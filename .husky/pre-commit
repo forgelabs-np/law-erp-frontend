@@ -1,0 +1,12 @@
+# Format the files with prettier
+echo "Formatting the files"
+yarn run format
+
+# Uncomment this after implementation of testing in the application
+# Test the application
+# echo "Testing the application"
+# yarn run test
+
+# Build the app
+echo "🔄 Building the app... ⏳"
+yarn build

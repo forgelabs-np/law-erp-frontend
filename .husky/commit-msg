@@ -1,0 +1,17 @@
+# Read the commit message
+commit_msg_file="$1"
+commit_msg=$(head -1 "$commit_msg_file")
+
+# Define the regex pattern for conventional commits
+pattern="^(feat|fix|wip|chore|docs|test|style|refactor|perf|build|ci|revert)(\(.+?\))?: .{1,}$"
+
+# Validate the commit message
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+    echo ""
+    echo "❌ Your commit message is invalid. \n"
+    echo "Please follow the conventional commit format: git commit -m \"<scope>: <message>\" \n"
+    echo "Valid types: feat, fix, wip, chore, docs, test, style, refactor, perf, build, ci, revert \n"
+    exit 1
+fi
+
+echo "✅ Commit message is valid."

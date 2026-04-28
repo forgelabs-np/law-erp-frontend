@@ -1,0 +1,10 @@
+services:
+  app:
+    container_name: law_firm_frontend
+    image: law_firm_frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4000:80 # Map the host port with the port that is open by server
+    restart: always

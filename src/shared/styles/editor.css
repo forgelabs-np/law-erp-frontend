@@ -1,0 +1,36 @@
+/* Only apply to ckeditor generated contents and parsed contents */
+
+/* Heading 1 generates h2 tag in html */
+.ck-content.ck-editor__editable h2,
+.parsed-content-wrapper h2 {
+  font-size: 28px;
+}
+
+/* Heading 2 generates h3 tag in html */
+.ck-content.ck-editor__editable h3,
+.parsed-content-wrapper h3 {
+  font-size: 24px;
+}
+
+/* Heading 3 generates h4 tag in html */
+.ck-content.ck-editor__editable h4,
+.parsed-content-wrapper h4 {
+  font-size: 18px;
+}
+
+.ck-content.ck-editor__editable i,
+.parsed-content-wrapper i {
+  font-style: italic;
+}
+
+.ck-content.ck-editor__editable ol,
+.parsed-content-wrapper ol {
+  list-style-type: decimal;
+  padding-left: 20px;
+}
+
+.ck-content.ck-editor__editable ul,
+.parsed-content-wrapper ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
