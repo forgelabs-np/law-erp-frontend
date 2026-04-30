@@ -3,8 +3,11 @@ export const ROUTES_CONFIG = {
     FORGOT_PASSWORD: "/auth/forgot-password",
     LOGIN: "/auth/login",
     RESET_PASSWORD: "/auth/reset-password",
+    SIGNUP: "/auth/signup",
   },
   USER: {
+    CLIENT_DASHBOARD: "/client/dashboard",
+    SOLO_DASHBOARD: "/solo/dashboard",
     ARCHIVE: "/archive",
     CASE_TYPE_SETUP: "/case-type-setup",
     FOLDER: "/folder",
