@@ -1,16 +1,21 @@
-import { ForgotPassword, Login, ResetPassword } from "@/pages/Authentication";
+import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
+import Login from "@/pages/Authentication/Login/Login";
+import Signup from "@/pages/Authentication/SignUp";
 import {
   Archive,
   CaseTypeSetup,
+  ClientDashboard,
   Folder,
   Home,
   MyFiles,
   OfficeSetup,
   SharedWithMe,
+  SoloDashboard,
   UserManagement,
 } from "@/pages/User";
 
 import { ROUTES_CONFIG } from "../config";
+import PublicRoute from "../routes/PublicRoutes";
 
 export const USER_ROUTES = [
   {
@@ -24,6 +29,14 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.FOLDER,
     element: <Folder />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
+    element: <ClientDashboard />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.SOLO_DASHBOARD,
+    element: <SoloDashboard />,
   },
   {
     path: ROUTES_CONFIG.USER.HOME,
@@ -53,8 +66,25 @@ export const AUTHENTICATION_ROUTES = [
     element: <ForgotPassword />,
   },
   {
-    path: ROUTES_CONFIG.AUTHENTICATION.LOGIN,
-    element: <Login />,
+    path: "/auth/login",
+    element: <PublicRoute Component={Login} />,
+  },
+  {
+    path: "/auth/client/login",
+    element: <PublicRoute Component={Login} />,
+  },
+  {
+    path: "/super-admin/login",
+    element: <PublicRoute Component={Login} hasSideContent={false} />,
+  },
+
+  {
+    path: "/auth/register/solo",
+    element: <PublicRoute Component={Signup} />,
+  },
+  {
+    path: "/auth/register/client",
+    element: <PublicRoute Component={Signup} />,
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
