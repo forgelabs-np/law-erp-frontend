@@ -13,6 +13,7 @@ import {
   SoloDashboard,
   UserManagement,
 } from "@/pages/User";
+import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -33,6 +34,10 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
     element: <ClientDashboard />,
+  },
+  {
+    path: "/calendar",
+    element: <CalendarTasksPage />,
   },
   {
     path: ROUTES_CONFIG.USER.SOLO_DASHBOARD,
