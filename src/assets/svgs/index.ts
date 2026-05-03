@@ -27,6 +27,7 @@ export { default as CloseCircleOutlineIcon } from "./CloseCircleOutlineIcon.svg?
 export { default as DeleteIcon } from "./DeleteIcon.svg?react";
 export { default as EyeOpenIcon } from "./EyeOpenIcon.svg?react";
 export { default as Edit1Icon } from "./Edit1Icon.svg?react";
+export { default as InputCalendarIcon } from "./InputCalendarIcon.svg?react";
 
 export { default as SwatchIcon } from "./SwatchIcon.svg?react";
 

@@ -1,8 +1,9 @@
 import { HStack } from "@chakra-ui/react";
 import { useController, useFormContext } from "react-hook-form";
 
-import { ChakraRadio, ChakraRadioGroup } from "@/shared/components";
 import { RadioGroupProps } from "@/shared/types";
+
+import { ChakraRadio, ChakraRadioGroup } from "../../ui";
 
 export const RadioGroup = ({ name, options }: RadioGroupProps) => {
   // prevent unintentional crashing in case of dynamic options

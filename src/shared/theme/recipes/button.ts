@@ -117,6 +117,16 @@ export const buttonRecipe = defineRecipe({
           },
         },
       },
+      errorOutline: {
+        borderWidth: "1px",
+        color: "red.600",
+        borderColor: "red.500",
+        _hover: {
+          color: "red.600",
+          borderColor: "red.600",
+          bg: "red.50",
+        },
+      },
       subtle: {
         bg: "primary.50",
         borderColor: "transparent",
