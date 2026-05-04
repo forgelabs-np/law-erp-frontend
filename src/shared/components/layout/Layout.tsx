@@ -13,7 +13,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
         <Navbar />
 
         <Box overflowY="auto" flex="1">
-          <Box padding="10">{children}</Box>
+          <Box padding="2">{children}</Box>
         </Box>
       </VStack>
     </HStack>

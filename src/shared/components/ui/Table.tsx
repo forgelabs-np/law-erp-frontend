@@ -30,7 +30,7 @@ export const TableUI = <T,>({
       css={{
         "& tbody tr": {
           _odd: { bg: "white" },
-          _even: { bg: "gray.75" },
+          _even: { bg: "gray.100" },
         },
       }}
       borderCollapse={"separate"}
@@ -38,7 +38,7 @@ export const TableUI = <T,>({
     >
       <ChakraTable.Header position={"sticky"} top={"0px"} zIndex={10}>
         {table.getHeaderGroups().map((headerGroup) => (
-          <ChakraTable.Row key={headerGroup.id} backgroundColor={"gray.25"}>
+          <ChakraTable.Row key={headerGroup.id} backgroundColor={"gray.100"}>
             {headerGroup.headers.map((header) => {
               const meta = (header.column.columnDef?.meta as MetaProps) || {};
               return (

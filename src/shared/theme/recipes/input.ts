@@ -2,7 +2,7 @@ import { defineRecipe } from "@chakra-ui/react";
 
 export const inputRecipe = defineRecipe({
   base: {
-    color: "green.800",
+    color: "gray.600",
     border: "sm",
   },
   variants: {
