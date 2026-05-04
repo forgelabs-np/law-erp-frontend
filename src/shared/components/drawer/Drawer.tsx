@@ -1,58 +1,51 @@
-"use client";
+import { Drawer as ChakraDrawer, CloseButton, Portal } from "@chakra-ui/react";
+import * as React from "react";
 
-import { Button } from "@chakra-ui/react";
+interface DrawerContentProps extends ChakraDrawer.ContentProps {
+  portalled?: boolean;
+  portalRef?: React.RefObject<HTMLElement>;
+  offset?: ChakraDrawer.ContentProps["padding"];
+}
 
-import { CloseIcon } from "@/shared/assets";
-import { DrawerProps } from "@/shared/types";
-
-import {
-  DrawerActionTrigger,
-  DrawerBackdrop,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerRoot,
-  DrawerTitle,
-} from "../ui";
-
-export const Drawer = ({
-  size,
-  open,
-  onClose,
-  children,
-  title,
-  closeOnEscape = true,
-  closeOnInteractOutside = true,
-  hasFooter = true,
-}: DrawerProps) => {
+export const DrawerContent = React.forwardRef<
+  HTMLDivElement,
+  DrawerContentProps
+>(function DrawerContent(props, ref) {
+  const { children, portalled = true, portalRef, offset, ...rest } = props;
   return (
-    <DrawerRoot
-      open={open}
-      onOpenChange={onClose}
-      size={size}
-      closeOnEscape={closeOnEscape}
-      closeOnInteractOutside={closeOnInteractOutside}
-    >
-      <DrawerBackdrop />
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{title}</DrawerTitle>
-
-          <CloseIcon className="close-icon" onClick={onClose} />
-        </DrawerHeader>
-
-        <DrawerBody>{children}</DrawerBody>
-
-        {hasFooter && (
-          <DrawerFooter>
-            <DrawerActionTrigger asChild>
-              <Button variant="outline">Cancel</Button>
-            </DrawerActionTrigger>
-            <Button>Save</Button>
-          </DrawerFooter>
-        )}
-      </DrawerContent>
-    </DrawerRoot>
+    <Portal disabled={!portalled} container={portalRef}>
+      <ChakraDrawer.Positioner padding={offset}>
+        <ChakraDrawer.Content ref={ref} {...rest} asChild={false}>
+          {children}
+        </ChakraDrawer.Content>
+      </ChakraDrawer.Positioner>
+    </Portal>
   );
-};
+});
+
+export const DrawerCloseTrigger = React.forwardRef<
+  HTMLButtonElement,
+  ChakraDrawer.CloseTriggerProps
+>(function DrawerCloseTrigger(props, ref) {
+  return (
+    <ChakraDrawer.CloseTrigger
+      position="absolute"
+      top="2"
+      insetEnd="2"
+      {...props}
+      asChild
+    >
+      <CloseButton size="sm" ref={ref} />
+    </ChakraDrawer.CloseTrigger>
+  );
+});
+
+export const DrawerTrigger = ChakraDrawer.Trigger;
+export const DrawerRoot = ChakraDrawer.Root;
+export const DrawerFooter = ChakraDrawer.Footer;
+export const DrawerHeader = ChakraDrawer.Header;
+export const DrawerBody = ChakraDrawer.Body;
+export const DrawerBackdrop = ChakraDrawer.Backdrop;
+export const DrawerDescription = ChakraDrawer.Description;
+export const DrawerTitle = ChakraDrawer.Title;
+export const DrawerActionTrigger = ChakraDrawer.ActionTrigger;

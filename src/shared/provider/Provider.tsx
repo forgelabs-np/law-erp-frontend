@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
 
-import { ChakraProvider, ToasterProvider } from "@/shared/components";
+import { ChakraProvider, ToasterProvider } from "../components/ui";
 
 const queryClient = new QueryClient();
 

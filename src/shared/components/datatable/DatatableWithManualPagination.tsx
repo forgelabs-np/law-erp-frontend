@@ -11,12 +11,13 @@ export const DatatableWithManualPagination = <T,>({
   columns,
   header,
   pagination,
+  isLoading,
 }: DatatableProps<T>) => {
   return (
     <VStack alignItems="stretch">
       {header?.title && <TableHeader {...header} />}
 
-      <Table data={data} columns={columns} />
+      <Table data={data} columns={columns} isLoading={isLoading} />
 
       {pagination && <Pagination {...pagination} />}
     </VStack>

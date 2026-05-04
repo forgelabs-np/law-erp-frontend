@@ -1,7 +1,7 @@
 import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
 import { format, isPast, parseISO } from "date-fns";
 
-import { Checkbox } from "@/shared/components";
+import { Checkbox } from "@/shared/components/ui";
 import { Task, TaskStatus } from "@/types/calendar.types";
 
 interface TaskGroup {

@@ -16,6 +16,7 @@ export const ROUTES_CONFIG = {
     OFFICE_SETUP: "/office-setup",
     SHARED_WITH_ME: "/shared-with-me",
     USER_MANAGEMENT: "/user-management",
+    ROLE_MANAGEMENT: "/role-management",
   },
 
   NO_MATCH: "*",

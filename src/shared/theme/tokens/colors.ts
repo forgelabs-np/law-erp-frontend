@@ -2,10 +2,10 @@ export const THEME_COLORS = {
   primary: {
     50: { value: "" },
     100: { value: "" },
-    200: { value: "" },
+    200: { value: "green.800" },
     300: { value: "" },
     400: { value: "" },
-    500: { value: "" },
+    500: { value: "#08545e" },
   },
 
   secondary: {

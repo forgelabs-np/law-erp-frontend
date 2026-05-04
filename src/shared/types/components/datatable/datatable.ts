@@ -6,4 +6,5 @@ export type DatatableProps<T> = TableProps<T> & {
   header?: TableHeaderProps;
   autoPagination?: boolean;
   pagination?: TablePaginationProps;
+  isLoading?: boolean;
 };
