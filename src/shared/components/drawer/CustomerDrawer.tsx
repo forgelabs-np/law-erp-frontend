@@ -127,7 +127,7 @@ const CustomDrawer = ({
         )}
         <DrawerBody
           as={Stack}
-          gap={6}
+          gap={3}
           p={{ base: 0, md: 6 }}
           pb={{ base: 6, md: 0 }}
         >
