@@ -1,8 +1,9 @@
-import { Box, Image, VStack } from "@chakra-ui/react";
+import { Box, Image, VStack, Spinner, Text } from "@chakra-ui/react";
 import { useState } from "react";
 
 import { LogoImage } from "@/shared/assets";
 import { SIDEBAR_ITEMS } from "@/shared/constants";
+import { useModules } from "@/shared/hooks/useModules";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
 
 import { SidebarItem } from "./SidebarItem";
@@ -10,6 +11,10 @@ import { AccordionRoot } from "../../ui";
 
 export const Sidebar = () => {
   const [value, setValue] = useState(getInitialExpandedSidebarMenu);
+  const { sidebarItems, loading, error } = useModules();
+
+  // Use dynamic items if available, fallback to static SIDEBAR_ITEMS
+  const itemsToDisplay = sidebarItems.length > 0 ? sidebarItems : SIDEBAR_ITEMS;
 
   return (
     <VStack
@@ -26,17 +31,29 @@ export const Sidebar = () => {
         <Image src={LogoImage} boxSize="20" />
       </Box>
 
-      <AccordionRoot
-        value={value}
-        onValueChange={(event) => setValue(event.value)}
-        multiple
-      >
-        <VStack alignItems="stretch" gap="1">
-          {SIDEBAR_ITEMS.map((sidebarItem) => (
-            <SidebarItem key={sidebarItem.name} {...sidebarItem} />
-          ))}
+      {error && (
+        <Text fontSize="xs" color="red.500" px="4" textAlign="center">
+          Error loading modules
+        </Text>
+      )}
+
+      {loading ? (
+        <VStack justifyContent="center" flex="1">
+          <Spinner size="sm" />
         </VStack>
-      </AccordionRoot>
+      ) : (
+        <AccordionRoot
+          value={value}
+          onValueChange={(event) => setValue(event.value)}
+          multiple
+        >
+          <VStack alignItems="stretch" gap="1">
+            {itemsToDisplay.map((sidebarItem) => (
+              <SidebarItem key={sidebarItem.name} {...sidebarItem} />
+            ))}
+          </VStack>
+        </AccordionRoot>
+      )}
     </VStack>
   );
 };
