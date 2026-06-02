@@ -5,4 +5,10 @@ export type SidebarItemProps = {
   subItems?: SidebarItemProps[];
   isChild?: boolean;
   isActive?: boolean;
+  section?: string;
+};
+
+export type SidebarSectionProps = {
+  title: string;
+  items: React.ReactNode[];
 };

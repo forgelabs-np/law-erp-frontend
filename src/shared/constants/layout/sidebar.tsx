@@ -1,64 +1,71 @@
-import { ChartIcon, FormIcon } from "@/shared/assets";
+import { LayoutGrid, Globe, Shirt, Users, Settings, Link2, LogOut, FileText, FolderOpen, Archive, Building2, User } from "lucide-react";
 import { ROUTES_CONFIG } from "@/shared/config";
 
 export const SIDEBAR_ITEMS = [
   {
     name: "Home",
     href: ROUTES_CONFIG.USER.HOME,
-    icon: <FormIcon />,
+    icon: <LayoutGrid size={16} />,
+    section: "",
   },
   {
     name: "User Management",
     href: ROUTES_CONFIG.USER.USER_MANAGEMENT,
-    icon: <ChartIcon />,
+    icon: <Users size={16} />,
+    section: "",
   },
   {
     name: "My Files",
     href: ROUTES_CONFIG.USER.MY_FILES,
-    icon: <FormIcon />,
+    icon: <FileText size={16} />,
+    section: "Main",
   },
   {
     name: "Shared With Me",
     href: ROUTES_CONFIG.USER.SHARED_WITH_ME,
-    icon: <ChartIcon />,
+    icon: <FolderOpen size={16} />,
+    section: "Main",
   },
   {
     name: "Folder",
     href: ROUTES_CONFIG.USER.FOLDER,
-    icon: <FormIcon />,
+    icon: <Globe size={16} />,
+    section: "Main",
   },
   {
     name: "Case Type Setup",
     href: ROUTES_CONFIG.USER.CASE_TYPE_SETUP,
-    icon: <ChartIcon />,
+    icon: <Shirt size={16} />,
+    section: "Main",
   },
   {
     name: "Office Setup",
     href: ROUTES_CONFIG.USER.OFFICE_SETUP,
-    icon: <FormIcon />,
+    icon: <Building2 size={16} />,
+    section: "Marketing & Support",
   },
   {
     name: "Archive",
     href: ROUTES_CONFIG.USER.ARCHIVE,
-    icon: <ChartIcon />,
+    icon: <Archive size={16} />,
+    section: "Marketing & Support",
   },
-
-  // use this format in case of nested
-  // {
-  //   name: "Datatable",
-  //   icon: <TableIcon />,
-  //   parent: ROUTES_CONFIG.DATATABLE.DEFAULT,
-  //   subItems: [
-  //     {
-  //       name: "Basic Datatable",
-  //       href: ROUTES_CONFIG.DATATABLE.BASIC,
-  //       icon: <TableIcon />,
-  //     },
-  //     {
-  //       name: "Dynamic Datatable",
-  //       href: ROUTES_CONFIG.DATATABLE.DYNAMIC,
-  //       icon: <TableIcon />,
-  //     },
-  //   ],
-  // },
+  {
+    name: "Settings",
+    href: "#",
+    icon: <Settings size={16} />,
+    section: "bottom",
+  },
+  {
+    name: "Profile",
+    href: "#",
+    icon: <User size={16} />,
+    section: "bottom",
+  },
+  {
+    name: "Log Out",
+    href: "#",
+    icon: <LogOut size={16} />,
+    section: "bottom",
+  },
 ];

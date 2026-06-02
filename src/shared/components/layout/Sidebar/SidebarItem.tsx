@@ -15,7 +15,8 @@ export const LinkItem = ({
   icon,
   isChild,
   isActive,
-}: SidebarItemProps) => {
+  isCollapsed,
+}: SidebarItemProps & { isCollapsed?: boolean }) => {
   const location = useLocation();
 
   const active = location.pathname === href;
@@ -26,45 +27,60 @@ export const LinkItem = ({
         to={href}
         style={{
           width: "100%",
+          textDecoration: "none",
         }}
       >
-        <LinkItem name={name} icon={icon} isChild={isChild} isActive={active} />
+        <LinkItem name={name} icon={icon} isChild={isChild} isActive={active} isCollapsed={isCollapsed} />
       </Link>
     );
   }
 
   return (
     <HStack
-      px="6"
+      px={isCollapsed ? "2" : "3"}
       py="2"
       pl={isChild ? "8" : undefined}
       userSelect="none"
       width="full"
+      position="relative"
       _hover={{
-        background: !isActive ? "gray.200" : undefined,
+        background: !isActive ? "gray.100" : undefined,
       }}
-      background={isActive ? "blue.500" : undefined}
-      color={isActive ? "white" : "gray.700"}
+      background={isActive ? "primary.50" : undefined}
+      color={isActive ? "primary.600" : "gray.700"}
+      cursor="pointer"
+      transition="all 0.2s"
+      justify={isCollapsed ? "center" : "flex-start"}
     >
+      {isActive && (
+        <Box
+          position="absolute"
+          left="0"
+          top="0"
+          bottom="0"
+          width="3px"
+          background="primary.500"
+          borderRadius="0 4px 4px 0"
+        />
+      )}
       <Box
         css={{
           "&>svg": {
-            width: 5,
-            height: 5,
+            width: 4,
+            height: 4,
           },
         }}
       >
         {icon}
       </Box>
 
-      <Text>{name}</Text>
+      {!isCollapsed && <Text fontSize="sm" fontWeight={isActive ? "600" : "400"}>{name}</Text>}
     </HStack>
   );
 };
 
-export const SidebarItem = (props: SidebarItemProps) => {
+export const SidebarItem = (props: SidebarItemProps & { isCollapsed?: boolean }) => {
   const subItems = props.subItems;
-
   const hasSubItems = Array.isArray(subItems);
 
   return (

@@ -1,11 +1,15 @@
 export const THEME_COLORS = {
   primary: {
-    50: { value: "" },
-    100: { value: "" },
-    200: { value: "" },
-    300: { value: "" },
-    400: { value: "" },
-    500: { value: "#08545e" },
+    50: { value: "#E8F5EE" },
+    100: { value: "#C5E6D5" },
+    200: { value: "#9ED0B8" },
+    300: { value: "#75B99B" },
+    400: { value: "#4CA27E" },
+    500: { value: "#0D6944" },
+    600: { value: "#0A5235" },
+    700: { value: "#073B26" },
+    800: { value: "#052418" },
+    900: { value: "#020D0A" },
   },
 
   secondary: {

@@ -1,230 +1,281 @@
-// DotMap.tsx
-import { Box, GridItem, Icon, Stack, Text } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { Box, GridItem, Stack, Text } from "@chakra-ui/react";
+import { useEffect, useRef } from "react";
+import { FaFileInvoice } from "react-icons/fa";
+import { MdLockPerson } from "react-icons/md";
+import { FaScaleUnbalancedFlip } from "react-icons/fa6";
+import { SupremeCourtImage } from "@/assets/images";
 
-import { ArrowRightIcon } from "@/assets/svgs";
-
-const routes = [
-  {
-    start: { x: 100, y: 150, delay: 0 },
-    end: { x: 200, y: 80, delay: 2 },
-    color: "#3b82f6",
-  },
-  {
-    start: { x: 200, y: 80, delay: 2 },
-    end: { x: 260, y: 120, delay: 4 },
-    color: "#3b82f6",
-  },
-  {
-    start: { x: 50, y: 50, delay: 1 },
-    end: { x: 150, y: 180, delay: 3 },
-    color: "#3b82f6",
-  },
-  {
-    start: { x: 280, y: 60, delay: 0.5 },
-    end: { x: 180, y: 180, delay: 2.5 },
-    color: "#3b82f6",
-  },
+// ── Rotating legal quotes ────────────────────────────────────────────────────
+const QUOTES = [
+  { text: "Justice is the constant and perpetual will to allot every man his due.", author: "Justinian I" },
+  { text: "The law is reason, free from passion.", author: "Aristotle" },
+  { text: "Injustice anywhere is a threat to justice everywhere.", author: "Martin Luther King Jr." },
 ];
 
-export const DotMap = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [dimensions, setDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
+const RotatingQuote = () => {
+  const textRef = useRef<HTMLParagraphElement | null>(null);
+  const authorRef = useRef<HTMLSpanElement | null>(null);
+  const idxRef = useRef(0);
 
-  // Handle resize
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !canvas.parentElement) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      const { width, height } = entries[0].contentRect;
-
-      setDimensions({ width, height });
-
-      canvas.width = width;
-      canvas.height = height;
-    });
-
-    resizeObserver.observe(canvas.parentElement);
-
-    return () => resizeObserver.disconnect();
+    const set = (i: number) => {
+      const q = QUOTES[i];
+      if (textRef.current) textRef.current.textContent = `"${q.text}"`;
+      if (authorRef.current) authorRef.current.textContent = `— ${q.author}`;
+    };
+    set(0);
+    const iv = setInterval(() => {
+      idxRef.current = (idxRef.current + 1) % QUOTES.length;
+      [textRef, authorRef].forEach(r => {
+        if (r.current) r.current.style.opacity = "0";
+      });
+      setTimeout(() => {
+        set(idxRef.current);
+        [textRef, authorRef].forEach(r => {
+          if (r.current) r.current.style.opacity = "1";
+        });
+      }, 600);
+    }, 5000);
+    return () => clearInterval(iv);
   }, []);
 
-  // Animation
-  useEffect(() => {
-    if (!dimensions.width || !dimensions.height) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const gap = 12;
-    const dots: { x: number; y: number; opacity: number }[] = [];
-
-    for (let x = 0; x < dimensions.width; x += gap) {
-      for (let y = 0; y < dimensions.height; y += gap) {
-        const w = dimensions.width;
-        const h = dimensions.height;
-
-        const inMap =
-          (x < w * 0.25 && x > w * 0.05 && y < h * 0.4 && y > h * 0.1) ||
-          (x < w * 0.25 && x > w * 0.15 && y < h * 0.8 && y > h * 0.4) ||
-          (x < w * 0.45 && x > w * 0.3 && y < h * 0.35 && y > h * 0.15) ||
-          (x < w * 0.5 && x > w * 0.35 && y < h * 0.65 && y > h * 0.35) ||
-          (x < w * 0.7 && x > w * 0.45 && y < h * 0.5 && y > h * 0.1) ||
-          (x < w * 0.8 && x > w * 0.65 && y < h * 0.8 && y > h * 0.6);
-
-        if (inMap && Math.random() > 0.3) {
-          dots.push({
-            x,
-            y,
-            opacity: Math.random() * 0.5 + 0.1,
-          });
-        }
-      }
-    }
-
-    let animationFrameId: number;
-    let startTime = Date.now();
-
-    const animate = () => {
-      ctx.clearRect(0, 0, dimensions.width, dimensions.height);
-
-      // Draw dots
-      dots.forEach((dot) => {
-        ctx.beginPath();
-        ctx.arc(dot.x, dot.y, 1, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${dot.opacity})`;
-        ctx.fill();
-      });
-
-      const currentTime = (Date.now() - startTime) / 1000;
-
-      // Draw routes
-      routes.forEach((route) => {
-        const elapsed = currentTime - route.start.delay;
-        if (elapsed <= 0) return;
-
-        const progress = Math.min(elapsed / 3, 1);
-
-        const x = route.start.x + (route.end.x - route.start.x) * progress;
-        const y = route.start.y + (route.end.y - route.start.y) * progress;
-
-        // Line
-        ctx.beginPath();
-        ctx.moveTo(route.start.x, route.start.y);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = route.color;
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        // Start point
-        ctx.beginPath();
-        ctx.arc(route.start.x, route.start.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = route.color;
-        ctx.fill();
-
-        // Moving point
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = "#60a5fa";
-        ctx.fill();
-
-        // Glow
-        ctx.beginPath();
-        ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(96,165,250,0.3)";
-        ctx.fill();
-
-        // End point
-        if (progress === 1) {
-          ctx.beginPath();
-          ctx.arc(route.end.x, route.end.y, 3, 0, Math.PI * 2);
-          ctx.fillStyle = route.color;
-          ctx.fill();
-        }
-      });
-
-      if (currentTime > 15) {
-        startTime = Date.now();
-      }
-
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [dimensions]);
-
   return (
-    <Box position="relative" w="full" h="full" overflow="hidden">
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-        }}
-      />
-    </Box>
+    <Stack gap="3" align="center" maxW="360px">
+      {/* opening quote mark */}
+      {/* <Text style={{
+        fontFamily: "'Georgia', serif",
+        fontSize: "48px",
+        lineHeight: "0.5",
+        color: "#ffffff",
+        opacity: 0.6,
+        alignSelf: "flex-start",
+        marginLeft: "8px",
+      }}>
+        "
+      </Text> */}
+      <p ref={textRef} style={{
+        color: "rgba(255,255,255,0.88)",
+        fontSize: "18.5px",
+        lineHeight: "1.75",
+        textAlign: "center",
+        fontStyle: "italic",
+        fontFamily: "'Georgia', serif",
+        transition: "opacity 0.6s ease",
+        margin: "0 0 4px",
+        minHeight: "50px",
+      }} />
+      <span ref={authorRef} style={{
+        color: "#4ade80",
+        fontSize: "10px",
+        letterSpacing: "0.14em",
+        textTransform: "uppercase",
+        fontFamily: "'Georgia', serif",
+        transition: "opacity 0.6s ease",
+      }} />
+    </Stack>
   );
 };
 
+// ── Feature pills ────────────────────────────────────────────────────────────
+const PILLARS = [
+  { label: "Case Management", icon: <FaScaleUnbalancedFlip /> },
+  { label: "Client Records",  icon: <FaFileInvoice /> },
+  { label: "Secure & Private", icon: <MdLockPerson /> },
+];
+
+// ── Main export ──────────────────────────────────────────────────────────────
 export const TravelConnectSidePanel = () => {
   return (
-    <GridItem position="relative" overflow="hidden" minH="500px">
-      {/* Background */}
+    <GridItem
+      position="relative"
+      overflow="hidden"
+      minH="500px"
+    >
       <Box position="absolute" inset={0}>
-        <DotMap />
+        <img
+          src={SupremeCourtImage}
+          alt="Supreme Court"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            display: "block",
+          }}
+        />
       </Box>
 
-      {/* Overlay Content */}
+      {/* ── Multi-layer overlay for depth ── */}
+      {/* Base dark scrim */}
+      <Box
+        position="absolute"
+        inset={0}
+        style={{ background: "rgba(5, 20, 12, 0.72)" }}
+      />
+      {/* Green gradient from bottom */}
+      <Box
+        position="absolute"
+        inset={0}
+        
+        style={{
+          background: "linear-gradient(to top, rgba(13,105,68,0.55) 0%, transparent 55%)",
+        }}
+      />
+      {/* Vignette edges */}
+      <Box
+        position="absolute"
+        inset={0}
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.45) 100%)",
+        }}
+      />
+      {/* Top fade to near-black */}
+      <Box
+        position="absolute"
+        inset={0}
+        style={{
+          background: "linear-gradient(to bottom, rgba(5,20,12,0.5) 0%, transparent 30%)",
+        }}
+      />
+
+      {/* ── Content ── */}
       <Stack
         position="absolute"
         inset={0}
         align="center"
-        justify="center"
-        p={8}
-        gap={4}
+        justify="space-between"
+        p="0"
         zIndex={1}
       >
+        {/* Top: Wordmark bar */}
         <Box
-          h="48px"
-          w="48px"
-          borderRadius="full"
-          bg="linear-gradient(135deg, #3b82f6, #6366f1)"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
+          width="full"
+          px="8"
+          pt="8"
+          pb="5"
+          style={{
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+          }}
         >
-          <Icon color="white" boxSize={6}>
-            <ArrowRightIcon />
-          </Icon>
+          <Stack align="center" gap="2">
+            <Text style={{
+              fontSize: "9px",
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.6)",
+              fontFamily: "'Georgia', serif",
+            }}>
+              Established Practice
+            </Text>
+            <Text style={{
+              fontFamily: "'Georgia', serif",
+              fontSize: "22px",
+              fontWeight: 700,
+              color: "#ffffff",
+              letterSpacing: "0.08em",
+              lineHeight: 1.2,
+            }}>
+              Law Firm <span style={{ color: "#62f15d" }}>CRM</span>
+            </Text>
+          </Stack>
         </Box>
 
-        <Text
-          fontSize="2xl"
-          fontWeight={700}
-          textAlign="center"
-          bgGradient="linear(to-r, blue.300, indigo.400)"
-          bgClip="text"
+        {/* Middle: Quote */}
+        <Box px="8" flex="1" display="flex" alignItems="center" justifyContent="center">
+          <RotatingQuote />
+        </Box>
+
+        {/* Bottom: Feature pills */}
+       {/* Bottom: Feature cards */}
+<Box
+  width="full"
+  px="5"
+  pt="5"
+  pb="6"
+  // style={{
+  //   borderTop: "1px solid rgba(255,255,255,0.08)",
+  //   background: "rgba(0,0,0,0.25)",
+  //   backdropFilter: "blur(8px)",
+  // }}
+>
+  <Stack direction="row" gap="3" justify="center">
+    {PILLARS.map(({ label, icon }) => (
+      <Box
+        key={label}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "10px",
+          // padding: "16px 12px 14px",
+          padding: "4px",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "8px",
+          background: "rgba(255,255,255,0.07)",
+          backdropFilter: "blur(4px)",
+          flex: 1,
+          maxWidth: "180px",
+        }}
+      >
+        {/* Icon circle */}
+        <Box
+          style={{
+            width: "38px",
+            height: "38px",
+            borderRadius: "50%",
+            border: "1.5px solid rgba(248, 248, 248, 0.5)",
+            background: "rgba(13,105,68,0.12)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#4ade80",
+            fontSize: "15px",
+          }}
         >
-          CRM
+          {icon}
+        </Box>
+
+        {/* Label */}
+        <Text style={{
+          fontSize: "9px",
+          color:"white",
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          fontWeight: 600,
+          textAlign: "center",
+          lineHeight: 1.4,
+        }}>
+          {label}
         </Text>
 
-        <Text fontSize="sm" textAlign="center" color="gray.500" maxW="xs">
-          Sign in to access your global travel dashboard and connect with nomads
-          worldwide
+        {/* Short description */}
+        <Text style={{
+          fontSize: "9.5px",
+          color: "rgba(255,255,255,0.45)",
+          textAlign: "center",
+          lineHeight: 1.5,
+        }}>
+          {
+            label === "Case Management"
+              ? "Track cases, deadlines and important updates"
+              : label === "Client Records"
+              ? "Centralize client information and communication"
+              : "Your data is protected with enterprise-grade security"
+          }
         </Text>
+
+        {/* Bottom accent line */}
+        {/* <Box style={{
+          width: "24px",
+          height: "2px",
+          borderRadius: "1px",
+          background: "#0D6944",
+          marginTop: "2px",
+        }} /> */}
+      </Box>
+    ))}
+  </Stack>
+</Box>
       </Stack>
     </GridItem>
   );
