@@ -1,10 +1,10 @@
-import { Box, Button, Image, Stack, Text } from "@chakra-ui/react";
+import { Box, Image, Stack, Text, Separator, Button } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { type LoginType, useLoginMutation } from "@/api/auth";
 import { Logo } from "@/assets/images";
-import { FormProvider, TextFieldInput } from "@/shared/components";
+import { FormProvider, PasswordInput, TextFieldInput } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
 
 const defaultValues = { username: "", password: "" };
@@ -15,18 +15,21 @@ const resolveLoginType = (pathname: string): LoginType => {
   return "solo";
 };
 
-const loginConfig: Record<LoginType, { title: string; subtitle: string }> = {
+const loginConfig: Record<LoginType, { title: string; subtitle: string; badge: string }> = {
   solo: {
-    title: "Welcome to Law Firm CRM",
-    subtitle: "Secure access to manage operations.",
+    badge: "Firm Access",
+    title: "Welcome back",
+    subtitle: "Sign in to manage your firm's operations.",
   },
   client: {
-    title: "Client Portal",
-    subtitle: "Sign in to your client account.",
+    badge: "Client Portal",
+    title: "Client Sign In",
+    subtitle: "Access your case files and documents.",
   },
   "super-admin": {
-    title: "Super Admin",
-    subtitle: "Restricted access. Authorised personnel only.",
+    badge: "Restricted",
+    title: "Administrator Access",
+    subtitle: "Authorised personnel only.",
   },
 };
 
@@ -45,8 +48,7 @@ const Login = () => {
       const response = await login(data);
       if (response?.status === 200 || response?.status === 201) {
         if (loginType === "super-admin") navigate("/super-admin/dashboard");
-        else if (loginType === "client")
-          navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
+        else if (loginType === "client") navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
         else navigate(ROUTES_CONFIG.USER.SOLO_DASHBOARD);
       }
     } catch {
@@ -55,49 +57,75 @@ const Login = () => {
   };
 
   return (
-    <Stack gap="32px" justifyContent="center">
-      <Stack gap="0">
-        <Box mx={{ base: "auto", md: 0 }}>
-          <Image src={Logo} alt="Logo" height="85px" width="max-content" />
+    <Stack gap="8" justifyContent="center" py="2">
+      {/* Logo */}
+      <Box mx={{ base: "auto", md: 0 }}>
+        <Image src={Logo} alt="Logo" height="72px" width="max-content" />
+      </Box>
+
+      {/* Header */}
+      <Stack gap="3">
+        {/* Access type badge */}
+        <Box
+          display="inline-flex"
+          alignSelf={{ base: "center", md: "flex-start" }}
+          px="2.5"
+          py="0.5"
+          borderRadius="sm"
+          bg="gray.100"
+          border="1px solid"
+          borderColor="gray.200"
+        >
+          <Text fontSize="xs" fontWeight="500" color="gray.500" letterSpacing="0.06em" textTransform="uppercase">
+            {config.badge}
+          </Text>
         </Box>
-        <Stack gap={1}>
-          <Text textStyle="heading_5" fontWeight={700}>
+
+        <Stack gap="1">
+          <Text fontSize="xl" fontWeight="700" color="gray.900" lineHeight="1.2">
             {config.title}
           </Text>
-          <Text textStyle="paragraph_regular" opacity={0.64}>
+          <Text fontSize="sm" color="gray.500" lineHeight="1.6">
             {config.subtitle}
           </Text>
         </Stack>
       </Stack>
 
+      {/* Form */}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
-        <Stack gap={8}>
-          <Stack gap={5}>
+        <Stack gap="6">
+          <Stack gap="4">
             {loginType === "client" ? (
               <TextFieldInput
                 name="username"
                 label="Mobile Number"
-                placeholder="Please provide mobile number"
+                placeholder="Enter your mobile number"
                 required
               />
             ) : (
               <TextFieldInput
                 name="username"
                 label="Username"
-                placeholder="Please provide username"
+                placeholder="Enter your username"
                 required
               />
             )}
-
-            <TextFieldInput
-              type="password"
+            <PasswordInput
               name="password"
               label="Password"
-              placeholder="Please enter your password"
+              placeholder="Enter your password"
               required
             />
           </Stack>
-          <Button type="submit" variant="danger" loading={isPending}>
+
+          <Button
+            type="submit"
+            variant="solid"
+            loading={isPending}
+            width="fit-content"
+            px={8}
+            bg="primary.500"
+          >
             Sign in
           </Button>
         </Stack>

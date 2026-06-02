@@ -170,7 +170,7 @@ export const UnAuthLayoutAdmin = ({
         background="white"
         overflow="hidden"
         width={{ base: "100%", md: "740px", xl: "1020px" }}
-        paddingY={10}
+        // paddingY={10}
         boxShadow="0px 8px 80px 0px rgba(43, 103, 177, 0.11)"
         flexShrink={0}
       >
@@ -180,6 +180,7 @@ export const UnAuthLayoutAdmin = ({
           borderColor="gray.200"
           as={Stack}
           gap={0}
+          paddingY={8}
         >
           {children}
         </GridItem>
