@@ -79,7 +79,12 @@ export const Sidebar = () => {
         value={value}
         onValueChange={(event) => setValue(event.value)}
         multiple
-        style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minHeight: 0,
+        }}
       >
         {/* Top + Main + Marketing — scrollable middle */}
         <VStack alignItems="stretch" gap="0" flex="1" overflowY="auto">

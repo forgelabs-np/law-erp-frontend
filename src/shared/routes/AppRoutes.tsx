@@ -2,10 +2,11 @@ import { useRoutes } from "react-router-dom";
 
 import { Layout } from "../components";
 import { AUTHENTICATION_ROUTES, USER_ROUTES } from "../constants";
+import TokenService from "../service/service-token";
 
 export const AppRoutes = () => {
-  // const authenticated = TokenService.isAuthenticated();
-  const authenticated = true;
+  const authenticated = TokenService.isAuthenticated();
+  // const authenticated = true;
 
   const routes = useRoutes(authenticated ? USER_ROUTES : AUTHENTICATION_ROUTES);
 

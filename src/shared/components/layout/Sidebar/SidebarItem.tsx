@@ -30,7 +30,13 @@ export const LinkItem = ({
           textDecoration: "none",
         }}
       >
-        <LinkItem name={name} icon={icon} isChild={isChild} isActive={active} isCollapsed={isCollapsed} />
+        <LinkItem
+          name={name}
+          icon={icon}
+          isChild={isChild}
+          isActive={active}
+          isCollapsed={isCollapsed}
+        />
       </Link>
     );
   }
@@ -74,12 +80,18 @@ export const LinkItem = ({
         {icon}
       </Box>
 
-      {!isCollapsed && <Text fontSize="sm" fontWeight={isActive ? "600" : "400"}>{name}</Text>}
+      {!isCollapsed && (
+        <Text fontSize="sm" fontWeight={isActive ? "600" : "400"}>
+          {name}
+        </Text>
+      )}
     </HStack>
   );
 };
 
-export const SidebarItem = (props: SidebarItemProps & { isCollapsed?: boolean }) => {
+export const SidebarItem = (
+  props: SidebarItemProps & { isCollapsed?: boolean }
+) => {
   const subItems = props.subItems;
   const hasSubItems = Array.isArray(subItems);
 

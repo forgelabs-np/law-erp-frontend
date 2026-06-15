@@ -16,5 +16,12 @@ export const api = {
     PERMISSION_SETUP: {
       GET_PERMISSIONS: "admin/permissions",
     },
+    MENU_MANAGEMENT: {
+      MODULE_MENUS: "admin/modules",
+      GET_BY_ID: "admin/modules/{moduleId}",
+      TOGGLE: "admin/modules/{moduleId}/toggle",
+      PAGINATION: "admin/modules/pagination",
+      LIST: "admin/modules/list",
+    },
   },
 };
