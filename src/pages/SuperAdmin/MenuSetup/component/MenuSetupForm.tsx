@@ -12,6 +12,10 @@ export const MenuSetupForm = ({
   isEdit?: boolean;
 }) => {
   return (
-    <ModuleMenuFields control={control as unknown as Control<RoleFormValues>} name="CRM" isEdit={isEdit} />
+    <ModuleMenuFields
+      control={control as unknown as Control<RoleFormValues>}
+      name="CRM"
+      isEdit={isEdit}
+    />
   );
 };

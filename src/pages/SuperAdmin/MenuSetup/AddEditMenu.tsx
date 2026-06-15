@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import {
   SubMenuResponse,
   useAddEditModuleMenuMutation,
-  useModuleMenuByIdQuery
+  useModuleMenuByIdQuery,
 } from "@/api/menuSetup";
 import { FormProvider } from "@/shared/components";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
