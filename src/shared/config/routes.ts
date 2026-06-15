@@ -17,6 +17,7 @@ export const ROUTES_CONFIG = {
     SHARED_WITH_ME: "/shared-with-me",
     USER_MANAGEMENT: "/user-management",
     ROLE_MANAGEMENT: "/role-management",
+    MENU_MANAGEMENT: "/menu-management",
   },
 
   NO_MATCH: "*",

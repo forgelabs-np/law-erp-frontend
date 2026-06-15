@@ -1,4 +1,16 @@
-import { LayoutGrid, Globe, Shirt, Users, Settings, Link2, LogOut, FileText, FolderOpen, Archive, Building2, User } from "lucide-react";
+import {
+  LayoutGrid,
+  Globe,
+  Shirt,
+  Users,
+  Settings,
+  LogOut,
+  FileText,
+  FolderOpen,
+  Archive,
+  Building2,
+  User,
+} from "lucide-react";
 import { ROUTES_CONFIG } from "@/shared/config";
 
 export const SIDEBAR_ITEMS = [
@@ -11,6 +23,18 @@ export const SIDEBAR_ITEMS = [
   {
     name: "User Management",
     href: ROUTES_CONFIG.USER.USER_MANAGEMENT,
+    icon: <Users size={16} />,
+    section: "",
+  },
+  {
+    name: "Role Management",
+    href: ROUTES_CONFIG.USER.ROLE_MANAGEMENT,
+    icon: <Users size={16} />,
+    section: "",
+  },
+  {
+    name: "Menu Management",
+    href: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
     icon: <Users size={16} />,
     section: "",
   },

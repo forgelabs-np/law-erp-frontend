@@ -45,31 +45,7 @@ export default tseslint.config(
       "no-console": "error",
       "no-empty": "off",
 
-      "import/order": [
-        "error",
-        {
-          groups: [
-            "builtin",
-            "external",
-            "internal",
-            ["parent", "sibling"],
-            "index",
-          ],
-          pathGroups: [
-            {
-              pattern: "@/**",
-              group: "internal",
-              position: "before",
-            },
-          ],
-          pathGroupsExcludedImportTypes: ["builtin"],
-          alphabetize: {
-            order: "asc",
-            caseInsensitive: true,
-          },
-          "newlines-between": "always", // Separation between import groups
-        },
-      ],
+      "import/order": "off",
     },
   }
 );

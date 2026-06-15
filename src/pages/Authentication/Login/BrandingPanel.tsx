@@ -14,29 +14,57 @@ export const BrandingPanel = () => {
       <VStack align="start" gap={8} flex={1} justify="center">
         {/* Logo */}
         <Box>
-          <Text color="white" fontSize="xl" fontWeight="bold" letterSpacing="wide">
+          <Text
+            color="white"
+            fontSize="xl"
+            fontWeight="bold"
+            letterSpacing="wide"
+          >
             LexElite
           </Text>
-          <Text color="primary.200" fontSize="sm" fontWeight="600" letterSpacing="wider">
+          <Text
+            color="primary.200"
+            fontSize="sm"
+            fontWeight="600"
+            letterSpacing="wider"
+          >
             CASE MANAGEMENT
           </Text>
         </Box>
 
         {/* Illustration */}
         <Box position="relative" w="full" h="200px">
-          <Building2 size={80} color="primary.300" style={{ position: "absolute", top: 20, left: 20 }} />
-          <Scale size={60} color="primary.400" style={{ position: "absolute", top: 60, right: 40 }} />
-          <FileText size={50} color="primary.200" style={{ position: "absolute", bottom: 40, left: 60 }} />
+          <Building2
+            size={80}
+            color="primary.300"
+            style={{ position: "absolute", top: 20, left: 20 }}
+          />
+          <Scale
+            size={60}
+            color="primary.400"
+            style={{ position: "absolute", top: 60, right: 40 }}
+          />
+          <FileText
+            size={50}
+            color="primary.200"
+            style={{ position: "absolute", bottom: 40, left: 60 }}
+          />
         </Box>
 
         {/* Title and Description */}
         <VStack align="start" gap={4} maxW="400px">
-          <Text color="white" fontSize="3xl" fontWeight="bold" lineHeight="tight">
+          <Text
+            color="white"
+            fontSize="3xl"
+            fontWeight="bold"
+            lineHeight="tight"
+          >
             Modern Case Management for Modern Law Firms
           </Text>
           <Text color="primary.100" fontSize="md" lineHeight="relaxed">
-            Streamline your legal practice with our comprehensive case management solution. 
-            Manage documents, track cases, and collaborate seamlessly.
+            Streamline your legal practice with our comprehensive case
+            management solution. Manage documents, track cases, and collaborate
+            seamlessly.
           </Text>
         </VStack>
       </VStack>

@@ -2,6 +2,7 @@ import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
 import Signup from "@/pages/Authentication/SignUp";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
+import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import {
   Archive,
   CaseTypeSetup,
@@ -67,6 +68,10 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT,
     element: <RoleSetup />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
+    element: <MenuManagement />,
   },
 ];
 
