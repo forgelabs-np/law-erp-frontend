@@ -19,6 +19,7 @@ import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPag
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
+import PermissionManagementTable from "@/pages/SuperAdmin/PermissionSetup/PermissionSetupTable";
 
 export const USER_ROUTES = [
   {
@@ -72,6 +73,10 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
     element: <MenuManagement />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.PERMISSION_MANAGEMENT,
+    element: <PermissionManagementTable />,
   },
 ];
 

@@ -33,6 +33,12 @@ export const SIDEBAR_ITEMS = [
     section: "",
   },
   {
+    name: "Permission Management",
+    href: ROUTES_CONFIG.USER.PERMISSION_MANAGEMENT,
+    icon: <Users size={16} />,
+    section: "",
+  },
+  {
     name: "Menu Management",
     href: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
     icon: <Users size={16} />,

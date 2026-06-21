@@ -15,6 +15,11 @@ export const api = {
     },
     PERMISSION_SETUP: {
       GET_PERMISSIONS: "admin/permissions",
+      POST: "admin/permissions",
+      DELETE: "admin/permissions/{id}",
+      TOGGLE: "admin/permissions/{idd}/toggle",
+      ACTIVE_PERMISSIONS: "admin/permissions/active",
+      GET_BY_ID: "admin/permissions/{id}",
     },
     MENU_MANAGEMENT: {
       MODULE_MENUS: "admin/modules",
