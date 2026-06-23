@@ -61,6 +61,13 @@ const addEditModuleMenu = async (payload: ModuleMenuPayload) => {
 
   const parentId = payload.id || response.data?.data?.id || response.data?.data;
 
+  if (parentId && payload.privilege && payload.privilege.length > 0) {
+    await assignModulePermissions({
+      moduleId: parentId.toString(),
+      permissionIds: payload.privilege,
+    });
+  }
+
   if (payload.subMenus && payload.subMenus.length > 0 && parentId) {
     const subPromises = payload.subMenus.map((sub) => {
       const subData = {
@@ -76,7 +83,17 @@ const addEditModuleMenu = async (payload: ModuleMenuPayload) => {
       return LawFirmCRMClient.post(
         api.USER_MANAGEMENT.MENU_MANAGEMENT.MODULE_MENUS,
         subData
-      );
+      ).then(async (subResponse) => {
+        const subId =
+          sub.id || subResponse.data?.data?.id || subResponse.data?.data;
+        if (subId && sub.privilege && sub.privilege.length > 0) {
+          await assignModulePermissions({
+            moduleId: subId.toString(),
+            permissionIds: sub.privilege,
+          });
+        }
+        return subResponse;
+      });
     });
     await Promise.all(subPromises);
   }
@@ -137,6 +154,33 @@ export const useToggleModuleMenuMutation = () => {
         queryKey: [api.USER_MANAGEMENT.MENU_MANAGEMENT.MODULE_MENUS],
       });
       queryClient.invalidateQueries({ queryKey: [`module-menu-${id}`] });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Something went wrong!";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+const assignModulePermissions = async (data: {
+  moduleId: string;
+  permissionIds: string[];
+}) => {
+  const url = api.USER_MANAGEMENT.MENU_MANAGEMENT.ASSIGN_PERMISSIONS.replace(
+    "{moduleId}",
+    data.moduleId
+  );
+  return LawFirmCRMClient.post(url, { permissionIds: data.permissionIds });
+};
+
+export const useAssignModulePermissionsMutation = () => {
+  return useMutation({
+    mutationFn: assignModulePermissions,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Permissions assigned successfully"
+      );
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =

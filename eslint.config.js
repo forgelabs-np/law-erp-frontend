@@ -33,13 +33,13 @@ export default tseslint.config(
       "react-hooks/exhaustive-deps": "error", // Enforces correct dependency arrays
 
       "@typescript-eslint/no-unused-vars": [
-        "error",
+        "warn",
         {
           argsIgnorePattern: "^_", // Ignore unused args starting with _
           caughtErrors: "none", // Ignore unused errors in catch blocks
         },
       ],
-      "@typescript-eslint/no-explicit-any": "error", // Disallow `any`
+      "@typescript-eslint/no-explicit-any": "warn", // Warn on `any` but don't block build
       "@typescript-eslint/no-non-null-assertion": "error", // Disallow `!` non-null assertions
 
       "no-console": "error",

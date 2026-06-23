@@ -2,9 +2,12 @@ import { Stack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-import { useAddEditRoleMutation, useRoleByIdQuery } from "@/api/roleSetup.ts";
+import {
+  useAddEditRoleMutation,
+  useRoleByIdQuery,
+} from "@/api/roleSetup.ts/index.ts";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
-import { normalizePrivilege } from "@/shared/utils/privilage";
+import { errorNotification } from "@/shared/utils/notification";
 
 import { RoleSetupForm } from "./component/RoleSetupForm";
 import { RoleFormValues, RoleSetupPayload } from "./types";
@@ -47,24 +50,13 @@ export const AddEditRole = ({
   useEffect(() => {
     if (roleById && id) {
       const permissions: Record<string, string[]> = {};
-      const rolePermissions = roleById.permissions;
+      const rolePermissions: any[] = roleById?.permissions ?? [];
 
-      if (Array.isArray(rolePermissions)) {
-        for (const mod of rolePermissions) {
-          for (const menu of mod.menus ?? []) {
-            const menuKey = menu.id ?? menu.menuCode;
-            if (menuKey) {
-              permissions[menuKey] = normalizePrivilege(menu.privilege);
-            }
-            for (const sub of menu.subMenus ?? []) {
-              const subKey = sub.id ?? sub.menuCode;
-              if (subKey) {
-                permissions[subKey] = normalizePrivilege(sub.privilege);
-              }
-            }
-          }
-        }
-      }
+      rolePermissions.forEach((perm: any) => {
+        const modCode = perm.code?.split(":")[0] || "OTHER";
+        if (!permissions[modCode]) permissions[modCode] = [];
+        if (perm.id) permissions[modCode].push(perm.id);
+      });
 
       reset({
         name: roleById?.name ?? "",
@@ -76,19 +68,22 @@ export const AddEditRole = ({
   }, [roleById, id, reset]);
 
   const onSubmit = (data: RoleFormValues) => {
-    const permissions = Object.entries(data.permissions ?? {})
-      .filter(([, priv]) => priv && priv.length > 0)
-      .map(([menuId, priv]) => ({
-        menuId,
-        privilege: priv,
-      }));
+    // Extract flat array of all selected permission UUIDs
+    const permissionIds = Object.values(data.permissions ?? {})
+      .flat()
+      .filter(Boolean);
+
+    if (permissionIds.length === 0) {
+      errorNotification("Please select at least one permission.");
+      return;
+    }
 
     const payload: RoleSetupPayload = {
       ...(id ? { id } : {}),
       name: data.name,
       code: data.code,
       description: data.description ?? "",
-      permissions,
+      permissionIds,
     };
 
     mutate(payload, {

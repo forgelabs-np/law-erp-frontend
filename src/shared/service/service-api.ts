@@ -12,6 +12,8 @@ export const api = {
       GET_BY_ID: "admin/roles/{roleId}",
       TOGGLE: "admin/roles/{roleId}/toggle",
       DROPDOWN: "admin/roles/dropdown",
+      ROLE_PERMISSIONS: "admin/roles/permissions",
+      GET_ROLE_PERMISSIONS: "admin/roles/{roleId}/permissions",
     },
     PERMISSION_SETUP: {
       GET_PERMISSIONS: "admin/permissions",
@@ -27,6 +29,7 @@ export const api = {
       TOGGLE: "admin/modules/{moduleId}/toggle",
       PAGINATION: "admin/modules/pagination",
       LIST: "admin/modules/list",
+      ASSIGN_PERMISSIONS: "admin/modules/{moduleId}/permissions",
     },
   },
 };

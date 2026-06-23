@@ -109,3 +109,58 @@ export const useToggleRoleMutation = () => {
 };
 
 //// Permission
+
+export interface RolePermissionPayload {
+  roleId: string;
+  permissionIds: string[];
+}
+
+const assignRolePermissions = async (data: RolePermissionPayload) => {
+  return LawFirmCRMClient.post(
+    api.USER_MANAGEMENT.ROLE_SETUP.ROLE_PERMISSIONS,
+    {
+      roleId: data.roleId,
+      permissionIds: data.permissionIds,
+    }
+  );
+};
+
+export const useAssignRolePermissionsMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: assignRolePermissions,
+    onSuccess: (response, variables) => {
+      successNotification(
+        response?.data?.message || "Role permissions assigned successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [`role-permissions-${variables.roleId}`],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Something went wrong!";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+const getRolePermissions = async (roleId: string) => {
+  return LawFirmCRMClient.get(
+    api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLE_PERMISSIONS.replace(
+      "{roleId}",
+      roleId
+    )
+  );
+};
+
+export const useRolePermissionsQuery = (roleId: string) => {
+  return useQuery({
+    queryKey: [`role-permissions-${roleId}`],
+    enabled: !!roleId,
+    queryFn: async () => {
+      return getRolePermissions(roleId);
+    },
+    select: (data) => data?.data?.data,
+  });
+};

@@ -10,7 +10,7 @@ export interface RoleSetupPayload {
   name: string;
   code: string;
   description: string;
-  permissions: RolePermissionItem[];
+  permissionIds: string[];
 }
 
 type ModuleField = {

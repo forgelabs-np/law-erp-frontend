@@ -2,7 +2,6 @@ import { Grid, HStack, Separator, Text, VStack } from "@chakra-ui/react";
 import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 
 import { Checkbox, Switch } from "@/shared/components/ui";
-import { PRIVILEGE_OPTIONS } from "@/shared/constants/permission";
 import { SelectOptionType } from "@/shared/types";
 import { capitalizeWords } from "@/shared/utils/captlizeWords";
 
@@ -16,9 +15,7 @@ function CheckboxGroup({
     options.length > 0 && options.every((opt) => value.includes(opt.value));
 
   const toggleAll = (details: { checked: boolean | "indeterminate" }) => {
-    onChange(
-      details.checked === true ? PRIVILEGE_OPTIONS.map((o) => o.value) : []
-    );
+    onChange(details.checked === true ? options.map((o) => o.value) : []);
   };
 
   const toggleOption = (option: string, checked: boolean | "indeterminate") => {

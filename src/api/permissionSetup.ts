@@ -38,9 +38,10 @@ export interface PermissionResponse {
 
 export interface PermissionPayload {
   id?: string;
-  moduleId: string;
+  moduleCode: string;
   action: string;
   code: string;
+  scope: string;
   description: string;
   isActive?: boolean;
 }
