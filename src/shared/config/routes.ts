@@ -18,6 +18,7 @@ export const ROUTES_CONFIG = {
     USER_MANAGEMENT: "/user-management",
     ROLE_MANAGEMENT: "/role-management",
     MENU_MANAGEMENT: "/menu-management",
+    PERMISSION_MANAGEMENT: "/permission-management",
   },
 
   NO_MATCH: "*",
