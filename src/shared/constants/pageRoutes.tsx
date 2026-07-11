@@ -3,6 +3,7 @@ import Login from "@/pages/Authentication/Login/Login";
 import Signup from "@/pages/Authentication/SignUp";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
+import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
 import {
   Archive,
   CaseTypeSetup,
@@ -77,6 +78,10 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.PERMISSION_MANAGEMENT,
     element: <PermissionManagementTable />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.FIRM_MANAGEMENT,
+    element: <FirmManagement />,
   },
 ];
 
