@@ -96,7 +96,7 @@ export const Sidebar = () => {
             />
           ))}
           <SidebarSection
-            title={!isCollapsed ? "Main" : ""}
+            title={mainItems.length === 0 ? "" : !isCollapsed ? "Main" : ""}
             items={mainItems.map((sidebarItem) => (
               <SidebarItem
                 key={sidebarItem.name}
@@ -106,7 +106,13 @@ export const Sidebar = () => {
             ))}
           />
           <SidebarSection
-            title={!isCollapsed ? "Marketing & Support" : ""}
+            title={
+              marketingItems.length === 0
+                ? ""
+                : !isCollapsed
+                  ? "Marketing & Support"
+                  : ""
+            }
             items={marketingItems.map((sidebarItem) => (
               <SidebarItem
                 key={sidebarItem.name}

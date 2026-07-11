@@ -32,4 +32,9 @@ export const api = {
       ASSIGN_PERMISSIONS: "admin/modules/{moduleId}/permissions",
     },
   },
+  FIRM_MANAGEMENT: {
+    GET_FIRMS: "super-admin/firms/admins",
+    GET_BY_ID: "super-admin/firms/{firmId}/admins",
+    TOGGLE: "super-admin/firms/admins/{adminId}",
+  },
 };
