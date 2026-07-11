@@ -17,6 +17,7 @@ import {
   UserManagement,
 } from "@/pages/User";
 import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
+import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -82,6 +83,10 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.FIRM_MANAGEMENT,
     element: <FirmManagement />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.TASK_CALENDAR,
+    element: <TaskCalendarPage />,
   },
 ];
 

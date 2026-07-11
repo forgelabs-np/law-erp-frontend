@@ -20,6 +20,7 @@ export const ROUTES_CONFIG = {
     MENU_MANAGEMENT: "/menu-management",
     PERMISSION_MANAGEMENT: "/permission-management",
     FIRM_MANAGEMENT: "/firm-management",
+    TASK_CALENDAR: "/task-calendar",
   },
 
   NO_MATCH: "*",
