@@ -10,8 +10,11 @@ import {
   Archive,
   Building2,
   User,
+  LayoutTemplate,
+  HelpCircle,
 } from "lucide-react";
 import { ROUTES_CONFIG } from "@/shared/config";
+import { MdTask } from "react-icons/md";
 
 export const SIDEBAR_ITEMS = [
   {
@@ -24,6 +27,12 @@ export const SIDEBAR_ITEMS = [
     name: "User Management",
     href: ROUTES_CONFIG.USER.USER_MANAGEMENT,
     icon: <Users size={16} />,
+    section: "",
+  },
+   {
+    name: "Task Calendar",
+    href: ROUTES_CONFIG.USER.TASK_CALENDAR,
+    icon: <MdTask size={16} />,
     section: "",
   },
   {
@@ -49,6 +58,24 @@ export const SIDEBAR_ITEMS = [
     href: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
     icon: <Users size={16} />,
     section: "",
+  },
+  {
+    name: "Templates",
+    href: "#",
+    icon: <LayoutTemplate size={16} />,
+    section: "bottom",
+  },
+  {
+    name: "Help & Docs",
+    href: "#",
+    icon: <HelpCircle size={16} />,
+    section: "bottom",
+  },
+  {
+    name: "Settings",
+    href: "#",
+    icon: <Settings size={16} />,
+    section: "bottom",
   },
   // {
   //   name: "My Files",

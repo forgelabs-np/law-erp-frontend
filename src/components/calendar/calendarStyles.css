@@ -1,0 +1,104 @@
+.fc {
+  --fc-border-color: #f1f5f9;
+  --fc-daygrid-event-dot-width: 8px;
+  --fc-today-bg-color: rgba(59, 130, 246, 0.05);
+  font-family: inherit;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+  border-color: var(--fc-border-color);
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border: 1px solid var(--fc-border-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.fc .fc-col-header-cell-cushion {
+  padding: 12px 8px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.fc-daygrid-day-number {
+  font-weight: 500;
+  color: #334155;
+  padding: 8px 12px;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: var(--fc-today-bg-color);
+}
+
+.fc-daygrid-day {
+  transition: background-color 0.2s ease;
+}
+
+.fc-daygrid-day:hover {
+  background-color: #f8fafc;
+}
+
+.fc-h-event {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fc-h-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 5;
+}
+
+.fc-event-main {
+  padding: 2px 4px;
+}
+
+.fc-daygrid-event {
+  margin-top: 4px;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.fc-v-event {
+  border-radius: 6px;
+  border: none;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fc-v-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+}
+
+.chakra-ui-dark .fc {
+  --fc-border-color: #334155;
+  --fc-today-bg-color: rgba(59, 130, 246, 0.1);
+}
+
+.chakra-ui-dark .fc-col-header-cell-cushion {
+  color: #94a3b8;
+}
+
+.chakra-ui-dark .fc-daygrid-day-number {
+  color: #e2e8f0;
+}
+
+.chakra-ui-dark .fc-daygrid-day:hover {
+  background-color: #1e293b;
+}
+
+.chakra-ui-dark .fc-h-event {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.chakra-ui-dark .fc-h-event:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
