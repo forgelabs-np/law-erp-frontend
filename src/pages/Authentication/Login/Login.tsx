@@ -114,21 +114,20 @@ const Login = () => {
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
         <Stack gap="6">
           <Stack gap="4">
-            {loginType === "client" ? (
+            {loginType !== "super-admin" && (
               <TextFieldInput
-                name="username"
-                label="Mobile Number"
-                placeholder="Enter your mobile number"
-                required
-              />
-            ) : (
-              <TextFieldInput
-                name="username"
-                label="Username"
-                placeholder="Enter your username"
+                name="lawFirmCode"
+                label="Firm Code"
+                placeholder="Enter your firm code"
                 required
               />
             )}
+            < TextFieldInput
+              name="username"
+              label="Username"
+              placeholder="Enter your username"
+              required
+            />
             <PasswordInput
               name="password"
               label="Password"

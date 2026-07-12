@@ -5,6 +5,14 @@ export const api = {
   loginClient: "auth/client/login",
   registerClient: "auth/register/client",
   superAdminLogin: "super-admin/login",
+  EMPLOYEE_MANAGEMENT: {
+    GET_EMPLOYEES: "firm/employees",
+    POST: "firm/employees",
+    GET_BY_ID: "firm/employees/{employeeId}",
+    PUT: "firm/employees/{employeeId}",
+    TOGGLE: "firm/employees/{employeeId}/toggle",
+    CHANGE_ROLE: "firm/employees/{employeeId}/role",
+  },
   USER_MANAGEMENT: {
     ROLE_SETUP: {
       GET_ROLES: "admin/roles",
@@ -31,10 +39,21 @@ export const api = {
       LIST: "admin/modules/list",
       ASSIGN_PERMISSIONS: "admin/modules/{moduleId}/permissions",
     },
+    USERS: {
+      GET_USERS: "modules/users",
+      SEARCH: "modules/users/search",
+      GET_PROFILE: "modules/users/{userId}/profile",
+      GET_PERMISSIONS: "modules/users/{userId}/permissions",
+      GET_ACTIVITY: "modules/users/{userId}/activity",
+      RESET_PASSWORD: "modules/users/{userId}/reset-password",
+      BULK_ROLE_CHANGE: "modules/users/bulk-role-change",
+      BULK_DEACTIVATE: "modules/users/bulk-deactivate",
+    }
   },
   FIRM_MANAGEMENT: {
+    POST: "super-admin/firms",
     GET_FIRMS: "super-admin/firms/admins",
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
-    TOGGLE: "super-admin/firms/admins/{adminId}",
+    TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
   },
 };

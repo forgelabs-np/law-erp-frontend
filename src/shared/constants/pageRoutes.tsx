@@ -4,6 +4,7 @@ import Signup from "@/pages/Authentication/SignUp";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
+import EmployeeManagement from "@/pages/User/EmployeeManagement/EmployeeManagementTable";
 import {
   Archive,
   CaseTypeSetup,
@@ -83,6 +84,10 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.FIRM_MANAGEMENT,
     element: <FirmManagement />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.EMPLOYEE_MANAGEMENT,
+    element: <EmployeeManagement />,
   },
   {
     path: ROUTES_CONFIG.USER.TASK_CALENDAR,

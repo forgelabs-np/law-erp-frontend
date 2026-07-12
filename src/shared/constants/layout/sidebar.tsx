@@ -29,6 +29,12 @@ export const SIDEBAR_ITEMS = [
     icon: <Users size={16} />,
     section: "",
   },
+  {
+    name: "Employee Management",
+    href: ROUTES_CONFIG.USER.EMPLOYEE_MANAGEMENT,
+    icon: <User size={16} />,
+    section: "",
+  },
    {
     name: "Task Calendar",
     href: ROUTES_CONFIG.USER.TASK_CALENDAR,

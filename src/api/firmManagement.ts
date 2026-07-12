@@ -64,7 +64,8 @@ export const useFirmByIdQuery = (id: string) => {
 // ─── CREATE / EDIT FIRM ────────────────────────────────────────────────────────
 
 const createEditFirm = (payload: FirmPayload) => {
-  return LawFirmCRMClient.post(api.FIRM_MANAGEMENT.GET_FIRMS, {
+  console.log(api.FIRM_MANAGEMENT.POST, "hgjhfgd");
+  return LawFirmCRMClient.post(api.FIRM_MANAGEMENT.POST, {
     data: payload,
   });
 };
@@ -92,7 +93,7 @@ export const useCreateEditFirmMutation = () => {
 // ─── TOGGLE FIRM STATUS ────────────────────────────────────────────────────────
 
 const toggleFirm = (id: string) => {
-  const url = api.FIRM_MANAGEMENT.TOGGLE.replace("{id}", id);
+  const url = api.FIRM_MANAGEMENT.TOGGLE.replace("{adminId}", id);
   return LawFirmCRMClient.patch(url);
 };
 
