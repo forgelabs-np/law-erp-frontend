@@ -16,6 +16,7 @@ export const LinkItem = ({
   isChild,
   isActive,
   isCollapsed,
+  onClick,
 }: SidebarItemProps & { isCollapsed?: boolean }) => {
   const location = useLocation();
 
@@ -36,6 +37,7 @@ export const LinkItem = ({
           isChild={isChild}
           isActive={active}
           isCollapsed={isCollapsed}
+          onClick={onClick}
         />
       </Link>
     );
@@ -57,6 +59,7 @@ export const LinkItem = ({
       cursor="pointer"
       transition="all 0.2s"
       justify={isCollapsed ? "center" : "flex-start"}
+      onClick={onClick}
     >
       {isActive && (
         <Box

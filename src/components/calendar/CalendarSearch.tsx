@@ -10,7 +10,13 @@ interface CalendarSearchProps {
 export const CalendarSearch = ({ value, onChange }: CalendarSearchProps) => {
   return (
     <Box position="relative" width={{ base: "100%", md: "250px" }}>
-      <Box position="absolute" left="12px" top="50%" transform="translateY(-50%)" zIndex={2}>
+      <Box
+        position="absolute"
+        left="12px"
+        top="50%"
+        transform="translateY(-50%)"
+        zIndex={2}
+      >
         <SearchIcon size={16} color="#94a3b8" />
       </Box>
       <Input

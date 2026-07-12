@@ -48,7 +48,7 @@ export const AddEditFirm = ({
 
   const firmById = firmByIdResponse?.[0];
 
-  console.log(firmById, "firmIddddddd")
+  console.log(firmById, "firmIddddddd");
 
   const methods = useForm<FirmFormValues>({ defaultValues });
   const { handleSubmit, reset } = methods;
@@ -96,9 +96,7 @@ export const AddEditFirm = ({
       adminEmail: data.adminEmail,
       adminMobileNo: data.adminMobileNo,
       adminFullName: data.adminFullName,
-      ...(data.adminPassword
-        ? { adminPassword: data.adminPassword }
-        : {}),
+      ...(data.adminPassword ? { adminPassword: data.adminPassword } : {}),
     };
 
     mutate(payload, {

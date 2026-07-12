@@ -6,6 +6,7 @@ export type SidebarItemProps = {
   isChild?: boolean;
   isActive?: boolean;
   section?: string;
+  onClick?: () => void;
 };
 
 export type SidebarSectionProps = {

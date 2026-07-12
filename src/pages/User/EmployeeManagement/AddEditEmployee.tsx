@@ -92,15 +92,9 @@ export const AddEditEmployee = ({
 
   const onSubmit = (data: EmployeeFormValues) => {
     if (id) {
-      updateEmployee(
-        { id, data },
-        { onSuccess: () => closeHandler() }
-      );
+      updateEmployee({ id, data }, { onSuccess: () => closeHandler() });
     } else {
-      addEmployee(
-        { ...data },
-        { onSuccess: () => closeHandler() }
-      );
+      addEmployee({ ...data }, { onSuccess: () => closeHandler() });
     }
   };
 
