@@ -48,11 +48,12 @@ export const api = {
       RESET_PASSWORD: "modules/users/{userId}/reset-password",
       BULK_ROLE_CHANGE: "modules/users/bulk-role-change",
       BULK_DEACTIVATE: "modules/users/bulk-deactivate",
-    }
+    },
   },
   FIRM_MANAGEMENT: {
     POST: "super-admin/firms",
     GET_FIRMS: "super-admin/firms/admins",
+    GET_FIRMS_MODULES: "firm/modules",
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
   },

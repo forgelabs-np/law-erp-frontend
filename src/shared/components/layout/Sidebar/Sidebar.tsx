@@ -2,8 +2,9 @@ import { Box, HStack, Button, Image, VStack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
-import { SIDEBAR_ITEMS } from "@/shared/constants";
+import { SIDEBAR_ITEMS, getSidebarItemsByRole } from "@/shared/constants";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
+import TokenService from "@/shared/service/service-token";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
@@ -12,12 +13,17 @@ export const Sidebar = () => {
   const [value, setValue] = useState(getInitialExpandedSidebarMenu);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const topItems = SIDEBAR_ITEMS.filter((item) => !item.section);
-  const mainItems = SIDEBAR_ITEMS.filter((item) => item.section === "Main");
-  const marketingItems = SIDEBAR_ITEMS.filter(
+  // Get user role from token and use role-based sidebar items
+  const tokenDetails = TokenService.getTokenDetails();
+  const userRole = tokenDetails?.roleCode;
+  const sidebarItems = getSidebarItemsByRole(userRole);
+
+  const topItems = sidebarItems.filter((item) => !item.section);
+  const mainItems = sidebarItems.filter((item) => item.section === "Main");
+  const marketingItems = sidebarItems.filter(
     (item) => item.section === "Marketing & Support"
   );
-  const bottomItems = SIDEBAR_ITEMS.filter(
+  const bottomItems = sidebarItems.filter(
     (item) =>
       item.section === "bottom" &&
       item.name !== "Home" &&

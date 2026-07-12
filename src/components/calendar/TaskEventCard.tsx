@@ -8,9 +8,11 @@ interface TaskEventCardProps {
 
 export const TaskEventCard = ({ event }: TaskEventCardProps) => {
   const task: Task = event.extendedProps;
-  
+
   // Format time like "10am" or "2.30pm"
-  const timeString = format(new Date(event.start), "h:mm a").toLowerCase().replace(":00", "");
+  const timeString = format(new Date(event.start), "h:mm a")
+    .toLowerCase()
+    .replace(":00", "");
 
   return (
     <Box
