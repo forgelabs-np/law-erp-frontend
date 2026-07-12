@@ -53,8 +53,8 @@ function getTokenDetails(): MofinTokenDetails | null {
     const token = getToken();
     return token
       ? (JSON.parse(
-          window.atob(token.access_token.split(".")[1])
-        ) as MofinTokenDetails)
+        window.atob(token.access_token.split(".")[1])
+      ) as MofinTokenDetails)
       : null;
   } catch (e) {
     return null;
@@ -63,6 +63,7 @@ function getTokenDetails(): MofinTokenDetails | null {
 
 function isAuthenticated() {
   const tokenDetails = getTokenDetails();
+  console.log(tokenDetails, "tokennnDetaile")
   if (tokenDetails) {
     return tokenDetails.exp * 1000 > Date.now();
   } else {

@@ -1,6 +1,7 @@
 export * from "./Archive";
 export * from "./CaseTypeSetup";
 export * from "./ClientDashboard";
+export * from "./EmployeeManagement";
 export * from "./Folder";
 export * from "./Home";
 export * from "./MyFiles";

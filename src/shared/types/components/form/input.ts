@@ -11,7 +11,7 @@ type BasicInputProps = {
 };
 
 export type TextFieldInputProps = BasicInputProps & {
-  type?: "text" | "password";
+  type?: "text" | "password" | "date" | "number" | "email";
 
   endElement?: React.ReactNode;
   startElement?: React.ReactNode;
