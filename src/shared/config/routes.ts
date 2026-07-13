@@ -23,6 +23,9 @@ export const ROUTES_CONFIG = {
     FIRM_MANAGEMENT: "/firm-management",
     TASK_CALENDAR: "/task-calendar",
   },
+  SUPER_ADMIN: {
+    AUDIT_LOGS: "/super-admin/audit-logs",
+  },
 
   NO_MATCH: "*",
 };
