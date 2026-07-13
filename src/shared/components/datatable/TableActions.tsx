@@ -22,6 +22,7 @@ export const TableActions = ({
             }}
             height="6"
             minWidth="6"
+            color={"gray.800"}
           >
             <EyeOpenIcon onClick={onView} />
           </IconButton>

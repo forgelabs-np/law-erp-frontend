@@ -22,6 +22,7 @@ export const ROUTES_CONFIG = {
     EMPLOYEE_MANAGEMENT: "/employee-management",
     FIRM_MANAGEMENT: "/firm-management",
     TASK_CALENDAR: "/task-calendar",
+    CLIENT_MANAGEMENT: "/client-management",
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",

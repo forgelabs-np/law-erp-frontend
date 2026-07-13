@@ -14,7 +14,7 @@ import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialo
 import { Switch } from "@/shared/components/ui";
 
 import { AddEditEmployee } from "./AddEditEmployee";
-import { useGetFirmModulesQuery } from "@/api/firmManagement";
+import { useGetFirmModulesQuery, useGetFirmRolesQuery } from "@/api/firmManagement";
 
 const EmployeeManagementTable = () => {
   const [selectedId, setSelectedId] = useState<string | undefined>();
@@ -104,6 +104,10 @@ const EmployeeManagementTable = () => {
     ],
     [onToggleConfirmOpen, onAddEditOpen]
   );
+
+  // const { data: firmRolesData } = useGetFirmRolesQuery();
+
+  // console.log(firmRolesData, "firmRolesData");
 
   return (
     <Stack gap={6} padding={8}>
