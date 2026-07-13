@@ -127,3 +127,17 @@ export const useGetFirmModulesQuery = () => {
     select: (response) => response?.data,
   });
 };
+
+const getFirmRoles = () => {
+  return LawFirmCRMClient.get<ApiResponse<FirmResponse[]>>(
+    api.FIRM_MANAGEMENT.GET_FIRM_ROLES
+  );
+};
+
+export const useGetFirmRolesQuery = () => {
+  return useQuery({
+    queryKey: [api.FIRM_MANAGEMENT.GET_FIRM_ROLES],
+    queryFn: getFirmRoles,
+    select: (response) => response?.data,
+  });
+};

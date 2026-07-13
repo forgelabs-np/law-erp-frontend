@@ -15,6 +15,7 @@ export interface UserResponseType {
   fullName: string;
   isActive: boolean;
   roleId: string;
+  userType:string
 }
 
 export interface UserProfileType extends UserResponseType {
