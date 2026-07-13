@@ -12,6 +12,7 @@ import {
   User,
   LayoutTemplate,
   HelpCircle,
+  Shield,
 } from "lucide-react";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { MdTask } from "react-icons/md";
@@ -133,6 +134,12 @@ const ROLE_SIDEBAR_ITEMS: Record<UserRole, typeof SIDEBAR_ITEMS> = {
       name: "Menu Management",
       href: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
       icon: <Users size={16} />,
+      section: "",
+    },
+    {
+      name: "Audit Logs",
+      href: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
+      icon: <Shield size={16} />,
       section: "",
     },
     {

@@ -57,4 +57,8 @@ export const api = {
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
   },
+  AUDIT_LOGS: {
+    PLATFORM_AUDIT: "super-admin/audit/actions",
+    FIRM_AUDIT: "super-admin/audit/firms/{firmId}",
+  },
 };
