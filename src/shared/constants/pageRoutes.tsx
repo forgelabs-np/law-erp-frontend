@@ -5,6 +5,7 @@ import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
 import AuditLogs from "@/pages/SuperAdmin/AuditLogs/AuditLogs";
+import FirmModules from "@/pages/SuperAdmin/FirmModules/FirmModules";
 import EmployeeManagement from "@/pages/User/EmployeeManagement/EmployeeManagementTable";
 import ClientManagement from "@/pages/User/ClientManagement/ClientManagement";
 import {
@@ -102,6 +103,10 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
     element: <AuditLogs />,
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,
+    element: <FirmModules />,
   },
 ];
 
