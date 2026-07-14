@@ -144,7 +144,7 @@ export function ModuleMenuFields({
   );
 }
 
-export type MODULE_TYPE = "CRM" | "CMS";
+export type MODULE_TYPE = "CRM" | "CMS" |"menu";
 
 interface ModuleMenuFieldsProps {
   control: Control<RoleFormValues>;

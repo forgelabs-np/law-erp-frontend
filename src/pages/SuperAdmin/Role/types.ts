@@ -28,4 +28,5 @@ export interface RoleFormValues {
   permissions?: Record<string, string[]>;
   CRM?: ModuleField;
   CMS?: ModuleField;
+  menu?: ModuleField;
 }

@@ -31,4 +31,5 @@ export const PRIVILEGE_OPTIONS = [
 export const MODULE_TYPE_OPTIONS = [
   { label: ModuleType.CRM, value: ModuleType.CRM },
   { label: ModuleType.CMS, value: ModuleType.CMS },
+  { label: ModuleType.MENU, value: ModuleType.MENU },
 ];
