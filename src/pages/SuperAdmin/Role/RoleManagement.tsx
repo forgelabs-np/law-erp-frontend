@@ -70,11 +70,16 @@ const RoleSetup = () => {
 
   const columns: Array<ColumnDef<RoleResposeType>> = useMemo(
     () => [
-      {
+      // {
+      //   accessorKey: "id",
+      //   header: "S.N.",
+      //   // cell: ({ row }) =>
+      //   //   (payload.page - 1) * payload.pageSize + row.index + 1,
+      // },
+       {
         accessorKey: "id",
         header: "S.N.",
-        // cell: ({ row }) =>
-        //   (payload.page - 1) * payload.pageSize + row.index + 1,
+        cell: ({ row }) => row.index + 1,
       },
       {
         accessorKey: "name",

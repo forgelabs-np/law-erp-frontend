@@ -9,6 +9,7 @@ import { ModuleMenuFields } from "./ModuleMenuFields";
 export const ModuleType = {
   CMS: "CMS",
   CRM: "CRM",
+  MENU: "menu",
   DEALER: "DEALER",
 } as const;
 
@@ -27,7 +28,7 @@ export function MenuSetupTabs({
       renderContent={(module) => (
         <ModuleMenuFields
           control={control}
-          name={module as "CRM" | "CMS"}
+          name={module as "CRM" | "CMS"|"menu"}
           onSubMenuToggle={onSubMenuToggle}
           isEdit={isEdit}
         />

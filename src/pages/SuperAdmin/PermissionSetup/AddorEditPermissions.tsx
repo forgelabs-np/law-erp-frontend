@@ -43,12 +43,13 @@ export const AddorEditPermissions = ({
   const { handleSubmit, reset } = methods;
 
   const { mutate, isPending } = useAddEditPermissionMutation();
+  console.log(moduleData, "moduleData");
 
   const moduleOptions = useMemo(() => {
     return (
       moduleData?.data.map((module) => ({
-        label: module.menuName,
-        value: module.menuCode,
+        label: module.name,
+        value: module.code  ,
       })) ?? []
     );
   }, [moduleData]);
