@@ -10,6 +10,7 @@ export interface Client {
   isActive: boolean;
   portalAccessEnabled: boolean;
   createdAt: string;
+
 }
 
 export interface ClientPayload {

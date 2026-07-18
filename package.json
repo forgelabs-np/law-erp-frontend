@@ -46,7 +46,8 @@
     "react-select": "^5.10.0",
     "react-slick": "^0.31.0",
     "slick-carousel": "^1.8.1",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.1",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@chakra-ui/cli": "^3.20.0",
