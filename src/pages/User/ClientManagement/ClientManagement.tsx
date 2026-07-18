@@ -52,8 +52,9 @@ const ClientManagement = () => {
   const { mutate: togglePortalAccess, isPending: isTogglePending } =
     useTogglePortalAccessMutation();
 
+
   // Filter clients based on search query (client-side filtering)
-  const filteredClients = clientsData?.filter((client) => {
+  const filteredClients = clientsData?.content?.filter((client) => {
     const query = searchQuery.toLowerCase();
     return (
       client.fullName?.toLowerCase().includes(query) ||
@@ -180,7 +181,7 @@ const ClientManagement = () => {
         header: "Actions",
         cell: ({ row }) => (
           <HStack gap={2}>
-           
+
             <Switch
               checked={row.original.portalAccessEnabled}
               onCheckedChange={(details) => {
@@ -192,7 +193,7 @@ const ClientManagement = () => {
               }}
               disabled={isTogglePending}
             />
-             <Button
+            <Button
               variant="ghost"
               size="sm"
               onClick={() => {

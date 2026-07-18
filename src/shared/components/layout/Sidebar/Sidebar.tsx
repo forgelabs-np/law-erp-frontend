@@ -1,34 +1,82 @@
 import { Box, HStack, Button, Image, VStack, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
-import { SIDEBAR_ITEMS, getSidebarItemsByRole } from "@/shared/constants";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
 import TokenService from "@/shared/service/service-token";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
+import { useModules } from "@/shared/hooks/useAuth";
+import {
+  getModuleConfig,
+  groupSidebarItemsBySection,
+  mapEnabledModulesToSidebarData,
+  SIDEBAR_SECTION_ORDER,
+} from "@/shared/constants/moduleRegistry";
+
+const handleLogout = () => {
+  TokenService.clearToken();
+  window.location.href = "/auth/login";
+};
+
+const SUPPORT_MODULE_CODES = [
+  "TEMPLATES",
+  "HELP_DOCS",
+  "SETTINGS",
+  "LOGOUT",
+] as const;
+
+const buildSupportSidebarItems = () => {
+  return SUPPORT_MODULE_CODES.map((moduleCode) => {
+    const config = getModuleConfig(moduleCode);
+    if (!config) {
+      return null;
+    }
+
+    const Icon = config.icon;
+
+    return {
+      moduleCode,
+      name: config.label,
+      href: config.path,
+      icon: <Icon size={16} />,
+      section: config.section,
+      order: config.order,
+      ...(moduleCode === "LOGOUT" ? { onClick: handleLogout } : {}),
+    };
+  })
+    .filter((item) => item !== null)
+    .sort((a, b) => a.order - b.order);
+};
 
 export const Sidebar = () => {
   const [value, setValue] = useState(getInitialExpandedSidebarMenu);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Get user role from token and use role-based sidebar items
-  const tokenDetails = TokenService.getTokenDetails();
-  const userRole = tokenDetails?.roleCode;
-  const sidebarItems = getSidebarItemsByRole(userRole);
+  const modules = useModules();
 
-  const topItems = sidebarItems.filter((item) => !item.section);
-  const mainItems = sidebarItems.filter((item) => item.section === "Main");
-  const marketingItems = sidebarItems.filter(
-    (item) => item.section === "Marketing & Support"
+  const moduleItems = useMemo(() => {
+    return mapEnabledModulesToSidebarData(modules).map((item) => {
+      const Icon = item.icon;
+
+      return {
+        moduleCode: item.moduleCode,
+        name: item.label,
+        href: item.path,
+        icon: <Icon size={16} />,
+        section: item.section,
+        order: item.order,
+      };
+    });
+  }, [modules]);
+
+  const itemsBySection = useMemo(
+    () => groupSidebarItemsBySection(moduleItems),
+    [moduleItems]
   );
-  const bottomItems = sidebarItems.filter(
-    (item) =>
-      item.section === "bottom" &&
-      item.name !== "Home" &&
-      item.name !== "User Management"
-  );
+
+  const bottomItems = useMemo(() => buildSupportSidebarItems(), []);
 
   return (
     <VStack
@@ -92,49 +140,36 @@ export const Sidebar = () => {
           minHeight: 0,
         }}
       >
-        {/* Top + Main + Marketing — scrollable middle */}
+        {/* Top + Main + Administration — scrollable middle */}
         <VStack alignItems="stretch" gap="0" flex="1" overflowY="auto">
-          {topItems.map((sidebarItem) => (
-            <SidebarItem
-              key={sidebarItem.name}
-              {...sidebarItem}
-              isCollapsed={isCollapsed}
-            />
-          ))}
-          <SidebarSection
-            title={mainItems.length === 0 ? "" : !isCollapsed ? "Main" : ""}
-            items={mainItems.map((sidebarItem) => (
-              <SidebarItem
-                key={sidebarItem.name}
-                {...sidebarItem}
-                isCollapsed={isCollapsed}
-              />
-            ))}
-          />
-          <SidebarSection
-            title={
-              marketingItems.length === 0
-                ? ""
-                : !isCollapsed
-                  ? "Marketing & Support"
-                  : ""
+          {SIDEBAR_SECTION_ORDER.map((section) => {
+            const sectionItems = itemsBySection[section] ?? [];
+            if (sectionItems.length === 0) {
+              return null;
             }
-            items={marketingItems.map((sidebarItem) => (
-              <SidebarItem
-                key={sidebarItem.name}
-                {...sidebarItem}
-                isCollapsed={isCollapsed}
+
+            return (
+              <SidebarSection
+                key={section}
+                title={!isCollapsed ? section : ""}
+                items={sectionItems.map((sidebarItem) => (
+                  <SidebarItem
+                    key={sidebarItem.moduleCode}
+                    {...sidebarItem}
+                    isCollapsed={isCollapsed}
+                  />
+                ))}
               />
-            ))}
-          />
+            );
+          })}
         </VStack>
 
-        {/* Bottom items — pinned to bottom */}
+        {/* Support items — pinned to bottom */}
         <Box borderTop="sm" borderTopColor="gray.200" pt="2" mt="2">
           <VStack alignItems="stretch" gap="0">
             {bottomItems.map((sidebarItem) => (
               <SidebarItem
-                key={sidebarItem.name}
+                key={sidebarItem.moduleCode}
                 {...sidebarItem}
                 isCollapsed={isCollapsed}
               />

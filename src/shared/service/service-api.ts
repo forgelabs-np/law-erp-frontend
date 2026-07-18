@@ -39,6 +39,7 @@ export const api = {
     },
     MENU_MANAGEMENT: {
       MODULE_MENUS: "admin/modules",
+      GET_MODULES: "admin/modules",
       GET_BY_ID: "admin/modules/{moduleId}",
       TOGGLE: "admin/modules/{moduleId}/toggle",
       PAGINATION: "admin/modules/pagination",
@@ -60,6 +61,8 @@ export const api = {
     POST: "super-admin/firms",
     GET_FIRMS: "super-admin/firms/admins",
     GET_FIRMS_MODULES: "firm/modules",
+    GET_FIRM_MODULES: "super-admin/firms/{firmId}/modules",
+    CONFIGURE_FIRM_MODULE: "super-admin/firms/{firmId}/modules",
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
     GET_FIRM_ROLES:"firm/roles"
