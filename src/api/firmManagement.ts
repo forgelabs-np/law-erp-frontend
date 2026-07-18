@@ -25,7 +25,7 @@ export interface FirmResponse {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  firmId: string
+  firmId: string;
 }
 
 // ─── GET ALL FIRMS ─────────────────────────────────────────────────────────────
@@ -75,9 +75,7 @@ export const useCreateEditFirmMutation = () => {
   return useMutation({
     mutationFn: createEditFirm,
     onSuccess: (response) => {
-      successNotification(
-        response?.data?.message || "Firm saved successfully"
-      );
+      successNotification(response?.data?.message || "Firm saved successfully");
       queryClient.invalidateQueries({
         queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
       });
@@ -113,5 +111,33 @@ export const useToggleFirmMutation = () => {
         error?.response?.data?.message ?? "Something went wrong!";
       errorNotification(errorMessage);
     },
+  });
+};
+
+const getFirmModules = () => {
+  return LawFirmCRMClient.get<ApiResponse<FirmResponse[]>>(
+    api.FIRM_MANAGEMENT.GET_FIRMS_MODULES
+  );
+};
+
+export const useGetFirmModulesQuery = () => {
+  return useQuery({
+    queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS_MODULES],
+    queryFn: getFirmModules,
+    select: (response) => response?.data,
+  });
+};
+
+const getFirmRoles = () => {
+  return LawFirmCRMClient.get<ApiResponse<FirmResponse[]>>(
+    api.FIRM_MANAGEMENT.GET_FIRM_ROLES
+  );
+};
+
+export const useGetFirmRolesQuery = () => {
+  return useQuery({
+    queryKey: [api.FIRM_MANAGEMENT.GET_FIRM_ROLES],
+    queryFn: getFirmRoles,
+    select: (response) => response?.data,
   });
 };

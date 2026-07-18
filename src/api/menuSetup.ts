@@ -27,6 +27,8 @@ export interface ModuleMenuResponse {
   privilege: string[];
   subMenus: SubMenuResponse[];
   isActive?: boolean;
+  name: string;
+  code: string;
 }
 
 const getModuleMenus = () => {

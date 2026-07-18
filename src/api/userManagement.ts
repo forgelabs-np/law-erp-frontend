@@ -15,6 +15,7 @@ export interface UserResponseType {
   fullName: string;
   isActive: boolean;
   roleId: string;
+  userType:string
 }
 
 export interface UserProfileType extends UserResponseType {
@@ -108,7 +109,9 @@ export const useResetPasswordMutation = () => {
   return useMutation({
     mutationFn: resetPassword,
     onSuccess: (response) => {
-      successNotification(response?.data?.message || "Password reset successfully");
+      successNotification(
+        response?.data?.message || "Password reset successfully"
+      );
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =
@@ -132,7 +135,9 @@ export const useBulkRoleChangeMutation = () => {
   return useMutation({
     mutationFn: bulkRoleChange,
     onSuccess: (response) => {
-      successNotification(response?.data?.message || "Roles updated successfully");
+      successNotification(
+        response?.data?.message || "Roles updated successfully"
+      );
       queryClient.invalidateQueries({
         queryKey: [api.USER_MANAGEMENT.USERS.GET_USERS],
       });
@@ -159,7 +164,9 @@ export const useBulkDeactivateMutation = () => {
   return useMutation({
     mutationFn: bulkDeactivate,
     onSuccess: (response) => {
-      successNotification(response?.data?.message || "Users deactivated successfully");
+      successNotification(
+        response?.data?.message || "Users deactivated successfully"
+      );
       queryClient.invalidateQueries({
         queryKey: [api.USER_MANAGEMENT.USERS.GET_USERS],
       });

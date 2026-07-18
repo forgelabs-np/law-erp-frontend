@@ -4,7 +4,9 @@ import Signup from "@/pages/Authentication/SignUp";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
+import AuditLogs from "@/pages/SuperAdmin/AuditLogs/AuditLogs";
 import EmployeeManagement from "@/pages/User/EmployeeManagement/EmployeeManagementTable";
+import ClientManagement from "@/pages/User/ClientManagement/ClientManagement";
 import {
   Archive,
   CaseTypeSetup,
@@ -92,6 +94,14 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.TASK_CALENDAR,
     element: <TaskCalendarPage />,
+  },
+  {
+    path: ROUTES_CONFIG.USER.CLIENT_MANAGEMENT,
+    element: <ClientManagement />,
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
+    element: <AuditLogs />,
   },
 ];
 

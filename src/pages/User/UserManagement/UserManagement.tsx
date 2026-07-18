@@ -1,4 +1,4 @@
-import { HStack, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import { Badge, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
@@ -9,7 +9,8 @@ import {
 } from "@/api/userManagement";
 import { Datatable, TableActions } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
-import { Switch } from "@/shared/components/ui";
+import { Switch, Tooltip } from "@/shared/components/ui";
+import { MdLockReset } from "react-icons/md";
 
 export const UserManagement = () => {
   const [userToReset, setUserToReset] = useState<string | null>(null);
@@ -44,22 +45,51 @@ export const UserManagement = () => {
         header: "Email",
       },
       {
+        accessorKey: "userType",
+        header: "User Type",
+        cell: ({ row }) => (
+          <Badge
+            bg="blue.100"
+            color="blue.700"
+            px="2"
+            py="1"
+            borderRadius="md"
+            fontSize="xs"
+            fontWeight="600"
+          >
+            {row.original.userType}
+          </Badge>
+              ),
+            },
+      {
         accessorKey: "isActive",
         header: "Status",
         cell: ({ row }) => (
-          <Switch checked={row.original.isActive ?? true} disabled />
+          <Switch checked={row.original.isActive ?? true} />
         ),
       },
       {
         accessorKey: "action",
         header: "Actions",
         cell: ({ row }) => (
-          <TableActions
-            onView={() => {
+          <Tooltip content="Reset Password">
+          <MdLockReset
+            style={{ cursor: "pointer" }}
+            size={"25px"}
+            onClick={() => {
               setUserToReset(String(row.original.id));
               onResetConfirmOpen();
             }}
           />
+          </Tooltip>
+
+          
+          // <TableActions
+          //   onView={() => {
+          //     setUserToReset(String(row.original.id));
+          //     onResetConfirmOpen();
+          //   }}
+          // />
         ),
       },
     ],

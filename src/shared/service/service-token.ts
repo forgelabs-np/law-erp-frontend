@@ -11,7 +11,7 @@ export enum Authorities {
   "hidden" = "hidden",
 }
 
-export interface MofinTokenDetails {
+export interface LawTokenDetails {
   contactNo: string;
   email: string;
   id: null | number;
@@ -24,6 +24,7 @@ export interface MofinTokenDetails {
   workspace: Authorities;
   exp: number;
   workspacedataid: number;
+  roleCode: string;
 }
 
 function setToken(token: TokenDetails) {
@@ -48,13 +49,13 @@ function getToken() {
   }
 }
 
-function getTokenDetails(): MofinTokenDetails | null {
+function getTokenDetails(): LawTokenDetails | null {
   try {
     const token = getToken();
     return token
       ? (JSON.parse(
         window.atob(token.access_token.split(".")[1])
-      ) as MofinTokenDetails)
+      ) as LawTokenDetails)
       : null;
   } catch (e) {
     return null;

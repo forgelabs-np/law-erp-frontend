@@ -37,7 +37,15 @@ export const TaskCalendar = ({
   }, [currentView, calendarRef]);
 
   return (
-    <Box bg="white" _dark={{ bg: "gray.900" }} borderRadius="xl" p={4} boxShadow="sm" flex="1" overflow="hidden">
+    <Box
+      bg="white"
+      _dark={{ bg: "gray.900" }}
+      borderRadius="xl"
+      p={4}
+      boxShadow="sm"
+      flex="1"
+      overflow="hidden"
+    >
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -49,15 +57,25 @@ export const TaskCalendar = ({
         selectMirror={true}
         dayMaxEvents={3}
         eventContent={(eventInfo) => <TaskEventCard event={eventInfo.event} />}
-        eventClick={(clickInfo) => onEventClick(clickInfo.event.extendedProps as Task)}
+        eventClick={(clickInfo) =>
+          onEventClick(clickInfo.event.extendedProps as Task)
+        }
         eventDrop={(dropInfo) => {
           if (dropInfo.event.start && dropInfo.event.end) {
-            onEventDrop(dropInfo.event.id, dropInfo.event.start, dropInfo.event.end);
+            onEventDrop(
+              dropInfo.event.id,
+              dropInfo.event.start,
+              dropInfo.event.end
+            );
           }
         }}
         eventResize={(resizeInfo) => {
           if (resizeInfo.event.start && resizeInfo.event.end) {
-            onEventResize(resizeInfo.event.id, resizeInfo.event.start, resizeInfo.event.end);
+            onEventResize(
+              resizeInfo.event.id,
+              resizeInfo.event.start,
+              resizeInfo.event.end
+            );
           }
         }}
         dateClick={(info) => onDateClick(info.date)}

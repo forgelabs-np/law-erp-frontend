@@ -13,6 +13,12 @@ export const api = {
     TOGGLE: "firm/employees/{employeeId}/toggle",
     CHANGE_ROLE: "firm/employees/{employeeId}/role",
   },
+  CLIENT_MANAGEMENT: {
+    GET_CLIENTS: "firm/clients",
+    POST: "firm/clients",
+    GET_BY_ID: "firm/clients/{clientId}",
+    TOGGLE_PORTAL_ACCESS: "firm/clients/{clientId}/portal-access",
+  },
   USER_MANAGEMENT: {
     ROLE_SETUP: {
       GET_ROLES: "admin/roles",
@@ -48,12 +54,18 @@ export const api = {
       RESET_PASSWORD: "modules/users/{userId}/reset-password",
       BULK_ROLE_CHANGE: "modules/users/bulk-role-change",
       BULK_DEACTIVATE: "modules/users/bulk-deactivate",
-    }
+    },
   },
   FIRM_MANAGEMENT: {
     POST: "super-admin/firms",
     GET_FIRMS: "super-admin/firms/admins",
+    GET_FIRMS_MODULES: "firm/modules",
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
+    GET_FIRM_ROLES:"firm/roles"
+  },
+  AUDIT_LOGS: {
+    PLATFORM_AUDIT: "super-admin/audit/actions",
+    FIRM_AUDIT: "super-admin/audit/firms/{firmId}",
   },
 };

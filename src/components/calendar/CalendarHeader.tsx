@@ -26,7 +26,14 @@ export const CalendarHeader = ({
       gap={4}
     >
       <Box>
-        <Heading as="h1" size="lg" fontWeight="bold" color="gray.800" _dark={{ color: "white" }} mb={1}>
+        <Heading
+          as="h1"
+          size="lg"
+          fontWeight="bold"
+          color="gray.800"
+          _dark={{ color: "white" }}
+          mb={1}
+        >
           Manage Tasks
         </Heading>
         <Text color="gray.500" _dark={{ color: "gray.400" }} fontSize="sm">
@@ -36,7 +43,7 @@ export const CalendarHeader = ({
 
       <Flex align="center" gap={3} flexWrap="wrap">
         <CalendarSearch value={searchQuery} onChange={onSearchChange} />
-        
+
         <Button
           variant="outline"
           borderRadius="full"
@@ -47,7 +54,7 @@ export const CalendarHeader = ({
         >
           Filters
         </Button>
-        
+
         <Button
           bg="black"
           color="white"

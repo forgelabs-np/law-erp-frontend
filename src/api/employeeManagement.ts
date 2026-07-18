@@ -60,10 +60,9 @@ export const useEmployeeByIdQuery = (id: string) => {
 };
 
 const addEmployee = (data: EmployeePayload) => {
-  return LawFirmCRMClient.post<ApiResponse<any>>(
-    api.EMPLOYEE_MANAGEMENT.POST,
-    { data }
-  );
+  return LawFirmCRMClient.post<ApiResponse<any>>(api.EMPLOYEE_MANAGEMENT.POST, {
+    data,
+  });
 };
 
 export const useAddEmployeeMutation = () => {
@@ -71,7 +70,9 @@ export const useAddEmployeeMutation = () => {
   return useMutation({
     mutationFn: addEmployee,
     onSuccess: (response) => {
-      successNotification(response?.data?.message || "Employee added successfully");
+      successNotification(
+        response?.data?.message || "Employee added successfully"
+      );
       queryClient.invalidateQueries({
         queryKey: [api.EMPLOYEE_MANAGEMENT.GET_EMPLOYEES],
       });
@@ -86,7 +87,13 @@ export const useAddEmployeeMutation = () => {
   });
 };
 
-const updateEmployee = ({ id, data }: { id: string; data: Partial<EmployeePayload> }) => {
+const updateEmployee = ({
+  id,
+  data,
+}: {
+  id: string;
+  data: Partial<EmployeePayload>;
+}) => {
   return LawFirmCRMClient.put<ApiResponse<any>>(
     api.EMPLOYEE_MANAGEMENT.PUT.replace("{employeeId}", id),
     { data }
@@ -98,7 +105,9 @@ export const useUpdateEmployeeMutation = () => {
   return useMutation({
     mutationFn: updateEmployee,
     onSuccess: (response, variables) => {
-      successNotification(response?.data?.message || "Employee updated successfully");
+      successNotification(
+        response?.data?.message || "Employee updated successfully"
+      );
       queryClient.invalidateQueries({
         queryKey: [api.EMPLOYEE_MANAGEMENT.GET_EMPLOYEES],
       });
@@ -125,7 +134,9 @@ export const useToggleEmployeeMutation = () => {
   return useMutation({
     mutationFn: toggleEmployee,
     onSuccess: (response) => {
-      successNotification(response?.data?.message || "Employee status updated successfully");
+      successNotification(
+        response?.data?.message || "Employee status updated successfully"
+      );
       queryClient.invalidateQueries({
         queryKey: [api.EMPLOYEE_MANAGEMENT.GET_EMPLOYEES],
       });
@@ -152,7 +163,9 @@ export const useChangeEmployeeRoleMutation = () => {
   return useMutation({
     mutationFn: changeEmployeeRole,
     onSuccess: (response, variables) => {
-      successNotification(response?.data?.message || "Employee role updated successfully");
+      successNotification(
+        response?.data?.message || "Employee role updated successfully"
+      );
       queryClient.invalidateQueries({
         queryKey: [api.EMPLOYEE_MANAGEMENT.GET_EMPLOYEES],
       });

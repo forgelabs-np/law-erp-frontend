@@ -12,6 +12,7 @@ import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
 import { EmployeeFormValues } from "./types";
+import { useGetFirmRolesQuery } from "@/api/firmManagement";
 
 const defaultValues: EmployeeFormValues = {
   username: "",
@@ -44,10 +45,12 @@ export const AddEditEmployee = ({
   const { data: employeeById, isLoading: isLoadingEmployee } =
     useEmployeeByIdQuery(id ?? "");
 
-  const { data: rolesData } = useGetRoleQuery();
+  // const { data: rolesData } = useGetRoleQuery();
+    const { data: firmRolesData } = useGetFirmRolesQuery();
+  
 
   const roleOptions =
-    rolesData?.data?.map((role) => ({
+    firmRolesData?.data?.map((role) => ({
       label: role.name,
       value: String(role.id),
     })) ?? [];
@@ -92,15 +95,9 @@ export const AddEditEmployee = ({
 
   const onSubmit = (data: EmployeeFormValues) => {
     if (id) {
-      updateEmployee(
-        { id, data },
-        { onSuccess: () => closeHandler() }
-      );
+      updateEmployee({ id, data }, { onSuccess: () => closeHandler() });
     } else {
-      addEmployee(
-        { ...data },
-        { onSuccess: () => closeHandler() }
-      );
+      addEmployee({ ...data }, { onSuccess: () => closeHandler() });
     }
   };
 

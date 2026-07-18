@@ -14,6 +14,7 @@ import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialo
 import { Switch } from "@/shared/components/ui";
 
 import { AddEditEmployee } from "./AddEditEmployee";
+import { useGetFirmModulesQuery, useGetFirmRolesQuery } from "@/api/firmManagement";
 
 const EmployeeManagementTable = () => {
   const [selectedId, setSelectedId] = useState<string | undefined>();
@@ -37,6 +38,9 @@ const EmployeeManagementTable = () => {
   const { data: employeesData, isLoading } = useGetEmployeesQuery();
   const { mutate: toggleEmployee, isPending: isTogglePending } =
     useToggleEmployeeMutation();
+
+  const { data } = useGetFirmModulesQuery();
+  console.log(data, "firmModules");
 
   const columns: Array<ColumnDef<EmployeeResponseType>> = useMemo(
     () => [
@@ -101,6 +105,10 @@ const EmployeeManagementTable = () => {
     [onToggleConfirmOpen, onAddEditOpen]
   );
 
+  // const { data: firmRolesData } = useGetFirmRolesQuery();
+
+  // console.log(firmRolesData, "firmRolesData");
+
   return (
     <Stack gap={6} padding={8}>
       <HStack justifyContent="space-between" alignItems="center">
@@ -146,7 +154,9 @@ const EmployeeManagementTable = () => {
           setEmployeeToToggle(null);
         }}
         title={
-          employeeToToggle?.active ? "Deactivate employee?" : "Activate employee?"
+          employeeToToggle?.active
+            ? "Deactivate employee?"
+            : "Activate employee?"
         }
         action={
           employeeToToggle?.active
