@@ -85,7 +85,8 @@ export const Sidebar = () => {
       gap="0"
       borderRight="sm"
       borderRightColor="gray.200"
-      width={isCollapsed ? "16" : "56"}
+      // width={isCollapsed ? "16" : "56"}
+      width={isCollapsed ? "16" : "66"}
       py="4"
       px={isCollapsed ? "2" : "2"}
       bg="white"

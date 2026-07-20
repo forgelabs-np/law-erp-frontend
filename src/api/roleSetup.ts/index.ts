@@ -164,3 +164,30 @@ export const useRolePermissionsQuery = (roleId: string) => {
     select: (data) => data?.data?.data,
   });
 };
+
+
+
+export const deleteRole = async (id: string) => {
+  const url = api.USER_MANAGEMENT.ROLE_SETUP.DELETE.replace("{roleId}", id);
+
+  return LawFirmCRMClient.delete(url);
+};
+
+export const useDeleteRoleMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteRole(id),
+    onSuccess: (response, id) => {
+      successNotification(response?.data?.message);
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLES],
+      });
+      // queryClient.invalidateQueries({ queryKey: [`role-${id}`] });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.error?.errorMessage ?? "Something went wrong!";
+      errorNotification(errorMessage);
+    },
+  });
+};

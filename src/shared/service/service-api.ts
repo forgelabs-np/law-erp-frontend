@@ -28,6 +28,8 @@ export const api = {
       DROPDOWN: "admin/roles/dropdown",
       ROLE_PERMISSIONS: "admin/roles/permissions",
       GET_ROLE_PERMISSIONS: "admin/roles/{roleId}/permissions",
+      DELETE: "admin/roles/{roleId}",
+
     },
     PERMISSION_SETUP: {
       GET_PERMISSIONS: "admin/permissions",
@@ -65,7 +67,7 @@ export const api = {
     CONFIGURE_FIRM_MODULE: "super-admin/firms/{firmId}/modules",
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
-    GET_FIRM_ROLES:"firm/roles"
+    GET_FIRM_ROLES: "firm/roles"
   },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit/actions",
