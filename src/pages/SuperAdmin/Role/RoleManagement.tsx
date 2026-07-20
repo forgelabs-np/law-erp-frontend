@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import {
   RoleResposeType,
+  useDeleteRoleMutation,
   useGetRoleQuery,
   useToggleRoleMutation,
 } from "@/api/roleSetup.ts";
@@ -61,6 +62,10 @@ const RoleSetup = () => {
   const { mutate: toggleRole, isPending: isTogglePending } =
     useToggleRoleMutation();
 
+  const { mutate: deleteRole, isPending: isDeletePending } = useDeleteRoleMutation()
+
+  const { open: deleteConfirmOpen, onOpen: onDeleteConfirmOpen, onClose: onDeleteConfirmClose } = useDisclosure()
+
   // const pageCount = roleData?.totalPages ?? 1;
   // const totalRecords = roleData?.totalRecords ?? 0;
   // const displayCount = roleData?.datalist?.length ?? 0;
@@ -76,7 +81,7 @@ const RoleSetup = () => {
       //   // cell: ({ row }) =>
       //   //   (payload.page - 1) * payload.pageSize + row.index + 1,
       // },
-       {
+      {
         accessorKey: "id",
         header: "S.N.",
         cell: ({ row }) => row.index + 1,
@@ -98,7 +103,7 @@ const RoleSetup = () => {
               });
               onToggleConfirmOpen();
             }}
-            // disabled={!togglePermission}
+          // disabled={!togglePermission}
           />
         ),
       },
@@ -110,6 +115,10 @@ const RoleSetup = () => {
             onEdit={() => {
               setSelectedId(row.original.id.toString());
               onAddEditOpen();
+            }}
+            onDelete={() => {
+              setSelectedId(row.original.id.toString());
+              onDeleteConfirmOpen();
             }}
           />
         ),
@@ -173,7 +182,7 @@ const RoleSetup = () => {
         // }}
         // setPayload={setPayload}
         data={roleData?.data ?? []}
-        // onSearchChange={handleSearchChange}
+      // onSearchChange={handleSearchChange}
       />
       <AddEditRole
         open={addEditOpen}
@@ -200,6 +209,12 @@ const RoleSetup = () => {
         }}
         submitActionPending={isTogglePending}
       />
+      <ConfirmationDialog open={deleteConfirmOpen} onClose={onDeleteConfirmClose} title="Delete role?" action="delete this role" handleSubmit={() => {
+        if (selectedId) {
+          deleteRole(selectedId);
+          onDeleteConfirmClose();
+        }
+      }} submitActionPending={isDeletePending} />
     </Stack>
   );
 };
