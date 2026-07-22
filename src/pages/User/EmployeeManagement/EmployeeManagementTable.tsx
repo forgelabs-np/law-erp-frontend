@@ -134,7 +134,7 @@ const EmployeeManagementTable = () => {
       <Datatable
         isLoading={isLoading}
         columns={columns}
-        data={employeesData ?? []}
+        data={employeesData?.content ?? []}
       />
 
       <AddEditEmployee

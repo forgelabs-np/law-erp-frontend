@@ -2,6 +2,7 @@ import { Badge } from "@chakra-ui/react";
 import { Button, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   FirmResponse,
@@ -12,10 +13,12 @@ import { AddIcon } from "@/assets/svgs";
 import { Datatable, TableActions } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch } from "@/shared/components/ui";
+import { ROUTES_CONFIG } from "@/shared/config";
 
 import { AddEditFirm } from "./AddEditFirm";
 
 const FirmManagement = () => {
+  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string>();
   const [firmToToggle, setFirmToToggle] = useState<{
     id: string;
@@ -101,16 +104,29 @@ const FirmManagement = () => {
         accessorKey: "action",
         header: "Actions",
         cell: ({ row }) => (
-          <TableActions
-            onEdit={() => {
-              setSelectedId(row.original.firmId.toString());
-              onAddEditOpen();
-            }}
-          />
+          <HStack gap={2}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                navigate(
+                  `${ROUTES_CONFIG.USER.FIRM_MANAGEMENT}/${row.original.firmId}/modules`
+                );
+              }}
+            >
+              Manage Modules
+            </Button>
+            <TableActions
+              onEdit={() => {
+                setSelectedId(row.original.firmId.toString());
+                onAddEditOpen();
+              }}
+            />
+          </HStack>
         ),
       },
     ],
-    [onToggleConfirmOpen, onAddEditOpen]
+    [onToggleConfirmOpen, onAddEditOpen, navigate]
   );
 
   return (

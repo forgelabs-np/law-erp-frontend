@@ -5,6 +5,7 @@ import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
 import AuditLogs from "@/pages/SuperAdmin/AuditLogs/AuditLogs";
+import FirmModules from "@/pages/SuperAdmin/FirmModules/FirmModules";
 import EmployeeManagement from "@/pages/User/EmployeeManagement/EmployeeManagementTable";
 import ClientManagement from "@/pages/User/ClientManagement/ClientManagement";
 import {
@@ -30,78 +31,102 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.ARCHIVE,
     element: <Archive />,
+    moduleCode: "ARCHIVE",
   },
   {
     path: ROUTES_CONFIG.USER.CASE_TYPE_SETUP,
     element: <CaseTypeSetup />,
+    moduleCode: "CASE_TYPE_SETUP",
   },
   {
     path: ROUTES_CONFIG.USER.FOLDER,
     element: <Folder />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
     element: <ClientDashboard />,
+    moduleCode: "HOME",
   },
   {
     path: "/calendar",
     element: <CalendarTasksPage />,
+    moduleCode: "TASK_CALENDAR",
   },
   {
     path: ROUTES_CONFIG.USER.SOLO_DASHBOARD,
     element: <SoloDashboard />,
+    moduleCode: "HOME",
   },
   {
     path: ROUTES_CONFIG.USER.HOME,
     element: <Home />,
+    moduleCode: "HOME",
   },
   {
     path: ROUTES_CONFIG.USER.MY_FILES,
     element: <MyFiles />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.OFFICE_SETUP,
     element: <OfficeSetup />,
+    moduleCode: "FIRM_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.SHARED_WITH_ME,
     element: <SharedWithMe />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.USER_MANAGEMENT,
     element: <UserManagement />,
+    moduleCode: "USER_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT,
     element: <RoleSetup />,
+    moduleCode: "ROLE_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
     element: <MenuManagement />,
+    moduleCode: "MENU_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.PERMISSION_MANAGEMENT,
     element: <PermissionManagementTable />,
+    moduleCode: "PERMISSION_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.FIRM_MANAGEMENT,
     element: <FirmManagement />,
+    moduleCode: "FIRM_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.EMPLOYEE_MANAGEMENT,
     element: <EmployeeManagement />,
+    moduleCode: "EMPLOYEE_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.USER.TASK_CALENDAR,
     element: <TaskCalendarPage />,
+    moduleCode: "TASK_CALENDAR",
   },
   {
     path: ROUTES_CONFIG.USER.CLIENT_MANAGEMENT,
     element: <ClientManagement />,
+    moduleCode: "CLIENT_MANAGEMENT",
   },
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
     element: <AuditLogs />,
+    moduleCode: "AUDIT_LOGS",
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,
+    element: <FirmModules />,
+    moduleCode: "FIRM_MANAGEMENT",
   },
 ];
 

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
-import { ApiErrorResponse, ApiResponse } from "@/shared/types/response";
+import { ApiErrorResponse, ApiResponse, PaginatedResponse } from "@/shared/types/response";
 import {
   errorNotification,
   successNotification,
@@ -13,7 +13,7 @@ import { Client, ClientPayload } from "@/pages/User/ClientManagement/types";
 export type { Client };
 
 const getClients = () => {
-  return LawFirmCRMClient.get<ApiResponse<Client[]>>(
+  return LawFirmCRMClient.get<ApiResponse<PaginatedResponse<Client>>>(
     api.CLIENT_MANAGEMENT.GET_CLIENTS
   );
 };
