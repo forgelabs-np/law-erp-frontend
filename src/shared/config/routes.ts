@@ -4,6 +4,9 @@ export const ROUTES_CONFIG = {
     LOGIN: "/auth/login",
     RESET_PASSWORD: "/auth/reset-password",
     SIGNUP: "/auth/signup",
+    CHANGE_PASSWORD: "/auth/change-password",
+    MFA_SETUP: "/auth/mfa/setup",
+    MFA_VERIFICATION: "/auth/mfa/verify",
   },
   USER: {
     CLIENT_DASHBOARD: "/client/dashboard",

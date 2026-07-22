@@ -1,6 +1,9 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
 import Signup from "@/pages/Authentication/SignUp";
+import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
+import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
+import MFAVerification from "@/pages/Authentication/MFAVerification/MFAVerification";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
@@ -159,5 +162,17 @@ export const AUTHENTICATION_ROUTES = [
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
     element: <ResetPassword />,
+  },
+  {
+    path: ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD,
+    element: <PublicRoute Component={ChangePassword} />,
+  },
+  {
+    path: ROUTES_CONFIG.AUTHENTICATION.MFA_SETUP,
+    element: <PublicRoute Component={MFASetup} />,
+  },
+  {
+    path: ROUTES_CONFIG.AUTHENTICATION.MFA_VERIFICATION,
+    element: <PublicRoute Component={MFAVerification} />,
   },
 ];

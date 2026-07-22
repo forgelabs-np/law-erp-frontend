@@ -3,7 +3,9 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { type LoginType, useLoginMutation } from "@/api/auth";
+import { useTemporaryAuthStore } from "@/store/temporaryAuthStore";
 import { Logo } from "@/assets/images";
+import TokenService from "@/shared/service/service-token";
 import {
   FormProvider,
   PasswordInput,
@@ -40,11 +42,27 @@ const loginConfig: Record<
   },
 };
 
+const handleSuperAdminLogin = (resData: any, navigate: ReturnType<typeof useNavigate>) => {
+  // Extract tokens regardless of the status property
+  if (resData.accessToken && resData.refreshToken) {
+    TokenService.setToken({
+      access_token: resData.accessToken,
+      refresh_token: resData.refreshToken,
+    });
+    localStorage.setItem(
+      "lastLoginRole",
+      TokenService.getTokenDetails()?.workspace ?? ""
+    );
+    navigate("/super-admin/dashboard");
+  }
+};
+
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const loginType = resolveLoginType(location.pathname);
   const config = loginConfig[loginType];
+  const setTemporaryAuth = useTemporaryAuthStore((state) => state.setTemporaryAuth);
 
   const methods = useForm({ defaultValues });
   const { handleSubmit } = methods;
@@ -53,11 +71,50 @@ const Login = () => {
   const onSubmitHandler = async (data: typeof defaultValues) => {
     try {
       const response = await login(data);
-      if (response?.status === 200 || response?.status === 201) {
-        if (loginType === "super-admin") navigate("/super-admin/dashboard");
-        else if (loginType === "client")
-          navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
-        else navigate(ROUTES_CONFIG.USER.SOLO_DASHBOARD);
+      const resData = response?.data?.data;
+
+      if (!resData) return;
+
+      if (loginType === "super-admin") {
+        handleSuperAdminLogin(resData, navigate);
+        return;
+      }
+
+      switch (resData.status) {
+        case "SUCCESS":
+          TokenService.setToken({
+            access_token: resData.accessToken,
+            refresh_token: resData.refreshToken,
+          });
+          localStorage.setItem(
+            "lastLoginRole",
+            TokenService.getTokenDetails()?.workspace ?? ""
+          );
+
+          if (loginType === "client") {
+            navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
+          } else {
+            navigate(ROUTES_CONFIG.USER.SOLO_DASHBOARD);
+          }
+          break;
+
+        case "PASSWORD_CHANGE_REQUIRED":
+          setTemporaryAuth(resData);
+          navigate(ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD);
+          break;
+
+        case "MFA_SETUP_REQUIRED":
+          setTemporaryAuth(resData);
+          navigate(ROUTES_CONFIG.AUTHENTICATION.MFA_SETUP);
+          break;
+
+        case "MFA_REQUIRED":
+          setTemporaryAuth(resData);
+          navigate(ROUTES_CONFIG.AUTHENTICATION.MFA_VERIFICATION);
+          break;
+
+        default:
+          break;
       }
     } catch {
       return;
