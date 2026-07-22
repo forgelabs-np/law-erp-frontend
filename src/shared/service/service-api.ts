@@ -5,6 +5,9 @@ export const api = {
   loginClient: "auth/client/login",
   registerClient: "auth/register/client",
   superAdminLogin: "super-admin/login",
+  changePassword: "auth/change-password",
+  mfaSetupConfirm: "auth/mfa/setup/confirm",
+  mfaValidate: "auth/mfa/validate",
   EMPLOYEE_MANAGEMENT: {
     GET_EMPLOYEES: "firm/employees",
     POST: "firm/employees",
