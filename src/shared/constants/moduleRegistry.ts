@@ -155,6 +155,22 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 24,
   },
+  GLOBAL_CONFIG: {
+    moduleCode: "GLOBAL_CONFIG",
+    label: "Global Configuration",
+    path: ROUTES_CONFIG.SUPER_ADMIN.GLOBAL_CONFIG,
+    icon: Settings,
+    section: "Administration",
+    order: 25,
+  },
+  FIRM_CONFIG: {
+    moduleCode: "FIRM_CONFIG",
+    label: "Firm Configuration",
+    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_CONFIG,
+    icon: Building2,
+    section: "Administration",
+    order: 26,
+  },
   AUDIT_LOGS: {
     moduleCode: "AUDIT_LOGS",
     label: "Audit Logs",

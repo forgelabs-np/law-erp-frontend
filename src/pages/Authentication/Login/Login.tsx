@@ -75,10 +75,11 @@ const Login = () => {
 
       if (!resData) return;
 
-      if (loginType === "super-admin") {
-        handleSuperAdminLogin(resData, navigate);
-        return;
-      }
+      // if (loginType === "super-admin") {
+      //   handleSuperAdminLogin(resData, navigate);
+      //   return;
+      // }
+      console.log(loginType, "typpe")
 
       switch (resData.status) {
         case "SUCCESS":
@@ -91,6 +92,10 @@ const Login = () => {
             TokenService.getTokenDetails()?.workspace ?? ""
           );
 
+          if (loginType === "super-admin") {
+            handleSuperAdminLogin(resData, navigate);
+            return;
+          }
           if (loginType === "client") {
             navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
           } else {

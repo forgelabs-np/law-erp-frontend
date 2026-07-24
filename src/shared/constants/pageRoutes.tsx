@@ -29,6 +29,8 @@ import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
 import PermissionManagementTable from "@/pages/SuperAdmin/PermissionSetup/PermissionSetupTable";
+import GlobalConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/GlobalConfiguration/GlobalConfigurationPage";
+import FirmConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/FirmConfiguration/FirmConfigurationPage";
 
 export const USER_ROUTES = [
   {
@@ -130,6 +132,16 @@ export const USER_ROUTES = [
     path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,
     element: <FirmModules />,
     moduleCode: "FIRM_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.GLOBAL_CONFIG,
+    element: <GlobalConfigurationPage />,
+    moduleCode: "GLOBAL_CONFIG",
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_CONFIG,
+    element: <FirmConfigurationPage />,
+    moduleCode: "FIRM_CONFIG",
   },
 ];
 

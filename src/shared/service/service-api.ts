@@ -16,6 +16,13 @@ export const api = {
     TOGGLE: "firm/employees/{employeeId}/toggle",
     CHANGE_ROLE: "firm/employees/{employeeId}/role",
   },
+  CONFIG_MANAGEMENT: {
+    GET_GLOBAL: "super-admin/config",
+    UPSERT_GLOBAL: "super-admin/config",
+    DELETE_GLOBAL: "super-admin/config/{key}",
+    GET_FIRM: "super-admin/firms/{firmId}/config",
+    UPSERT_FIRM: "super-admin/firms/{firmId}/config",
+  },
   CLIENT_MANAGEMENT: {
     GET_CLIENTS: "firm/clients",
     POST: "firm/clients",
