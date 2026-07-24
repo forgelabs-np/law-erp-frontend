@@ -30,6 +30,8 @@ export const ROUTES_CONFIG = {
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",
     FIRM_MODULES: "/firm-management/:firmId/modules",
+    GLOBAL_CONFIG: "/super-admin/configuration/global",
+    FIRM_CONFIG: "/super-admin/configuration/firms",
   },
 
   NO_MATCH: "*",
