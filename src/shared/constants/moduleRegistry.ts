@@ -171,8 +171,8 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 26,
   },
-  AUDIT_LOGS: {
-    moduleCode: "AUDIT_LOGS",
+  AUDIT: {
+    moduleCode: "AUDIT",
     label: "Audit Logs",
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
     icon: Shield,
