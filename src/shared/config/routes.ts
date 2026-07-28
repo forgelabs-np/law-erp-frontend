@@ -4,6 +4,9 @@ export const ROUTES_CONFIG = {
     LOGIN: "/auth/login",
     RESET_PASSWORD: "/auth/reset-password",
     SIGNUP: "/auth/signup",
+    CHANGE_PASSWORD: "/auth/change-password",
+    MFA_SETUP: "/auth/mfa/setup",
+    MFA_VERIFICATION: "/auth/mfa/verify",
   },
   USER: {
     CLIENT_DASHBOARD: "/client/dashboard",
@@ -27,6 +30,8 @@ export const ROUTES_CONFIG = {
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",
     FIRM_MODULES: "/firm-management/:firmId/modules",
+    GLOBAL_CONFIG: "/super-admin/configuration/global",
+    FIRM_CONFIG: "/super-admin/configuration/firms",
   },
 
   NO_MATCH: "*",

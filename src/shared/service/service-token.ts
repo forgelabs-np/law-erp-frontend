@@ -9,6 +9,8 @@ export enum Authorities {
   "vendor" = "cbs-vendor",
   "client" = "client",
   "hidden" = "hidden",
+  "super-admin" = "super-admin",
+  "solo" = "solo",
 }
 
 export interface LawTokenDetails {

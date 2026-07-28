@@ -5,6 +5,9 @@ export const api = {
   loginClient: "auth/client/login",
   registerClient: "auth/register/client",
   superAdminLogin: "super-admin/login",
+  changePassword: "auth/change-password",
+  mfaSetupConfirm: "auth/mfa/setup/confirm",
+  mfaValidate: "auth/mfa/validate",
   EMPLOYEE_MANAGEMENT: {
     GET_EMPLOYEES: "firm/employees",
     POST: "firm/employees",
@@ -12,6 +15,13 @@ export const api = {
     PUT: "firm/employees/{employeeId}",
     TOGGLE: "firm/employees/{employeeId}/toggle",
     CHANGE_ROLE: "firm/employees/{employeeId}/role",
+  },
+  CONFIG_MANAGEMENT: {
+    GET_GLOBAL: "super-admin/config",
+    UPSERT_GLOBAL: "super-admin/config",
+    DELETE_GLOBAL: "super-admin/config/{key}",
+    GET_FIRM: "super-admin/firms/{firmId}/config",
+    UPSERT_FIRM: "super-admin/firms/{firmId}/config",
   },
   CLIENT_MANAGEMENT: {
     GET_CLIENTS: "firm/clients",

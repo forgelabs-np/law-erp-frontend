@@ -1,6 +1,9 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
 import Signup from "@/pages/Authentication/SignUp";
+import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
+import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
+import MFAVerification from "@/pages/Authentication/MFAVerification/MFAVerification";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
@@ -26,6 +29,8 @@ import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
 import PermissionManagementTable from "@/pages/SuperAdmin/PermissionSetup/PermissionSetupTable";
+import GlobalConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/GlobalConfiguration/GlobalConfigurationPage";
+import FirmConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/FirmConfiguration/FirmConfigurationPage";
 
 export const USER_ROUTES = [
   {
@@ -128,6 +133,16 @@ export const USER_ROUTES = [
     element: <FirmModules />,
     moduleCode: "FIRM_MANAGEMENT",
   },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.GLOBAL_CONFIG,
+    element: <GlobalConfigurationPage />,
+    moduleCode: "GLOBAL_CONFIG",
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_CONFIG,
+    element: <FirmConfigurationPage />,
+    moduleCode: "FIRM_CONFIG",
+  },
 ];
 
 export const AUTHENTICATION_ROUTES = [
@@ -159,5 +174,17 @@ export const AUTHENTICATION_ROUTES = [
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
     element: <ResetPassword />,
+  },
+  {
+    path: ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD,
+    element: <PublicRoute Component={ChangePassword} />,
+  },
+  {
+    path: ROUTES_CONFIG.AUTHENTICATION.MFA_SETUP,
+    element: <PublicRoute Component={MFASetup} />,
+  },
+  {
+    path: ROUTES_CONFIG.AUTHENTICATION.MFA_VERIFICATION,
+    element: <PublicRoute Component={MFAVerification} />,
   },
 ];

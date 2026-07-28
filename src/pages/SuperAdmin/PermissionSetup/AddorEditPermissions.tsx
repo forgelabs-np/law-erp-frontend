@@ -11,10 +11,40 @@ import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 import { PermissionFormValues } from "./types";
 
+const PERMISSION_ACTION_OPTIONS = [
+  { label: "View", value: "VIEW" },
+  { label: "Create", value: "CREATE" },
+  { label: "Edit", value: "EDIT" },
+  { label: "Delete", value: "DELETE" },
+  { label: "Access", value: "ACCESS" },
+  { label: "Upload", value: "UPLOAD" },
+  { label: "Download", value: "DOWNLOAD" },
+  { label: "Share", value: "SHARE" },
+  { label: "Export", value: "EXPORT" },
+  { label: "Schedule", value: "SCHEDULE" },
+  { label: "Update Status", value: "UPDATE_STATUS" },
+  { label: "Assign", value: "ASSIGN" },
+  { label: "Approve", value: "APPROVE" },
+  { label: "Reject", value: "REJECT" },
+  { label: "Review", value: "REVIEW" },
+  { label: "Archive", value: "ARCHIVE" },
+  { label: "Restore", value: "RESTORE" },
+  { label: "Print", value: "PRINT" },
+  { label: "Forward", value: "FORWARD" },
+];
+
+const PERMISSION_SCOPE_OPTIONS = [
+  { label: "Global", value: "GLOBAL" },
+  { label: "Tenant", value: "TENANT" },
+  { label: "Assigned", value: "ASSIGNED" },
+  { label: "Own", value: "OWN" },
+];
+
 const defaultValues: PermissionFormValues = {
   permission: {
     moduleId: "",
     action: "",
+    scope: "TENANT",
     code: "",
     description: "",
   },
@@ -67,6 +97,7 @@ export const AddorEditPermissions = ({
         permission: {
           moduleId: permissionById.module?.code ?? "",
           action: permissionById.action ?? "",
+          scope: permissionById.scope ?? "GLOBAL",
           code: permissionById.code ?? "",
           description: permissionById.description ?? "",
         },
@@ -78,8 +109,8 @@ export const AddorEditPermissions = ({
     const payload = {
       ...(id ? { id } : {}),
       moduleCode: data.permission.moduleId,
-      action: data.permission.action.toUpperCase(),
-      scope: "GLOBAL",
+      action: data.permission.action,
+      scope: data.permission.scope,
       code: data.permission.code.toUpperCase(),
       description: data.permission.description,
       isActive: true,
@@ -126,10 +157,18 @@ export const AddorEditPermissions = ({
               options={moduleOptions}
               required
             />
-            <TextFieldInput
+            <ReactSelect
               name="permission.action"
               label="Action"
-              placeholder="e.g. READ"
+              placeholder="Select Action"
+              options={PERMISSION_ACTION_OPTIONS}
+              required
+            />
+            <ReactSelect
+              name="permission.scope"
+              label="Scope"
+              placeholder="Select Scope"
+              options={PERMISSION_SCOPE_OPTIONS}
               required
             />
             <TextFieldInput

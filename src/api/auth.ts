@@ -21,6 +21,23 @@ export interface SignupDetails {
   panNumber: string;
 }
 
+export type AuthStatus =
+  | "SUCCESS"
+  | "PASSWORD_CHANGE_REQUIRED"
+  | "MFA_SETUP_REQUIRED"
+  | "MFA_REQUIRED";
+
+export interface AuthResponse {
+  status: AuthStatus;
+  accessToken?: string;
+  refreshToken?: string;
+  passwordChangeToken?: string;
+  mfaToken?: string;
+  mfaQrCodeUri?: string;
+  mfaManualKey?: string;
+  expiresIn?: number;
+}
+
 // --- API endpoints (add to your existing api object) ---
 // api.superAdminLogin = "/api/v1/super-admin/login"
 // api.superAdminRegister = "/api/v1/super-admin/register"
@@ -52,27 +69,54 @@ const initLogin = (data: LoginDetails, type: LoginType) => {
 export const useLoginMutation = (type: LoginType) => {
   return useMutation({
     mutationFn: (data: LoginDetails) => initLogin(data, type),
-    onSuccess: (response) => {
-      if (response?.data?.data?.accessToken) {
-        const tokens = {
-          access_token: response.data.data.accessToken,
-          refresh_token: response.data.data.refreshToken,
-        };
-        TokenService.setToken(tokens);
-        localStorage.setItem(
-          "lastLoginRole",
-          TokenService.getTokenDetails()?.workspace ?? ""
-        );
-      } else {
-        toastSuccess("OTP sent to your device");
-      }
-    },
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       toastFail(
         err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Login failed!"
+        err.response?.data?.error ??
+        "Login failed!"
+      );
+    },
+  });
+};
+
+export const useChangePasswordMutation = () => {
+  return useMutation({
+    mutationFn: (data: any) => LawFirmCRMClient.post(api.changePassword, { data }),
+    onError: (error) => {
+      const err = error as AxiosError<{ message: string; error: string }>;
+      toastFail(
+        err.response?.data?.message ??
+        err.response?.data?.error ??
+        "Failed to change password"
+      );
+    },
+  });
+};
+
+export const useConfirmMfaSetupMutation = () => {
+  return useMutation({
+    mutationFn: (data: any) => LawFirmCRMClient.post(api.mfaSetupConfirm, { data }),
+    onError: (error) => {
+      const err = error as AxiosError<{ message: string; error: string }>;
+      toastFail(
+        err.response?.data?.message ??
+        err.response?.data?.error ??
+        "Invalid code"
+      );
+    },
+  });
+};
+
+export const useValidateMfaMutation = () => {
+  return useMutation({
+    mutationFn: (data: any) => LawFirmCRMClient.post(api.mfaValidate, { data }),
+    onError: (error) => {
+      const err = error as AxiosError<{ message: string; error: string }>;
+      toastFail(
+        err.response?.data?.message ??
+        err.response?.data?.error ??
+        "Invalid code"
       );
     },
   });
@@ -93,8 +137,8 @@ export const useSignupMutation = (type: RegisterType) => {
       const err = error as AxiosError<{ message?: string; error?: string }>;
       toastFail(
         err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Signup failed!"
+        err.response?.data?.error ??
+        "Signup failed!"
       );
     },
   });
