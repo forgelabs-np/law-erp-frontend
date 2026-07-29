@@ -8,7 +8,11 @@ interface AuditLogDateGroupProps {
   onViewDetails: (log: AuditLog) => void;
 }
 
-export const AuditLogDateGroup = ({ dateLabel, logs, onViewDetails }: AuditLogDateGroupProps) => {
+export const AuditLogDateGroup = ({
+  dateLabel,
+  logs,
+  onViewDetails,
+}: AuditLogDateGroupProps) => {
   return (
     <Stack gap={4}>
       {/* Date header */}

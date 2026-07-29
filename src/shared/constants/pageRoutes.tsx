@@ -22,6 +22,9 @@ import {
   SharedWithMe,
   SoloDashboard,
   UserManagement,
+  UserProfilePage,
+  UserPermissionsPage,
+  UserActivityPage,
 } from "@/pages/User";
 import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
 import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
@@ -86,6 +89,21 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.USER_MANAGEMENT,
     element: <UserManagement />,
+    moduleCode: "USER_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.USER_PROFILE,
+    element: <UserProfilePage />,
+    moduleCode: "USER_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.USER_PERMISSIONS,
+    element: <UserPermissionsPage />,
+    moduleCode: "USER_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.USER_ACTIVITY,
+    element: <UserActivityPage />,
     moduleCode: "USER_MANAGEMENT",
   },
   {

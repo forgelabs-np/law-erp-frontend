@@ -165,8 +165,6 @@ export const useRolePermissionsQuery = (roleId: string) => {
   });
 };
 
-
-
 export const deleteRole = async (id: string) => {
   const url = api.USER_MANAGEMENT.ROLE_SETUP.DELETE.replace("{roleId}", id);
 

@@ -1,4 +1,11 @@
-import { Badge, Button, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Badge,
+  Button,
+  HStack,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
@@ -11,7 +18,6 @@ import { AddIcon, EyeIcon } from "@/assets/svgs";
 import { Datatable } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch } from "@/shared/components/ui";
-
 
 import {
   formatClientDate,
@@ -51,7 +57,6 @@ const ClientManagement = () => {
   const { data: clientsData, isLoading } = useGetClientsQuery();
   const { mutate: togglePortalAccess, isPending: isTogglePending } =
     useTogglePortalAccessMutation();
-
 
   // Filter clients based on search query (client-side filtering)
   const filteredClients = clientsData?.content?.filter((client) => {
@@ -181,7 +186,6 @@ const ClientManagement = () => {
         header: "Actions",
         cell: ({ row }) => (
           <HStack gap={2}>
-
             <Switch
               checked={row.original.portalAccessEnabled}
               onCheckedChange={(details) => {

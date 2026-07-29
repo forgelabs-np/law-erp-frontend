@@ -8,7 +8,12 @@ import {
   successNotification,
 } from "@/shared/utils/notification";
 
-import { ConfigureModulePayload, FirmModule, MasterModule, MergedModule } from "@/pages/SuperAdmin/FirmModules/types";
+import {
+  ConfigureModulePayload,
+  FirmModule,
+  MasterModule,
+  MergedModule,
+} from "@/pages/SuperAdmin/FirmModules/types";
 
 export type { FirmModule, MasterModule, MergedModule };
 

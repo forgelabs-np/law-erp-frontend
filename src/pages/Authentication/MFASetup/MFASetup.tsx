@@ -14,7 +14,8 @@ import { ROUTES_CONFIG } from "@/shared/config";
 const MFASetup = () => {
   const navigate = useNavigate();
   const [totpCode, setTotpCode] = useState("");
-  const { mutateAsync: confirmMfaSetup, isPending } = useConfirmMfaSetupMutation();
+  const { mutateAsync: confirmMfaSetup, isPending } =
+    useConfirmMfaSetupMutation();
   const authState = useTemporaryAuthStore();
 
   const handleVerify = async () => {
@@ -38,7 +39,8 @@ const MFASetup = () => {
         localStorage.setItem("lastLoginRole", workspace);
 
         if (workspace === "super-admin") navigate("/super-admin/dashboard");
-        else if (workspace === "client") navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
+        else if (workspace === "client")
+          navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
         else navigate(ROUTES_CONFIG.USER.SOLO_DASHBOARD);
       }
     } catch {
@@ -54,34 +56,68 @@ const MFASetup = () => {
 
       <Stack gap="3">
         <Stack gap="1">
-          <Text fontSize="xl" fontWeight="700" color="gray.900" lineHeight="1.2">
+          <Text
+            fontSize="xl"
+            fontWeight="700"
+            color="gray.900"
+            lineHeight="1.2"
+          >
             MFA Setup Required
           </Text>
           <Text fontSize="sm" color="gray.500" lineHeight="1.6">
-            Scan the QR code with your authenticator app and enter the 6-digit code.
+            Scan the QR code with your authenticator app and enter the 6-digit
+            code.
           </Text>
         </Stack>
-        <CountdownTimer onExpire={() => { authState.clearTemporaryAuth(); navigate("/auth/login"); }} fontSize="sm" />
+        <CountdownTimer
+          onExpire={() => {
+            authState.clearTemporaryAuth();
+            navigate("/auth/login");
+          }}
+          fontSize="sm"
+        />
       </Stack>
 
       <VStack gap="6" align="center">
         {authState.mfaQrCodeUri && (
-          <Box p={4} bg="white" borderRadius="md" shadow="sm" border="1px solid" borderColor="gray.200">
+          <Box
+            p={4}
+            bg="white"
+            borderRadius="md"
+            shadow="sm"
+            border="1px solid"
+            borderColor="gray.200"
+          >
             <QRCodeSVG value={authState.mfaQrCodeUri} size={200} />
           </Box>
         )}
 
         {authState.mfaManualKey && (
           <Stack gap="1" align="center">
-            <Text fontSize="sm" color="gray.500">Manual Entry Key</Text>
-            <Text fontSize="sm" fontWeight="bold" userSelect="all" bg="gray.100" px={3} py={1} borderRadius="md">
+            <Text fontSize="sm" color="gray.500">
+              Manual Entry Key
+            </Text>
+            <Text
+              fontSize="sm"
+              fontWeight="bold"
+              userSelect="all"
+              bg="gray.100"
+              px={3}
+              py={1}
+              borderRadius="md"
+            >
               {authState.mfaManualKey}
             </Text>
           </Stack>
         )}
 
         <Stack gap="4" w="full">
-          <OtpInput value={totpCode} onChange={setTotpCode} length={6} isDisabled={authState.isExpired()} />
+          <OtpInput
+            value={totpCode}
+            onChange={setTotpCode}
+            length={6}
+            isDisabled={authState.isExpired()}
+          />
 
           <Button
             onClick={handleVerify}

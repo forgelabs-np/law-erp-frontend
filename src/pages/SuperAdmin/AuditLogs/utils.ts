@@ -1,6 +1,8 @@
 import { AuditAction } from "./types";
 
-export const formatAuditDate = (dateString: string): { date: string; time: string } => {
+export const formatAuditDate = (
+  dateString: string
+): { date: string; time: string } => {
   const date = new Date(dateString);
 
   const dateOptions: Intl.DateTimeFormatOptions = {
@@ -26,9 +28,24 @@ export const getAuditActionStyle = (action: AuditAction) => {
     AuditAction,
     { color: string; background: string; icon: string; labelColor: string }
   > = {
-    LOGIN: { color: "blue", background: "blue.50", icon: "LogIn", labelColor: "blue.700" },
-    LOGOUT: { color: "gray", background: "gray.50", icon: "LogOut", labelColor: "gray.700" },
-    LOGIN_FAILED: { color: "red", background: "red.50", icon: "XCircle", labelColor: "red.700" },
+    LOGIN: {
+      color: "blue",
+      background: "blue.50",
+      icon: "LogIn",
+      labelColor: "blue.700",
+    },
+    LOGOUT: {
+      color: "gray",
+      background: "gray.50",
+      icon: "LogOut",
+      labelColor: "gray.700",
+    },
+    LOGIN_FAILED: {
+      color: "red",
+      background: "red.50",
+      icon: "XCircle",
+      labelColor: "red.700",
+    },
     PASSWORD_CHANGED: {
       color: "blue",
       background: "blue.50",
@@ -172,7 +189,10 @@ export const getActionBadgeColor = (action: AuditAction): string => {
   return style.color;
 };
 
-export const truncateSummary = (summary: string, maxLength: number = 50): string => {
+export const truncateSummary = (
+  summary: string,
+  maxLength: number = 50
+): string => {
   if (!summary || summary.length <= maxLength) return summary;
   return summary.substring(0, maxLength) + "...";
 };

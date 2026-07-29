@@ -93,7 +93,7 @@ export function SubMenuItem({
 
 interface SubMenuItemProps {
   control: Control<RoleFormValues>;
-  moduleName: "CRM" | "CMS"|"menu";
+  moduleName: "CRM" | "CMS" | "menu";
   index: number;
   subMenuId?: string;
   active?: boolean;

@@ -42,7 +42,10 @@ const loginConfig: Record<
   },
 };
 
-const handleSuperAdminLogin = (resData: any, navigate: ReturnType<typeof useNavigate>) => {
+const handleSuperAdminLogin = (
+  resData: any,
+  navigate: ReturnType<typeof useNavigate>
+) => {
   // Extract tokens regardless of the status property
   if (resData.accessToken && resData.refreshToken) {
     TokenService.setToken({
@@ -62,7 +65,9 @@ const Login = () => {
   const location = useLocation();
   const loginType = resolveLoginType(location.pathname);
   const config = loginConfig[loginType];
-  const setTemporaryAuth = useTemporaryAuthStore((state) => state.setTemporaryAuth);
+  const setTemporaryAuth = useTemporaryAuthStore(
+    (state) => state.setTemporaryAuth
+  );
 
   const methods = useForm({ defaultValues });
   const { handleSubmit } = methods;
@@ -79,7 +84,7 @@ const Login = () => {
       //   handleSuperAdminLogin(resData, navigate);
       //   return;
       // }
-      console.log(loginType, "typpe")
+      console.log(loginType, "typpe");
 
       switch (resData.status) {
         case "SUCCESS":

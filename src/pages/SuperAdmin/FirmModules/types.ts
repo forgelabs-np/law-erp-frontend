@@ -50,4 +50,9 @@ export interface ConfigureModuleFormValues {
   notes: string;
 }
 
-export type ModuleStatusFilter = "all" | "assigned" | "not_assigned" | "enabled" | "disabled";
+export type ModuleStatusFilter =
+  | "all"
+  | "assigned"
+  | "not_assigned"
+  | "enabled"
+  | "disabled";

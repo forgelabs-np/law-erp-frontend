@@ -28,7 +28,7 @@ export function MenuSetupTabs({
       renderContent={(module) => (
         <ModuleMenuFields
           control={control}
-          name={module as "CRM" | "CMS"|"menu"}
+          name={module as "CRM" | "CMS" | "menu"}
           onSubMenuToggle={onSubMenuToggle}
           isEdit={isEdit}
         />

@@ -62,9 +62,14 @@ const RoleSetup = () => {
   const { mutate: toggleRole, isPending: isTogglePending } =
     useToggleRoleMutation();
 
-  const { mutate: deleteRole, isPending: isDeletePending } = useDeleteRoleMutation()
+  const { mutate: deleteRole, isPending: isDeletePending } =
+    useDeleteRoleMutation();
 
-  const { open: deleteConfirmOpen, onOpen: onDeleteConfirmOpen, onClose: onDeleteConfirmClose } = useDisclosure()
+  const {
+    open: deleteConfirmOpen,
+    onOpen: onDeleteConfirmOpen,
+    onClose: onDeleteConfirmClose,
+  } = useDisclosure();
 
   // const pageCount = roleData?.totalPages ?? 1;
   // const totalRecords = roleData?.totalRecords ?? 0;
@@ -103,7 +108,7 @@ const RoleSetup = () => {
               });
               onToggleConfirmOpen();
             }}
-          // disabled={!togglePermission}
+            // disabled={!togglePermission}
           />
         ),
       },
@@ -182,7 +187,7 @@ const RoleSetup = () => {
         // }}
         // setPayload={setPayload}
         data={roleData?.data ?? []}
-      // onSearchChange={handleSearchChange}
+        // onSearchChange={handleSearchChange}
       />
       <AddEditRole
         open={addEditOpen}
@@ -209,12 +214,19 @@ const RoleSetup = () => {
         }}
         submitActionPending={isTogglePending}
       />
-      <ConfirmationDialog open={deleteConfirmOpen} onClose={onDeleteConfirmClose} title="Delete role?" action="delete this role" handleSubmit={() => {
-        if (selectedId) {
-          deleteRole(selectedId);
-          onDeleteConfirmClose();
-        }
-      }} submitActionPending={isDeletePending} />
+      <ConfirmationDialog
+        open={deleteConfirmOpen}
+        onClose={onDeleteConfirmClose}
+        title="Delete role?"
+        action="delete this role"
+        handleSubmit={() => {
+          if (selectedId) {
+            deleteRole(selectedId);
+            onDeleteConfirmClose();
+          }
+        }}
+        submitActionPending={isDeletePending}
+      />
     </Stack>
   );
 };

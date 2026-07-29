@@ -8,7 +8,10 @@ interface AuditLogsTimelineProps {
   onViewDetails: (log: AuditLog) => void;
 }
 
-export const AuditLogsTimeline = ({ logs, onViewDetails }: AuditLogsTimelineProps) => {
+export const AuditLogsTimeline = ({
+  logs,
+  onViewDetails,
+}: AuditLogsTimelineProps) => {
   const groupedLogs = groupAuditLogsByDate(logs);
 
   return (

@@ -124,6 +124,7 @@ export const Table = React.memo(TableUI, (prevProps, nextProps) => {
   return (
     JSON.stringify(prevProps.columns) === JSON.stringify(nextProps.columns) &&
     JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data) &&
-    prevProps.isLoading === nextProps.isLoading
+    prevProps.isLoading === nextProps.isLoading &&
+    prevProps.revisionKey === nextProps.revisionKey
   );
 }) as <T>(props: TableProps<T>) => ReturnType<typeof TableUI>;

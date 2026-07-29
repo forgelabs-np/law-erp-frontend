@@ -10,7 +10,11 @@ interface AuditLogTimelineItemProps {
   onViewDetails: (log: AuditLog) => void;
 }
 
-export const AuditLogTimelineItem = ({ log, isLast, onViewDetails }: AuditLogTimelineItemProps) => {
+export const AuditLogTimelineItem = ({
+  log,
+  isLast,
+  onViewDetails,
+}: AuditLogTimelineItemProps) => {
   const { time } = formatAuditDate(log.createdAt);
   const style = getAuditActionStyle(log.action);
 

@@ -16,12 +16,16 @@ const ChangePassword = () => {
   const navigate = useNavigate();
   const methods = useForm({ defaultValues });
   const { handleSubmit, setError } = methods;
-  const { mutateAsync: changePassword, isPending } = useChangePasswordMutation();
+  const { mutateAsync: changePassword, isPending } =
+    useChangePasswordMutation();
   const authState = useTemporaryAuthStore();
 
   const onSubmitHandler = async (data: typeof defaultValues) => {
     if (data.newPassword !== data.confirmPassword) {
-      setError("confirmPassword", { type: "manual", message: "Passwords do not match" });
+      setError("confirmPassword", {
+        type: "manual",
+        message: "Passwords do not match",
+      });
       return;
     }
 
@@ -64,14 +68,25 @@ const ChangePassword = () => {
 
       <Stack gap="3">
         <Stack gap="1">
-          <Text fontSize="xl" fontWeight="700" color="gray.900" lineHeight="1.2">
+          <Text
+            fontSize="xl"
+            fontWeight="700"
+            color="gray.900"
+            lineHeight="1.2"
+          >
             Change Password
           </Text>
           <Text fontSize="sm" color="gray.500" lineHeight="1.6">
             Your password must be updated before continuing.
           </Text>
         </Stack>
-        <CountdownTimer onExpire={() => { authState.clearTemporaryAuth(); navigate("/auth/login"); }} fontSize="sm" />
+        <CountdownTimer
+          onExpire={() => {
+            authState.clearTemporaryAuth();
+            navigate("/auth/login");
+          }}
+          fontSize="sm"
+        />
       </Stack>
 
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
