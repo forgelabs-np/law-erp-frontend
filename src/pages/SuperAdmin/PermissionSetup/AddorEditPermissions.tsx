@@ -79,7 +79,7 @@ export const AddorEditPermissions = ({
     return (
       moduleData?.data.map((module) => ({
         label: module.name,
-        value: module.code  ,
+        value: module.code,
       })) ?? []
     );
   }, [moduleData]);

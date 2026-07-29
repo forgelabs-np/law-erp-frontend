@@ -27,7 +27,12 @@ const AuditLogs = () => {
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const { data: auditData, isLoading, error, refetch } = usePlatformAuditLogsQuery(filters);
+  const {
+    data: auditData,
+    isLoading,
+    error,
+    refetch,
+  } = usePlatformAuditLogsQuery(filters);
 
   const handleReset = () => {
     setFilters(defaultFilters);
@@ -92,7 +97,10 @@ const AuditLogs = () => {
       ) : error ? (
         <AuditLogsErrorState onRetry={() => refetch()} />
       ) : logs.length === 0 ? (
-        <AuditLogsEmptyState hasFilters={hasFilters} onResetFilters={handleReset} />
+        <AuditLogsEmptyState
+          hasFilters={hasFilters}
+          onResetFilters={handleReset}
+        />
       ) : (
         <>
           {/* Timeline */}

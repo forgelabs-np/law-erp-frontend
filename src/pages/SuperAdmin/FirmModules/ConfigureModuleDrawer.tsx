@@ -114,7 +114,9 @@ export const ConfigureModuleDrawer = ({
                   render={({ field }) => (
                     <Switch
                       checked={field.value}
-                      onCheckedChange={(details) => field.onChange(details.checked)}
+                      onCheckedChange={(details) =>
+                        field.onChange(details.checked)
+                      }
                     >
                       Enable Module
                     </Switch>
@@ -129,7 +131,9 @@ export const ConfigureModuleDrawer = ({
                   render={({ field }) => (
                     <Switch
                       checked={field.value}
-                      onCheckedChange={(details) => field.onChange(details.checked)}
+                      onCheckedChange={(details) =>
+                        field.onChange(details.checked)
+                      }
                     >
                       Trial Mode
                     </Switch>

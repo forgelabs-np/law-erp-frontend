@@ -46,8 +46,7 @@ export const AddEditEmployee = ({
     useEmployeeByIdQuery(id ?? "");
 
   // const { data: rolesData } = useGetRoleQuery();
-    const { data: firmRolesData } = useGetFirmRolesQuery();
-  
+  const { data: firmRolesData } = useGetFirmRolesQuery();
 
   const roleOptions =
     firmRolesData?.data?.map((role) => ({

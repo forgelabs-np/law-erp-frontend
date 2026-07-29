@@ -1,10 +1,25 @@
-import { Badge, Box, Button, Card, HStack, NativeSelect, Stack, Text, VStack } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  HStack,
+  NativeSelect,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { ArrowLeftIcon } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { MasterModule, MergedModule, useGetAllModulesQuery, useGetFirmModulesQuery } from "@/api/firmModules";
+import {
+  MasterModule,
+  MergedModule,
+  useGetAllModulesQuery,
+  useGetFirmModulesQuery,
+} from "@/api/firmModules";
 import { Datatable } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
 
@@ -25,11 +40,15 @@ const FirmModules = () => {
   const { firmId } = useParams<{ firmId: string }>();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ModuleStatusFilter>("all");
-  const [selectedModule, setSelectedModule] = useState<MergedModule | null>(null);
+  const [selectedModule, setSelectedModule] = useState<MergedModule | null>(
+    null
+  );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const { data: masterModulesData, isLoading: isLoadingMaster } = useGetAllModulesQuery();
-  const { data: firmModulesData, isLoading: isLoadingFirm } = useGetFirmModulesQuery(firmId ?? "");
+  const { data: masterModulesData, isLoading: isLoadingMaster } =
+    useGetAllModulesQuery();
+  const { data: firmModulesData, isLoading: isLoadingFirm } =
+    useGetFirmModulesQuery(firmId ?? "");
 
   const isLoading = isLoadingMaster || isLoadingFirm;
 
@@ -144,7 +163,9 @@ const FirmModules = () => {
             fontSize="xs"
             fontWeight="600"
           >
-            {row.original.isAssigned && row.original.isEnabled ? "Enabled" : "Not Enabled"}
+            {row.original.isAssigned && row.original.isEnabled
+              ? "Enabled"
+              : "Not Enabled"}
           </Badge>
         ),
       },
@@ -187,9 +208,7 @@ const FirmModules = () => {
         accessorKey: "notes",
         header: "Notes",
         cell: ({ row }) => (
-          <Text fontSize="sm">
-            {row.original.notes || "—"}
-          </Text>
+          <Text fontSize="sm">{row.original.notes || "—"}</Text>
         ),
       },
       {
@@ -254,7 +273,14 @@ const FirmModules = () => {
             <Text fontSize="xs" color="gray.500">
               Status
             </Text>
-            <Badge bg="green.100" color="green.700" px="2" py="1" borderRadius="md" fontSize="xs">
+            <Badge
+              bg="green.100"
+              color="green.700"
+              px="2"
+              py="1"
+              borderRadius="md"
+              fontSize="xs"
+            >
               Active
             </Badge>
           </VStack>
@@ -276,65 +302,67 @@ const FirmModules = () => {
           </VStack>
         </HStack>
       </Card.Root>
-        <HStack gap={4} alignItems="center">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as ModuleStatusFilter)}
-            style={{
-              padding: "8px 12px",
-              borderRadius: "8px",
-              border: "1px solid #e2e8f0",
-              fontSize: "14px",
-              width: "150px",
-            }}
-          >
-            {STATUS_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
-            <Text fontSize="xs" color="gray.500">
-              Total:
-            </Text>
-            <Text fontSize="sm" fontWeight="600">
-              {totalCount}
-            </Text>
-          </HStack>
-          <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
-            <Text fontSize="xs" color="gray.500">
-              Assigned:
-            </Text>
-            <Text fontSize="sm" fontWeight="600">
-              {assignedCount}
-            </Text>
-          </HStack>
-          <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
-            <Text fontSize="xs" color="gray.500">
-              Unassigned:
-            </Text>
-            <Text fontSize="sm" fontWeight="600">
-              {unassignedCount}
-            </Text>
-          </HStack>
-          <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
-            <Text fontSize="xs" color="gray.500">
-              Enabled:
-            </Text>
-            <Text fontSize="sm" fontWeight="600">
-              {enabledCount}
-            </Text>
-          </HStack>
-          <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
-            <Text fontSize="xs" color="gray.500">
-              Disabled:
-            </Text>
-            <Text fontSize="sm" fontWeight="600">
-              {disabledCount}
-            </Text>
-          </HStack>
+      <HStack gap={4} alignItems="center">
+        <select
+          value={statusFilter}
+          onChange={(e) =>
+            setStatusFilter(e.target.value as ModuleStatusFilter)
+          }
+          style={{
+            padding: "8px 12px",
+            borderRadius: "8px",
+            border: "1px solid #e2e8f0",
+            fontSize: "14px",
+            width: "150px",
+          }}
+        >
+          {STATUS_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
+          <Text fontSize="xs" color="gray.500">
+            Total:
+          </Text>
+          <Text fontSize="sm" fontWeight="600">
+            {totalCount}
+          </Text>
         </HStack>
+        <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
+          <Text fontSize="xs" color="gray.500">
+            Assigned:
+          </Text>
+          <Text fontSize="sm" fontWeight="600">
+            {assignedCount}
+          </Text>
+        </HStack>
+        <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
+          <Text fontSize="xs" color="gray.500">
+            Unassigned:
+          </Text>
+          <Text fontSize="sm" fontWeight="600">
+            {unassignedCount}
+          </Text>
+        </HStack>
+        <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
+          <Text fontSize="xs" color="gray.500">
+            Enabled:
+          </Text>
+          <Text fontSize="sm" fontWeight="600">
+            {enabledCount}
+          </Text>
+        </HStack>
+        <HStack gap={2} px={4} py={2} bg="gray.50" borderRadius="md">
+          <Text fontSize="xs" color="gray.500">
+            Disabled:
+          </Text>
+          <Text fontSize="sm" fontWeight="600">
+            {disabledCount}
+          </Text>
+        </HStack>
+      </HStack>
 
       {/* Toolbar */}
       <HStack justifyContent="space-between" alignItems="center">
@@ -353,8 +381,6 @@ const FirmModules = () => {
             />
           </Box>
         </HStack>
-
-      
       </HStack>
 
       {/* Configure Module Drawer */}

@@ -1,4 +1,12 @@
-import { Badge, Box, Button, HStack, Stack, Text, VStack } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Button,
+  HStack,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { ChevronRight, User } from "lucide-react";
 import { AuditLog } from "../types";
 import { AuditLogActionBadge } from "./AuditLogActionBadge";
@@ -9,7 +17,10 @@ interface AuditLogEventCardProps {
   onViewDetails: (log: AuditLog) => void;
 }
 
-export const AuditLogEventCard = ({ log, onViewDetails }: AuditLogEventCardProps) => {
+export const AuditLogEventCard = ({
+  log,
+  onViewDetails,
+}: AuditLogEventCardProps) => {
   const { time } = formatAuditDate(log.createdAt);
 
   return (

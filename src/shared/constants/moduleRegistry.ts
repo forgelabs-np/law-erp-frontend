@@ -22,11 +22,7 @@ type IconComponent = ComponentType<{
   color?: string;
 }>;
 
-export type ModuleSection =
-  | "General"
-  | "Main"
-  | "Administration"
-  | "Support";
+export type ModuleSection = "General" | "Main" | "Administration" | "Support";
 
 export interface ModuleRegistryEntry {
   moduleCode: string;

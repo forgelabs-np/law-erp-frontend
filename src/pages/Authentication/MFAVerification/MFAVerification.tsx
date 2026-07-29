@@ -53,7 +53,8 @@ const MFAVerification = () => {
         localStorage.setItem("lastLoginRole", loginType);
 
         if (loginType === "super-admin") navigate("/super-admin/dashboard");
-        else if (loginType === "client") navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
+        else if (loginType === "client")
+          navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
         else navigate(ROUTES_CONFIG.USER.SOLO_DASHBOARD);
       }
     } catch {
@@ -69,14 +70,25 @@ const MFAVerification = () => {
 
       <Stack gap="3">
         <Stack gap="1">
-          <Text fontSize="xl" fontWeight="700" color="gray.900" lineHeight="1.2">
+          <Text
+            fontSize="xl"
+            fontWeight="700"
+            color="gray.900"
+            lineHeight="1.2"
+          >
             Two-Factor Authentication
           </Text>
           <Text fontSize="sm" color="gray.500" lineHeight="1.6">
             Enter the 6-digit code from your authenticator app.
           </Text>
         </Stack>
-        <CountdownTimer onExpire={() => { authState.clearTemporaryAuth(); navigate("/auth/login"); }} fontSize="sm" />
+        <CountdownTimer
+          onExpire={() => {
+            authState.clearTemporaryAuth();
+            navigate("/auth/login");
+          }}
+          fontSize="sm"
+        />
       </Stack>
 
       <VStack gap="6" align="center">

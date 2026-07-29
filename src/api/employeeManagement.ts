@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
-import { ApiErrorResponse, ApiResponse, PaginatedResponse } from "@/shared/types/response";
+import {
+  ApiErrorResponse,
+  ApiResponse,
+  PaginatedResponse,
+} from "@/shared/types/response";
 import {
   errorNotification,
   successNotification,
@@ -31,9 +35,9 @@ export interface EmployeeResponseType extends EmployeePayload {
 }
 
 const getEmployees = () => {
-  return LawFirmCRMClient.get<ApiResponse<PaginatedResponse<EmployeeResponseType>>>(
-    api.EMPLOYEE_MANAGEMENT.GET_EMPLOYEES
-  );
+  return LawFirmCRMClient.get<
+    ApiResponse<PaginatedResponse<EmployeeResponseType>>
+  >(api.EMPLOYEE_MANAGEMENT.GET_EMPLOYEES);
 };
 
 export const useGetEmployeesQuery = () => {

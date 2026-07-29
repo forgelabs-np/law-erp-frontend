@@ -73,8 +73,8 @@ export const useLoginMutation = (type: LoginType) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       toastFail(
         err.response?.data?.message ??
-        err.response?.data?.error ??
-        "Login failed!"
+          err.response?.data?.error ??
+          "Login failed!"
       );
     },
   });
@@ -82,13 +82,14 @@ export const useLoginMutation = (type: LoginType) => {
 
 export const useChangePasswordMutation = () => {
   return useMutation({
-    mutationFn: (data: any) => LawFirmCRMClient.post(api.changePassword, { data }),
+    mutationFn: (data: any) =>
+      LawFirmCRMClient.post(api.changePassword, { data }),
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       toastFail(
         err.response?.data?.message ??
-        err.response?.data?.error ??
-        "Failed to change password"
+          err.response?.data?.error ??
+          "Failed to change password"
       );
     },
   });
@@ -96,13 +97,14 @@ export const useChangePasswordMutation = () => {
 
 export const useConfirmMfaSetupMutation = () => {
   return useMutation({
-    mutationFn: (data: any) => LawFirmCRMClient.post(api.mfaSetupConfirm, { data }),
+    mutationFn: (data: any) =>
+      LawFirmCRMClient.post(api.mfaSetupConfirm, { data }),
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       toastFail(
         err.response?.data?.message ??
-        err.response?.data?.error ??
-        "Invalid code"
+          err.response?.data?.error ??
+          "Invalid code"
       );
     },
   });
@@ -115,8 +117,8 @@ export const useValidateMfaMutation = () => {
       const err = error as AxiosError<{ message: string; error: string }>;
       toastFail(
         err.response?.data?.message ??
-        err.response?.data?.error ??
-        "Invalid code"
+          err.response?.data?.error ??
+          "Invalid code"
       );
     },
   });
@@ -137,8 +139,8 @@ export const useSignupMutation = (type: RegisterType) => {
       const err = error as AxiosError<{ message?: string; error?: string }>;
       toastFail(
         err.response?.data?.message ??
-        err.response?.data?.error ??
-        "Signup failed!"
+          err.response?.data?.error ??
+          "Signup failed!"
       );
     },
   });

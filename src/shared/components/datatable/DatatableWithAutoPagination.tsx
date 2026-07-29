@@ -12,6 +12,7 @@ export const DatatableWithAutoPagination = <T,>({
   data,
   columns,
   header,
+  revisionKey,
 }: DatatableProps<T>) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(DATA_PER_PAGE);
@@ -32,7 +33,7 @@ export const DatatableWithAutoPagination = <T,>({
         />
       )}
 
-      <Table data={paginatedData} columns={columns} />
+      <Table data={paginatedData} columns={columns} revisionKey={revisionKey} />
 
       <Pagination
         currentPage={currentPage}

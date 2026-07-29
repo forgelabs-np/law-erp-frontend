@@ -18,7 +18,11 @@ interface AuditLogDetailsDrawerProps {
   onClose: () => void;
 }
 
-export const AuditLogDetailsDrawer = ({ log, isOpen, onClose }: AuditLogDetailsDrawerProps) => {
+export const AuditLogDetailsDrawer = ({
+  log,
+  isOpen,
+  onClose,
+}: AuditLogDetailsDrawerProps) => {
   if (!log) return null;
 
   const { date, time } = formatAuditDate(log.createdAt);
@@ -74,7 +78,7 @@ export const AuditLogDetailsDrawer = ({ log, isOpen, onClose }: AuditLogDetailsD
 
             {/* Entity Information */}
             <Box>
-                 <Text fontSize="xs" color="gray.500" mb={2}>
+              <Text fontSize="xs" color="gray.500" mb={2}>
                 User Information
               </Text>
               <VStack align="start" gap={2}>
@@ -107,9 +111,7 @@ export const AuditLogDetailsDrawer = ({ log, isOpen, onClose }: AuditLogDetailsD
 
             {/* User Information */}
             <Box>
-           
               <VStack align="start" gap={2}>
-                
                 <HStack gap={2}>
                   <Text fontSize="xs" color="gray.600" minW="100px">
                     User Type:

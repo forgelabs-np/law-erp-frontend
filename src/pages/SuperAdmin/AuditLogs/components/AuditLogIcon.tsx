@@ -9,7 +9,9 @@ interface AuditLogIconProps {
 
 export const AuditLogIcon = ({ action, size = 16 }: AuditLogIconProps) => {
   const style = getAuditActionStyle(action);
-  const Icon = Icons[style.icon as keyof typeof Icons] as React.ComponentType<{ size?: number }>;
+  const Icon = Icons[style.icon as keyof typeof Icons] as React.ComponentType<{
+    size?: number;
+  }>;
 
   if (!Icon) {
     return <Icons.Activity size={size} />;
