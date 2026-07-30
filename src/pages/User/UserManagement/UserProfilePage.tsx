@@ -389,7 +389,7 @@ export const UserProfilePage = () => {
                     <Badge
                       bg="gray.100"
                       color="gray.600"
-                      px="2"
+                      pr="6"
                       py="0.5"
                       borderRadius="full"
                       fontSize="xs"

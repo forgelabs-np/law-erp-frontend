@@ -6,7 +6,7 @@ import { PasswordInputProps } from "@/shared/types";
 
 import { TextFieldInput } from "./TextField";
 
-export const PasswordInput = ({ name, ...restProps }: PasswordInputProps) => {
+export const PasswordInput = ({ name, inputHeight, inputBorderRadius, ...restProps }: PasswordInputProps & { inputHeight?: string; inputBorderRadius?: string }) => {
   const { open, onToggle } = useDisclosure();
 
   const { control } = useFormContext();
@@ -24,6 +24,8 @@ export const PasswordInput = ({ name, ...restProps }: PasswordInputProps) => {
       name={name}
       type={open ? "text" : "password"}
       autoComplete="new-password"
+      inputHeight={inputHeight}
+      inputBorderRadius={inputBorderRadius}
       endElement={
         isIconVisible ? (
           <Grid

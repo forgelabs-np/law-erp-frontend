@@ -11,6 +11,7 @@ import { ChevronRight, User } from "lucide-react";
 import { AuditLog } from "../types";
 import { AuditLogActionBadge } from "./AuditLogActionBadge";
 import { formatAuditDate } from "../utils";
+import { Avatar } from "@/shared/components/ui";
 
 interface AuditLogEventCardProps {
   log: AuditLog;
@@ -75,8 +76,16 @@ export const AuditLogEventCard = ({
         {/* Right side - User info and View Details */}
         <VStack align="end" gap={2} minW="120px">
           <HStack gap={2} fontSize="xs" color="gray.600">
-            <User size={14} />
-            <Text fontWeight="500">{log.userType}</Text>
+            {/* <User size={14} />
+            <Text fontWeight="500">{log.userType}</Text> */}
+            <Avatar
+              name={log.userType}
+              size={"2xs"}
+              // variant="outline"
+              // colorScheme="blue"
+              bg={log.userType === "S" ? "blue.500" : "green.500"}
+              color="white"
+            />
           </HStack>
           <Button
             size="xs"

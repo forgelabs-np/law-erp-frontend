@@ -1,5 +1,8 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
+import { FirmHeroPanel } from "@/pages/Authentication/Login/LoginHeroPanel";
+import { SuperAdminHeroPanel } from "@/pages/Authentication/Login/HeroPanels/SuperAdminHeroPanel";
+import { ClientHeroPanel } from "@/pages/Authentication/Login/HeroPanels/ClientHeroPanel";
 import Signup from "@/pages/Authentication/SignUp";
 import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
@@ -170,15 +173,15 @@ export const AUTHENTICATION_ROUTES = [
   },
   {
     path: "/auth/login",
-    element: <PublicRoute Component={Login} />,
+    element: <PublicRoute Component={Login} variant="split" sideContent={<FirmHeroPanel />} />,
   },
   {
     path: "/auth/client/login",
-    element: <PublicRoute Component={Login} />,
+    element: <PublicRoute Component={Login} variant="split" sideContent={<ClientHeroPanel />} />,
   },
   {
     path: "/super-admin/login",
-    element: <PublicRoute Component={Login} hasSideContent={false} />,
+    element: <PublicRoute Component={Login} variant="split" sideContent={<SuperAdminHeroPanel />} />,
   },
 
   {

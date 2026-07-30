@@ -34,7 +34,7 @@ export type EntityType =
   | "MODULE"
   | "PERMISSION";
 
-export type UserType = "SUPER_ADMIN" | "ADMIN" | "LAWYER" | "CLIENT" | "STAFF";
+export type UserType = "SUPER_ADMIN" | "ADMIN" | "LAWYER" | "CLIENT" | "STAFF"|"S";
 
 export interface AuditLog {
   id: string;

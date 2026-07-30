@@ -141,7 +141,11 @@ const LayoutSlider = () => {
 export const UnAuthLayoutAdmin = ({
   children,
   sideContent,
-}: PropsWithChildren & { sideContent?: ReactNode }) => {
+  variant = "center",
+}: PropsWithChildren & { 
+  sideContent?: ReactNode;
+  variant?: "center" | "split";
+}) => {
   const hasSideContent = !!sideContent;
 
   const responsiveSide = useBreakpointValue({
@@ -149,6 +153,81 @@ export const UnAuthLayoutAdmin = ({
     md: sideContent ?? <LayoutSlider />, // falls back to original slider if no custom content
   });
 
+  // Split layout variant for modern full-viewport design
+  if (variant === "split") {
+    return (
+      <Flex
+        minH="100vh"
+        width="100%"
+        bg="white"
+      >
+        {/* Left Panel - Form */}
+        <Flex
+          flex={{ base: "1", lg: "0.45" }}
+          flexDirection="column"
+          justifyContent="center"
+          px={{ base: 6, md: 12, lg: 16 }}
+          py={{ base: 8, md: 12 }}
+          bg="white"
+        >
+          <Box maxW="480px" width="100%" mx="auto">
+            {children}
+          </Box>
+        </Flex>
+
+        {/* Right Panel - Hero */}
+        <Flex
+          display={{ base: "none", lg: "flex" }}
+          flex="0.55"
+          flexDirection="column"
+          justifyContent="center"
+          px={16}
+          py={12}
+          position="relative"
+          overflow="hidden"
+          bg="gray.900"
+        >
+          {/* Background gradient overlay */}
+          <Box
+            position="absolute"
+            inset={0}
+            bgGradient="linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%)"
+          />
+          
+          {/* Decorative blurred circles */}
+          <Box
+            position="absolute"
+            top="-20%"
+            right="-10%"
+            width="400px"
+            height="400px"
+            bg="primary.500"
+            opacity="0.1"
+            filter="blur(100px)"
+            borderRadius="full"
+          />
+          <Box
+            position="absolute"
+            bottom="-20%"
+            left="-10%"
+            width="350px"
+            height="350px"
+            bg="purple.500"
+            opacity="0.1"
+            filter="blur(80px)"
+            borderRadius="full"
+          />
+
+          {/* Hero Content */}
+          <Box position="relative" zIndex={1} width="100%">
+            {sideContent}
+          </Box>
+        </Flex>
+      </Flex>
+    );
+  }
+
+  // Center layout variant (default) - existing behavior
   return (
     <Flex
       minH="100vh"
@@ -170,7 +249,6 @@ export const UnAuthLayoutAdmin = ({
         background="white"
         overflow="hidden"
         width={{ base: "100%", md: "740px", xl: "1020px" }}
-        // paddingY={10}
         boxShadow="0px 8px 80px 0px rgba(43, 103, 177, 0.11)"
         flexShrink={0}
       >
