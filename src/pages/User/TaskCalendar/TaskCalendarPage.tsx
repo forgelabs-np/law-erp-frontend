@@ -9,27 +9,27 @@ import {
   Button,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar";
 import { TaskCalendar } from "@/components/calendar/TaskCalendar";
 import { TaskDrawer } from "@/components/calendar/TaskDrawer";
 import { CreateTaskModal } from "@/components/calendar/CreateTaskModal";
 import { CalendarLegend } from "@/components/calendar/CalendarLegend";
-import {
-  useCalendarTasks,
-  useCreateTask,
-  useUpdateTask,
-  useDeleteTask,
-} from "@/hooks/useCalendar";
+import { useCalendarEvents } from "@/hooks/useCalendarApi";
 import { Task } from "@/types/Task";
-import { addDays, subDays } from "date-fns";
+import { mapCalendarEventToTask } from "@/utils/calendarHelpers";
+import {
+  startOfMonth,
+  endOfMonth,
+  addMonths,
+  subMonths,
+  format,
+} from "date-fns";
 import toast from "react-hot-toast";
 
 const TaskCalendarPage = () => {
-  const { data: tasks, isLoading, isError } = useCalendarTasks();
-  const createTaskMutation = useCreateTask();
-  const updateTaskMutation = useUpdateTask();
-  const deleteTaskMutation = useDeleteTask();
+  const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -42,6 +42,26 @@ const TaskCalendarPage = () => {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const calendarRef = useRef<any>(null);
+
+  // Calculate date range based on current view
+  const getVisibleDateRange = () => {
+    const start = currentDate; // July 2026
+    const end = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // July 2026
+    return {
+      from: format(start, "yyyy-MM-dd"),
+      to: format(end, "yyyy-MM-dd"),
+    };
+  };
+
+  const dateRange = getVisibleDateRange();
+  const {
+    data: calendarEvents,
+    isLoading,
+    isError,
+  } = useCalendarEvents(dateRange);
+
+  // Map CalendarEvent to Task for existing UI
+  const tasks = calendarEvents?.map(mapCalendarEventToTask) || [];
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -83,72 +103,43 @@ const TaskCalendarPage = () => {
   };
 
   const handleEventDrop = (taskId: string, start: Date, end: Date) => {
-    updateTaskMutation.mutate(
-      {
-        id: taskId,
-        updates: { startDate: start.toISOString(), endDate: end.toISOString() },
-      },
-      {
-        onSuccess: () => toast.success("Task rescheduled"),
-      }
-    );
+    // Calendar events are read-only from the API
+    // Drag and drop is not supported for calendar events
+    toast("Event rescheduling is not supported for calendar events");
   };
 
   const handleEventResize = (taskId: string, start: Date, end: Date) => {
-    updateTaskMutation.mutate(
-      {
-        id: taskId,
-        updates: { startDate: start.toISOString(), endDate: end.toISOString() },
-      },
-      {
-        onSuccess: () => toast.success("Task duration updated"),
-      }
-    );
+    // Calendar events are read-only from the API
+    // Resizing is not supported for calendar events
+    toast("Event duration update is not supported for calendar events");
   };
 
   const handleDateClick = (date: Date) => {
-    setEditingTask(null);
-    setIsModalOpen(true);
+    // Navigate to create case page instead of opening modal
+    navigate("/cases/create");
   };
 
   const handleCreateOrUpdateTask = (data: Omit<Task, "id">) => {
-    if (editingTask) {
-      updateTaskMutation.mutate(
-        { id: editingTask.id, updates: data },
-        { onSuccess: () => toast.success("Task updated") }
-      );
-    } else {
-      createTaskMutation.mutate(data, {
-        onSuccess: () => toast.success("Task created"),
-      });
-    }
+    // Not used - calendar events are read-only
+    toast("Creating new calendar events is not supported");
   };
 
   const handleEditClick = (task: Task) => {
-    setIsDrawerOpen(false);
-    setEditingTask(task);
-    setIsModalOpen(true);
+    // Navigate to case detail page
+    if (task.caseNumber) {
+      navigate(`/cases/${task.caseNumber}`);
+    }
   };
 
   const handleDeleteTask = (id: string) => {
-    deleteTaskMutation.mutate(id, {
-      onSuccess: () => {
-        toast.success("Task deleted");
-        setIsDrawerOpen(false);
-      },
-    });
+    // Calendar events cannot be deleted from the calendar
+    toast("Deleting calendar events is not supported");
   };
 
   const handleCompleteTask = (task: Task) => {
-    updateTaskMutation.mutate(
-      { id: task.id, updates: { status: "Completed" } },
-      {
-        onSuccess: () => {
-          toast.success("Task marked as complete");
-          setSelectedTask({ ...task, status: "Completed" });
-        },
-      }
-    );
+    // Status updates will be handled via the Case Update API in the drawer
+    // This is a placeholder - actual implementation will be in the drawer
+    toast("Status update will be handled via case update");
   };
 
   if (isLoading) {
@@ -182,10 +173,7 @@ const TaskCalendarPage = () => {
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         onFilterClick={() => toast("Filters opening soon!")}
-        onCreateClick={() => {
-          setEditingTask(null);
-          setIsModalOpen(true);
-        }}
+        onCreateClick={() => navigate("/cases/create")}
       />
 
       <Box
@@ -229,8 +217,11 @@ const TaskCalendarPage = () => {
             <Text color="gray.500" mb={6}>
               You don't have any legal tasks for this period.
             </Text>
-            <Button colorScheme="blue" onClick={() => setIsModalOpen(true)}>
-              Create First Task
+            <Button
+              colorScheme="blue"
+              onClick={() => navigate("/cases/create")}
+            >
+              Create First Case
             </Button>
           </Center>
         ) : (
@@ -257,13 +248,6 @@ const TaskCalendarPage = () => {
         onEdit={handleEditClick}
         onDelete={handleDeleteTask}
         onComplete={handleCompleteTask}
-      />
-
-      <CreateTaskModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateOrUpdateTask}
-        initialData={editingTask}
       />
     </Box>
   );

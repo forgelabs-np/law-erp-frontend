@@ -20,7 +20,10 @@ export const TextFieldInput = ({
   autoComplete,
   inputHeight,
   inputBorderRadius,
-}: TextFieldInputProps & { inputHeight?: string; inputBorderRadius?: string }) => {
+}: TextFieldInputProps & {
+  inputHeight?: string;
+  inputBorderRadius?: string;
+}) => {
   const { control } = useFormContext();
 
   const {

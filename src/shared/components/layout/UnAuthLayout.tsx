@@ -142,7 +142,7 @@ export const UnAuthLayoutAdmin = ({
   children,
   sideContent,
   variant = "center",
-}: PropsWithChildren & { 
+}: PropsWithChildren & {
   sideContent?: ReactNode;
   variant?: "center" | "split";
 }) => {
@@ -156,11 +156,7 @@ export const UnAuthLayoutAdmin = ({
   // Split layout variant for modern full-viewport design
   if (variant === "split") {
     return (
-      <Flex
-        minH="100vh"
-        width="100%"
-        bg="white"
-      >
+      <Flex minH="100vh" width="100%" bg="white">
         {/* Left Panel - Form */}
         <Flex
           flex={{ base: "1", lg: "0.45" }}
@@ -193,7 +189,7 @@ export const UnAuthLayoutAdmin = ({
             inset={0}
             bgGradient="linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%)"
           />
-          
+
           {/* Decorative blurred circles */}
           <Box
             position="absolute"

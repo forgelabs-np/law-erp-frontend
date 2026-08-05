@@ -14,21 +14,12 @@ export const SuperAdminHeroPanel = () => {
         >
           System Administration
         </Text>
-        <Text
-          fontSize="5xl"
-          fontWeight="700"
-          color="white"
-          lineHeight="1.1"
-        >
+        <Text fontSize="5xl" fontWeight="700" color="white" lineHeight="1.1">
           Law Firm Administration
         </Text>
-        <Text
-          fontSize="lg"
-          color="gray.300"
-          lineHeight="1.7"
-          maxW="600px"
-        >
-          Manage firms, subscriptions, users, system configuration and platform settings.
+        <Text fontSize="lg" color="gray.300" lineHeight="1.7" maxW="600px">
+          Manage firms, subscriptions, users, system configuration and platform
+          settings.
         </Text>
       </Stack>
 

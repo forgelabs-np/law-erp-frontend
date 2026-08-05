@@ -6,7 +6,15 @@ import { PasswordInputProps } from "@/shared/types";
 
 import { TextFieldInput } from "./TextField";
 
-export const PasswordInput = ({ name, inputHeight, inputBorderRadius, ...restProps }: PasswordInputProps & { inputHeight?: string; inputBorderRadius?: string }) => {
+export const PasswordInput = ({
+  name,
+  inputHeight,
+  inputBorderRadius,
+  ...restProps
+}: PasswordInputProps & {
+  inputHeight?: string;
+  inputBorderRadius?: string;
+}) => {
   const { open, onToggle } = useDisclosure();
 
   const { control } = useFormContext();

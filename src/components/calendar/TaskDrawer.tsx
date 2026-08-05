@@ -28,6 +28,7 @@ import {
   CheckCircle,
   Trash2,
   Edit2,
+  MapPin,
 } from "lucide-react";
 import { getTaskColor } from "../../utils/calendarHelpers";
 
@@ -162,22 +163,43 @@ export const TaskDrawer = ({
               </HStack>
               <Text fontSize="sm">
                 <Text as="span" color="gray.500">
-                  Name:{" "}
-                </Text>
-                {task.caseName}
-              </Text>
-              <Text fontSize="sm">
-                <Text as="span" color="gray.500">
                   Number:{" "}
                 </Text>
                 {task.caseNumber}
               </Text>
+              <Text fontSize="sm">
+                <Text as="span" color="gray.500">
+                  Title:{" "}
+                </Text>
+                {task.caseName}
+              </Text>
             </Box>
 
-            <Flex justify="space-between">
-              <Box>
-                <Text fontSize="sm" color="gray.500" mb={1}>
-                  Status
+            <Box
+              bg="gray.50"
+              _dark={{ bg: "gray.800" }}
+              p={4}
+              borderRadius="lg"
+            >
+              <HStack mb={2}>
+                <MapPin size={18} color="gray" />
+                <Text fontWeight="600">Hearing Details</Text>
+              </HStack>
+              <Text fontSize="sm">
+                <Text as="span" color="gray.500">
+                  Court Room:{" "}
+                </Text>
+                {task.description?.split(" - ")[1] || "N/A"}
+              </Text>
+              <Text fontSize="sm">
+                <Text as="span" color="gray.500">
+                  Hearing Type:{" "}
+                </Text>
+                {task.description?.split(" - ")[0] || "N/A"}
+              </Text>
+              <Text fontSize="sm">
+                <Text as="span" color="gray.500">
+                  Status:{" "}
                 </Text>
                 <Badge
                   colorScheme={
@@ -190,24 +212,8 @@ export const TaskDrawer = ({
                 >
                   {task.status}
                 </Badge>
-              </Box>
-              <Box>
-                <Text fontSize="sm" color="gray.500" mb={1}>
-                  Priority
-                </Text>
-                <Badge
-                  colorScheme={
-                    task.priority === "Critical"
-                      ? "red"
-                      : task.priority === "High"
-                        ? "orange"
-                        : "gray"
-                  }
-                >
-                  {task.priority}
-                </Badge>
-              </Box>
-            </Flex>
+              </Text>
+            </Box>
           </VStack>
         </DrawerBody>
 

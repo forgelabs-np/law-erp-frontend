@@ -14,21 +14,12 @@ export const ClientHeroPanel = () => {
         >
           Client Portal
         </Text>
-        <Text
-          fontSize="5xl"
-          fontWeight="700"
-          color="white"
-          lineHeight="1.1"
-        >
+        <Text fontSize="5xl" fontWeight="700" color="white" lineHeight="1.1">
           Client Portal
         </Text>
-        <Text
-          fontSize="lg"
-          color="gray.300"
-          lineHeight="1.7"
-          maxW="600px"
-        >
-          Securely access your legal documents, appointments, invoices and case progress.
+        <Text fontSize="lg" color="gray.300" lineHeight="1.7" maxW="600px">
+          Securely access your legal documents, appointments, invoices and case
+          progress.
         </Text>
       </Stack>
 

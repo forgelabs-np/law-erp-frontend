@@ -1,4 +1,13 @@
-import { Box, Button, HStack, Image, Link, Stack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  HStack,
+  Image,
+  Link,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -142,13 +151,13 @@ const Login = () => {
           <Image src={Logo} alt="Logo" height="48px" width="max-content" />
         </Box>
         <Stack gap={1}>
-        <Text fontSize="sm" fontWeight="600" color="gray.600">
-          Law Firm CRM
-        </Text>
-        <Text fontSize="xs" color="gray.400">
-          Enterprise Practice Management
-        </Text>
-          </Stack>
+          <Text fontSize="sm" fontWeight="600" color="gray.600">
+            Law Firm CRM
+          </Text>
+          <Text fontSize="xs" color="gray.400">
+            Enterprise Practice Management
+          </Text>
+        </Stack>
       </HStack>
 
       {/* Header */}
@@ -220,12 +229,23 @@ const Login = () => {
               inputHeight="52px"
               inputBorderRadius="lg"
             />
-                        {loginType !== "super-admin" && (
-
-            <Text fontSize="xs" color="gray.400" justifyContent="end" width="full">
-              Forgot your password? <Link href="/forgot-password" color="primary.500" fontWeight="600">Reset here</Link>
-            </Text>
-                        )}
+            {loginType !== "super-admin" && (
+              <Text
+                fontSize="xs"
+                color="gray.400"
+                justifyContent="end"
+                width="full"
+              >
+                Forgot your password?{" "}
+                <Link
+                  href="/forgot-password"
+                  color="primary.500"
+                  fontWeight="600"
+                >
+                  Reset here
+                </Link>
+              </Text>
+            )}
           </Stack>
 
           <Button
@@ -248,7 +268,7 @@ const Login = () => {
 
       {/* Security Footer */}
       <HStack gap={2} justify="center" pt={4}>
-       <LuShieldCheck />
+        <LuShieldCheck />
         <Text fontSize="xs" color="gray.400">
           Secured with enterprise-grade encryption
         </Text>
@@ -258,20 +278,33 @@ const Login = () => {
       <Stack gap={3} pt={2}>
         <HStack gap={5} justify="center" fontSize="xs" color="gray.400">
           <Text>Need help?</Text>
-          <Text as="span" color="primary.500" cursor="pointer" _hover={{ textDecoration: "underline" }}>
+          <Text
+            as="span"
+            color="primary.500"
+            cursor="pointer"
+            _hover={{ textDecoration: "underline" }}
+          >
             Contact Support
           </Text>
-        <HStack gap={3} justify="center" fontSize="xs" color="gray.400">
-                    <Text>•</Text>
+          <HStack gap={3} justify="center" fontSize="xs" color="gray.400">
+            <Text>•</Text>
 
-          <Text as="span" cursor="pointer" _hover={{ textDecoration: "underline" }}>
-            Privacy Policy
-          </Text>
-          <Text>•</Text>
-          <Text as="span" cursor="pointer" _hover={{ textDecoration: "underline" }}>
-            Terms of Service
-          </Text>
-        </HStack>
+            <Text
+              as="span"
+              cursor="pointer"
+              _hover={{ textDecoration: "underline" }}
+            >
+              Privacy Policy
+            </Text>
+            <Text>•</Text>
+            <Text
+              as="span"
+              cursor="pointer"
+              _hover={{ textDecoration: "underline" }}
+            >
+              Terms of Service
+            </Text>
+          </HStack>
         </HStack>
       </Stack>
     </VStack>

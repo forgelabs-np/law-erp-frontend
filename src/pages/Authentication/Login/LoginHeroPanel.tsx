@@ -14,24 +14,15 @@ export const FirmHeroPanel = () => {
         >
           Legal Practice Management
         </Text>
-        <Text
-          fontSize="5xl"
-          fontWeight="700"
-          color="white"
-          lineHeight="1.1"
-        >
+        <Text fontSize="5xl" fontWeight="700" color="white" lineHeight="1.1">
           Modern Law Firm{" "}
           <Text as="span" color="primary.400">
             CRM
           </Text>
         </Text>
-        <Text
-          fontSize="lg"
-          color="gray.300"
-          lineHeight="1.7"
-          maxW="600px"
-        >
-          Manage clients, cases, documents, billing, and firm operations from one secure platform.
+        <Text fontSize="lg" color="gray.300" lineHeight="1.7" maxW="600px">
+          Manage clients, cases, documents, billing, and firm operations from
+          one secure platform.
         </Text>
       </Stack>
 
