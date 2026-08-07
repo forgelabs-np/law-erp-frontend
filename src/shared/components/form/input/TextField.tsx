@@ -18,7 +18,12 @@ export const TextFieldInput = ({
   endElement,
   startElement,
   autoComplete,
-}: TextFieldInputProps) => {
+  inputHeight,
+  inputBorderRadius,
+}: TextFieldInputProps & {
+  inputHeight?: string;
+  inputBorderRadius?: string;
+}) => {
   const { control } = useFormContext();
 
   const {
@@ -50,6 +55,8 @@ export const TextFieldInput = ({
           paddingLeft={startElement ? "10 !important" : undefined}
           paddingRight={endElement ? "10 !important" : undefined}
           autoComplete={autoComplete}
+          height={inputHeight}
+          borderRadius={inputBorderRadius}
         />
       </InputGroup>
     </FormWrapper>

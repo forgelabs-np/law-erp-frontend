@@ -65,7 +65,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   },
   CASE_MANAGEMENT: {
     moduleCode: "CASE_MANAGEMENT",
-    label: "Cases",
+    label: "Case Management",
     path: "/cases",
     icon: FileText,
     section: "Main",
@@ -79,9 +79,9 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Main",
     order: 12,
   },
-  TASK_CALENDAR: {
-    moduleCode: "TASK_CALENDAR",
-    label: "Task Calendar",
+  CALENDAR: {
+    moduleCode: "CALENDAR",
+    label: "Calendar",
     path: ROUTES_CONFIG.USER.TASK_CALENDAR,
     icon: MdTask,
     section: "Main",
@@ -119,6 +119,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 20,
   },
+  // CASE_MANAGEMENT:{
+  //   moduleCode: "CASE_MANAGEMENT",
+  //   label: "Case Management",
+  //   path: "/cases",
+  //   icon: FileText,
+  //   section: "Main",
+  //   order: 11,
+  // },
   ROLE_MANAGEMENT: {
     moduleCode: "ROLE_MANAGEMENT",
     label: "Role Management",

@@ -1,5 +1,8 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
+import { FirmHeroPanel } from "@/pages/Authentication/Login/LoginHeroPanel";
+import { SuperAdminHeroPanel } from "@/pages/Authentication/Login/HeroPanels/SuperAdminHeroPanel";
+import { ClientHeroPanel } from "@/pages/Authentication/Login/HeroPanels/ClientHeroPanel";
 import Signup from "@/pages/Authentication/SignUp";
 import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
@@ -28,6 +31,9 @@ import {
 } from "@/pages/User";
 import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
 import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
+import CaseListPage from "@/pages/User/CaseManagement/pages/CaseListPage";
+import CreateCasePage from "@/pages/User/CaseManagement/pages/CreateCasePage";
+import CaseDetailPage from "@/pages/User/CaseManagement/pages/CaseDetailPage";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -142,6 +148,21 @@ export const USER_ROUTES = [
     moduleCode: "CLIENT_MANAGEMENT",
   },
   {
+    path: "/cases",
+    element: <CaseListPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: "/cases/create",
+    element: <CreateCasePage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: "/cases/:caseNumber",
+    element: <CaseDetailPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
     element: <AuditLogs />,
     moduleCode: "AUDIT_LOGS",
@@ -170,15 +191,33 @@ export const AUTHENTICATION_ROUTES = [
   },
   {
     path: "/auth/login",
-    element: <PublicRoute Component={Login} />,
+    element: (
+      <PublicRoute
+        Component={Login}
+        variant="split"
+        sideContent={<FirmHeroPanel />}
+      />
+    ),
   },
   {
     path: "/auth/client/login",
-    element: <PublicRoute Component={Login} />,
+    element: (
+      <PublicRoute
+        Component={Login}
+        variant="split"
+        sideContent={<ClientHeroPanel />}
+      />
+    ),
   },
   {
     path: "/super-admin/login",
-    element: <PublicRoute Component={Login} hasSideContent={false} />,
+    element: (
+      <PublicRoute
+        Component={Login}
+        variant="split"
+        sideContent={<SuperAdminHeroPanel />}
+      />
+    ),
   },
 
   {

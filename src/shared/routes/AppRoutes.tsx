@@ -14,7 +14,7 @@ const toRouterRoute = (route: (typeof USER_ROUTES)[number]): RouteObject => {
   return routerRoute;
 };
 
-export const AppRoutes = () => {
+export const AppRoutes = () => {  
   const authenticated = TokenService.isAuthenticated();
 
   const authRoutes = [

@@ -80,7 +80,7 @@ export const UserPermissionsPage = () => {
           alignSelf="flex-start"
           onClick={() => navigate(ROUTES_CONFIG.USER.USER_MANAGEMENT)}
           size="sm"
-        // leftIcon={<ArrowLeft size={16} />}
+          // leftIcon={<ArrowLeft size={16} />}
         >
           Back to Users
         </Button>
@@ -103,7 +103,7 @@ export const UserPermissionsPage = () => {
         alignSelf="flex-start"
         onClick={() => navigate(ROUTES_CONFIG.USER.USER_MANAGEMENT)}
         size="sm"
-      // leftIcon={<ArrowLeft size={16} />}
+        // leftIcon={<ArrowLeft size={16} />}
       >
         Back to Users
       </Button>
