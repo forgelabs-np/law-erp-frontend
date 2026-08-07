@@ -38,6 +38,7 @@ export const api = {
       DROPDOWN: "admin/roles/dropdown",
       ROLE_PERMISSIONS: "admin/roles/permissions",
       GET_ROLE_PERMISSIONS: "admin/roles/{roleId}/permissions",
+      GET_ROLE_USERS: "firm/roles/{roleId}/users",
       DELETE: "admin/roles/{roleId}",
     },
     PERMISSION_SETUP: {
@@ -59,6 +60,7 @@ export const api = {
     },
     USERS: {
       GET_USERS: "modules/users",
+      SUPER_ADMIN_GET_USERS: "super-admin/users",
       SEARCH: "modules/users/search",
       GET_PROFILE: "modules/users/{userId}/profile",
       GET_PERMISSIONS: "modules/users/{userId}/permissions",
