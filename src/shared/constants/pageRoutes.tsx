@@ -8,6 +8,7 @@ import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
 import MFAVerification from "@/pages/Authentication/MFAVerification/MFAVerification";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
+import UserRoleDetails from "@/pages/SuperAdmin/Role/UserRoleDetails/UserRoleDetails";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
 import AuditLogs from "@/pages/SuperAdmin/AuditLogs/AuditLogs";
@@ -115,6 +116,11 @@ export const USER_ROUTES = [
   {
     path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT,
     element: <RoleSetup />,
+    moduleCode: "ROLE_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS,
+    element: <UserRoleDetails />,
     moduleCode: "ROLE_MANAGEMENT",
   },
   {

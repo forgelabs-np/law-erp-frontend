@@ -199,6 +199,8 @@ export const UserProfilePage = () => {
             >
               Reset Password
             </Button>
+            
+            <UserX size={20} />
             <Button
               size="sm"
               variant="ghost"
@@ -271,8 +273,8 @@ export const UserProfilePage = () => {
           p={5}
         >
           <HStack gap={3}>
-            <Box bg="blue.50" borderRadius="lg" p={3}>
-              <Activity size={20} color="blue.600" />
+            <Box bg="blue.800" borderRadius="lg" p={3}>
+              <Activity size={20} color="white" />
             </Box>
             <Stack gap={0}>
               <Text fontSize="2xl" fontWeight="700" color="gray.800">
@@ -293,8 +295,8 @@ export const UserProfilePage = () => {
           p={5}
         >
           <HStack gap={3}>
-            <Box bg="purple.50" borderRadius="lg" p={3}>
-              <ShieldCheck size={20} color="purple.600" />
+            <Box bg="purple.800" borderRadius="lg" p={3}>
+              <ShieldCheck size={20} color="white" />
             </Box>
             <Stack gap={0}>
               <Text fontSize="2xl" fontWeight="700" color="gray.800">
@@ -315,8 +317,8 @@ export const UserProfilePage = () => {
           p={5}
         >
           <HStack gap={3}>
-            <Box bg="green.50" borderRadius="lg" p={3}>
-              <Shield size={20} color="green.600" />
+            <Box bg="green.800" borderRadius="lg" p={3}>
+              <Shield size={20} color="white" />
             </Box>
             <Stack gap={0}>
               <Text fontSize="2xl" fontWeight="700" color="gray.800">
@@ -337,8 +339,8 @@ export const UserProfilePage = () => {
           p={5}
         >
           <HStack gap={3}>
-            <Box bg="orange.50" borderRadius="lg" p={3}>
-              <Clock size={20} color="orange.600" />
+            <Box bg="orange.800" borderRadius="lg" p={3}>
+              <Clock size={20} color="white" />
             </Box>
             <Stack gap={0}>
               <Text fontSize="2xl" fontWeight="700" color="gray.800">

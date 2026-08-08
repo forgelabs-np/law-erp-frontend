@@ -74,9 +74,12 @@ export const TaskDrawer = ({
       size="md"
       placement="end"
     >
-      <DrawerContent bg="gray.50" _dark={{ bg: "gray.900" }}>
+      <DrawerContent
+        bg="gray.50"
+        _dark={{ bg: "gray.900" }}
+      >
         <DrawerHeader pb={6} w={"full"}>
-          <Stack>
+          <Stack w={"100%"}>
 
             {/* </Stack> */}
             <Flex justify="space-between" align="flex-start" mb={4}>

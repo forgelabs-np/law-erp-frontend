@@ -23,6 +23,7 @@ export const ROUTES_CONFIG = {
     USER_PERMISSIONS: "/user-management/:userId/permissions",
     USER_ACTIVITY: "/user-management/:userId/activity",
     ROLE_MANAGEMENT: "/role-management",
+    ROLE_MANAGEMENT_DETAILS: "/role-management/:userId",
     MENU_MANAGEMENT: "/menu-management",
     PERMISSION_MANAGEMENT: "/permission-management",
     EMPLOYEE_MANAGEMENT: "/employee-management",

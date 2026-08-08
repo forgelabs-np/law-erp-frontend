@@ -6,6 +6,7 @@ import {
   Flex,
   Text,
   VStack,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import {
   DialogRoot,
@@ -128,22 +129,62 @@ export const HearingFormModal = ({
     "ARGUMENT",
   ];
 
+  const modalHeight = useBreakpointValue({
+    base: "100vh",
+    md: "90vh",
+    lg: "85vh",
+  });
+  const modalMaxHeight = useBreakpointValue({
+    base: "100vh",
+    md: "95vh",
+    lg: "90vh",
+  });
+
   return (
     <DialogRoot
       open={isOpen}
       onOpenChange={(e) => !e.open && onClose()}
       placement="center"
     >
-      <DialogContent maxWidth="600px">
-        <DialogHeader>
+       <DialogContent
+          maxW="700px"
+          w="90vw"
+          h={{ base: "100dvh", md: "90vh" }}
+          maxH={{ base: "100dvh", md: "90vh" }}
+          display="flex"
+          flexDirection="column"
+          overflow="hidden"
+          p={0}
+      >
+        <DialogHeader
+          flexShrink={0}
+          px={6}
+          py={5}
+          borderBottom="1px solid"
+          borderColor="gray.200"
+          bg="white"
+          zIndex={2}
+      >
           <DialogTitle>
             {initialData ? "Edit Hearing" : "Schedule Hearing"}
           </DialogTitle>
           <DialogCloseTrigger />
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onFormSubmit)}>
-          <DialogBody>
+        <form onSubmit={handleSubmit(onFormSubmit)}  style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          overflow: "hidden",
+        }}>
+          <DialogBody
+              flex="1"
+              overflowY="auto"
+              overflowX="hidden"
+              px={6}
+              py={5}
+              minH={0}
+          >
             <VStack gap={4} align="stretch">
               <Box>
                 <Text mb={1} fontSize="sm" fontWeight="500">
@@ -316,7 +357,16 @@ export const HearingFormModal = ({
             </VStack>
           </DialogBody>
 
-          <DialogFooter>
+          <DialogFooter 
+              flexShrink={0}
+              px={6}
+              py={4}
+              bg="white"
+              borderTop="1px solid"
+              borderColor="gray.200"
+              justifyContent="flex-end"
+              gap={3}
+          >
             <Button variant="outline" mr={3} onClick={onClose}>
               Cancel
             </Button>

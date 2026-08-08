@@ -575,8 +575,8 @@ export const UserActivityPage = () => {
         >
           <HStack gap={4} flexWrap={{ base: "wrap", md: "nowrap" }}>
             <HStack gap={3} flex={1}>
-              <Box bg="blue.50" borderRadius="full" p={3} flexShrink={0}>
-                <User size={20} color="blue.600" />
+              <Box bg="blue.800" borderRadius="full" p={3} flexShrink={0}>
+                <User size={20} color="white" />
               </Box>
               <Stack gap={0}>
                 <Text fontWeight="600" fontSize="sm" color="gray.800">
