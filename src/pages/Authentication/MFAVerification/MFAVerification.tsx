@@ -82,13 +82,13 @@ const MFAVerification = () => {
             Enter the 6-digit code from your authenticator app.
           </Text>
         </Stack>
-        <CountdownTimer
+        {/* <CountdownTimer
           onExpire={() => {
             authState.clearTemporaryAuth();
             navigate("/auth/login");
           }}
           fontSize="sm"
-        />
+        /> */}
       </Stack>
 
       <VStack gap="6" align="center">

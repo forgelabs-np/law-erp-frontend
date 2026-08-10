@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import TokenService, { TokenDetails } from "@/shared/service/service-token";
-import { toastFail, toastSuccess } from "@/shared/toast";
+import { errorNotification, successNotification } from "@/shared/utils/notification";
 
 export interface LoginDetails {
   username: string;
@@ -69,12 +70,13 @@ const initLogin = (data: LoginDetails, type: LoginType) => {
 export const useLoginMutation = (type: LoginType) => {
   return useMutation({
     mutationFn: (data: LoginDetails) => initLogin(data, type),
+    onSuccess: (response) => {
+      successNotification(response.data.message || "OTP sent successful!");
+    },
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
-      toastFail(
-        err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Login failed!"
+      errorNotification(
+        err.response?.data?.message ?? err.response?.data?.error ?? "Login failed!"
       );
     },
   });
@@ -86,7 +88,7 @@ export const useChangePasswordMutation = () => {
       LawFirmCRMClient.post(api.changePassword, { data }),
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
-      toastFail(
+      errorNotification(
         err.response?.data?.message ??
           err.response?.data?.error ??
           "Failed to change password"
@@ -101,7 +103,7 @@ export const useConfirmMfaSetupMutation = () => {
       LawFirmCRMClient.post(api.mfaSetupConfirm, { data }),
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
-      toastFail(
+      errorNotification(
         err.response?.data?.message ??
           err.response?.data?.error ??
           "Invalid code"
@@ -113,9 +115,12 @@ export const useConfirmMfaSetupMutation = () => {
 export const useValidateMfaMutation = () => {
   return useMutation({
     mutationFn: (data: any) => LawFirmCRMClient.post(api.mfaValidate, { data }),
+    onSuccess: (response) => {
+      successNotification(response.data.message || "Logged In Succesfully");
+    },
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
-      toastFail(
+      errorNotification(
         err.response?.data?.message ??
           err.response?.data?.error ??
           "Invalid code"
@@ -133,11 +138,11 @@ export const useSignupMutation = (type: RegisterType) => {
   return useMutation({
     mutationFn: (data: SignupDetails) => initSignup(data, type),
     onSuccess: () => {
-      toastSuccess("Account created successfully");
+      successNotification("Account created successfully");
     },
     onError: (error) => {
       const err = error as AxiosError<{ message?: string; error?: string }>;
-      toastFail(
+      errorNotification(
         err.response?.data?.message ??
           err.response?.data?.error ??
           "Signup failed!"

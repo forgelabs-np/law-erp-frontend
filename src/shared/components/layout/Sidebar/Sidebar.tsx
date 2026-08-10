@@ -104,30 +104,49 @@ export const Sidebar = () => {
       }}
     >
       {/* Logo + toggle */}
-      <Box px={isCollapsed ? "2" : "3"} mb="3">
-        <HStack justify="space-between" align="center">
-          <Image src={LogoImage} boxSize={isCollapsed ? "6" : "8"} />
-          {!isCollapsed && (
-            <Text fontWeight="bold" fontSize="md" color="gray.800">
-              Law CRM
-            </Text>
-          )}
+      {isCollapsed ? (
+        <VStack align="center" gap="3" mb="4" px="2">
+          <Image src={LogoImage} boxSize="6" />
           <Button
-            aria-label="Toggle sidebar"
+            aria-label="Expand sidebar"
             onClick={() => setIsCollapsed(!isCollapsed)}
             variant="ghost"
-            size="xs"
+            size="sm"
             color="gray.500"
-            p="1"
+            p="2"
+            minW="32px"
+            minH="32px"
+            borderRadius="md"
+            _hover={{ bg: "gray.100" }}
           >
-            {isCollapsed ? (
-              <ChevronRight size={14} />
-            ) : (
-              <ChevronLeft size={14} />
-            )}
+            <ChevronRight size={16} />
           </Button>
-        </HStack>
-      </Box>
+        </VStack>
+      ) : (
+        <Box px="3" mb="3">
+          <HStack justify="space-between" align="center">
+            <HStack gap="2">
+              <Image src={LogoImage} boxSize="8" />
+              <Text fontWeight="bold" fontSize="md" color="gray.800">
+                Law CRM
+              </Text>
+            </HStack>
+            <Button
+              aria-label="Collapse sidebar"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              variant="ghost"
+              size="xs"
+              color="gray.500"
+              p="1"
+            >
+              <ChevronLeft size={14} />
+            </Button>
+          </HStack>
+        </Box>
+      )}
+
+      {/* Divider */}
+      <Box borderBottom="sm" borderBottomColor="gray.200" mb="2" />
 
       {/* Scrollable nav area — grows to fill space */}
       <AccordionRoot

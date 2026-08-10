@@ -16,6 +16,7 @@ import { MdTask } from "react-icons/md";
 import { ComponentType } from "react";
 
 import { ROUTES_CONFIG } from "@/shared/config";
+import { IoCalendarOutline } from "react-icons/io5";
 
 type IconComponent = ComponentType<{
   size?: number | string;
@@ -83,7 +84,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     moduleCode: "CALENDAR",
     label: "Calendar",
     path: ROUTES_CONFIG.USER.TASK_CALENDAR,
-    icon: MdTask,
+    icon: IoCalendarOutline,
     section: "Main",
     order: 13,
   },
