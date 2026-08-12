@@ -69,13 +69,13 @@ const MFASetup = () => {
             code.
           </Text>
         </Stack>
-        <CountdownTimer
+        {/* <CountdownTimer
           onExpire={() => {
             authState.clearTemporaryAuth();
             navigate("/auth/login");
           }}
           fontSize="sm"
-        />
+        /> */}
       </Stack>
 
       <VStack gap="6" align="center">
@@ -92,7 +92,7 @@ const MFASetup = () => {
           </Box>
         )}
 
-        {authState.mfaManualKey && (
+        {/* {authState.mfaManualKey && (
           <Stack gap="1" align="center">
             <Text fontSize="sm" color="gray.500">
               Manual Entry Key
@@ -109,7 +109,7 @@ const MFASetup = () => {
               {authState.mfaManualKey}
             </Text>
           </Stack>
-        )}
+        )} */}
 
         <Stack gap="4" w="full">
           <OtpInput

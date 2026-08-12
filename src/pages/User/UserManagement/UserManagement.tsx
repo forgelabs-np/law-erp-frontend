@@ -485,6 +485,7 @@ export const UserManagement = () => {
         borderRadius="lg"
         border="1px solid"
         borderColor="gray.200"
+        zIndex={99}
       >
         <FormProvider methods={filterFormMethods}>
           <Stack

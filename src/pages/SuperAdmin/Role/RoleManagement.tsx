@@ -6,9 +6,10 @@ import { useForm } from "react-hook-form";
 
 import { useSuperAdminUsersQuery, UserResponseType } from "@/api/userManagement";
 import { useGetFirmsQuery, FirmResponse } from "@/api/firmManagement";
-import { RefreshCw, Users, Shield, Building, Ban, ChevronRight, ShieldCheck, Users2Icon, ShieldBan, Building2Icon, BanIcon } from "lucide-react";
+import { RefreshCw, Users, Shield, Building, Ban, ChevronRight, ShieldCheck, Users2Icon, ShieldBan, Building2Icon, BanIcon, Eye } from "lucide-react";
 import { Datatable, FormProvider, ReactSelect, SearchInput } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
+import { Tooltip } from "@/shared/components/ui";
 
 // StatCard Component
 interface StatCardProps {
@@ -131,7 +132,7 @@ const RoleSetup = () => {
         header: "User",
         cell: ({ row }) => (
           <HStack gap={3}>
-            <Avatar.Root size="lg">
+            <Avatar.Root size="sm">
               <Avatar.Fallback name={row.original.fullName} />
             </Avatar.Root>
             <Stack gap={0}>
@@ -177,7 +178,7 @@ const RoleSetup = () => {
           const color = row.original.roleName ? roleColorMap[row.original.roleName] || "gray" : "gray";
           return row.original.roleName ? (
             <HStack gap={2}>
-              <ShieldCheck size={14} color={color === "gray" ? "gray" : undefined} />
+              {/* <ShieldCheck size={14} color={color === "gray" ? "gray" : undefined} /> */}
               <Badge colorPalette={color} px={3} py={1} borderRadius="full">
                 {row.original.roleName}
               </Badge>
@@ -221,19 +222,33 @@ const RoleSetup = () => {
         accessorKey: "action",
         header: "Action",
         cell: ({ row }) => (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => navigate(
+          <Tooltip content="View Role">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                         onClick={() => navigate(
               ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(":userId", row.original.id),
               { state: { user: row.original } }
             )}
-          >
-            <HStack gap={2}>
-              <Text>View Role</Text>
-              <ChevronRight size={16} />
-            </HStack>
-          </Button>
+                          aria-label="View Profile"
+                        >
+                          <Eye size={18} />
+                        </Button>
+                      </Tooltip>
+          
+          // <Button
+          //   size="sm"
+          //   variant="ghost"
+          //   onClick={() => navigate(
+          //     ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(":userId", row.original.id),
+          //     { state: { user: row.original } }
+          //   )}
+          // >
+          //   <HStack gap={2}>
+          //     <Text>View Role</Text>
+          //     <ChevronRight size={16} />
+          //   </HStack>
+          // </Button>
         ),
       },
     ],
@@ -255,6 +270,7 @@ const RoleSetup = () => {
           variant="ghost"
           size="lg"
           onClick={() => refetch()}
+          p={2}
         >
           <RefreshCw size={20} />
         </IconButton>
