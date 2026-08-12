@@ -26,6 +26,8 @@ export interface RoleResposeType {
   isSystem: boolean;
   isActive: boolean;
   permissions: Permission[];
+  userCount?: number;
+  assignedUserNames?: string[];
 }
 
 const getRole = () => {
@@ -165,8 +167,6 @@ export const useRolePermissionsQuery = (roleId: string) => {
   });
 };
 
-
-
 export const deleteRole = async (id: string) => {
   const url = api.USER_MANAGEMENT.ROLE_SETUP.DELETE.replace("{roleId}", id);
 
@@ -189,5 +189,22 @@ export const useDeleteRoleMutation = () => {
         error?.response?.data?.error?.errorMessage ?? "Something went wrong!";
       errorNotification(errorMessage);
     },
+  });
+};
+
+const getRoleUsers = async (roleId: string) => {
+  return LawFirmCRMClient.get(
+    api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLE_USERS.replace("{roleId}", roleId)
+  );
+};
+
+export const useRoleUsersQuery = (roleId: string, enabled: boolean = true) => {
+  return useQuery({
+    queryKey: [`role-users-${roleId}`],
+    enabled: !!roleId && enabled,
+    queryFn: async () => {
+      return getRoleUsers(roleId);
+    },
+    select: (data) => data?.data?.data,
   });
 };

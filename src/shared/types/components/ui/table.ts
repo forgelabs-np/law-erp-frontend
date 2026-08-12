@@ -4,6 +4,7 @@ export type TableProps<T> = {
   data: T[];
   columns: TableOptions<T>["columns"];
   isLoading?: boolean;
+  revisionKey?: number | string;
 };
 
 export interface MetaProps {

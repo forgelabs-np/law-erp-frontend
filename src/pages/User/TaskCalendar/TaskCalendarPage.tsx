@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, ChangeEvent, useMemo, useCallback } from "react";
 import {
   Box,
   Flex,
@@ -9,30 +9,38 @@ import {
   Button,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar";
 import { TaskCalendar } from "@/components/calendar/TaskCalendar";
 import { TaskDrawer } from "@/components/calendar/TaskDrawer";
 import { CreateTaskModal } from "@/components/calendar/CreateTaskModal";
 import { CalendarLegend } from "@/components/calendar/CalendarLegend";
-import {
-  useCalendarTasks,
-  useCreateTask,
-  useUpdateTask,
-  useDeleteTask,
-} from "@/hooks/useCalendar";
+import { useCalendarEvents } from "@/hooks/useCalendarApi";
 import { Task } from "@/types/Task";
-import { addDays, subDays } from "date-fns";
+import { mapCalendarEventToTask } from "@/utils/calendarHelpers";
+import {
+  startOfMonth,
+  endOfMonth,
+  addMonths,
+  subMonths,
+  format,
+} from "date-fns";
 import toast from "react-hot-toast";
+import { CalendarHearingFormModal } from "./CalendarHearingFormModal";
+import { Hearing } from "@/pages/User/CaseManagement/types/hearing.types";
+import {
+  useCreateHearingMutation,
+  useUpdateHearingMutation,
+  useDeleteHearingMutation,
+  useGetHearingQuery,
+} from "@/pages/User/CaseManagement/api/hearing.api";
 
 const TaskCalendarPage = () => {
-  const { data: tasks, isLoading, isError } = useCalendarTasks();
-  const createTaskMutation = useCreateTask();
-  const updateTaskMutation = useUpdateTask();
-  const deleteTaskMutation = useDeleteTask();
+  const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDateStr, setCurrentDateStr] = useState(() => format(new Date(), "yyyy-MM-dd"));
   const [currentView, setCurrentView] = useState("dayGridMonth");
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -41,7 +49,51 @@ const TaskCalendarPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
+  // Hearing modal state
+  const [isHearingModalOpen, setIsHearingModalOpen] = useState(false);
+  const [editingHearing, setEditingHearing] = useState<Hearing | null>(null);
+  const [prefilledDate, setPrefilledDate] = useState<string | undefined>();
+
   const calendarRef = useRef<any>(null);
+
+  // Hearing mutations
+  const createHearingMutation = useCreateHearingMutation();
+  const updateHearingMutation = useUpdateHearingMutation();
+  const deleteHearingMutation = useDeleteHearingMutation();
+
+  // Fetch hearing details for editing
+  const { data: hearingDetails, isLoading: hearingLoading } = useGetHearingQuery(
+    editingHearing?.id || ""
+  );
+  
+  // Memoized dateRange object for API call - uses string state for stability
+  const dateRange = useMemo(() => {
+    const start = new Date(currentDateStr);
+    let end: Date;
+    
+    if (currentView === "dayGridMonth") {
+      end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+    } else if (currentView === "timeGridWeek") {
+      end = new Date(start);
+      end.setDate(end.getDate() + 7);
+    } else {
+      // timeGridDay
+      end = new Date(start);
+    }
+    
+    return {
+      from: format(start, "yyyy-MM-dd"),
+      to: format(end, "yyyy-MM-dd"),
+    };
+  }, [currentDateStr, currentView]);
+  const {
+    data: calendarEvents,
+    isLoading,
+    isError,
+  } = useCalendarEvents(dateRange);
+
+  // Map CalendarEvent to Task for existing UI
+  const tasks = calendarEvents?.map(mapCalendarEventToTask) || [];
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -57,25 +109,35 @@ const TaskCalendarPage = () => {
     ) || [];
 
   const handlePrev = () => {
-    if (calendarRef.current) {
-      calendarRef.current.getApi().prev();
-      setCurrentDate(calendarRef.current.getApi().getDate());
+    const newDate = new Date(currentDate);
+    if (currentView === "dayGridMonth") {
+      newDate.setMonth(newDate.getMonth() - 1);
+    } else if (currentView === "timeGridWeek") {
+      newDate.setDate(newDate.getDate() - 7);
+    } else {
+      newDate.setDate(newDate.getDate() - 1);
     }
+    setCurrentDateStr(format(newDate, "yyyy-MM-dd"));
   };
 
   const handleNext = () => {
-    if (calendarRef.current) {
-      calendarRef.current.getApi().next();
-      setCurrentDate(calendarRef.current.getApi().getDate());
+    const newDate = new Date(currentDate);
+    if (currentView === "dayGridMonth") {
+      newDate.setMonth(newDate.getMonth() + 1);
+    } else if (currentView === "timeGridWeek") {
+      newDate.setDate(newDate.getDate() + 7);
+    } else {
+      newDate.setDate(newDate.getDate() + 1);
     }
+    setCurrentDateStr(format(newDate, "yyyy-MM-dd"));
   };
 
   const handleToday = () => {
-    if (calendarRef.current) {
-      calendarRef.current.getApi().today();
-      setCurrentDate(calendarRef.current.getApi().getDate());
-    }
+    setCurrentDateStr(format(new Date(), "yyyy-MM-dd"));
   };
+
+  // Memoized Date object from string for calendar component
+  const currentDate = useMemo(() => new Date(currentDateStr), [currentDateStr]);
 
   const handleEventClick = (task: Task) => {
     setSelectedTask(task);
@@ -83,72 +145,87 @@ const TaskCalendarPage = () => {
   };
 
   const handleEventDrop = (taskId: string, start: Date, end: Date) => {
-    updateTaskMutation.mutate(
-      {
-        id: taskId,
-        updates: { startDate: start.toISOString(), endDate: end.toISOString() },
-      },
-      {
-        onSuccess: () => toast.success("Task rescheduled"),
-      }
-    );
+    // Calendar events are read-only from the API
+    // Drag and drop is not supported for calendar events
+    toast("Event rescheduling is not supported for calendar events");
   };
 
   const handleEventResize = (taskId: string, start: Date, end: Date) => {
-    updateTaskMutation.mutate(
-      {
-        id: taskId,
-        updates: { startDate: start.toISOString(), endDate: end.toISOString() },
-      },
-      {
-        onSuccess: () => toast.success("Task duration updated"),
-      }
-    );
+    // Calendar events are read-only from the API
+    // Resizing is not supported for calendar events
+    toast("Event duration update is not supported for calendar events");
   };
 
   const handleDateClick = (date: Date) => {
-    setEditingTask(null);
-    setIsModalOpen(true);
+    // Open hearing modal with prefilled date
+    setEditingHearing(null);
+    setPrefilledDate(format(date, "yyyy-MM-dd"));
+    setIsHearingModalOpen(true);
   };
 
-  const handleCreateOrUpdateTask = (data: Omit<Task, "id">) => {
-    if (editingTask) {
-      updateTaskMutation.mutate(
-        { id: editingTask.id, updates: data },
-        { onSuccess: () => toast.success("Task updated") }
-      );
-    } else {
-      createTaskMutation.mutate(data, {
-        onSuccess: () => toast.success("Task created"),
+  const handleCreateHearing = () => {
+    // Open hearing modal with today's date
+    setEditingHearing(null);
+    setPrefilledDate(format(new Date(), "yyyy-MM-dd"));
+    setIsHearingModalOpen(true);
+  };
+
+  const handleEditHearing = (task: Task) => {
+    // Fetch hearing details and open modal in edit mode
+    setEditingHearing({ id: task.id } as Hearing);
+    setPrefilledDate(undefined);
+    setIsHearingModalOpen(true);
+  };
+
+  const handleHearingSubmit = (data: any) => {
+    if (editingHearing) {
+      updateHearingMutation.mutate({
+        hearingId: editingHearing.id,
+        data,
       });
+    } else {
+      createHearingMutation.mutate({
+        caseNumber: data.caseNumber,
+        data,
+      });
+    }
+    setIsHearingModalOpen(false);
+    setEditingHearing(null);
+    setPrefilledDate(undefined);
+  };
+
+  const handleDeleteHearing = (hearingId: string) => {
+    if (
+      confirm(
+        "Are you sure you want to cancel this hearing? This action cannot be undone."
+      )
+    ) {
+      deleteHearingMutation.mutate(hearingId);
+      setIsHearingModalOpen(false);
+      setEditingHearing(null);
     }
   };
 
+  const handleCreateOrUpdateTask = (data: Omit<Task, "id">) => {
+    // Not used - calendar events are read-only
+    toast("Creating new calendar events is not supported");
+  };
+
   const handleEditClick = (task: Task) => {
+    // Close drawer and open hearing modal in edit mode
     setIsDrawerOpen(false);
-    setEditingTask(task);
-    setIsModalOpen(true);
+    handleEditHearing(task);
   };
 
   const handleDeleteTask = (id: string) => {
-    deleteTaskMutation.mutate(id, {
-      onSuccess: () => {
-        toast.success("Task deleted");
-        setIsDrawerOpen(false);
-      },
-    });
+    // Calendar events cannot be deleted from the calendar
+    toast("Deleting calendar events is not supported");
   };
 
   const handleCompleteTask = (task: Task) => {
-    updateTaskMutation.mutate(
-      { id: task.id, updates: { status: "Completed" } },
-      {
-        onSuccess: () => {
-          toast.success("Task marked as complete");
-          setSelectedTask({ ...task, status: "Completed" });
-        },
-      }
-    );
+    // Status updates will be handled via the Case Update API in the drawer
+    // This is a placeholder - actual implementation will be in the drawer
+    toast("Status update will be handled via case update");
   };
 
   if (isLoading) {
@@ -169,6 +246,7 @@ const TaskCalendarPage = () => {
       </Center>
     );
   }
+  console.log(hearingDetails, editingHearing,"hearingsss")
 
   return (
     <Box
@@ -182,10 +260,7 @@ const TaskCalendarPage = () => {
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         onFilterClick={() => toast("Filters opening soon!")}
-        onCreateClick={() => {
-          setEditingTask(null);
-          setIsModalOpen(true);
-        }}
+        onCreateClick={handleCreateHearing}
       />
 
       <Box
@@ -204,48 +279,18 @@ const TaskCalendarPage = () => {
           onViewChange={setCurrentView}
         />
 
-        {filteredTasks.length === 0 && !isLoading ? (
-          <Center py={20} flexDirection="column">
-            <Box mb={4} color="gray.300">
-              <svg
-                width="120"
-                height="120"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-            </Box>
-            <Text fontSize="xl" fontWeight="600" mb={2}>
-              No Tasks Scheduled
-            </Text>
-            <Text color="gray.500" mb={6}>
-              You don't have any legal tasks for this period.
-            </Text>
-            <Button colorScheme="blue" onClick={() => setIsModalOpen(true)}>
-              Create First Task
-            </Button>
-          </Center>
-        ) : (
-          <Flex h={{ base: "600px", lg: "700px" }} direction="column">
-            <TaskCalendar
-              tasks={filteredTasks}
-              onEventClick={handleEventClick}
-              onEventDrop={handleEventDrop}
-              onEventResize={handleEventResize}
-              onDateClick={handleDateClick}
-              calendarRef={calendarRef}
-              currentView={currentView}
-            />
-          </Flex>
-        )}
+        <Flex h={{ base: "600px", lg: "700px" }} direction="column">
+          <TaskCalendar
+            tasks={filteredTasks}
+            onEventClick={handleEventClick}
+            onEventDrop={handleEventDrop}
+            onEventResize={handleEventResize}
+            onDateClick={handleDateClick}
+            calendarRef={calendarRef}
+            currentView={currentView}
+            currentDate={currentDate}
+          />
+        </Flex>
       </Box>
 
       <CalendarLegend />
@@ -259,11 +304,17 @@ const TaskCalendarPage = () => {
         onComplete={handleCompleteTask}
       />
 
-      <CreateTaskModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateOrUpdateTask}
-        initialData={editingTask}
+      <CalendarHearingFormModal
+        isOpen={isHearingModalOpen}
+        onClose={() => {
+          setIsHearingModalOpen(false);
+          setEditingHearing(null);
+          setPrefilledDate(undefined);
+        }}
+        onSubmit={handleHearingSubmit}
+        initialData={hearingDetails || editingHearing}
+        prefilledDate={prefilledDate}
+        onDelete={editingHearing ? handleDeleteHearing : undefined}
       />
     </Box>
   );

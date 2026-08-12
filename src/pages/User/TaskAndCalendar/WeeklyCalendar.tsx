@@ -23,7 +23,7 @@ const HOURS = Array.from(
 );
 
 const COLOR_MAP: Record<
-  CalendarEvent["color"],
+  "blue" | "green" | "purple" | "orange",
   { bg: string; border: string; text: string }
 > = {
   blue: { bg: "#dbeafe", border: "#93c5fd", text: "#1e40af" },
@@ -41,11 +41,11 @@ const minutesToPx = (minutes: number) =>
   ((minutes - START_HOUR * 60) / 60) * HOUR_HEIGHT;
 
 const EventBlock = ({ event }: { event: CalendarEvent }) => {
-  const startMins = timeToMinutes(event.startTime);
+  const startMins = timeToMinutes(event.time);
   const endMins = timeToMinutes(event.endTime);
   const top = minutesToPx(startMins);
   const height = ((endMins - startMins) / 60) * HOUR_HEIGHT;
-  const colors = COLOR_MAP[event.color];
+  const colors = COLOR_MAP[event.color || "blue"];
 
   return (
     <Box
@@ -83,7 +83,7 @@ const EventBlock = ({ event }: { event: CalendarEvent }) => {
         </Text>
       )}
       <Text fontSize="10px" color={colors.text} opacity={0.7} mt="2px">
-        {event.startTime} – {event.endTime}
+        {event.time} – {event.endTime}
       </Text>
     </Box>
   );

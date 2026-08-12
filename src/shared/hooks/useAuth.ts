@@ -30,7 +30,9 @@ export const useIsInitialized = () => {
 
 export const useHasModule = (moduleCode: string) => {
   const modules = useModules();
-  return modules.some((module) => module.moduleCode === moduleCode && module.enabled);
+  return modules.some(
+    (module) => module.moduleCode === moduleCode && module.enabled
+  );
 };
 
 export const useHasPermission = (permission: string) => {

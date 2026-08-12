@@ -38,13 +38,13 @@ const GlobalConfigurationPage: React.FC = () => {
     <Box p={6} maxW="1000px">
       {/* Page Header */}
       <Flex alignItems="center" gap={3} mb={2}>
-
         <Heading size="lg" fontWeight="700">
           Global Configuration
         </Heading>
       </Flex>
-      <Text color="gray.500" fontSize="sm" mb={8} >
-        Manage system-wide configuration values used across the entire application.
+      <Text color="gray.500" fontSize="sm" mb={8}>
+        Manage system-wide configuration values used across the entire
+        application.
       </Text>
 
       {/* Configuration Editor */}

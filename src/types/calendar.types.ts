@@ -10,10 +10,17 @@ export interface Task {
 
 export interface CalendarEvent {
   id: string;
+  caseId: string;
+  caseNumber: string;
+  caseTitle: string;
   title: string;
-  subtitle?: string;
   date: string;
-  startTime: string;
+  time: string;
   endTime: string;
-  color: "blue" | "green" | "purple" | "orange";
+  courtRoom: string;
+  hearingType: string;
+  status: string;
+  advocateId: string;
+  color?: "blue" | "green" | "purple" | "orange";
+  subtitle?: string;
 }

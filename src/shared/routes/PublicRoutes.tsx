@@ -4,9 +4,13 @@ import { UnAuthLayoutAdmin } from "../components/layout/UnAuthLayout";
 
 const PublicRoute = ({
   Component,
+  variant = "center",
+  sideContent = <TravelConnectSidePanel />,
 }: {
   Component: React.ComponentType;
   hasSideContent?: boolean;
+  variant?: "center" | "split";
+  sideContent?: React.ReactNode;
 }) => {
   //   const token = TokenService.getToken();
 
@@ -15,7 +19,7 @@ const PublicRoute = ({
   //   }
 
   return (
-    <UnAuthLayoutAdmin sideContent={<TravelConnectSidePanel />}>
+    <UnAuthLayoutAdmin variant={variant} sideContent={sideContent}>
       <Component />
     </UnAuthLayoutAdmin>
   );

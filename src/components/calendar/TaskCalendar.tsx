@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -17,6 +17,7 @@ interface TaskCalendarProps {
   onDateClick: (date: Date) => void;
   calendarRef: React.RefObject<any>; // FullCalendar ref
   currentView: string;
+  currentDate: Date;
 }
 
 export const TaskCalendar = ({
@@ -27,14 +28,24 @@ export const TaskCalendar = ({
   onDateClick,
   calendarRef,
   currentView,
+  currentDate,
 }: TaskCalendarProps) => {
   const events = tasks.map(mapTaskToEvent);
 
   useEffect(() => {
     if (calendarRef.current) {
-      calendarRef.current.getApi().changeView(currentView);
+      const api = calendarRef.current.getApi();
+      api.changeView(currentView);
     }
-  }, [currentView, calendarRef]);
+  }, [currentView]);
+
+  // Sync calendar date when parent's currentDate changes
+  useEffect(() => {
+    if (calendarRef.current) {
+      const api = calendarRef.current.getApi();
+      api.gotoDate(currentDate);
+    }
+  }, [currentDate]);
 
   return (
     <Box
@@ -50,6 +61,7 @@ export const TaskCalendar = ({
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={currentView}
+        initialDate={currentDate}
         headerToolbar={false}
         events={events}
         editable={true}

@@ -14,8 +14,14 @@ export interface UserResponseType {
   email: string;
   fullName: string;
   isActive: boolean;
+  isBlocked: boolean
   roleId: string;
-  userType:string
+  roleName?: string;
+  userType: string;
+  mobileNo?: string;
+  firmName?: string;
+  firmCode?: string;
+  lastLogin?: string;
 }
 
 export interface UserProfileType extends UserResponseType {
@@ -35,6 +41,21 @@ export const useGetUsersQuery = () => {
   return useQuery({
     queryKey: [api.USER_MANAGEMENT.USERS.GET_USERS],
     queryFn: getUsers,
+    select: (response) => response?.data?.data,
+  });
+};
+
+const getSuperAdminUsers = (params: any) => {
+  return LawFirmCRMClient.get<ApiResponse<any>>(
+    api.USER_MANAGEMENT.USERS.SUPER_ADMIN_GET_USERS,
+    { params }
+  );
+};
+
+export const useSuperAdminUsersQuery = (params: any) => {
+  return useQuery({
+    queryKey: [api.USER_MANAGEMENT.USERS.SUPER_ADMIN_GET_USERS, params],
+    queryFn: () => getSuperAdminUsers(params),
     select: (response) => response?.data?.data,
   });
 };

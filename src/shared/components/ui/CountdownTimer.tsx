@@ -33,7 +33,11 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
   }, [expiresAt, onExpire]);
 
   if (!expiresAt || timeLeft <= 0) {
-    return <Text color="red.500" fontWeight="bold" {...rest}>Expired</Text>;
+    return (
+      <Text color="red.500" fontWeight="bold" {...rest}>
+        Expired
+      </Text>
+    );
   }
 
   const minutes = Math.floor(timeLeft / 60);

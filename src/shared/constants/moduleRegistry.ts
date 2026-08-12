@@ -16,17 +16,14 @@ import { MdTask } from "react-icons/md";
 import { ComponentType } from "react";
 
 import { ROUTES_CONFIG } from "@/shared/config";
+import { IoCalendarOutline } from "react-icons/io5";
 
 type IconComponent = ComponentType<{
   size?: number | string;
   color?: string;
 }>;
 
-export type ModuleSection =
-  | "General"
-  | "Main"
-  | "Administration"
-  | "Support";
+export type ModuleSection = "General" | "Main" | "Administration" | "Support";
 
 export interface ModuleRegistryEntry {
   moduleCode: string;
@@ -69,7 +66,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   },
   CASE_MANAGEMENT: {
     moduleCode: "CASE_MANAGEMENT",
-    label: "Cases",
+    label: "Case Management",
     path: "/cases",
     icon: FileText,
     section: "Main",
@@ -83,11 +80,11 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Main",
     order: 12,
   },
-  TASK_CALENDAR: {
-    moduleCode: "TASK_CALENDAR",
-    label: "Task Calendar",
+  CALENDAR: {
+    moduleCode: "CALENDAR",
+    label: "Calendar",
     path: ROUTES_CONFIG.USER.TASK_CALENDAR,
-    icon: MdTask,
+    icon: IoCalendarOutline,
     section: "Main",
     order: 13,
   },
@@ -123,6 +120,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 20,
   },
+  // CASE_MANAGEMENT:{
+  //   moduleCode: "CASE_MANAGEMENT",
+  //   label: "Case Management",
+  //   path: "/cases",
+  //   icon: FileText,
+  //   section: "Main",
+  //   order: 11,
+  // },
   ROLE_MANAGEMENT: {
     moduleCode: "ROLE_MANAGEMENT",
     label: "Role Management",

@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Flex, Input, Stack, Text, IconButton, Icon } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Input,
+  Stack,
+  Text,
+  IconButton,
+  Icon,
+} from "@chakra-ui/react";
 import { Trash2, Plus, Save } from "lucide-react";
 import { ConfigValues } from "@/api/configManagement";
 
@@ -57,7 +66,9 @@ export const ConfigEditor: React.FC<ConfigEditorProps> = ({
   };
 
   const handleKeyChange = (id: string, newKey: string) => {
-    setRows(rows.map((r) => (r.id === id ? { ...r, key: newKey, isError: false } : r)));
+    setRows(
+      rows.map((r) => (r.id === id ? { ...r, key: newKey, isError: false } : r))
+    );
     setErrorMsg(null);
   };
 
@@ -90,7 +101,9 @@ export const ConfigEditor: React.FC<ConfigEditorProps> = ({
 
     if (hasError) {
       setRows(updatedRows);
-      setErrorMsg("Please fix the highlighted errors. Keys must be unique and cannot be empty.");
+      setErrorMsg(
+        "Please fix the highlighted errors. Keys must be unique and cannot be empty."
+      );
       return;
     }
 

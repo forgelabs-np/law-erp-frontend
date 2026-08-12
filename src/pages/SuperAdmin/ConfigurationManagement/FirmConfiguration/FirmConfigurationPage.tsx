@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Badge,
-  Box,
-  Flex,
-  Heading,
-  Icon,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Badge, Box, Flex, Heading, Icon, Stack, Text } from "@chakra-ui/react";
 import { Building2, Settings } from "lucide-react";
 import { useForm, FormProvider } from "react-hook-form";
 
@@ -123,17 +115,18 @@ const FirmConfigurationPage: React.FC = () => {
     (firmsResponse as any)?.data ||
     (Array.isArray(firmsResponse) ? firmsResponse : []);
 
-  const selectedFirm = firms.find(
-    (f) => (f.id || f.firmId) === selectedFirmId
-  );
+  const selectedFirm = firms.find((f) => (f.id || f.firmId) === selectedFirmId);
 
   const firmOptions = firms.map((firm) => ({
     label: `${(firm as any).firmName || firm.name} (${(firm as any).firmCode || firm.lawFirmCode})`,
     value: firm.id || firm.firmId,
   }));
 
-  const { data: firmConfig, isLoading: isLoadingConfig, isFetching } =
-    useFirmConfigQuery(selectedFirmId);
+  const {
+    data: firmConfig,
+    isLoading: isLoadingConfig,
+    isFetching,
+  } = useFirmConfigQuery(selectedFirmId);
 
   const upsertMutation = useUpsertFirmConfigMutation();
 
@@ -147,12 +140,11 @@ const FirmConfigurationPage: React.FC = () => {
     <Box p={6} maxW="1000px">
       {/* Page Header */}
       <Flex alignItems="center" gap={3} mb={2}>
-
         <Heading size="lg" fontWeight="700">
           Firm Configuration
         </Heading>
       </Flex>
-      <Text color="gray.500" fontSize="sm" mb={8} >
+      <Text color="gray.500" fontSize="sm" mb={8}>
         Manage configuration values specific to individual firms.
       </Text>
 

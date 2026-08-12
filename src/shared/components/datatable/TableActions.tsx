@@ -4,6 +4,7 @@ import { DeleteIcon, EditIcon, EyeOpenIcon } from "@/shared/assets";
 import { TableActionsProps } from "@/shared/types";
 
 import { Tooltip } from "../ui";
+import { Eye } from "lucide-react";
 
 export const TableActions = ({
   onView,
@@ -24,7 +25,7 @@ export const TableActions = ({
             minWidth="6"
             color={"gray.800"}
           >
-            <EyeOpenIcon onClick={onView} />
+            <Eye onClick={onView} />
           </IconButton>
         </Tooltip>
       )}

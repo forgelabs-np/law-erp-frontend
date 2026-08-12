@@ -14,7 +14,10 @@ import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialo
 import { Switch } from "@/shared/components/ui";
 
 import { AddEditEmployee } from "./AddEditEmployee";
-import { useGetFirmModulesQuery, useGetFirmRolesQuery } from "@/api/firmManagement";
+import {
+  useGetFirmModulesQuery,
+  useGetFirmRolesQuery,
+} from "@/api/firmManagement";
 
 const EmployeeManagementTable = () => {
   const [selectedId, setSelectedId] = useState<string | undefined>();

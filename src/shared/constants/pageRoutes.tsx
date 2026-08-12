@@ -1,10 +1,14 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
+import { FirmHeroPanel } from "@/pages/Authentication/Login/LoginHeroPanel";
+import { SuperAdminHeroPanel } from "@/pages/Authentication/Login/HeroPanels/SuperAdminHeroPanel";
+import { ClientHeroPanel } from "@/pages/Authentication/Login/HeroPanels/ClientHeroPanel";
 import Signup from "@/pages/Authentication/SignUp";
 import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
 import MFAVerification from "@/pages/Authentication/MFAVerification/MFAVerification";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
+import UserRoleDetails from "@/pages/SuperAdmin/Role/UserRoleDetails/UserRoleDetails";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
 import AuditLogs from "@/pages/SuperAdmin/AuditLogs/AuditLogs";
@@ -22,9 +26,15 @@ import {
   SharedWithMe,
   SoloDashboard,
   UserManagement,
+  UserProfilePage,
+  UserPermissionsPage,
+  UserActivityPage,
 } from "@/pages/User";
 import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
 import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
+import CaseListPage from "@/pages/User/CaseManagement/pages/CaseListPage";
+import CreateCasePage from "@/pages/User/CaseManagement/pages/CreateCasePage";
+import CaseDetailPage from "@/pages/User/CaseManagement/pages/CaseDetailPage";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -89,8 +99,28 @@ export const USER_ROUTES = [
     moduleCode: "USER_MANAGEMENT",
   },
   {
+    path: ROUTES_CONFIG.USER.USER_PROFILE,
+    element: <UserProfilePage />,
+    moduleCode: "USER_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.USER_PERMISSIONS,
+    element: <UserPermissionsPage />,
+    moduleCode: "USER_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.USER_ACTIVITY,
+    element: <UserActivityPage />,
+    moduleCode: "USER_MANAGEMENT",
+  },
+  {
     path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT,
     element: <RoleSetup />,
+    moduleCode: "ROLE_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS,
+    element: <UserRoleDetails />,
     moduleCode: "ROLE_MANAGEMENT",
   },
   {
@@ -124,6 +154,21 @@ export const USER_ROUTES = [
     moduleCode: "CLIENT_MANAGEMENT",
   },
   {
+    path: "/cases",
+    element: <CaseListPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: "/cases/create",
+    element: <CreateCasePage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: "/cases/:caseNumber",
+    element: <CaseDetailPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
     element: <AuditLogs />,
     moduleCode: "AUDIT_LOGS",
@@ -152,15 +197,33 @@ export const AUTHENTICATION_ROUTES = [
   },
   {
     path: "/auth/login",
-    element: <PublicRoute Component={Login} />,
+    element: (
+      <PublicRoute
+        Component={Login}
+        variant="split"
+        sideContent={<FirmHeroPanel />}
+      />
+    ),
   },
   {
     path: "/auth/client/login",
-    element: <PublicRoute Component={Login} />,
+    element: (
+      <PublicRoute
+        Component={Login}
+        variant="split"
+        sideContent={<ClientHeroPanel />}
+      />
+    ),
   },
   {
     path: "/super-admin/login",
-    element: <PublicRoute Component={Login} hasSideContent={false} />,
+    element: (
+      <PublicRoute
+        Component={Login}
+        variant="split"
+        sideContent={<SuperAdminHeroPanel />}
+      />
+    ),
   },
 
   {

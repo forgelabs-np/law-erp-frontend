@@ -38,8 +38,8 @@ export const api = {
       DROPDOWN: "admin/roles/dropdown",
       ROLE_PERMISSIONS: "admin/roles/permissions",
       GET_ROLE_PERMISSIONS: "admin/roles/{roleId}/permissions",
+      GET_ROLE_USERS: "firm/roles/{roleId}/users",
       DELETE: "admin/roles/{roleId}",
-
     },
     PERMISSION_SETUP: {
       GET_PERMISSIONS: "admin/permissions",
@@ -60,6 +60,7 @@ export const api = {
     },
     USERS: {
       GET_USERS: "modules/users",
+      SUPER_ADMIN_GET_USERS: "super-admin/users",
       SEARCH: "modules/users/search",
       GET_PROFILE: "modules/users/{userId}/profile",
       GET_PERMISSIONS: "modules/users/{userId}/permissions",
@@ -77,10 +78,35 @@ export const api = {
     CONFIGURE_FIRM_MODULE: "super-admin/firms/{firmId}/modules",
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
-    GET_FIRM_ROLES: "firm/roles"
+    GET_FIRM_ROLES: "firm/roles",
   },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit/actions",
     FIRM_AUDIT: "super-admin/audit/firms/{firmId}",
+  },
+  CASE_MANAGEMENT: {
+    GET_CASES: "firm/cases",
+    POST: "firm/cases",
+    GET_BY_CASE_NUMBER: "firm/cases/{caseNumber}",
+    PUT: "firm/cases/{caseNumber}",
+    DELETE: "firm/cases/{caseNumber}",
+    UPDATE_STAGE: "firm/cases/{caseNumber}/stage",
+    ADD_PARTY: "firm/cases/{caseNumber}/parties",
+    UPDATE_PARTY: "firm/cases/{caseNumber}/parties/{partyId}",
+    DELETE_PARTY: "firm/cases/{caseNumber}/parties/{partyId}",
+    LINK_PARTY: "firm/cases/{caseNumber}/parties/{partyId}/link",
+    MATCH_PARTY: "firm/cases/parties/match",
+    GET_TIMELINE: "firm/cases/{caseNumber}/timeline",
+    GET_HEARINGS: "firm/cases/{caseNumber}/hearings",
+  },
+  HEARINGS: {
+    GET_HEARING: "firm/hearings/{hearingId}",
+    UPDATE_HEARING: "firm/hearings/{hearingId}",
+    DELETE_HEARING: "firm/hearings/{hearingId}",
+  },
+  CALENDAR: {
+    GET_EVENTS: "firm/calendar",
+    GET_TODAY: "firm/calendar/today",
+    GET_UPCOMING: "firm/calendar/upcoming",
   },
 };
