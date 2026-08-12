@@ -150,7 +150,7 @@ const getActionConfig = (action: string): ActionConfig => {
     ACTION_CONFIG[action] || {
       icon: Activity,
       color: "gray.600",
-      bg: "gray.50",
+      bg: "gray.100",
       label: action,
     }
   );
@@ -216,7 +216,7 @@ const ActivityCard = ({ activity }: ActivityCardProps) => {
           mt={0.5}
           aria-hidden="true"
         >
-          <ActionIcon size={16} color={config.color} />
+          <ActionIcon size={16} color={"black"} />
         </Box>
 
         {/* Content */}
@@ -249,12 +249,12 @@ const ActivityCard = ({ activity }: ActivityCardProps) => {
               <Calendar size={12} />
               <Text>{relativeDate}</Text>
             </HStack>
-            {activity.ipAddress && (
+            {/* {activity.ipAddress && (
               <HStack gap={1}>
                 <Globe size={12} />
                 <Text>{activity.ipAddress}</Text>
               </HStack>
-            )}
+            )} */}
           </HStack>
 
           {/* Expandable Details */}

@@ -46,7 +46,6 @@ export const SoloDashboard = () => {
       calendar={{
         selectedDate,
         onDateChange: setSelectedDate,
-        todayLabel: "Wed, May 21",
         tasks: [
           { time: "9:00 AM", label: "Client call – Johnson v. Smith" },
           { time: "10:30 AM", label: "Draft demand letter – Patel" },

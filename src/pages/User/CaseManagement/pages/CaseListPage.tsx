@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Case, useGetCasesQuery } from "../api/case.api";
 import { CaseFilters as CaseFiltersType } from "../types/case.types";
-import { AddIcon } from "@/assets/svgs";
+import { AddIcon, DeleteIcon } from "@/assets/svgs";
 import { Datatable } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 
@@ -13,6 +13,8 @@ import { CaseFiltersModal } from "../components/CaseFiltersModal";
 import { CaseStageBadge } from "../components/CaseStageBadge";
 import { CaseStatusBadge } from "../components/CaseStatusBadge";
 import { CaseTypeBadge } from "../components/CaseTypeBadge";
+import { Eye } from "lucide-react";
+import { Tooltip } from "@/shared/components/ui";
 
 const CaseListPage = () => {
   const navigate = useNavigate();
@@ -117,22 +119,26 @@ const CaseListPage = () => {
         accessorKey: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <HStack gap={2}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleRowClick(row.original.caseNumber)}
-            >
-              View
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              colorScheme="red"
-              onClick={() => handleDeleteClick(row.original.caseNumber)}
-            >
-              Delete
-            </Button>
+          <HStack gap={0}>
+            <Tooltip content="View Case">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRowClick(row.original.caseNumber)}
+                  >
+                  <Eye size={16} />
+                </Button>
+              </Tooltip>
+              <Tooltip content="Delete Case">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  colorScheme="red"
+                  onClick={() => handleDeleteClick(row.original.caseNumber)}
+                  >
+                  <DeleteIcon/>
+                </Button>
+              </Tooltip>
           </HStack>
         ),
       },

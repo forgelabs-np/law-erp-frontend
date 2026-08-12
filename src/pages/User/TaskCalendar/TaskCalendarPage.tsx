@@ -1,31 +1,37 @@
-import { useState, useRef, ChangeEvent, useMemo, useCallback } from "react";
+import { useState, useMemo, ChangeEvent } from "react";
 import {
   Box,
   Flex,
   Spinner,
-  Center,
   Text,
-  Image,
   Button,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar";
-import { TaskCalendar } from "@/components/calendar/TaskCalendar";
+import { NepaliCalendar, CalendarView } from "@/components/calendar/NepaliCalendar";
 import { TaskDrawer } from "@/components/calendar/TaskDrawer";
-import { CreateTaskModal } from "@/components/calendar/CreateTaskModal";
 import { CalendarLegend } from "@/components/calendar/CalendarLegend";
 import { useCalendarEvents } from "@/hooks/useCalendarApi";
 import { Task } from "@/types/Task";
 import { mapCalendarEventToTask } from "@/utils/calendarHelpers";
 import {
-  startOfMonth,
-  endOfMonth,
-  addMonths,
-  subMonths,
-  format,
-} from "date-fns";
+  NepaliDateParts,
+  addNepaliDays,
+  formatApiDate,
+  formatGregorianMonthRange,
+  formatNepaliDate,
+  formatNepaliDateRange,
+  formatNepaliMonthYear,
+  getNepaliMonthEnd,
+  getNepaliMonthStart,
+  getNepaliWeekStart,
+  gregorianToNepali,
+  nepaliDateKey,
+  nepaliToGregorian,
+  parseApiDate,
+  shiftNepaliMonth,
+} from "@/utils/nepaliDateUtils";
+import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { CalendarHearingFormModal } from "./CalendarHearingFormModal";
 import { Hearing } from "@/pages/User/CaseManagement/types/hearing.types";
@@ -37,24 +43,22 @@ import {
 } from "@/pages/User/CaseManagement/api/hearing.api";
 
 const TaskCalendarPage = () => {
-  const navigate = useNavigate();
-
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentDateStr, setCurrentDateStr] = useState(() => format(new Date(), "yyyy-MM-dd"));
-  const [currentView, setCurrentView] = useState("dayGridMonth");
+  // Single source of truth for what the Nepali calendar displays (BS).
+  // The backend continues to receive Gregorian (AD) dates derived from this.
+  const [displayNepali, setDisplayNepali] = useState<NepaliDateParts>(() =>
+    gregorianToNepali(new Date())
+  );
+  const [selectedNepali, setSelectedNepali] = useState<NepaliDateParts | null>(null);
+  const [currentView, setCurrentView] = useState<CalendarView>("dayGridMonth");
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   // Hearing modal state
   const [isHearingModalOpen, setIsHearingModalOpen] = useState(false);
   const [editingHearing, setEditingHearing] = useState<Hearing | null>(null);
   const [prefilledDate, setPrefilledDate] = useState<string | undefined>();
-
-  const calendarRef = useRef<any>(null);
 
   // Hearing mutations
   const createHearingMutation = useCreateHearingMutation();
@@ -65,101 +69,142 @@ const TaskCalendarPage = () => {
   const { data: hearingDetails, isLoading: hearingLoading } = useGetHearingQuery(
     editingHearing?.id || ""
   );
-  
-  // Memoized dateRange object for API call - uses string state for stability
+
+  // Today in BS (stable for the session).
+  const todayNepali = useMemo(() => gregorianToNepali(new Date()), []);
+
+  // Gregorian (AD) date range for the API, derived from the displayed Nepali period.
+  // Changing the Nepali month/view changes this range -> exactly one new API request.
   const dateRange = useMemo(() => {
-    const start = new Date(currentDateStr);
-    let end: Date;
-    
-    if (currentView === "dayGridMonth") {
-      end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
-    } else if (currentView === "timeGridWeek") {
-      end = new Date(start);
-      end.setDate(end.getDate() + 7);
-    } else {
-      // timeGridDay
-      end = new Date(start);
+    if (currentView === "timeGridWeek") {
+      const weekStart = getNepaliWeekStart(displayNepali);
+      const weekEnd = addNepaliDays(weekStart, 6);
+      return {
+        from: formatApiDate(nepaliToGregorian(weekStart)),
+        to: formatApiDate(nepaliToGregorian(weekEnd)),
+      };
     }
-    
+    if (currentView === "timeGridDay") {
+      const day = formatApiDate(nepaliToGregorian(displayNepali));
+      return { from: day, to: day };
+    }
     return {
-      from: format(start, "yyyy-MM-dd"),
-      to: format(end, "yyyy-MM-dd"),
+      from: formatApiDate(
+        getNepaliMonthStart(displayNepali.year, displayNepali.month)
+      ),
+      to: formatApiDate(
+        getNepaliMonthEnd(displayNepali.year, displayNepali.month)
+      ),
     };
-  }, [currentDateStr, currentView]);
+  }, [displayNepali, currentView]);
+
   const {
     data: calendarEvents,
-    isLoading,
+    isFetching,
     isError,
+    refetch,
   } = useCalendarEvents(dateRange);
 
   // Map CalendarEvent to Task for existing UI
-  const tasks = calendarEvents?.map(mapCalendarEventToTask) || [];
+  const tasks = useMemo(
+    () => calendarEvents?.map(mapCalendarEventToTask) || [],
+    [calendarEvents]
+  );
+
+  // Nepali title (primary) + Gregorian range (secondary) for the toolbar.
+  const { toolbarTitle, toolbarSubtitle } = useMemo(() => {
+    if (currentView === "timeGridWeek") {
+      const weekStart = getNepaliWeekStart(displayNepali);
+      const weekEnd = addNepaliDays(weekStart, 6);
+      return {
+        toolbarTitle: formatNepaliDateRange(weekStart, weekEnd),
+        toolbarSubtitle: `${format(nepaliToGregorian(weekStart), "MMM d")} – ${format(
+          nepaliToGregorian(weekEnd),
+          "MMM d, yyyy"
+        )}`,
+      };
+    }
+    if (currentView === "timeGridDay") {
+      return {
+        toolbarTitle: formatNepaliDate(displayNepali),
+        toolbarSubtitle: format(nepaliToGregorian(displayNepali), "MMMM d, yyyy"),
+      };
+    }
+    return {
+      toolbarTitle: formatNepaliMonthYear(displayNepali.year, displayNepali.month),
+      toolbarSubtitle: formatGregorianMonthRange(
+        getNepaliMonthStart(displayNepali.year, displayNepali.month),
+        getNepaliMonthEnd(displayNepali.year, displayNepali.month)
+      ),
+    };
+  }, [displayNepali, currentView]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredTasks =
-    tasks?.filter(
+  // Events within the visible Nepali month/week/day (same filtering as tasks).
+  const visibleTasks = useMemo(() => {
+    if (searchQuery.trim() === "") return tasks;
+    const query = searchQuery.toLowerCase();
+    return tasks.filter(
       (task: Task) =>
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.assignedLawyer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.caseNumber?.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
+        task.title.toLowerCase().includes(query) ||
+        task.client.toLowerCase().includes(query) ||
+        task.assignedLawyer.toLowerCase().includes(query) ||
+        task.caseNumber?.toLowerCase().includes(query)
+    );
+  }, [tasks, searchQuery]);
+
+  const visibleTasksByNepaliDate = useMemo(() => {
+    const byNepaliDate = new Map<string, Task[]>();
+    visibleTasks.forEach((task: Task) => {
+      const adDate = parseApiDate(task.startDate.slice(0, 10));
+      const nepali = gregorianToNepali(adDate);
+      const key = nepaliDateKey(nepali);
+      const existing = byNepaliDate.get(key);
+      if (existing) {
+        existing.push(task);
+      } else {
+        byNepaliDate.set(key, [task]);
+      }
+    });
+    return byNepaliDate;
+  }, [visibleTasks]);
 
   const handlePrev = () => {
-    const newDate = new Date(currentDate);
-    if (currentView === "dayGridMonth") {
-      newDate.setMonth(newDate.getMonth() - 1);
-    } else if (currentView === "timeGridWeek") {
-      newDate.setDate(newDate.getDate() - 7);
-    } else {
-      newDate.setDate(newDate.getDate() - 1);
-    }
-    setCurrentDateStr(format(newDate, "yyyy-MM-dd"));
+    setDisplayNepali((prev) => {
+      if (currentView === "dayGridMonth") return shiftNepaliMonth(prev, -1);
+      if (currentView === "timeGridWeek") return addNepaliDays(prev, -7);
+      return addNepaliDays(prev, -1);
+    });
   };
 
   const handleNext = () => {
-    const newDate = new Date(currentDate);
-    if (currentView === "dayGridMonth") {
-      newDate.setMonth(newDate.getMonth() + 1);
-    } else if (currentView === "timeGridWeek") {
-      newDate.setDate(newDate.getDate() + 7);
-    } else {
-      newDate.setDate(newDate.getDate() + 1);
-    }
-    setCurrentDateStr(format(newDate, "yyyy-MM-dd"));
+    setDisplayNepali((prev) => {
+      if (currentView === "dayGridMonth") return shiftNepaliMonth(prev, 1);
+      if (currentView === "timeGridWeek") return addNepaliDays(prev, 7);
+      return addNepaliDays(prev, 1);
+    });
   };
 
   const handleToday = () => {
-    setCurrentDateStr(format(new Date(), "yyyy-MM-dd"));
+    const today = gregorianToNepali(new Date());
+    setDisplayNepali(today);
+    setSelectedNepali(today);
   };
-
-  // Memoized Date object from string for calendar component
-  const currentDate = useMemo(() => new Date(currentDateStr), [currentDateStr]);
 
   const handleEventClick = (task: Task) => {
     setSelectedTask(task);
     setIsDrawerOpen(true);
   };
 
-  const handleEventDrop = (taskId: string, start: Date, end: Date) => {
-    // Calendar events are read-only from the API
-    // Drag and drop is not supported for calendar events
-    toast("Event rescheduling is not supported for calendar events");
-  };
-
-  const handleEventResize = (taskId: string, start: Date, end: Date) => {
-    // Calendar events are read-only from the API
-    // Resizing is not supported for calendar events
-    toast("Event duration update is not supported for calendar events");
-  };
-
-  const handleDateClick = (date: Date) => {
-    // Open hearing modal with prefilled date
+  const handleDateClick = (nepali: NepaliDateParts) => {
+    // Highlight the selected Nepali day and open the hearing modal prefilled
+    // with the equivalent Gregorian date (what the API expects).
+    setSelectedNepali(nepali);
     setEditingHearing(null);
-    setPrefilledDate(format(date, "yyyy-MM-dd"));
+    setPrefilledDate(formatApiDate(nepaliToGregorian(nepali)));
     setIsHearingModalOpen(true);
   };
 
@@ -192,6 +237,8 @@ const TaskCalendarPage = () => {
     setIsHearingModalOpen(false);
     setEditingHearing(null);
     setPrefilledDate(undefined);
+    // Clear the temporary day highlight once the interaction is finished.
+    setSelectedNepali(null);
   };
 
   const handleDeleteHearing = (hearingId: string) => {
@@ -203,12 +250,8 @@ const TaskCalendarPage = () => {
       deleteHearingMutation.mutate(hearingId);
       setIsHearingModalOpen(false);
       setEditingHearing(null);
+      setSelectedNepali(null);
     }
-  };
-
-  const handleCreateOrUpdateTask = (data: Omit<Task, "id">) => {
-    // Not used - calendar events are read-only
-    toast("Creating new calendar events is not supported");
   };
 
   const handleEditClick = (task: Task) => {
@@ -217,36 +260,16 @@ const TaskCalendarPage = () => {
     handleEditHearing(task);
   };
 
-  const handleDeleteTask = (id: string) => {
+  const handleDeleteTask = () => {
     // Calendar events cannot be deleted from the calendar
     toast("Deleting calendar events is not supported");
   };
 
-  const handleCompleteTask = (task: Task) => {
+  const handleCompleteTask = () => {
     // Status updates will be handled via the Case Update API in the drawer
     // This is a placeholder - actual implementation will be in the drawer
     toast("Status update will be handled via case update");
   };
-
-  if (isLoading) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" color="blue.500" />
-      </Center>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Center h="100vh" flexDirection="column" gap={4}>
-        <Text fontSize="xl" color="red.500">
-          Failed to load tasks
-        </Text>
-        <Button onClick={() => window.location.reload()}>Retry</Button>
-      </Center>
-    );
-  }
-  console.log(hearingDetails, editingHearing,"hearingsss")
 
   return (
     <Box
@@ -271,7 +294,8 @@ const TaskCalendarPage = () => {
         boxShadow="sm"
       >
         <CalendarToolbar
-          currentDate={currentDate}
+          title={toolbarTitle}
+          subtitle={toolbarSubtitle}
           currentView={currentView}
           onPrev={handlePrev}
           onNext={handleNext}
@@ -279,17 +303,67 @@ const TaskCalendarPage = () => {
           onViewChange={setCurrentView}
         />
 
+        {isError && (
+          <Flex
+            alignItems="center"
+            justifyContent="space-between"
+            gap={3}
+            mb={3}
+            bg="red.50"
+            _dark={{ bg: "rgba(254, 226, 226, 0.1)", borderColor: "red.800" }}
+            border="1px solid"
+            borderColor="red.200"
+            px={4}
+            py={2}
+            borderRadius="md"
+          >
+            <Text fontSize="sm" color="red.600" _dark={{ color: "red.300" }}>
+              Failed to load events.
+            </Text>
+            <Button
+              size="xs"
+              variant="outline"
+              colorScheme="red"
+              onClick={() => refetch()}
+            >
+              Retry
+            </Button>
+          </Flex>
+        )}
+
         <Flex h={{ base: "600px", lg: "700px" }} direction="column">
-          <TaskCalendar
-            tasks={filteredTasks}
-            onEventClick={handleEventClick}
-            onEventDrop={handleEventDrop}
-            onEventResize={handleEventResize}
-            onDateClick={handleDateClick}
-            calendarRef={calendarRef}
-            currentView={currentView}
-            currentDate={currentDate}
-          />
+          <Box position="relative" flex="1" minH={0}>
+            <NepaliCalendar
+              view={currentView}
+              displayNepali={displayNepali}
+              tasksByNepaliDate={visibleTasksByNepaliDate}
+              selectedNepali={selectedNepali}
+              todayNepali={todayNepali}
+              onDayClick={handleDateClick}
+              onEventClick={handleEventClick}
+            />
+            {isFetching && (
+              <Flex
+                position="absolute"
+                top={3}
+                right={3}
+                alignItems="center"
+                gap={2}
+                bg="white"
+                _dark={{ bg: "gray.800" }}
+                px={3}
+                py={1.5}
+                borderRadius="full"
+                boxShadow="sm"
+                zIndex={2}
+              >
+                <Spinner size="sm" color="blue.500" />
+                <Text fontSize="xs" color="gray.600" _dark={{ color: "gray.300" }}>
+                  Loading events…
+                </Text>
+              </Flex>
+            )}
+          </Box>
         </Flex>
       </Box>
 
@@ -310,6 +384,8 @@ const TaskCalendarPage = () => {
           setIsHearingModalOpen(false);
           setEditingHearing(null);
           setPrefilledDate(undefined);
+          // Clear the temporary day highlight once the modal closes.
+          setSelectedNepali(null);
         }}
         onSubmit={handleHearingSubmit}
         initialData={hearingDetails || editingHearing}
