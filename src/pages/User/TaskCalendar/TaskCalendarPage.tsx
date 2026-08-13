@@ -33,14 +33,17 @@ import {
 } from "@/utils/nepaliDateUtils";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
-import { CalendarHearingFormModal } from "./CalendarHearingFormModal";
-import { Hearing } from "@/pages/User/CaseManagement/types/hearing.types";
+import { CalendarEventFormModal } from "./CalendarEventFormModal";
 import {
-  useCreateHearingMutation,
-  useUpdateHearingMutation,
-  useDeleteHearingMutation,
-  useGetHearingQuery,
-} from "@/pages/User/CaseManagement/api/hearing.api";
+  CourtEvent,
+  CreateCourtEventRequest,
+} from "@/pages/User/CaseManagement/types/matter.types";
+import {
+  useCreateCourtEventMutation,
+  useUpdateCourtEventMutation,
+  useCancelCourtEventMutation,
+  useGetCourtEventQuery,
+} from "@/pages/User/CaseManagement/api/courtEvent.api";
 
 const TaskCalendarPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,19 +58,19 @@ const TaskCalendarPage = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Hearing modal state
-  const [isHearingModalOpen, setIsHearingModalOpen] = useState(false);
-  const [editingHearing, setEditingHearing] = useState<Hearing | null>(null);
+  // Event modal state
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<CourtEvent | null>(null);
   const [prefilledDate, setPrefilledDate] = useState<string | undefined>();
 
-  // Hearing mutations
-  const createHearingMutation = useCreateHearingMutation();
-  const updateHearingMutation = useUpdateHearingMutation();
-  const deleteHearingMutation = useDeleteHearingMutation();
+  // Event mutations
+  const createEventMutation = useCreateCourtEventMutation();
+  const updateEventMutation = useUpdateCourtEventMutation();
+  const cancelEventMutation = useCancelCourtEventMutation();
 
-  // Fetch hearing details for editing
-  const { data: hearingDetails, isLoading: hearingLoading } = useGetHearingQuery(
-    editingHearing?.id || ""
+  // Fetch event details for editing
+  const { data: eventDetails } = useGetCourtEventQuery(
+    editingEvent?.id || ""
   );
 
   // Today in BS (stable for the session).
@@ -200,64 +203,67 @@ const TaskCalendarPage = () => {
   };
 
   const handleDateClick = (nepali: NepaliDateParts) => {
-    // Highlight the selected Nepali day and open the hearing modal prefilled
+    // Highlight the selected Nepali day and open the event modal prefilled
     // with the equivalent Gregorian date (what the API expects).
     setSelectedNepali(nepali);
-    setEditingHearing(null);
+    setEditingEvent(null);
     setPrefilledDate(formatApiDate(nepaliToGregorian(nepali)));
-    setIsHearingModalOpen(true);
+    setIsEventModalOpen(true);
   };
 
-  const handleCreateHearing = () => {
-    // Open hearing modal with today's date
-    setEditingHearing(null);
+  const handleCreateEvent = () => {
+    // Open event modal with today's date
+    setEditingEvent(null);
     setPrefilledDate(format(new Date(), "yyyy-MM-dd"));
-    setIsHearingModalOpen(true);
+    setIsEventModalOpen(true);
   };
 
-  const handleEditHearing = (task: Task) => {
-    // Fetch hearing details and open modal in edit mode
-    setEditingHearing({ id: task.id } as Hearing);
+  const handleEditEvent = (task: Task) => {
+    // Fetch event details and open modal in edit mode
+    setEditingEvent({ id: task.id } as CourtEvent);
     setPrefilledDate(undefined);
-    setIsHearingModalOpen(true);
+    setIsEventModalOpen(true);
   };
 
-  const handleHearingSubmit = (data: any) => {
-    if (editingHearing) {
-      updateHearingMutation.mutate({
-        hearingId: editingHearing.id,
-        data,
+  const handleEventSubmit = (
+    data: CreateCourtEventRequest & { courtCaseRef: string }
+  ) => {
+    const { courtCaseRef, ...eventData } = data;
+    if (editingEvent) {
+      updateEventMutation.mutate({
+        eventId: editingEvent.id,
+        data: eventData,
       });
     } else {
-      createHearingMutation.mutate({
-        caseNumber: data.caseNumber,
-        data,
+      createEventMutation.mutate({
+        courtCaseRef,
+        data: eventData,
       });
     }
-    setIsHearingModalOpen(false);
-    setEditingHearing(null);
+    setIsEventModalOpen(false);
+    setEditingEvent(null);
     setPrefilledDate(undefined);
     // Clear the temporary day highlight once the interaction is finished.
     setSelectedNepali(null);
   };
 
-  const handleDeleteHearing = (hearingId: string) => {
+  const handleCancelEvent = (eventId: string) => {
     if (
       confirm(
-        "Are you sure you want to cancel this hearing? This action cannot be undone."
+        "Are you sure you want to cancel this event? This action cannot be undone."
       )
     ) {
-      deleteHearingMutation.mutate(hearingId);
-      setIsHearingModalOpen(false);
-      setEditingHearing(null);
+      cancelEventMutation.mutate(eventId);
+      setIsEventModalOpen(false);
+      setEditingEvent(null);
       setSelectedNepali(null);
     }
   };
 
   const handleEditClick = (task: Task) => {
-    // Close drawer and open hearing modal in edit mode
+    // Close drawer and open event modal in edit mode
     setIsDrawerOpen(false);
-    handleEditHearing(task);
+    handleEditEvent(task);
   };
 
   const handleDeleteTask = () => {
@@ -283,7 +289,7 @@ const TaskCalendarPage = () => {
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         onFilterClick={() => toast("Filters opening soon!")}
-        onCreateClick={handleCreateHearing}
+        onCreateClick={handleCreateEvent}
       />
 
       <Box
@@ -378,19 +384,19 @@ const TaskCalendarPage = () => {
         onComplete={handleCompleteTask}
       />
 
-      <CalendarHearingFormModal
-        isOpen={isHearingModalOpen}
+      <CalendarEventFormModal
+        isOpen={isEventModalOpen}
         onClose={() => {
-          setIsHearingModalOpen(false);
-          setEditingHearing(null);
+          setIsEventModalOpen(false);
+          setEditingEvent(null);
           setPrefilledDate(undefined);
           // Clear the temporary day highlight once the modal closes.
           setSelectedNepali(null);
         }}
-        onSubmit={handleHearingSubmit}
-        initialData={hearingDetails || editingHearing}
+        onSubmit={handleEventSubmit}
+        initialData={eventDetails || editingEvent}
         prefilledDate={prefilledDate}
-        onDelete={editingHearing ? handleDeleteHearing : undefined}
+        onDelete={editingEvent ? handleCancelEvent : undefined}
       />
     </Box>
   );

@@ -8,19 +8,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { PartyMatchResult, MatchConfidence } from "../types/case.types";
+import { PartyMatch } from "../types/matter.types";
 
 interface PartyMatchSuggestionsProps {
-  matches: PartyMatchResult[];
-  onSelectMatch: (match: PartyMatchResult) => void;
+  matches: PartyMatch[];
+  onSelectMatch: (match: PartyMatch) => void;
   onDismiss: () => void;
 }
-
-const CONFIDENCE_COLORS: Record<MatchConfidence, string> = {
-  HIGH: "green",
-  MEDIUM: "yellow",
-  LOW: "gray",
-};
 
 export const PartyMatchSuggestions = ({
   matches,

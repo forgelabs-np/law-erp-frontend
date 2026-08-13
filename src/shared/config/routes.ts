@@ -30,6 +30,13 @@ export const ROUTES_CONFIG = {
     FIRM_MANAGEMENT: "/firm-management",
     TASK_CALENDAR: "/task-calendar",
     CLIENT_MANAGEMENT: "/client-management",
+    CASE_MANAGEMENT: "/case-management",
+    CASE_MANAGEMENT_MATTERS: "/cases",
+    CASE_MANAGEMENT_CREATE: "/cases/create",
+    CASE_MANAGEMENT_DETAIL: "/cases/:matterNumber",
+    CASE_MANAGEMENT_COURT_CASE: "/cases/:matterNumber/court-cases/:courtCaseRef",
+    FIRM_ACTIVITY: "/firm-activity",
+    STALE_MATTERS: "/stale-matters",
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",

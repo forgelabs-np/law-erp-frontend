@@ -12,7 +12,6 @@ import {
   FolderOpen,
   Archive,
 } from "lucide-react";
-import { MdTask } from "react-icons/md";
 import { ComponentType } from "react";
 
 import { ROUTES_CONFIG } from "@/shared/config";
@@ -67,7 +66,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   CASE_MANAGEMENT: {
     moduleCode: "CASE_MANAGEMENT",
     label: "Case Management",
-    path: "/cases",
+    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT,
     icon: FileText,
     section: "Main",
     order: 11,

@@ -1,4 +1,4 @@
-import { Box, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, HStack, Text } from "@chakra-ui/react";
 import { Scale, Gavel } from "lucide-react";
 
 type CaseType = "CIVIL" | "CRIMINAL";

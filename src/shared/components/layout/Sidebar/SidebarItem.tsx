@@ -20,7 +20,9 @@ export const LinkItem = ({
 }: SidebarItemProps & { isCollapsed?: boolean }) => {
   const location = useLocation();
 
-  const active = location.pathname === href;
+  // Prefer an explicit `isActive` override (used for module-level
+  // highlighting); otherwise fall back to an exact pathname match.
+  const active = isActive ?? location.pathname === href;
 
   if (href) {
     return (

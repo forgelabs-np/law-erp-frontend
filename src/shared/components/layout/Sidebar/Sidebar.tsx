@@ -1,5 +1,6 @@
 import { Box, HStack, Button, Image, VStack, Text } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
@@ -27,6 +28,15 @@ const SUPPORT_MODULE_CODES = [
   "LOGOUT",
 ] as const;
 
+// Path prefixes that belong to the Case Management module. The sidebar item
+// stays highlighted while the user browses any of these pages.
+const CASE_MANAGEMENT_ACTIVE_PREFIXES = [
+  "/case-management",
+  "/cases",
+  "/firm-activity",
+  "/stale-matters",
+];
+
 const buildSupportSidebarItems = () => {
   return SUPPORT_MODULE_CODES.map((moduleCode) => {
     const config = getModuleConfig(moduleCode);
@@ -53,12 +63,19 @@ const buildSupportSidebarItems = () => {
 export const Sidebar = () => {
   const [value, setValue] = useState(getInitialExpandedSidebarMenu);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const location = useLocation();
 
   const modules = useModules();
 
   const moduleItems = useMemo(() => {
     return mapEnabledModulesToSidebarData(modules).map((item) => {
       const Icon = item.icon;
+
+      const isCaseManagementActive =
+        item.moduleCode === "CASE_MANAGEMENT" &&
+        CASE_MANAGEMENT_ACTIVE_PREFIXES.some((prefix) =>
+          location.pathname.startsWith(prefix)
+        );
 
       return {
         moduleCode: item.moduleCode,
@@ -67,9 +84,10 @@ export const Sidebar = () => {
         icon: <Icon size={16} />,
         section: item.section,
         order: item.order,
+        ...(isCaseManagementActive ? { isActive: true } : {}),
       };
     });
-  }, [modules]);
+  }, [modules, location.pathname]);
 
   const itemsBySection = useMemo(
     () => groupSidebarItemsBySection(moduleItems),
