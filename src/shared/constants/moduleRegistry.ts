@@ -159,6 +159,15 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 24,
   },
+  CONFIGURATION: {
+    moduleCode: "CONFIGURATION",
+    label: "Configuration",
+    path: "",
+    // path: ROUTES_CONFIG.USER.CONFIGURATION,
+    icon: Settings,
+    section: "Administration",
+    order: 25,
+  },
   GLOBAL_CONFIG: {
     moduleCode: "GLOBAL_CONFIG",
     label: "Global Configuration",
@@ -250,25 +259,40 @@ export const getModuleIcon = (moduleCode: string): IconComponent => {
 
 export interface ModuleSidebarData extends ModuleConfig {
   moduleCode: string;
+  subModules?: ModuleSidebarData[];
+  parentModuleCode?: string;
 }
 
 export const mapEnabledModulesToSidebarData = (
-  modules: { moduleCode: string; enabled: boolean }[]
+  modules: { moduleCode: string; enabled: boolean; subModules?: any[] }[]
 ): ModuleSidebarData[] => {
+  const mapModule = (
+    module: { moduleCode: string; enabled: boolean; subModules?: any[] },
+    parentModuleCode?: string
+  ): ModuleSidebarData | null => {
+    const config = getModuleConfig(module.moduleCode);
+    if (!config) {
+      warnUnknownModule(module.moduleCode);
+      return null;
+    }
+
+    const subModulesData = module.subModules
+      ?.filter((sub) => sub.enabled)
+      .map((sub) => mapModule(sub, module.moduleCode))
+      .filter((item): item is ModuleSidebarData => item !== null)
+      .sort((a, b) => a.order - b.order);
+
+    return {
+      moduleCode: module.moduleCode,
+      ...config,
+      subModules: subModulesData?.length ? subModulesData : undefined,
+      parentModuleCode,
+    };
+  };
+
   return modules
     .filter((module) => module.enabled)
-    .map((module) => {
-      const config = getModuleConfig(module.moduleCode);
-      if (!config) {
-        warnUnknownModule(module.moduleCode);
-        return null;
-      }
-
-      return {
-        moduleCode: module.moduleCode,
-        ...config,
-      };
-    })
+    .map((module) => mapModule(module))
     .filter((item): item is ModuleSidebarData => item !== null)
     .sort((a, b) => a.order - b.order);
 };

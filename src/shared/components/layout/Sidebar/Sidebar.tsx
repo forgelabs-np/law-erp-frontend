@@ -1,7 +1,6 @@
 import { Box, HStack, Button, Image, VStack, Text } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
 import TokenService from "@/shared/service/service-token";
@@ -9,6 +8,7 @@ import { SidebarItem } from "./SidebarItem";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
 import { useModules } from "@/shared/hooks/useAuth";
+import { useLocation } from "react-router-dom";
 import {
   getModuleConfig,
   groupSidebarItemsBySection,
@@ -67,8 +67,41 @@ export const Sidebar = () => {
 
   const modules = useModules();
 
+  // Auto-expand parent when a child route is active (only on route change)
+  useEffect(() => {
+    const allModulePaths = new Set<string>();
+    const parentModuleMap = new Map<string, string>();
+
+    const collectPaths = (items: any[], parentCode?: string) => {
+      items.forEach((item) => {
+        if (item.path) {
+          allModulePaths.add(item.path);
+          if (parentCode) {
+            parentModuleMap.set(item.path, parentCode);
+          }
+        }
+        if (item.subModules?.length) {
+          collectPaths(item.subModules, item.moduleCode);
+        }
+      });
+    };
+
+    const mappedModules = mapEnabledModulesToSidebarData(modules);
+    collectPaths(mappedModules);
+
+    // Find which parent should be expanded based on current route
+    const currentPath = location.pathname;
+    const parentToExpand = parentModuleMap.get(currentPath);
+
+    // Only auto-expand if the parent is not already in the value array
+    // This allows manual collapsing to persist
+    if (parentToExpand && !value.includes(parentToExpand)) {
+      setValue((prev) => [...prev, parentToExpand]);
+    }
+  }, [location.pathname, modules]);
+
   const moduleItems = useMemo(() => {
-    return mapEnabledModulesToSidebarData(modules).map((item) => {
+    const mapModuleToSidebarItem = (item: any, isChild = false): any => {
       const Icon = item.icon;
 
       const isCaseManagementActive =
@@ -77,6 +110,12 @@ export const Sidebar = () => {
           location.pathname.startsWith(prefix)
         );
 
+      const isActive = location.pathname === item.path || isCaseManagementActive;
+
+      const subItems = item.subModules?.map((sub: any) =>
+        mapModuleToSidebarItem(sub, true)
+      );
+
       return {
         moduleCode: item.moduleCode,
         name: item.label,
@@ -84,9 +123,15 @@ export const Sidebar = () => {
         icon: <Icon size={16} />,
         section: item.section,
         order: item.order,
-        ...(isCaseManagementActive ? { isActive: true } : {}),
+        subItems: subItems?.length ? subItems : undefined,
+        isChild,
+        ...(isActive ? { isActive: true } : {}),
       };
-    });
+    };
+
+    return mapEnabledModulesToSidebarData(modules).map((item) =>
+      mapModuleToSidebarItem(item)
+    );
   }, [modules, location.pathname]);
 
   const itemsBySection = useMemo(
@@ -195,6 +240,8 @@ export const Sidebar = () => {
                     key={sidebarItem.moduleCode}
                     {...sidebarItem}
                     isCollapsed={isCollapsed}
+                    moduleCode={sidebarItem.moduleCode}
+                    expandedModules={value}
                   />
                 ))}
               />
