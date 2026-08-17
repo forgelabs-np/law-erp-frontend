@@ -1,4 +1,4 @@
-import { Table as ChakraTable, Skeleton, Stack, Text } from "@chakra-ui/react";
+import { Table as ChakraTable, Skeleton, Stack, Text, Box } from "@chakra-ui/react";
 import {
   flexRender,
   getCoreRowModel,
@@ -26,96 +26,118 @@ export const TableUI = <T,>({
   });
 
   return (
-    <ChakraTable.Root
-      css={{
-        "& tbody tr": {
-          _odd: { bg: "white" },
-          _even: { bg: "gray.100" },
-        },
-      }}
-      borderCollapse={"separate"}
-      borderSpacing={0}
+    <Box
+      bg="white"
+      borderWidth="1px"
+      borderColor="gray.200"
+      borderRadius="12px"
+      boxShadow="0 1px 3px rgba(0, 0, 0, 0.05)"
+      overflow="hidden"
     >
-      <ChakraTable.Header position={"sticky"} top={"0px"} zIndex={10}>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <ChakraTable.Row key={headerGroup.id} backgroundColor={"gray.100"}>
-            {headerGroup.headers.map((header) => {
-              const meta = (header.column.columnDef?.meta as MetaProps) || {};
-              return (
-                <ChakraTable.ColumnHeader
-                  key={header.id}
-                  css={{ ...meta }}
-                  borderTop={"1px solid"}
-                  borderColor={"gray.200"}
-                >
-                  <Text
-                    fontSize={"14px"}
-                    fontWeight={700}
-                    color={"gray.700"}
-                    textTransform={"capitalize"}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </Text>
-                </ChakraTable.ColumnHeader>
-              );
-            })}
-          </ChakraTable.Row>
-        ))}
-      </ChakraTable.Header>
-
-      <ChakraTable.Body>
-        {isLoading ? (
-          <ChakraTable.Row>
-            <ChakraTable.Cell
-              colSpan={table.getHeaderGroups()[0].headers.length}
-              textAlign={"center"}
-              borderBottom={0}
+      <ChakraTable.Root
+        css={{
+          "& tbody tr": {
+            bg: "white",
+            _hover: { bg: "gray.50" },
+          },
+        }}
+        borderCollapse={"separate"}
+        borderSpacing={0}
+      >
+        <ChakraTable.Header position={"sticky"} top={"0px"} zIndex={10}>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <ChakraTable.Row 
+              key={headerGroup.id} 
+              backgroundColor={"gray.50"}
+              borderBottom="1px solid"
+              borderColor="gray.200"
             >
-              <Stack width={"full"}>
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-                <Skeleton height="20px" />
-              </Stack>
-            </ChakraTable.Cell>
-          </ChakraTable.Row>
-        ) : data?.length === 0 ? (
-          <ChakraTable.Row>
-            <ChakraTable.Cell
-              colSpan={table.getHeaderGroups()[0].headers.length}
-              textAlign={"center"}
-              borderBottom={0}
-            >
-              <NoDataAvailable content={"No Data Available"} />
-            </ChakraTable.Cell>
-          </ChakraTable.Row>
-        ) : (
-          table.getRowModel().rows?.map((row) => (
-            <ChakraTable.Row key={row.id}>
-              {row.getVisibleCells()?.map((cell) => {
-                const meta = (cell.column.columnDef?.meta as MetaProps) || {};
+              {headerGroup.headers.map((header) => {
+                const meta = (header.column.columnDef?.meta as MetaProps) || {};
                 return (
-                  <ChakraTable.Cell
-                    key={cell.id}
+                  <ChakraTable.ColumnHeader
+                    key={header.id}
                     css={{ ...meta }}
-                    fontSize={"14px"}
+                    py="3"
+                    px="4"
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </ChakraTable.Cell>
+                    <Text
+                      fontSize={"13px"}
+                      fontWeight={600}
+                      color={"gray.700"}
+                      textTransform={"capitalize"}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </Text>
+                  </ChakraTable.ColumnHeader>
                 );
               })}
             </ChakraTable.Row>
-          ))
-        )}
-      </ChakraTable.Body>
-    </ChakraTable.Root>
+          ))}
+        </ChakraTable.Header>
+
+        <ChakraTable.Body>
+          {isLoading ? (
+            <ChakraTable.Row>
+              <ChakraTable.Cell
+                colSpan={table.getHeaderGroups()[0].headers.length}
+                textAlign={"center"}
+                borderBottom={0}
+              >
+                <Stack width={"full"}>
+                  <Skeleton height="20px" />
+                  <Skeleton height="20px" />
+                  <Skeleton height="20px" />
+                  <Skeleton height="20px" />
+                  <Skeleton height="20px" />
+                  <Skeleton height="20px" />
+                </Stack>
+              </ChakraTable.Cell>
+            </ChakraTable.Row>
+          ) : data?.length === 0 ? (
+            <ChakraTable.Row>
+              <ChakraTable.Cell
+                colSpan={table.getHeaderGroups()[0].headers.length}
+                textAlign={"center"}
+                borderBottom={0}
+              >
+                <NoDataAvailable content={"No Data Available"} />
+              </ChakraTable.Cell>
+            </ChakraTable.Row>
+          ) : (
+            table.getRowModel().rows?.map((row) => (
+              <ChakraTable.Row 
+                key={row.id}
+                borderBottom="1px solid"
+                borderColor="gray.100"
+                transition="background-color 0.15s ease"
+              >
+                {row.getVisibleCells()?.map((cell) => {
+                  const meta = (cell.column.columnDef?.meta as MetaProps) || {};
+                  return (
+                    <ChakraTable.Cell
+                      key={cell.id}
+                      css={{ ...meta }}
+                      fontSize={"14px"}
+                      py="4"
+                      px="4"
+                      verticalAlign="middle"
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </ChakraTable.Cell>
+                  );
+                })}
+              </ChakraTable.Row>
+            ))
+          )}
+        </ChakraTable.Body>
+      </ChakraTable.Root>
+    </Box>
   );
 };
 
