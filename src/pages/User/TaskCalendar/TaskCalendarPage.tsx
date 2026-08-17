@@ -279,8 +279,9 @@ const TaskCalendarPage = () => {
 
   return (
     <Box
-      p={{ base: 4, md: 8 }}
+      p={{ base: 4, md: 4 }}
       bg="gray.50"
+      borderRadius="lg"
       _dark={{ bg: "gray.900" }}
       minH="100vh"
       w="100%"
