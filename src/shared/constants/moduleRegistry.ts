@@ -11,6 +11,7 @@ import {
   FileText,
   FolderOpen,
   Archive,
+  Database,
 } from "lucide-react";
 import { ComponentType } from "react";
 
@@ -159,6 +160,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 24,
   },
+  SCRAPER_MANAGEMENT: {
+    moduleCode: "SCRAPER_MANAGEMENT",
+    label: "Court Data Sync",
+    path: ROUTES_CONFIG.USER.SCRAPER_MANAGEMENT,
+    icon: Database,
+    section: "Administration",
+    order: 25,
+  },
   CONFIGURATION: {
     moduleCode: "CONFIGURATION",
     label: "Configuration",
@@ -166,7 +175,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     // path: ROUTES_CONFIG.USER.CONFIGURATION,
     icon: Settings,
     section: "Administration",
-    order: 25,
+    order: 26,
   },
   GLOBAL_CONFIG: {
     moduleCode: "GLOBAL_CONFIG",

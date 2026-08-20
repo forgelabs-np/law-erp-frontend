@@ -51,8 +51,10 @@ import { CourtEventFormModal } from "../components/CourtEventFormModal";
 import { CourtEventDetailsModal } from "../components/CourtEventDetailsModal";
 import { EventHeldModal } from "../components/EventHeldModal";
 import { JudgmentModal } from "../components/JudgmentModal";
+import { CaseHearingStatus } from "../components/HearingStatus/CaseHearingStatus";
+import { useCaseHearingStatus } from "@/shared/hooks/useScraper";
 
-type Tab = "overview" | "events" | "roles";
+type Tab = "overview" | "events" | "roles" | "hearing";
 
 const CourtCaseDetailPage = () => {
   const { matterNumber, courtCaseRef } = useParams<{
@@ -67,6 +69,11 @@ const CourtCaseDetailPage = () => {
   );
   const { data: events = [] } = useGetCourtCaseEventsQuery(courtCaseRef ?? "");
   const { data: matter } = useGetMatterQuery(matterNumber ?? "");
+
+  // Hearing status query - using courtCaseNumber as caseNoInternal
+  const caseNoInternal = courtCase?.courtCaseNumber;
+  const { data: hearingStatus, isLoading: hearingLoading, refetch: refetchHearing } = useCaseHearingStatus(caseNoInternal ?? "");
+  const [isRefreshingHearing, setIsRefreshingHearing] = useState(false);
 
   const updateStageMutation = useUpdateCourtCaseStageMutation();
   const recordJudgmentMutation = useRecordJudgmentMutation();
@@ -136,6 +143,12 @@ const CourtCaseDetailPage = () => {
   const handleMarkHeld = (event: CourtEvent) => {
     setHeldEvent(event);
     setIsEventDetailsOpen(false);
+  };
+
+  const handleRefreshHearing = async () => {
+    setIsRefreshingHearing(true);
+    await refetchHearing();
+    setIsRefreshingHearing(false);
   };
 
   return (
@@ -220,6 +233,7 @@ const CourtCaseDetailPage = () => {
           { id: "overview", label: "Overview", icon: Scale },
           { id: "events", label: "Events", icon: Calendar },
           { id: "roles", label: "Parties & Roles", icon: User },
+          { id: "hearing", label: "Hearing Status", icon: Calendar },
         ]}
         activeTab={activeTab}
         onTabChange={(tabId) => setActiveTab(tabId as Tab)}
@@ -475,6 +489,16 @@ const CourtCaseDetailPage = () => {
             )}
           </SectionCard>
         </VStack>
+      )}
+
+      {/* Hearing Status */}
+      {activeTab === "hearing" && (
+        <CaseHearingStatus
+          data={hearingStatus ?? null}
+          isLoading={hearingLoading}
+          onRefresh={handleRefreshHearing}
+          isRefreshing={isRefreshingHearing}
+        />
       )}
 
       {/* Modals */}

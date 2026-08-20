@@ -37,6 +37,7 @@ export const ROUTES_CONFIG = {
     CASE_MANAGEMENT_COURT_CASE: "/cases/:matterNumber/court-cases/:courtCaseRef",
     FIRM_ACTIVITY: "/firm-activity",
     STALE_MATTERS: "/stale-matters",
+    SCRAPER_MANAGEMENT: "/scraper-management",
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",

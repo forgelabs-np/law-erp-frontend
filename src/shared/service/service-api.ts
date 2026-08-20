@@ -114,4 +114,9 @@ export const api = {
     GET_TODAY: "firm/calendar/today",
     GET_UPCOMING: "firm/calendar/upcoming",
   },
+  SCRAPER: {
+    CASE_HEARING_STATUS: "cases/{caseNoInternal}/hearing-status",
+    ADMIN_SCRAPE: "scraper/admin/scrape",
+    ADMIN_EXPORT: "scraper/admin/export",
+  },
 };
