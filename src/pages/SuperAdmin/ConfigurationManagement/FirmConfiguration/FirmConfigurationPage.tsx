@@ -137,7 +137,7 @@ const FirmConfigurationPage: React.FC = () => {
   };
 
   return (
-    <Box p={6} maxW="1000px">
+    <Box p={2} maxW="1000px">
       {/* Page Header */}
       <Flex alignItems="center" gap={3} mb={2}>
         <Heading size="lg" fontWeight="700">

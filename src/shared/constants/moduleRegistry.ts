@@ -11,8 +11,8 @@ import {
   FileText,
   FolderOpen,
   Archive,
+  Database,
 } from "lucide-react";
-import { MdTask } from "react-icons/md";
 import { ComponentType } from "react";
 
 import { ROUTES_CONFIG } from "@/shared/config";
@@ -51,7 +51,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   HOME: {
     moduleCode: "HOME",
     label: "Dashboard",
-    path: ROUTES_CONFIG.USER.HOME,
+    path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
     icon: LayoutGrid,
     section: "General",
     order: 1,
@@ -67,7 +67,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   CASE_MANAGEMENT: {
     moduleCode: "CASE_MANAGEMENT",
     label: "Case Management",
-    path: "/cases",
+    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT,
     icon: FileText,
     section: "Main",
     order: 11,
@@ -160,6 +160,23 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 24,
   },
+  SCRAPER_MANAGEMENT: {
+    moduleCode: "SCRAPER_MANAGEMENT",
+    label: "Court Data Sync",
+    path: ROUTES_CONFIG.USER.SCRAPER_MANAGEMENT,
+    icon: Database,
+    section: "Administration",
+    order: 25,
+  },
+  CONFIGURATION: {
+    moduleCode: "CONFIGURATION",
+    label: "Configuration",
+    path: "",
+    // path: ROUTES_CONFIG.USER.CONFIGURATION,
+    icon: Settings,
+    section: "Administration",
+    order: 26,
+  },
   GLOBAL_CONFIG: {
     moduleCode: "GLOBAL_CONFIG",
     label: "Global Configuration",
@@ -251,25 +268,40 @@ export const getModuleIcon = (moduleCode: string): IconComponent => {
 
 export interface ModuleSidebarData extends ModuleConfig {
   moduleCode: string;
+  subModules?: ModuleSidebarData[];
+  parentModuleCode?: string;
 }
 
 export const mapEnabledModulesToSidebarData = (
-  modules: { moduleCode: string; enabled: boolean }[]
+  modules: { moduleCode: string; enabled: boolean; subModules?: any[] }[]
 ): ModuleSidebarData[] => {
+  const mapModule = (
+    module: { moduleCode: string; enabled: boolean; subModules?: any[] },
+    parentModuleCode?: string
+  ): ModuleSidebarData | null => {
+    const config = getModuleConfig(module.moduleCode);
+    if (!config) {
+      warnUnknownModule(module.moduleCode);
+      return null;
+    }
+
+    const subModulesData = module.subModules
+      ?.filter((sub) => sub.enabled)
+      .map((sub) => mapModule(sub, module.moduleCode))
+      .filter((item): item is ModuleSidebarData => item !== null)
+      .sort((a, b) => a.order - b.order);
+
+    return {
+      moduleCode: module.moduleCode,
+      ...config,
+      subModules: subModulesData?.length ? subModulesData : undefined,
+      parentModuleCode,
+    };
+  };
+
   return modules
     .filter((module) => module.enabled)
-    .map((module) => {
-      const config = getModuleConfig(module.moduleCode);
-      if (!config) {
-        warnUnknownModule(module.moduleCode);
-        return null;
-      }
-
-      return {
-        moduleCode: module.moduleCode,
-        ...config,
-      };
-    })
+    .map((module) => mapModule(module))
     .filter((item): item is ModuleSidebarData => item !== null)
     .sort((a, b) => a.order - b.order);
 };

@@ -10,6 +10,7 @@ export interface UserModule {
   path: string;
   enabled: boolean;
   actions: string[];
+  subModules?: UserModule[];
 }
 
 export interface CurrentUserResponse {

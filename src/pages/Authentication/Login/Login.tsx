@@ -114,9 +114,9 @@ const Login = () => {
             return;
           }
           if (loginType === "client") {
-            navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
+            navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
           } else {
-            navigate(ROUTES_CONFIG.USER.SOLO_DASHBOARD);
+            navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
           }
           break;
 

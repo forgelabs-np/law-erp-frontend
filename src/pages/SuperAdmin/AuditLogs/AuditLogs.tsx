@@ -77,7 +77,7 @@ const AuditLogs = () => {
   const endIndex = Math.min((filters.page + 1) * filters.size, totalElements);
 
   return (
-    <Stack gap={6} padding={8}>
+    <Stack gap={2} padding={2}>
       {/* Header */}
       <AuditLogsHeader />
 

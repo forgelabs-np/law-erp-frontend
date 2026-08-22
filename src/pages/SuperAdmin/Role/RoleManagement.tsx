@@ -256,7 +256,7 @@ const RoleSetup = () => {
   );
 
   return (
-    <Stack gap={8} padding={8}>
+    <Stack gap={6} padding={2}>
       {/* Page Header */}
       <Flex justify="space-between" align="center">
         <Stack gap={2}>

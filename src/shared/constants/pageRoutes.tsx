@@ -32,9 +32,15 @@ import {
 } from "@/pages/User";
 import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
 import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
-import CaseListPage from "@/pages/User/CaseManagement/pages/CaseListPage";
-import CreateCasePage from "@/pages/User/CaseManagement/pages/CreateCasePage";
-import CaseDetailPage from "@/pages/User/CaseManagement/pages/CaseDetailPage";
+import MattersListPage from "@/pages/User/CaseManagement/pages/MattersListPage";
+import CreateMatterPage from "@/pages/User/CaseManagement/pages/CreateMatterPage";
+import MatterDetailPage from "@/pages/User/CaseManagement/pages/MatterDetailPage";
+import CourtCaseDetailPage from "@/pages/User/CaseManagement/pages/CourtCaseDetailPage";
+import FirmActivityPage from "@/pages/User/CaseManagement/pages/FirmActivityPage";
+import StaleMattersPage from "@/pages/User/CaseManagement/pages/StaleMattersPage";
+import CaseDashboardPage from "@/pages/User/CaseManagement/pages/CaseDashboardPage";
+import ScraperManagementPage from "@/pages/User/ScraperManagement/ScraperManagementPage";
+import GlobalDashboardPage from "@/pages/User/CaseManagement/pages/GlobalDashboardPage";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -152,21 +158,52 @@ export const USER_ROUTES = [
     path: ROUTES_CONFIG.USER.CLIENT_MANAGEMENT,
     element: <ClientManagement />,
     moduleCode: "CLIENT_MANAGEMENT",
+    roles: ["FIRM_ADMIN"],
   },
   {
-    path: "/cases",
-    element: <CaseListPage />,
+    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT,
+    element: <CaseDashboardPage />,
     moduleCode: "CASE_MANAGEMENT",
   },
   {
-    path: "/cases/create",
-    element: <CreateCasePage />,
+    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_MATTERS,
+    element: <MattersListPage />,
     moduleCode: "CASE_MANAGEMENT",
   },
   {
-    path: "/cases/:caseNumber",
-    element: <CaseDetailPage />,
+    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_CREATE,
+    element: <CreateMatterPage />,
     moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_DETAIL,
+    element: <MatterDetailPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_COURT_CASE,
+    element: <CourtCaseDetailPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.FIRM_ACTIVITY,
+    element: <FirmActivityPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.STALE_MATTERS,
+    element: <StaleMattersPage />,
+    moduleCode: "CASE_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.SCRAPER_MANAGEMENT,
+    element: <ScraperManagementPage />,
+    moduleCode: "SCRAPER_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
+    element: <GlobalDashboardPage />,
+    moduleCode: "GLOBAL_DASHBOARD",
   },
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,

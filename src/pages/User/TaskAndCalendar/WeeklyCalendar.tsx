@@ -41,11 +41,14 @@ const minutesToPx = (minutes: number) =>
   ((minutes - START_HOUR * 60) / 60) * HOUR_HEIGHT;
 
 const EventBlock = ({ event }: { event: CalendarEvent }) => {
-  const startMins = timeToMinutes(event.time);
-  const endMins = timeToMinutes(event.endTime);
+  const startTime = event.scheduledTime ?? "09:00";
+  const endTime = event.endTime ?? event.scheduledTime ?? "10:00";
+  const startMins = timeToMinutes(startTime);
+  const endMins = timeToMinutes(endTime);
   const top = minutesToPx(startMins);
   const height = ((endMins - startMins) / 60) * HOUR_HEIGHT;
-  const colors = COLOR_MAP[event.color || "blue"];
+  const colorKey: "blue" | "purple" = event.eventType === "PESHI" ? "purple" : "blue";
+  const colors = COLOR_MAP[colorKey];
 
   return (
     <Box
@@ -70,20 +73,20 @@ const EventBlock = ({ event }: { event: CalendarEvent }) => {
         color={colors.text}
         lineHeight="1.3"
       >
-        {event.title}
+        {event.eventType} · {event.matterTitle}
       </Text>
-      {event.subtitle && (
+      {event.ourCourtCaseRef && (
         <Text
           fontSize="10px"
           color={colors.text}
           opacity={0.8}
           lineHeight="1.3"
         >
-          {event.subtitle}
+          {event.ourCourtCaseRef}
         </Text>
       )}
       <Text fontSize="10px" color={colors.text} opacity={0.7} mt="2px">
-        {event.time} – {event.endTime}
+        {startTime} – {endTime}
       </Text>
     </Box>
   );
@@ -115,7 +118,7 @@ export const WeeklyCalendar = ({
   const getEventsForDay = (day: Date) =>
     events.filter((e) => {
       try {
-        return isSameDay(parseISO(e.date), day);
+        return isSameDay(parseISO(e.scheduledDate), day);
       } catch {
         return false;
       }

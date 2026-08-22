@@ -74,23 +74,25 @@ export const mapCalendarEventToTask = (event: CalendarEvent): Task => {
   const taskType: TaskType = "Court Hearing";
   const priority: "Low" | "Medium" | "High" | "Critical" = "Medium";
   const taskStatus: "Pending" | "In Progress" | "Completed" | "Overdue" =
-    event.status === "COMPLETED" ? "Completed" : "Pending";
+    event.status === "HELD" ? "Completed" : "Pending";
 
+  const eventLabel =
+    event.eventType.charAt(0) + event.eventType.slice(1).toLowerCase();
   // Combine date and time to create ISO datetime strings
-  const startDateTime = `${event.date}T${event.time}`;
-  const endDateTime = `${event.date}T${event.endTime}`;
+  const startDateTime = `${event.scheduledDate}T${event.scheduledTime || "09:00:00"}`;
+  const endDateTime = `${event.scheduledDate}T${event.endTime || event.scheduledTime || "10:00:00"}`;
 
   return {
     id: event.id,
-    title: event.title,
-    description: `${event.hearingType} - ${event.courtRoom}`,
+    title: `${eventLabel} · ${event.matterTitle}`,
+    description: `${eventLabel} - ${event.courtRoom || ""}`,
     taskType,
     priority,
     status: taskStatus,
     assignedLawyer: "", // Will be populated if advocate data is available
-    client: event.caseTitle,
-    caseName: event.caseTitle,
-    caseNumber: event.caseNumber,
+    client: event.matterTitle,
+    caseName: event.matterTitle,
+    caseNumber: event.matterNumber,
     startDate: startDateTime,
     endDate: endDateTime,
     color: getTaskColor(taskType, taskStatus),

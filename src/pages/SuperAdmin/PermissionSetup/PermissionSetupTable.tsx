@@ -86,7 +86,7 @@ const PermissionManagementTable = () => {
   );
 
   return (
-    <Stack gap={6} padding={8}>
+    <Stack gap={6} padding={2}>
       <HStack justifyContent="space-between" alignItems="center">
         <Stack gap={2}>
           <Text textStyle="heading_4">Menu Setup</Text>

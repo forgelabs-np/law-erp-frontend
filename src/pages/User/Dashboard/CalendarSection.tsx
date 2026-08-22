@@ -1,7 +1,19 @@
-import { Box, HStack, Stack, Text } from "@chakra-ui/react";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
-import "./CalendarSection.css"; // custom overrides below
+import { useState, useEffect, useMemo } from "react";
+import { Box, Flex, HStack, IconButton, Stack, Text } from "@chakra-ui/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { NepaliCalendar } from "@/components/calendar/NepaliCalendar";
+import {
+  NepaliDateParts,
+  NEPALI_FONT_STACK,
+  formatGregorianMonthRange,
+  formatNepaliDate,
+  formatNepaliMonthYear,
+  getNepaliMonthEnd,
+  getNepaliMonthStart,
+  gregorianToNepali,
+  nepaliToGregorian,
+  shiftNepaliMonth,
+} from "@/utils/nepaliDateUtils";
 
 export interface CalendarTask {
   time: string;
@@ -11,7 +23,6 @@ export interface CalendarTask {
 export interface CalendarSectionData {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
-  todayLabel: string;
   tasks: CalendarTask[];
   onViewFullCalendar?: () => void;
 }
@@ -19,10 +30,25 @@ export interface CalendarSectionData {
 export const CalendarSection = ({
   selectedDate,
   onDateChange,
-  todayLabel,
   tasks,
   onViewFullCalendar,
 }: CalendarSectionData) => {
+  const selectedNepali = gregorianToNepali(selectedDate);
+  const [displayNepali, setDisplayNepali] = useState<NepaliDateParts>(() =>
+    gregorianToNepali(selectedDate)
+  );
+
+  // Follow external selection changes (e.g. clicking a day or a neighbor month day).
+  useEffect(() => {
+    setDisplayNepali(gregorianToNepali(selectedDate));
+  }, [selectedDate]);
+
+  const emptyTasksByNepaliDate = useMemo(() => new Map(), []);
+  const todayNepali = useMemo(() => gregorianToNepali(new Date()), []);
+
+  const handlePrevMonth = () => setDisplayNepali((prev) => shiftNepaliMonth(prev, -1));
+  const handleNextMonth = () => setDisplayNepali((prev) => shiftNepaliMonth(prev, 1));
+
   return (
     <Box
       bg="white"
@@ -35,17 +61,57 @@ export const CalendarSection = ({
         Calendar & Tasks
       </Text>
 
-      <Box mb={5}>
-        <Calendar
-          value={selectedDate}
-          onChange={(val) => onDateChange(val as Date)}
-          locale="en-US"
+      <Box mb={4}>
+        <Flex alignItems="center" justifyContent="space-between" mb={2}>
+          <IconButton
+            size="sm"
+            variant="ghost"
+            aria-label="Previous Nepali month"
+            onClick={handlePrevMonth}
+          >
+            <ChevronLeft size={16} />
+          </IconButton>
+          <Box textAlign="center">
+            <Text
+              fontWeight={700}
+              fontSize="sm"
+              color="gray.800"
+              fontFamily={NEPALI_FONT_STACK}
+            >
+              {formatNepaliMonthYear(displayNepali.year, displayNepali.month)}
+            </Text>
+            <Text fontSize="10px" color="gray.400" fontWeight="500">
+              {formatGregorianMonthRange(
+                getNepaliMonthStart(displayNepali.year, displayNepali.month),
+                getNepaliMonthEnd(displayNepali.year, displayNepali.month)
+              )}
+            </Text>
+          </Box>
+          <IconButton
+            size="sm"
+            variant="ghost"
+            aria-label="Next Nepali month"
+            onClick={handleNextMonth}
+          >
+            <ChevronRight size={16} />
+          </IconButton>
+        </Flex>
+
+        <NepaliCalendar
+          view="dayGridMonth"
+          displayNepali={displayNepali}
+          tasksByNepaliDate={emptyTasksByNepaliDate}
+          selectedNepali={selectedNepali}
+          todayNepali={todayNepali}
+          onDayClick={(nepali) => onDateChange(nepaliToGregorian(nepali))}
+          onEventClick={() => {}}
+          variant="widget"
         />
       </Box>
 
       <Box>
-        <Text fontSize="sm" fontWeight={600} mb={3}>
-          Today • {todayLabel}
+        <Text fontSize="sm" fontWeight={600} mb={3} fontFamily={NEPALI_FONT_STACK}>
+          Today • {formatNepaliDate(todayNepali)}
         </Text>
         <Stack gap={2}>
           {tasks.map((task, i) => (

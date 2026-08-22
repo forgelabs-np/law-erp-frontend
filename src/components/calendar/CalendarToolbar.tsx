@@ -7,19 +7,24 @@ import {
   ButtonGroup,
 } from "@chakra-ui/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { format } from "date-fns";
+import { NEPALI_FONT_STACK } from "../../utils/nepaliDateUtils";
+import { CalendarView } from "./NepaliCalendar";
 
 interface CalendarToolbarProps {
-  currentDate: Date;
-  currentView: string; // 'dayGridMonth', 'timeGridWeek', 'timeGridDay'
+  /** Nepali (Bikram Sambat) title for the current calendar period, e.g. "श्रावण २०८३". */
+  title: string;
+  /** Optional secondary Gregorian label, e.g. "Jul–Aug 2026". */
+  subtitle?: string;
+  currentView: CalendarView;
   onPrev: () => void;
   onNext: () => void;
   onToday: () => void;
-  onViewChange: (view: string) => void;
+  onViewChange: (view: CalendarView) => void;
 }
 
 export const CalendarToolbar = ({
-  currentDate,
+  title,
+  subtitle,
   currentView,
   onPrev,
   onNext,
@@ -36,15 +41,29 @@ export const CalendarToolbar = ({
       gap={4}
     >
       <Flex align="center" gap={4}>
-        <Text
-          fontSize="xl"
-          fontWeight="bold"
-          color="gray.800"
-          _dark={{ color: "white" }}
-          minW="200px"
-        >
-          {format(currentDate, "EEEE, dd MMMM yyyy")}
-        </Text>
+        <Box minW="200px">
+          <Text
+            fontSize="xl"
+            fontWeight="bold"
+            color="gray.800"
+            _dark={{ color: "white" }}
+            lineHeight="1.2"
+            fontFamily={NEPALI_FONT_STACK}
+          >
+            {title}
+          </Text>
+          {subtitle && (
+            <Text
+              fontSize="sm"
+              fontWeight="500"
+              color="gray.500"
+              _dark={{ color: "gray.400" }}
+              lineHeight="1.2"
+            >
+              {subtitle}
+            </Text>
+          )}
+        </Box>
 
         <Button
           variant="outline"
