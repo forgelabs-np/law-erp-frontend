@@ -38,6 +38,7 @@ export const ROUTES_CONFIG = {
     FIRM_ACTIVITY: "/firm-activity",
     STALE_MATTERS: "/stale-matters",
     SCRAPER_MANAGEMENT: "/scraper-management",
+    GLOBAL_DASHBOARD: "/global-dashboard",
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",

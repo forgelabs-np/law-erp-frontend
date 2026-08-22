@@ -89,6 +89,7 @@ export const api = {
     POST: "firm/matters",
     GET_BY_MATTER_NUMBER: "firm/matters/{matterNumber}",
     PUT: "firm/matters/{matterNumber}",
+    DELETE: "firm/matters/{matterNumber}",
     GET_TIMELINE: "firm/matters/{matterNumber}/timeline",
     GET_FIRM_TIMELINE: "firm/matters/timeline",
     GET_STALE: "firm/matters/stale",
@@ -118,5 +119,14 @@ export const api = {
     CASE_HEARING_STATUS: "cases/{caseNoInternal}/hearing-status",
     ADMIN_SCRAPE: "scraper/admin/scrape",
     ADMIN_EXPORT: "scraper/admin/export",
+  },
+  DASHBOARD: {
+    FIRM_DASHBOARD: "firm/dashboard",
+    GLOBAL_DASHBOARD: "modules/dashboard",
+  },
+  MATTER_ASSIGNMENTS: {
+    GET: "firm/matters/{matterNumber}/assignments",
+    POST: "firm/matters/{matterNumber}/assignments",
+    DELETE: "firm/matters/{matterNumber}/assignments/{userId}",
   },
 };

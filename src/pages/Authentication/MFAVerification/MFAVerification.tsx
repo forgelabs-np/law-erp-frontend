@@ -54,8 +54,8 @@ const MFAVerification = () => {
 
         if (loginType === "super-admin") navigate("/super-admin/dashboard");
         else if (loginType === "client")
-          navigate(ROUTES_CONFIG.USER.CLIENT_DASHBOARD);
-        else navigate(ROUTES_CONFIG.USER.SOLO_DASHBOARD);
+          navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
+        else navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
       }
     } catch {
       return;

@@ -51,7 +51,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   HOME: {
     moduleCode: "HOME",
     label: "Dashboard",
-    path: ROUTES_CONFIG.USER.HOME,
+    path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
     icon: LayoutGrid,
     section: "General",
     order: 1,

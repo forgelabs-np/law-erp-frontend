@@ -40,6 +40,7 @@ import FirmActivityPage from "@/pages/User/CaseManagement/pages/FirmActivityPage
 import StaleMattersPage from "@/pages/User/CaseManagement/pages/StaleMattersPage";
 import CaseDashboardPage from "@/pages/User/CaseManagement/pages/CaseDashboardPage";
 import ScraperManagementPage from "@/pages/User/ScraperManagement/ScraperManagementPage";
+import GlobalDashboardPage from "@/pages/User/CaseManagement/pages/GlobalDashboardPage";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -157,6 +158,7 @@ export const USER_ROUTES = [
     path: ROUTES_CONFIG.USER.CLIENT_MANAGEMENT,
     element: <ClientManagement />,
     moduleCode: "CLIENT_MANAGEMENT",
+    roles: ["FIRM_ADMIN"],
   },
   {
     path: ROUTES_CONFIG.USER.CASE_MANAGEMENT,
@@ -197,6 +199,11 @@ export const USER_ROUTES = [
     path: ROUTES_CONFIG.USER.SCRAPER_MANAGEMENT,
     element: <ScraperManagementPage />,
     moduleCode: "SCRAPER_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
+    element: <GlobalDashboardPage />,
+    moduleCode: "GLOBAL_DASHBOARD",
   },
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,

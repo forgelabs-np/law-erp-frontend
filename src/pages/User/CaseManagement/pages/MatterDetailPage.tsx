@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   Link2,
   Scale,
+  Trash2,
   User,
   Users,
 } from "lucide-react";
@@ -23,6 +24,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
+  useDeleteMatterMutation,
   useGetMatterQuery,
   useGetMatterTimelineQuery,
   useUpdateMatterMutation,
@@ -60,6 +62,7 @@ import { CourtEventFormModal } from "../components/CourtEventFormModal";
 import { CourtEventDetailsModal } from "../components/CourtEventDetailsModal";
 import { EventHeldModal } from "../components/EventHeldModal";
 import { JudgmentModal } from "../components/JudgmentModal";
+import { MatterTeam } from "../components/MatterTeam";
 
 type Tab = "overview" | "courtCases" | "parties" | "events" | "timeline";
 
@@ -77,6 +80,7 @@ const MatterDetailPage = () => {
   const { data: events = [] } = useGetCourtCaseEventsQuery(courtCaseRef);
 
   const updateMatterMutation = useUpdateMatterMutation();
+  const deleteMatterMutation = useDeleteMatterMutation();
   const addPartyMutation = useAddMatterPartyMutation();
   const addCourtCaseMutation = useAddCourtCaseMutation();
   const createEventMutation = useCreateCourtEventMutation();
@@ -158,6 +162,16 @@ const MatterDetailPage = () => {
     setIsJudgmentOpen(true);
   };
 
+  const handleDeleteMatter = () => {
+    if (window.confirm(`Are you sure you want to delete matter ${matterNumber}? This action cannot be undone.`)) {
+      deleteMatterMutation.mutate(matterNumber ?? "", {
+        onSuccess: () => {
+          navigate("/cases");
+        },
+      });
+    }
+  };
+
   return (
     <Stack gap={8} padding={8} bg="gray.50" minH="100vh">
       <MatterHeaderCard
@@ -175,6 +189,15 @@ const MatterDetailPage = () => {
             </Button>
             <Button variant="outline" size="sm" onClick={() => setIsEditOpen(true)}>
               Edit
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              colorScheme="red"
+              onClick={handleDeleteMatter}
+              disabled={deleteMatterMutation.isPending}
+            >
+              <Trash2 size={14} /> Delete
             </Button>
           </>
         }
@@ -350,6 +373,9 @@ const MatterDetailPage = () => {
               )}
             </SectionCard>
           )}
+
+          {/* Matter Team */}
+          <MatterTeam matterNumber={matterNumber ?? ""} matterTitle={matter.title} />
         </VStack>
       )}
 

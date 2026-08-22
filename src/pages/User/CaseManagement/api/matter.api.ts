@@ -127,6 +127,26 @@ export const useUpdateMatterMutation = () => {
   });
 };
 
+const deleteMatter = (matterNumber: string) => {
+  return LawFirmCRMClient.delete<ApiResponse<void>>(
+    api.MATTER_MANAGEMENT.DELETE.replace("{matterNumber}", matterNumber)
+  );
+};
+
+export const useDeleteMatterMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteMatter,
+    onSuccess: (_, matterNumber) => {
+      toastSuccess(`Matter ${matterNumber} deleted successfully`);
+      queryClient.invalidateQueries({ queryKey: ["matters"] });
+    },
+    onError: (error: ApiErrorResponse) => {
+      toastFail(getApiErrorMessage(error, "Failed to delete matter"));
+    },
+  });
+};
+
 // ============================================================
 // Timeline
 // ============================================================
