@@ -1,11 +1,26 @@
-import { Badge, Box, Button, HStack, Stack, Text, VStack, useDisclosure } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Button,
+  HStack,
+  Stack,
+  Text,
+  VStack,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { Database, Download, RefreshCw, FileDown } from "lucide-react";
 import { useState } from "react";
 
 import { SectionCard } from "../CaseManagement/components/ui";
-import { useManualScrape, useGenerateWeeklyExport } from "@/shared/hooks/useScraper";
+import {
+  useManualScrape,
+  useGenerateWeeklyExport,
+} from "@/shared/hooks/useScraper";
 import { useAuthStore } from "@/shared/stores/auth.store";
-import { NepaliDatePicker, formatForApi } from "@/shared/components/NepaliDatePicker/NepaliDatePicker";
+import {
+  NepaliDatePicker,
+  formatForApi,
+} from "@/shared/components/NepaliDatePicker/NepaliDatePicker";
 import { NepaliDateParts } from "@/utils/nepaliDateUtils";
 
 // Known courts from documentation (can be expanded if court API becomes available)
@@ -16,7 +31,7 @@ const KNOWN_COURTS = [
 
 const ScraperManagementPage = () => {
   const role = useAuthStore((state) => state.role);
-  
+
   // Permission check - only FIRM_ADMIN can access
   // if (role?.name !== "FIRM_ADMIN") {
   //   return (
@@ -33,8 +48,14 @@ const ScraperManagementPage = () => {
 
   const [selectedCourtId, setSelectedCourtId] = useState<number>(39);
   const [bsDate, setBsDate] = useState<NepaliDateParts | null>(null);
-  const [scrapeResult, setScrapeResult] = useState<{ rows: number; success: boolean } | null>(null);
-  const [exportResult, setExportResult] = useState<{ success: boolean; timestamp?: string } | null>(null);
+  const [scrapeResult, setScrapeResult] = useState<{
+    rows: number;
+    success: boolean;
+  } | null>(null);
+  const [exportResult, setExportResult] = useState<{
+    success: boolean;
+    timestamp?: string;
+  } | null>(null);
 
   const manualScrapeMutation = useManualScrape();
   const generateWeeklyExportMutation = useGenerateWeeklyExport();
@@ -120,9 +141,20 @@ const ScraperManagementPage = () => {
 
         <Stack gap={5}>
           {/* Court and Date Selectors - Horizontal on Desktop */}
-          <HStack gap={6} align="flex-start" flexWrap="wrap" flexDirection={{ base: "column", md: "row" }}>
+          <HStack
+            gap={6}
+            align="flex-start"
+            flexWrap="wrap"
+            flexDirection={{ base: "column", md: "row" }}
+          >
             <Box flex={1} minW={{ base: "100%", md: "200px" }}>
-              <Text fontSize="xs" fontWeight="600" color="#6B7280" textTransform="uppercase" mb={2}>
+              <Text
+                fontSize="xs"
+                fontWeight="600"
+                color="#6B7280"
+                textTransform="uppercase"
+                mb={2}
+              >
                 Court
               </Text>
               <HStack gap={2} flexWrap="wrap">
@@ -149,7 +181,13 @@ const ScraperManagementPage = () => {
             </Box>
 
             <Box flex={1} minW={{ base: "100%", md: "200px" }}>
-              <Text fontSize="xs" fontWeight="600" color="#6B7280" textTransform="uppercase" mb={2}>
+              <Text
+                fontSize="xs"
+                fontWeight="600"
+                color="#6B7280"
+                textTransform="uppercase"
+                mb={2}
+              >
                 Nepali Date
               </Text>
               <NepaliDatePicker
@@ -189,7 +227,8 @@ const ScraperManagementPage = () => {
               borderColor="#E5E7EB"
             >
               <Text fontSize="sm" fontWeight="500" color="#6B7280">
-                Syncing {selectedCourt?.name} — Fetching cause-list data for {bsDate ? formatForApi(bsDate) : '...'}...
+                Syncing {selectedCourt?.name} — Fetching cause-list data for{" "}
+                {bsDate ? formatForApi(bsDate) : "..."}...
               </Text>
             </Box>
           )}
@@ -217,7 +256,8 @@ const ScraperManagementPage = () => {
                     No hearing records found
                   </Text>
                   <Text fontSize="sm" color="#B45309">
-                    The court cause list may not have been available for the selected date. Try another date or run the sync again.
+                    The court cause list may not have been available for the
+                    selected date. Try another date or run the sync again.
                   </Text>
                 </>
               )}
@@ -272,22 +312,24 @@ const ScraperManagementPage = () => {
           </Button>
 
           {/* Result */}
-          {exportResult && exportResult.success && !generateWeeklyExportMutation.isPending && (
-            <Box
-              p={4}
-              bg="#F0FDF4"
-              borderRadius="lg"
-              border="1px solid"
-              borderColor="#BBF7D0"
-            >
-              <Text fontSize="sm" fontWeight="600" color="#166534" mb={1}>
-                Report generated successfully
-              </Text>
-              <Text fontSize="sm" color="#15803D">
-                Generated just now
-              </Text>
-            </Box>
-          )}
+          {exportResult &&
+            exportResult.success &&
+            !generateWeeklyExportMutation.isPending && (
+              <Box
+                p={4}
+                bg="#F0FDF4"
+                borderRadius="lg"
+                border="1px solid"
+                borderColor="#BBF7D0"
+              >
+                <Text fontSize="sm" fontWeight="600" color="#166534" mb={1}>
+                  Report generated successfully
+                </Text>
+                <Text fontSize="sm" color="#15803D">
+                  Generated just now
+                </Text>
+              </Box>
+            )}
         </Stack>
       </SectionCard>
 
@@ -320,15 +362,19 @@ const ScraperManagementPage = () => {
                   Date
                 </Text>
                 <Text fontSize="sm" color="#1F2937" fontFamily="monospace">
-                  {bsDate ? formatForApi(bsDate) : ''}
+                  {bsDate ? formatForApi(bsDate) : ""}
                 </Text>
               </Box>
               <Text fontSize="sm" color="gray.600">
-                This will retrieve the court's daily cause list and update hearing records.
+                This will retrieve the court's daily cause list and update
+                hearing records.
               </Text>
             </Stack>
             <HStack gap={3} justify="flex-end">
-              <Button variant="outline" onClick={scrapeConfirmDisclosure.onClose}>
+              <Button
+                variant="outline"
+                onClick={scrapeConfirmDisclosure.onClose}
+              >
                 Cancel
               </Button>
               <Button colorScheme="green" onClick={confirmScrape}>
@@ -358,7 +404,10 @@ const ScraperManagementPage = () => {
               This will regenerate the previous completed Monday–Sunday export.
             </Text>
             <HStack gap={3} justify="flex-end">
-              <Button variant="outline" onClick={exportConfirmDisclosure.onClose}>
+              <Button
+                variant="outline"
+                onClick={exportConfirmDisclosure.onClose}
+              >
                 Cancel
               </Button>
               <Button colorScheme="green" onClick={confirmExport}>

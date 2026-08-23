@@ -31,9 +31,7 @@ import {
 interface CalendarEventFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (
-    data: CreateCourtEventRequest & { courtCaseRef: string }
-  ) => void;
+  onSubmit: (data: CreateCourtEventRequest & { courtCaseRef: string }) => void;
   initialData?: CourtEvent | null;
   prefilledDate?: string; // Optional - for calendar date click
   onDelete?: (eventId: string) => void; // Optional - for cancel action
@@ -138,7 +136,9 @@ export const CalendarEventFormModal = ({
       courtCaseRef,
       eventType: values.eventType,
       scheduledDate: values.scheduledDate,
-      scheduledTime: values.scheduledTime ? `${values.scheduledTime}:00` : undefined,
+      scheduledTime: values.scheduledTime
+        ? `${values.scheduledTime}:00`
+        : undefined,
       endTime: values.endTime ? `${values.endTime}:00` : undefined,
       attendingAdvocateId: values.attendingAdvocateId || undefined,
       judgeName: values.judgeName.trim() || undefined,

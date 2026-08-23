@@ -30,7 +30,11 @@ import {
   PartyType,
   RelationType,
 } from "../types/matter.types";
-import { partyTypeLabel, representationLabel, relationTypeLabel } from "../utils/matterHelpers";
+import {
+  partyTypeLabel,
+  representationLabel,
+  relationTypeLabel,
+} from "../utils/matterHelpers";
 import { FieldSelect } from "./ui";
 
 interface AddCourtCaseModalProps {
@@ -67,7 +71,12 @@ const RELATION_TYPES: RelationType[] = [
   "REVIEW",
 ];
 
-const COURT_LEVELS: CourtLevel[] = ["DISTRICT", "HIGH", "SUPREME", "SPECIALIZED"];
+const COURT_LEVELS: CourtLevel[] = [
+  "DISTRICT",
+  "HIGH",
+  "SUPREME",
+  "SPECIALIZED",
+];
 
 const PARTY_TYPES: PartyType[] = [
   "PLAINTIFF",
@@ -78,7 +87,11 @@ const PARTY_TYPES: PartyType[] = [
   "APPLICANT",
 ];
 
-const REPRESENTATIONS: PartyRepresentation[] = ["REPRESENTED", "OPPOSING", "SELF"];
+const REPRESENTATIONS: PartyRepresentation[] = [
+  "REPRESENTED",
+  "OPPOSING",
+  "SELF",
+];
 
 const relationToDefaultRole = (relation: RelationType): PartyType => {
   switch (relation) {
@@ -150,7 +163,11 @@ export const AddCourtCaseModal = ({
       checked
         ? [
             ...prev,
-            { matterPartyId: party.id, roleType: defaultRole, representation: "REPRESENTED" },
+            {
+              matterPartyId: party.id,
+              roleType: defaultRole,
+              representation: "REPRESENTED",
+            },
           ]
         : prev.filter((role) => role.matterPartyId !== party.id)
     );
@@ -158,7 +175,9 @@ export const AddCourtCaseModal = ({
 
   const updateRole = (partyId: string, patch: Partial<SelectedRole>) => {
     setSelectedRoles((prev) =>
-      prev.map((role) => (role.matterPartyId === partyId ? { ...role, ...patch } : role))
+      prev.map((role) =>
+        role.matterPartyId === partyId ? { ...role, ...patch } : role
+      )
     );
   };
 
@@ -244,7 +263,9 @@ export const AddCourtCaseModal = ({
                 >
                   {COURT_LEVELS.map((level) => (
                     <option key={level} value={level}>
-                      {level.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}
+                      {level
+                        .toLowerCase()
+                        .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </option>
                   ))}
                 </FieldSelect>
@@ -303,7 +324,11 @@ export const AddCourtCaseModal = ({
               </Box>
             </Flex>
 
-            <Flex gap={4} flexDirection={{ base: "column", md: "row" }} align="flex-end">
+            <Flex
+              gap={4}
+              flexDirection={{ base: "column", md: "row" }}
+              align="flex-end"
+            >
               <Box flex={1}>
                 <Text mb={1} fontSize="sm" fontWeight="500">
                   Judge Name
@@ -336,20 +361,28 @@ export const AddCourtCaseModal = ({
 
               {parties.length === 0 && (
                 <Text fontSize="sm" color="gray.500">
-                  No parties yet — add parties to the matter first, or add a new party below.
+                  No parties yet — add parties to the matter first, or add a new
+                  party below.
                 </Text>
               )}
 
               <VStack gap={2} align="stretch">
                 {parties.map((party) => {
-                  const role = selectedRoles.find((r) => r.matterPartyId === party.id);
+                  const role = selectedRoles.find(
+                    (r) => r.matterPartyId === party.id
+                  );
                   return (
                     <HStack key={party.id} gap={3} flexWrap="wrap">
                       <Checkbox
                         checked={!!role}
                         onCheckedChange={(e) => toggleParty(party, !!e.checked)}
                       />
-                      <Text fontSize="sm" fontWeight="500" flex={1} minW="160px">
+                      <Text
+                        fontSize="sm"
+                        fontWeight="500"
+                        flex={1}
+                        minW="160px"
+                      >
                         {party.fullName}
                       </Text>
                       {role ? (
@@ -359,7 +392,9 @@ export const AddCourtCaseModal = ({
                             w="150px"
                             value={role.roleType}
                             onChange={(value) =>
-                              updateRole(party.id, { roleType: value as PartyType })
+                              updateRole(party.id, {
+                                roleType: value as PartyType,
+                              })
                             }
                           >
                             {PARTY_TYPES.map((type) => (
@@ -402,14 +437,17 @@ export const AddCourtCaseModal = ({
                     {party.fullName} (new)
                   </Text>
                   <Text fontSize="xs" color="gray.500" w="180px">
-                    {partyTypeLabel(party.roleType)} · {representationLabel(party.representation)}
+                    {partyTypeLabel(party.roleType)} ·{" "}
+                    {representationLabel(party.representation)}
                   </Text>
                   <Button
                     size="xs"
                     variant="ghost"
                     colorScheme="red"
                     onClick={() =>
-                      setInlineParties((prev) => prev.filter((_, i) => i !== index))
+                      setInlineParties((prev) =>
+                        prev.filter((_, i) => i !== index)
+                      )
                     }
                   >
                     <X size={14} />
@@ -428,7 +466,10 @@ export const AddCourtCaseModal = ({
                       placeholder="Full name"
                       value={inlineDraft.fullName}
                       onChange={(e) =>
-                        setInlineDraft((prev) => ({ ...prev, fullName: e.target.value }))
+                        setInlineDraft((prev) => ({
+                          ...prev,
+                          fullName: e.target.value,
+                        }))
                       }
                       flex={2}
                     />
@@ -437,7 +478,10 @@ export const AddCourtCaseModal = ({
                       placeholder="Mobile"
                       value={inlineDraft.mobileNo ?? ""}
                       onChange={(e) =>
-                        setInlineDraft((prev) => ({ ...prev, mobileNo: e.target.value }))
+                        setInlineDraft((prev) => ({
+                          ...prev,
+                          mobileNo: e.target.value,
+                        }))
                       }
                       flex={1}
                     />
@@ -446,7 +490,10 @@ export const AddCourtCaseModal = ({
                       placeholder="Email"
                       value={inlineDraft.email ?? ""}
                       onChange={(e) =>
-                        setInlineDraft((prev) => ({ ...prev, email: e.target.value }))
+                        setInlineDraft((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
                       }
                       flex={1}
                     />
@@ -457,7 +504,10 @@ export const AddCourtCaseModal = ({
                       w="150px"
                       value={inlineDraft.roleType}
                       onChange={(value) =>
-                        setInlineDraft((prev) => ({ ...prev, roleType: value as PartyType }))
+                        setInlineDraft((prev) => ({
+                          ...prev,
+                          roleType: value as PartyType,
+                        }))
                       }
                     >
                       {PARTY_TYPES.map((type) => (
@@ -483,7 +533,11 @@ export const AddCourtCaseModal = ({
                         </option>
                       ))}
                     </FieldSelect>
-                    <Button size="sm" variant="outline" onClick={addInlineParty}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={addInlineParty}
+                    >
                       <Plus size={14} /> Add
                     </Button>
                   </Flex>

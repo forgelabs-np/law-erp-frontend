@@ -60,7 +60,12 @@ const OUTCOME_TYPES: OutcomeType[] = [
   "WITHDRAWN",
 ];
 
-const NEXT_EVENT_TYPES: NextEventType[] = ["TARIK", "PESHI", "JUDGMENT", "NONE"];
+const NEXT_EVENT_TYPES: NextEventType[] = [
+  "TARIK",
+  "PESHI",
+  "JUDGMENT",
+  "NONE",
+];
 
 export const EventHeldModal = ({
   isOpen,
@@ -263,9 +268,7 @@ export const EventHeldModal = ({
                       name="nextEventDate"
                       control={control}
                       rules={{ required: "Next date is required" }}
-                      render={({ field }) => (
-                        <Input type="date" {...field} />
-                      )}
+                      render={({ field }) => <Input type="date" {...field} />}
                     />
                   </Box>
                   <Box flex={1}>
@@ -288,7 +291,8 @@ export const EventHeldModal = ({
                   </Alert.Indicator>
                   <Alert.Content>
                     <Alert.Title fontSize="sm">
-                      No further event will be scheduled. Record the judgment on the court case.
+                      No further event will be scheduled. Record the judgment on
+                      the court case.
                     </Alert.Title>
                     {onRecordJudgment && (
                       <Button
@@ -314,7 +318,8 @@ export const EventHeldModal = ({
                   </Alert.Indicator>
                   <Alert.Content>
                     <Alert.Title fontSize="sm">
-                      No next event — the case will be treated as completed by the backend.
+                      No next event — the case will be treated as completed by
+                      the backend.
                     </Alert.Title>
                   </Alert.Content>
                 </Alert.Root>

@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 import { CourtCase } from "../types/matter.types";
 import { courtCaseStageLabel, formatDate } from "../utils/matterHelpers";
-import { CourtCaseStageBadge, CourtCaseStatusBadge, RelationTypeBadge } from "./MatterBadges";
+import {
+  CourtCaseStageBadge,
+  CourtCaseStatusBadge,
+  RelationTypeBadge,
+} from "./MatterBadges";
 
 interface CourtCaseChainProps {
   matterNumber?: string;
@@ -42,7 +46,11 @@ export const CourtCaseChain = ({
         const isLast = index === courtCases.length - 1;
 
         return (
-          <HStack key={courtCase.id || courtCase.ourCourtCaseRef} gap={4} align="stretch">
+          <HStack
+            key={courtCase.id || courtCase.ourCourtCaseRef}
+            gap={4}
+            align="stretch"
+          >
             {/* Left rail */}
             <Stack align="center" gap={0} w="6" flexShrink={0}>
               <Box
@@ -78,7 +86,12 @@ export const CourtCaseChain = ({
                 )
               }
             >
-              <HStack justify="space-between" align="flex-start" flexWrap="wrap" gap={2}>
+              <HStack
+                justify="space-between"
+                align="flex-start"
+                flexWrap="wrap"
+                gap={2}
+              >
                 <Stack gap={2}>
                   <HStack gap={2} flexWrap="wrap">
                     <RelationTypeBadge relation={courtCase.relationType} />
@@ -98,7 +111,12 @@ export const CourtCaseChain = ({
                       </Box>
                     )}
                   </HStack>
-                  <Text fontSize="md" fontWeight="600" color="gray.900" fontFamily="monospace">
+                  <Text
+                    fontSize="md"
+                    fontWeight="600"
+                    color="gray.900"
+                    fontFamily="monospace"
+                  >
                     {courtCase.ourCourtCaseRef}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
@@ -111,11 +129,14 @@ export const CourtCaseChain = ({
                     Filed {formatDate(courtCase.filingDate)}
                   </Text>
                   <Text fontSize="xs" color="gray.500">
-                    {courtCase.judgeName ? `Judge: ${courtCase.judgeName}` : "No judge assigned"}
+                    {courtCase.judgeName
+                      ? `Judge: ${courtCase.judgeName}`
+                      : "No judge assigned"}
                   </Text>
                   {courtCase.eventCount !== undefined && (
                     <Text fontSize="xs" color="gray.500">
-                      {courtCase.eventCount} {courtCase.eventCount === 1 ? "event" : "events"}
+                      {courtCase.eventCount}{" "}
+                      {courtCase.eventCount === 1 ? "event" : "events"}
                     </Text>
                   )}
                 </Stack>

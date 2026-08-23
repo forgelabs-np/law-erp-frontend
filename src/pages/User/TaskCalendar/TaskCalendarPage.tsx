@@ -1,14 +1,11 @@
 import { useState, useMemo, ChangeEvent } from "react";
-import {
-  Box,
-  Flex,
-  Spinner,
-  Text,
-  Button,
-} from "@chakra-ui/react";
+import { Box, Flex, Spinner, Text, Button } from "@chakra-ui/react";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar";
-import { NepaliCalendar, CalendarView } from "@/components/calendar/NepaliCalendar";
+import {
+  NepaliCalendar,
+  CalendarView,
+} from "@/components/calendar/NepaliCalendar";
 import { TaskDrawer } from "@/components/calendar/TaskDrawer";
 import { CalendarLegend } from "@/components/calendar/CalendarLegend";
 import { useCalendarEvents } from "@/hooks/useCalendarApi";
@@ -52,7 +49,9 @@ const TaskCalendarPage = () => {
   const [displayNepali, setDisplayNepali] = useState<NepaliDateParts>(() =>
     gregorianToNepali(new Date())
   );
-  const [selectedNepali, setSelectedNepali] = useState<NepaliDateParts | null>(null);
+  const [selectedNepali, setSelectedNepali] = useState<NepaliDateParts | null>(
+    null
+  );
   const [currentView, setCurrentView] = useState<CalendarView>("dayGridMonth");
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -69,9 +68,7 @@ const TaskCalendarPage = () => {
   const cancelEventMutation = useCancelCourtEventMutation();
 
   // Fetch event details for editing
-  const { data: eventDetails } = useGetCourtEventQuery(
-    editingEvent?.id || ""
-  );
+  const { data: eventDetails } = useGetCourtEventQuery(editingEvent?.id || "");
 
   // Today in BS (stable for the session).
   const todayNepali = useMemo(() => gregorianToNepali(new Date()), []);
@@ -130,11 +127,17 @@ const TaskCalendarPage = () => {
     if (currentView === "timeGridDay") {
       return {
         toolbarTitle: formatNepaliDate(displayNepali),
-        toolbarSubtitle: format(nepaliToGregorian(displayNepali), "MMMM d, yyyy"),
+        toolbarSubtitle: format(
+          nepaliToGregorian(displayNepali),
+          "MMMM d, yyyy"
+        ),
       };
     }
     return {
-      toolbarTitle: formatNepaliMonthYear(displayNepali.year, displayNepali.month),
+      toolbarTitle: formatNepaliMonthYear(
+        displayNepali.year,
+        displayNepali.month
+      ),
       toolbarSubtitle: formatGregorianMonthRange(
         getNepaliMonthStart(displayNepali.year, displayNepali.month),
         getNepaliMonthEnd(displayNepali.year, displayNepali.month)
@@ -365,7 +368,11 @@ const TaskCalendarPage = () => {
                 zIndex={2}
               >
                 <Spinner size="sm" color="blue.500" />
-                <Text fontSize="xs" color="gray.600" _dark={{ color: "gray.300" }}>
+                <Text
+                  fontSize="xs"
+                  color="gray.600"
+                  _dark={{ color: "gray.300" }}
+                >
                   Loading events…
                 </Text>
               </Flex>

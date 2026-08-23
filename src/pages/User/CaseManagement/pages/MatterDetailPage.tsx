@@ -41,7 +41,11 @@ import {
   useMarkEventHeldMutation,
   useUpdateCourtEventMutation,
 } from "../api/courtEvent.api";
-import { CourtEvent, MatterParty, PartyEntryRequest } from "../types/matter.types";
+import {
+  CourtEvent,
+  MatterParty,
+  PartyEntryRequest,
+} from "../types/matter.types";
 import {
   courtCaseStageLabel,
   formatDate,
@@ -54,7 +58,11 @@ import { SectionCard, SegmentedTabs } from "../components/ui";
 import { CourtCaseChain } from "../components/CourtCaseChain";
 import { MatterTimeline } from "../components/MatterTimeline";
 import { CourtCaseEvents } from "../components/CourtCaseEvents";
-import { CourtCaseStatusBadge, CourtCaseStageBadge, MatterTypeBadge } from "../components/MatterBadges";
+import {
+  CourtCaseStatusBadge,
+  CourtCaseStageBadge,
+  MatterTypeBadge,
+} from "../components/MatterBadges";
 import { AddPartyModal } from "../components/AddPartyModal";
 import { AddCourtCaseModal } from "../components/AddCourtCaseModal";
 import { EditMatterModal } from "../components/EditMatterModal";
@@ -71,7 +79,11 @@ const MatterDetailPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
 
-  const { data: matter, isLoading, isError } = useGetMatterQuery(matterNumber ?? "");
+  const {
+    data: matter,
+    isLoading,
+    isError,
+  } = useGetMatterQuery(matterNumber ?? "");
   const timelineQuery = useGetMatterTimelineQuery(matterNumber ?? "");
   const timelineEvents = timelineQuery.data ?? [];
 
@@ -163,7 +175,11 @@ const MatterDetailPage = () => {
   };
 
   const handleDeleteMatter = () => {
-    if (window.confirm(`Are you sure you want to delete matter ${matterNumber}? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete matter ${matterNumber}? This action cannot be undone.`
+      )
+    ) {
       deleteMatterMutation.mutate(matterNumber ?? "", {
         onSuccess: () => {
           navigate("/cases");
@@ -180,14 +196,26 @@ const MatterDetailPage = () => {
         actions={
           <>
             {currentCourtCase && (
-              <Button variant="outline" size="sm" onClick={() => setIsEventFormOpen(true)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEventFormOpen(true)}
+              >
                 <Calendar size={14} /> Schedule Event
               </Button>
             )}
-            <Button variant="outline" size="sm" onClick={() => setIsAddPartyOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAddPartyOpen(true)}
+            >
               <User size={14} /> Add Party
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setIsEditOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditOpen(true)}
+            >
               Edit
             </Button>
             <Button
@@ -214,11 +242,20 @@ const MatterDetailPage = () => {
         <VStack gap={6} align="stretch">
           <SectionCard title="Matter Summary" icon={FileText}>
             <Grid
-              templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+              templateColumns={{
+                base: "1fr",
+                md: "repeat(2, 1fr)",
+                lg: "repeat(3, 1fr)",
+              }}
               gap={4}
             >
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Matter Number
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -226,7 +263,12 @@ const MatterDetailPage = () => {
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Type
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -234,7 +276,12 @@ const MatterDetailPage = () => {
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Status
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -242,7 +289,12 @@ const MatterDetailPage = () => {
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Current Court
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -250,15 +302,27 @@ const MatterDetailPage = () => {
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Court Case Number
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {currentCourtCase?.courtCaseNumber ?? matter.courtCaseNumber ?? "-"}
+                  {currentCourtCase?.courtCaseNumber ??
+                    matter.courtCaseNumber ??
+                    "-"}
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Filing Date
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -266,7 +330,12 @@ const MatterDetailPage = () => {
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Court Cases
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -274,7 +343,12 @@ const MatterDetailPage = () => {
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Parties
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -282,7 +356,12 @@ const MatterDetailPage = () => {
                 </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Events
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
@@ -292,7 +371,13 @@ const MatterDetailPage = () => {
             </Grid>
             {matter.description && (
               <Box mt={4}>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" mb={2}>
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                  mb={2}
+                >
                   Description
                 </Text>
                 <Text fontSize="base" color="gray.700" lineHeight="1.7">
@@ -314,11 +399,20 @@ const MatterDetailPage = () => {
                 )}
               </HStack>
               <Grid
-                templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }}
+                templateColumns={{
+                  base: "1fr",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(3, 1fr)",
+                }}
                 gap={4}
               >
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Reference
                   </Text>
                   <Text fontSize="sm" fontWeight="600" fontFamily="monospace">
@@ -326,7 +420,12 @@ const MatterDetailPage = () => {
                   </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Court Level
                   </Text>
                   <Text fontSize="sm" fontWeight="600">
@@ -334,7 +433,12 @@ const MatterDetailPage = () => {
                   </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Stage
                   </Text>
                   <Text fontSize="sm" fontWeight="600">
@@ -344,8 +448,16 @@ const MatterDetailPage = () => {
               </Grid>
 
               {/* Judgment info */}
-              {(currentCourtCase.judgmentDate || currentCourtCase.judgmentSummary) && (
-                <Box mt={4} p={4} bg="green.50" border="1px solid" borderColor="green.200" borderRadius="lg">
+              {(currentCourtCase.judgmentDate ||
+                currentCourtCase.judgmentSummary) && (
+                <Box
+                  mt={4}
+                  p={4}
+                  bg="green.50"
+                  border="1px solid"
+                  borderColor="green.200"
+                  borderRadius="lg"
+                >
                   <HStack gap={2} mb={2}>
                     <Gavel size={16} color="#15803d" />
                     <Text fontSize="sm" fontWeight="700" color="green.800">
@@ -367,7 +479,12 @@ const MatterDetailPage = () => {
               )}
 
               {!currentCourtCase.judgmentSummary && (
-                <Button mt={4} variant="outline" size="sm" onClick={handleRecordJudgment}>
+                <Button
+                  mt={4}
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRecordJudgment}
+                >
                   <Gavel size={14} /> Record Judgment
                 </Button>
               )}
@@ -375,7 +492,10 @@ const MatterDetailPage = () => {
           )}
 
           {/* Matter Team */}
-          <MatterTeam matterNumber={matterNumber ?? ""} matterTitle={matter.title} />
+          <MatterTeam
+            matterNumber={matterNumber ?? ""}
+            matterTitle={matter.title}
+          />
         </VStack>
       )}
 
@@ -399,9 +519,14 @@ const MatterDetailPage = () => {
           <SectionCard title="Parties" icon={Users}>
             <HStack justify="space-between" mb={4}>
               <Text fontSize="sm" color="gray.500">
-                {parties.length} {parties.length === 1 ? "party" : "parties"} on this matter
+                {parties.length} {parties.length === 1 ? "party" : "parties"} on
+                this matter
               </Text>
-              <Button variant="outline" size="sm" onClick={() => setIsAddPartyOpen(true)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAddPartyOpen(true)}
+              >
                 + Add Party
               </Button>
             </HStack>
@@ -415,7 +540,9 @@ const MatterDetailPage = () => {
             ) : (
               <VStack gap={3} align="stretch">
                 {parties.map((party) => {
-                  const role = currentRoles.find((r) => r.matterPartyId === party.id);
+                  const role = currentRoles.find(
+                    (r) => r.matterPartyId === party.id
+                  );
                   return (
                     <Box
                       key={party.id}
@@ -425,29 +552,70 @@ const MatterDetailPage = () => {
                       border="1px solid"
                       borderColor="gray.100"
                     >
-                      <HStack justify="space-between" align="flex-start" flexWrap="wrap" gap={3}>
+                      <HStack
+                        justify="space-between"
+                        align="flex-start"
+                        flexWrap="wrap"
+                        gap={3}
+                      >
                         <VStack align="stretch" gap={2}>
-                          <Text fontSize="base" fontWeight="600" color="gray.900">
+                          <Text
+                            fontSize="base"
+                            fontWeight="600"
+                            color="gray.900"
+                          >
                             {party.fullName}
                           </Text>
                           <HStack gap={2} flexWrap="wrap">
                             {role && (
                               <>
-                                <Badge bg="blue.100" color="blue.700" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+                                <Badge
+                                  bg="blue.100"
+                                  color="blue.700"
+                                  px={3}
+                                  py={1}
+                                  borderRadius="full"
+                                  fontSize="xs"
+                                  fontWeight="600"
+                                >
                                   {partyTypeLabel(role.roleType)}
                                 </Badge>
-                                <Badge bg="purple.100" color="purple.700" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+                                <Badge
+                                  bg="purple.100"
+                                  color="purple.700"
+                                  px={3}
+                                  py={1}
+                                  borderRadius="full"
+                                  fontSize="xs"
+                                  fontWeight="600"
+                                >
                                   {representationLabel(role.representation)}
                                 </Badge>
                               </>
                             )}
                             {party.isOurClient && (
-                              <Badge bg="green.100" color="green.700" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+                              <Badge
+                                bg="green.100"
+                                color="green.700"
+                                px={3}
+                                py={1}
+                                borderRadius="full"
+                                fontSize="xs"
+                                fontWeight="600"
+                              >
                                 Our Client
                               </Badge>
                             )}
                             {party.clientId && (
-                              <Badge bg="orange.100" color="orange.700" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+                              <Badge
+                                bg="orange.100"
+                                color="orange.700"
+                                px={3}
+                                py={1}
+                                borderRadius="full"
+                                fontSize="xs"
+                                fontWeight="600"
+                              >
                                 Linked
                               </Badge>
                             )}
@@ -561,7 +729,9 @@ const MatterDetailPage = () => {
           setIsEventFormOpen(false);
           setSelectedEvent(null);
         }}
-        isSubmitting={createEventMutation.isPending || updateEventMutation.isPending}
+        isSubmitting={
+          createEventMutation.isPending || updateEventMutation.isPending
+        }
         initialData={selectedEvent}
         onSubmit={(data) => {
           if (selectedEvent) {

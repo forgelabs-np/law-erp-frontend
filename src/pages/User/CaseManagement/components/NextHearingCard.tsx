@@ -10,10 +10,7 @@ import {
 } from "@/utils/nepaliDateUtils";
 
 import { CourtEvent, OutcomeType } from "../types/matter.types";
-import {
-  courtEventTypeLabel,
-  formatTime,
-} from "../utils/matterHelpers";
+import { courtEventTypeLabel, formatTime } from "../utils/matterHelpers";
 
 interface NextHearingCardProps {
   /** The next scheduled court event. */
@@ -128,7 +125,12 @@ export const NextHearingCard = ({
         {/* Date block */}
         <HStack gap={4} align="center">
           <Stack gap={0} align="center">
-            <Text color="white" fontSize="3xl" fontWeight="800" lineHeight="1.1">
+            <Text
+              color="white"
+              fontSize="3xl"
+              fontWeight="800"
+              lineHeight="1.1"
+            >
               {day}
             </Text>
             <Text
@@ -200,7 +202,11 @@ export const NextHearingCard = ({
             {daysLabel}
           </Badge>
           {onViewEvent && (
-            <Button variant="light" size="sm" onClick={() => onViewEvent(event)}>
+            <Button
+              variant="light"
+              size="sm"
+              onClick={() => onViewEvent(event)}
+            >
               View Event
             </Button>
           )}

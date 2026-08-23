@@ -109,7 +109,9 @@ export const CourtEventFormModal = ({
     onSubmit({
       eventType: values.eventType,
       scheduledDate: values.scheduledDate,
-      scheduledTime: values.scheduledTime ? `${values.scheduledTime}:00` : undefined,
+      scheduledTime: values.scheduledTime
+        ? `${values.scheduledTime}:00`
+        : undefined,
       endTime: values.endTime ? `${values.endTime}:00` : undefined,
       attendingAdvocateId: values.attendingAdvocateId || undefined,
       judgeName: values.judgeName.trim() || undefined,

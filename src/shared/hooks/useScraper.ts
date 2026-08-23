@@ -1,16 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getCaseHearingStatus, manualScrape, generateWeeklyExport } from "../service/scraper.service";
+import {
+  getCaseHearingStatus,
+  manualScrape,
+  generateWeeklyExport,
+} from "../service/scraper.service";
 import { ApiErrorResponse, ApiResponse } from "../types/response";
 import { toastFail, toastSuccess } from "../toast";
-import { CaseHearingStatus, ScrapeResult, HearingExportResult } from "../types/scraper.types";
+import {
+  CaseHearingStatus,
+  ScrapeResult,
+  HearingExportResult,
+} from "../types/scraper.types";
 
 // ============================================================
 // Query keys
 // ============================================================
 
 export const scraperKeys = {
-  caseHearingStatus: (caseNoInternal: string) => ["case-hearing-status", caseNoInternal] as const,
+  caseHearingStatus: (caseNoInternal: string) =>
+    ["case-hearing-status", caseNoInternal] as const,
 };
 
 // ============================================================
@@ -32,7 +41,7 @@ export const useCaseHearingStatus = (caseNoInternal: string) => {
 
 export const useManualScrape = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ courtId, dateBs }: { courtId: number; dateBs: string }) =>
       manualScrape(courtId, dateBs),
@@ -42,7 +51,9 @@ export const useManualScrape = () => {
         if (data.rows === 0) {
           toastSuccess("No hearing records were published for this date");
         } else {
-          toastSuccess(`Court data updated successfully. ${data.rows} hearing records processed.`);
+          toastSuccess(
+            `Court data updated successfully. ${data.rows} hearing records processed.`
+          );
         }
         // Invalidate hearing status queries for cases that might be affected
         queryClient.invalidateQueries({ queryKey: ["case-hearing-status"] });
@@ -68,9 +79,9 @@ export const useGenerateWeeklyExport = () => {
       const blob = response.data as any;
       if (blob instanceof Blob) {
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
-        a.download = 'weekly-hearing-snapshot.csv';
+        a.download = "weekly-hearing-snapshot.csv";
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);

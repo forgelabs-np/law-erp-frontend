@@ -154,7 +154,11 @@ export const RoleUsersDrawer = ({
                     />
                     <Box flex="1">
                       <HStack justify="space-between" mb={1}>
-                        <Text fontWeight="600" color="gray.800" _dark={{ color: "white" }}>
+                        <Text
+                          fontWeight="600"
+                          color="gray.800"
+                          _dark={{ color: "white" }}
+                        >
                           {user.fullName || "—"}
                         </Text>
                         <Badge

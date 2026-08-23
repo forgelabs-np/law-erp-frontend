@@ -26,7 +26,12 @@ interface InfoTileProps {
   iconBg?: string;
 }
 
-const InfoTile = ({ icon, label, value, iconBg = "gray.50" }: InfoTileProps) => (
+const InfoTile = ({
+  icon,
+  label,
+  value,
+  iconBg = "gray.50",
+}: InfoTileProps) => (
   <Box
     bg="gray.50"
     border="1px solid"

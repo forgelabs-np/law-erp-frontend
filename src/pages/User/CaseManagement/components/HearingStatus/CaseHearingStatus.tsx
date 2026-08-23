@@ -1,9 +1,21 @@
-import { Badge, Box, Button, HStack, Skeleton, Stack, Text, VStack } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Button,
+  HStack,
+  Skeleton,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { Calendar, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 import { parseApiDate } from "@/utils/nepaliDateUtils";
 
-import { CaseHearingStatus as CaseHearingStatusType, HearingRecord } from "@/shared/types/scraper.types";
+import {
+  CaseHearingStatus as CaseHearingStatusType,
+  HearingRecord,
+} from "@/shared/types/scraper.types";
 import { SectionCard } from "../ui";
 import { HearingSourceBadge } from "./HearingSourceBadge";
 
@@ -60,7 +72,13 @@ export const CaseHearingStatus = ({
       <Box mb={6} pb={4} borderBottom="1px solid" borderColor="gray.100">
         <HStack gap={6} flexWrap="wrap">
           <Box>
-            <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" mb={1}>
+            <Text
+              fontSize="xs"
+              fontWeight="600"
+              color="gray.500"
+              textTransform="uppercase"
+              mb={1}
+            >
               Case
             </Text>
             <Text fontSize="sm" fontWeight="600" color="gray.900">
@@ -68,7 +86,13 @@ export const CaseHearingStatus = ({
             </Text>
           </Box>
           <Box>
-            <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" mb={1}>
+            <Text
+              fontSize="xs"
+              fontWeight="600"
+              color="gray.500"
+              textTransform="uppercase"
+              mb={1}
+            >
               Court
             </Text>
             <Text fontSize="sm" fontWeight="600" color="gray.900">
@@ -76,10 +100,21 @@ export const CaseHearingStatus = ({
             </Text>
           </Box>
           <Box>
-            <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" mb={1}>
+            <Text
+              fontSize="xs"
+              fontWeight="600"
+              color="gray.500"
+              textTransform="uppercase"
+              mb={1}
+            >
               Internal Case No.
             </Text>
-            <Text fontSize="sm" fontWeight="600" color="gray.700" fontFamily="monospace">
+            <Text
+              fontSize="sm"
+              fontWeight="600"
+              color="gray.700"
+              fontFamily="monospace"
+            >
               {caseNoInternal}
             </Text>
           </Box>
@@ -142,7 +177,13 @@ const NextHearingCard = ({ hearing }: NextHearingCardProps) => {
       borderColor="green.200"
       mb={6}
     >
-      <Text fontSize="xs" fontWeight="600" color="green.700" textTransform="uppercase" mb={3}>
+      <Text
+        fontSize="xs"
+        fontWeight="600"
+        color="green.700"
+        textTransform="uppercase"
+        mb={3}
+      >
         Next Hearing
       </Text>
 
@@ -150,14 +191,25 @@ const NextHearingCard = ({ hearing }: NextHearingCardProps) => {
       <Text fontSize="2xl" fontWeight="700" color="green.800" mb={1}>
         {format(adDate, "d MMM yyyy")}
       </Text>
-      <Text fontSize="lg" fontWeight="600" color="green.700" mb={4} fontFamily="monospace">
+      <Text
+        fontSize="lg"
+        fontWeight="600"
+        color="green.700"
+        mb={4}
+        fontFamily="monospace"
+      >
         {hearing.hearingDateBs} BS
       </Text>
 
       {/* Details */}
       <Stack gap={2}>
         <Box>
-          <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="gray.500"
+            textTransform="uppercase"
+          >
             Court
           </Text>
           <Text fontSize="sm" fontWeight="600" color="gray.900">
@@ -166,7 +218,12 @@ const NextHearingCard = ({ hearing }: NextHearingCardProps) => {
         </Box>
 
         <Box>
-          <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="gray.500"
+            textTransform="uppercase"
+          >
             Subject
           </Text>
           <Text fontSize="sm" fontWeight="500" color="gray.800">
@@ -175,7 +232,12 @@ const NextHearingCard = ({ hearing }: NextHearingCardProps) => {
         </Box>
 
         <Box>
-          <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="gray.500"
+            textTransform="uppercase"
+          >
             Order
           </Text>
           <Text fontSize="sm" fontWeight="500" color="gray.800">
@@ -184,7 +246,12 @@ const NextHearingCard = ({ hearing }: NextHearingCardProps) => {
         </Box>
 
         <Box>
-          <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="gray.500"
+            textTransform="uppercase"
+          >
             Source
           </Text>
           <HearingSourceBadge source={hearing.source} />
@@ -241,7 +308,12 @@ const HearingHistoryItem = ({ hearing }: HearingHistoryItemProps) => {
           <Text fontSize="base" fontWeight="600" color="gray.900">
             {format(adDate, "d MMM yyyy")}
           </Text>
-          <Text fontSize="sm" fontWeight="500" color="gray.600" fontFamily="monospace">
+          <Text
+            fontSize="sm"
+            fontWeight="500"
+            color="gray.600"
+            fontFamily="monospace"
+          >
             {hearing.hearingDateBs}
           </Text>
         </VStack>

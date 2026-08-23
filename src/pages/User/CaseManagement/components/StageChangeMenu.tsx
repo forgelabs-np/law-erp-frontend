@@ -3,10 +3,7 @@ import { useState } from "react";
 
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 
-import {
-  CourtCaseStage,
-  MatterType,
-} from "../types/matter.types";
+import { CourtCaseStage, MatterType } from "../types/matter.types";
 import { courtCaseStageLabel, getStageOptions } from "../utils/matterHelpers";
 import { CourtCaseStageBadge } from "./MatterBadges";
 import { FieldSelect } from "./ui";

@@ -32,7 +32,12 @@ const StaleMattersPage = () => {
 
   return (
     <Stack gap={6} padding={8}>
-      <HStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={4}>
+      <HStack
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+        gap={4}
+      >
         <Stack gap={2}>
           <Text textStyle="heading_4">Stale / Long Pending Matters</Text>
           <Text textStyle="paragraph_regular" color="gray.500">
@@ -110,7 +115,12 @@ const StaleMattersPage = () => {
                     >
                       {matter.matterNumber}
                     </Text>
-                    <Text fontSize="md" fontWeight="600" color="gray.900" lineClamp={2}>
+                    <Text
+                      fontSize="md"
+                      fontWeight="600"
+                      color="gray.900"
+                      lineClamp={2}
+                    >
                       {matter.title}
                     </Text>
                     <Text fontSize="xs" color="gray.500" fontFamily="monospace">
@@ -130,9 +140,16 @@ const StaleMattersPage = () => {
                   </Box>
                 </HStack>
 
-                <HStack justify="space-between" mt={4} pt={4} borderTop="1px solid" borderColor="gray.100">
+                <HStack
+                  justify="space-between"
+                  mt={4}
+                  pt={4}
+                  borderTop="1px solid"
+                  borderColor="gray.100"
+                >
                   <Text fontSize="xs" color="gray.500">
-                    {matterTypeLabel(matter.matterType)} · {matterStatusLabel(matter.status)}
+                    {matterTypeLabel(matter.matterType)} ·{" "}
+                    {matterStatusLabel(matter.status)}
                   </Text>
                   <Button
                     variant="outline"
@@ -157,7 +174,10 @@ const StaleMattersPage = () => {
                 size="sm"
                 disabled={(filters.page ?? 0) === 0}
                 onClick={() =>
-                  setFilters((prev) => ({ ...prev, page: (prev.page ?? 0) - 1 }))
+                  setFilters((prev) => ({
+                    ...prev,
+                    page: (prev.page ?? 0) - 1,
+                  }))
                 }
               >
                 Previous
@@ -167,7 +187,10 @@ const StaleMattersPage = () => {
                 size="sm"
                 disabled={(filters.page ?? 0) + 1 >= (data?.totalPages ?? 1)}
                 onClick={() =>
-                  setFilters((prev) => ({ ...prev, page: (prev.page ?? 0) + 1 }))
+                  setFilters((prev) => ({
+                    ...prev,
+                    page: (prev.page ?? 0) + 1,
+                  }))
                 }
               >
                 Next

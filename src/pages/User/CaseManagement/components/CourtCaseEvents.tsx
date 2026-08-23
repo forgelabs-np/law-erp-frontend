@@ -1,16 +1,18 @@
+import { Box, Button, HStack, Stack, Text, VStack } from "@chakra-ui/react";
 import {
-  Box,
-  Button,
-  HStack,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import { ArrowDown, ArrowRight, CalendarPlus, CheckCircle2 } from "lucide-react";
+  ArrowDown,
+  ArrowRight,
+  CalendarPlus,
+  CheckCircle2,
+} from "lucide-react";
 import { useMemo } from "react";
 
 import { CourtEvent } from "../types/matter.types";
-import { formatDate, formatTime, outcomeTypeLabel } from "../utils/matterHelpers";
+import {
+  formatDate,
+  formatTime,
+  outcomeTypeLabel,
+} from "../utils/matterHelpers";
 import { CourtEventStatusBadge, CourtEventTypeBadge } from "./MatterBadges";
 
 interface CourtCaseEventsProps {
@@ -85,7 +87,11 @@ export const CourtCaseEvents = ({
     );
   }
 
-  const renderEvent = (event: CourtEvent, index: number, list: CourtEvent[]) => {
+  const renderEvent = (
+    event: CourtEvent,
+    index: number,
+    list: CourtEvent[]
+  ) => {
     const isNextInChain =
       event.status === "HELD" && event.nextEventId
         ? list.some((e) => e.id === event.nextEventId)
@@ -104,7 +110,12 @@ export const CourtCaseEvents = ({
           _hover={{ borderColor: "blue.300", boxShadow: "sm" }}
           transition="all 0.15s ease"
         >
-          <HStack justify="space-between" align="flex-start" flexWrap="wrap" gap={2}>
+          <HStack
+            justify="space-between"
+            align="flex-start"
+            flexWrap="wrap"
+            gap={2}
+          >
             <Stack gap={1}>
               <HStack gap={2} flexWrap="wrap">
                 <CourtEventTypeBadge type={event.eventType} />
@@ -184,10 +195,14 @@ export const CourtCaseEvents = ({
         </Stack>
       )}
 
-      <Button variant="outline" size="sm" alignSelf="flex-start" onClick={onSchedule}>
+      <Button
+        variant="outline"
+        size="sm"
+        alignSelf="flex-start"
+        onClick={onSchedule}
+      >
         <CalendarPlus size={16} /> Schedule Event
       </Button>
     </VStack>
   );
 };
-

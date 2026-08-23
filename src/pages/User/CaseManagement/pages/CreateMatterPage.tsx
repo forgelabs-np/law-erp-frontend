@@ -49,7 +49,12 @@ const STEPS = [
   { id: 4, title: "Review & Save" },
 ];
 
-const COURT_LEVELS: CourtLevel[] = ["DISTRICT", "HIGH", "SUPREME", "SPECIALIZED"];
+const COURT_LEVELS: CourtLevel[] = [
+  "DISTRICT",
+  "HIGH",
+  "SUPREME",
+  "SPECIALIZED",
+];
 
 interface PartyDraft extends PartyEntryRequest {
   key: string;
@@ -80,7 +85,9 @@ const CreateMatterPage = () => {
   // Step 3 - parties
   const [parties, setParties] = useState<PartyDraft[]>([]);
   const [isAddPartyOpen, setIsAddPartyOpen] = useState(false);
-  const [matchesByParty, setMatchesByParty] = useState<Record<string, PartyMatch[]>>({});
+  const [matchesByParty, setMatchesByParty] = useState<
+    Record<string, PartyMatch[]>
+  >({});
   const matchPartyMutation = useMatchMatterPartyMutation();
   const matchTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
@@ -131,7 +138,8 @@ const CreateMatterPage = () => {
               fullName: match.fullName,
               mobileNo: match.mobileNo ?? "",
               email: match.email ?? "",
-              clientId: match.sourceType === "CLIENT" ? match.sourceId : undefined,
+              clientId:
+                match.sourceType === "CLIENT" ? match.sourceId : undefined,
               isOurClient: match.sourceType === "CLIENT" ? true : p.isOurClient,
             }
           : p
@@ -277,7 +285,9 @@ const CreateMatterPage = () => {
                 >
                   {COURT_LEVELS.map((level) => (
                     <option key={level} value={level}>
-                      {level.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}
+                      {level
+                        .toLowerCase()
+                        .replace(/\b\w/g, (c) => c.toUpperCase())}
                     </option>
                   ))}
                 </FieldSelect>
@@ -328,17 +338,32 @@ const CreateMatterPage = () => {
               Add the parties of the original court case. Matching clients and
               parties are suggested to avoid duplicates.
             </Text>
-            <Button variant="outline" size="sm" onClick={() => setIsAddPartyOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsAddPartyOpen(true)}
+            >
               + Add Party
             </Button>
           </HStack>
 
           {parties.length === 0 ? (
-            <Box py={10} textAlign="center" border="1px dashed" borderColor="gray.300" borderRadius="lg">
+            <Box
+              py={10}
+              textAlign="center"
+              border="1px dashed"
+              borderColor="gray.300"
+              borderRadius="lg"
+            >
               <Text fontSize="sm" color="gray.500">
                 No parties added yet
               </Text>
-              <Button mt={4} variant="outline" size="sm" onClick={() => setIsAddPartyOpen(true)}>
+              <Button
+                mt={4}
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAddPartyOpen(true)}
+              >
                 + Add First Party
               </Button>
             </Box>
@@ -369,14 +394,19 @@ const CreateMatterPage = () => {
                       size="xs"
                       colorScheme="red"
                       onClick={() =>
-                        setParties((prev) => prev.filter((p) => p.key !== party.key))
+                        setParties((prev) =>
+                          prev.filter((p) => p.key !== party.key)
+                        )
                       }
                     >
                       <X size={14} />
                     </Button>
                   </HStack>
 
-                  <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={3}>
+                  <Grid
+                    templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
+                    gap={3}
+                  >
                     <Box>
                       <Text mb={1} fontSize="xs" color="gray.600">
                         Full Name *
@@ -386,7 +416,10 @@ const CreateMatterPage = () => {
                         value={party.fullName}
                         onChange={(e) => {
                           updateParty(party.key, { fullName: e.target.value });
-                          handlePartyMatch({ ...party, fullName: e.target.value });
+                          handlePartyMatch({
+                            ...party,
+                            fullName: e.target.value,
+                          });
                         }}
                         placeholder="Full name"
                       />
@@ -400,7 +433,10 @@ const CreateMatterPage = () => {
                         value={party.mobileNo ?? ""}
                         onChange={(e) => {
                           updateParty(party.key, { mobileNo: e.target.value });
-                          handlePartyMatch({ ...party, mobileNo: e.target.value });
+                          handlePartyMatch({
+                            ...party,
+                            mobileNo: e.target.value,
+                          });
                         }}
                         placeholder="9800000000"
                       />
@@ -412,7 +448,9 @@ const CreateMatterPage = () => {
                       <Input
                         size="sm"
                         value={party.email ?? ""}
-                        onChange={(e) => updateParty(party.key, { email: e.target.value })}
+                        onChange={(e) =>
+                          updateParty(party.key, { email: e.target.value })
+                        }
                         placeholder="name@mail.com"
                       />
                     </Box>
@@ -424,7 +462,9 @@ const CreateMatterPage = () => {
                         size="sm"
                         value={party.roleType}
                         onChange={(value) =>
-                          updateParty(party.key, { roleType: value as PartyType })
+                          updateParty(party.key, {
+                            roleType: value as PartyType,
+                          })
                         }
                       >
                         {(
@@ -456,13 +496,17 @@ const CreateMatterPage = () => {
                           })
                         }
                       >
-                        {(["REPRESENTED", "OPPOSING", "SELF"] as PartyRepresentation[]).map(
-                          (rep) => (
-                            <option key={rep} value={rep}>
-                              {representationLabel(rep)}
-                            </option>
-                          )
-                        )}
+                        {(
+                          [
+                            "REPRESENTED",
+                            "OPPOSING",
+                            "SELF",
+                          ] as PartyRepresentation[]
+                        ).map((rep) => (
+                          <option key={rep} value={rep}>
+                            {representationLabel(rep)}
+                          </option>
+                        ))}
                       </FieldSelect>
                     </Box>
                     <Box>
@@ -473,7 +517,9 @@ const CreateMatterPage = () => {
                         size="sm"
                         value={party.isOurClient ? "yes" : "no"}
                         onChange={(value) =>
-                          updateParty(party.key, { isOurClient: value === "yes" })
+                          updateParty(party.key, {
+                            isOurClient: value === "yes",
+                          })
                         }
                       >
                         <option value="yes">Yes</option>
@@ -487,7 +533,10 @@ const CreateMatterPage = () => {
                       matches={matchesByParty[party.key] ?? []}
                       onSelectMatch={(match) => selectMatch(party.key, match)}
                       onDismiss={() =>
-                        setMatchesByParty((prev) => ({ ...prev, [party.key]: [] }))
+                        setMatchesByParty((prev) => ({
+                          ...prev,
+                          [party.key]: [],
+                        }))
                       }
                     />
                   </Box>
@@ -502,7 +551,13 @@ const CreateMatterPage = () => {
       {currentStep === 3 && (
         <FormSection title="Review & Save" icon={FileText}>
           <VStack gap={4} align="stretch">
-            <Box p={4} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.100">
+            <Box
+              p={4}
+              bg="gray.50"
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.100"
+            >
               <Text fontSize="sm" fontWeight="600" color="gray.700" mb={2}>
                 Matter
               </Text>
@@ -526,7 +581,13 @@ const CreateMatterPage = () => {
               )}
             </Box>
 
-            <Box p={4} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.100">
+            <Box
+              p={4}
+              bg="gray.50"
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.100"
+            >
               <Text fontSize="sm" fontWeight="600" color="gray.700" mb={2}>
                 Original Court Case
               </Text>
@@ -535,7 +596,13 @@ const CreateMatterPage = () => {
               </Text>
             </Box>
 
-            <Box p={4} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.100">
+            <Box
+              p={4}
+              bg="gray.50"
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.100"
+            >
               <Text fontSize="sm" fontWeight="600" color="gray.700" mb={2}>
                 Parties ({parties.length})
               </Text>
@@ -543,7 +610,8 @@ const CreateMatterPage = () => {
                 <HStack key={party.key} justify="space-between" py={1}>
                   <Text fontSize="sm">{party.fullName}</Text>
                   <Text fontSize="xs" color="gray.600">
-                    {partyTypeLabel(party.roleType)} · {representationLabel(party.representation)}
+                    {partyTypeLabel(party.roleType)} ·{" "}
+                    {representationLabel(party.representation)}
                     {party.isOurClient ? " · Our client" : ""}
                   </Text>
                 </HStack>
@@ -566,7 +634,9 @@ const CreateMatterPage = () => {
           }
         }}
         isNextDisabled={!stepValidation[currentStep]}
-        nextLabel={currentStep === STEPS.length - 1 ? "Create Matter" : "Next Step"}
+        nextLabel={
+          currentStep === STEPS.length - 1 ? "Create Matter" : "Next Step"
+        }
       />
 
       <AddPartyModal

@@ -111,7 +111,12 @@ const FirmActivityPage = () => {
 
   return (
     <Stack gap={6} padding={8}>
-      <HStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={4}>
+      <HStack
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+        gap={4}
+      >
         <Stack gap={2}>
           <Text textStyle="heading_4">Firm Activity</Text>
           <Text textStyle="paragraph_regular" color="gray.500">
@@ -138,7 +143,12 @@ const FirmActivityPage = () => {
           <FieldSelect
             value={filters.matterType ?? ""}
             onChange={(value) =>
-              updateFilters({ matterType: (value || undefined) as "CIVIL" | "CRIMINAL" | undefined })
+              updateFilters({
+                matterType: (value || undefined) as
+                  | "CIVIL"
+                  | "CRIMINAL"
+                  | undefined,
+              })
             }
             placeholder="All Types"
           >
@@ -150,7 +160,13 @@ const FirmActivityPage = () => {
           <FieldSelect
             value={filters.status ?? ""}
             onChange={(value) =>
-              updateFilters({ status: (value || undefined) as "ACTIVE" | "DORMANT" | "CLOSED" | undefined })
+              updateFilters({
+                status: (value || undefined) as
+                  | "ACTIVE"
+                  | "DORMANT"
+                  | "CLOSED"
+                  | undefined,
+              })
             }
             placeholder="All Statuses"
           >
@@ -160,7 +176,11 @@ const FirmActivityPage = () => {
           </FieldSelect>
         </Box>
         {hasActiveFilters && (
-          <Button variant="ghost" size="md" onClick={() => setFilters(DEFAULT_FILTERS)}>
+          <Button
+            variant="ghost"
+            size="md"
+            onClick={() => setFilters(DEFAULT_FILTERS)}
+          >
             Clear
           </Button>
         )}
@@ -175,7 +195,10 @@ const FirmActivityPage = () => {
             No activity found
           </Text>
           {hasActiveFilters && (
-            <Button variant="outline" onClick={() => setFilters(DEFAULT_FILTERS)}>
+            <Button
+              variant="outline"
+              onClick={() => setFilters(DEFAULT_FILTERS)}
+            >
               Clear Filters
             </Button>
           )}

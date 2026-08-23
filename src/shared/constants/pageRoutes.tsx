@@ -41,6 +41,16 @@ import StaleMattersPage from "@/pages/User/CaseManagement/pages/StaleMattersPage
 import CaseDashboardPage from "@/pages/User/CaseManagement/pages/CaseDashboardPage";
 import ScraperManagementPage from "@/pages/User/ScraperManagement/ScraperManagementPage";
 import GlobalDashboardPage from "@/pages/User/CaseManagement/pages/GlobalDashboardPage";
+import {
+  ProjectDashboardPage,
+  ProjectListPage,
+  CreateProjectPage,
+  EditProjectPage,
+  ProjectDetailPage,
+  RenewalTypesPage,
+  ClientProjectsPage,
+  ClientProjectDetailPage,
+} from "@/pages/User/ProjectManagement";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -204,6 +214,48 @@ export const USER_ROUTES = [
     path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
     element: <GlobalDashboardPage />,
     moduleCode: "GLOBAL_DASHBOARD",
+  },
+  {
+    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT,
+    element: <ProjectDashboardPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_PROJECTS,
+    element: <ProjectListPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_CREATE,
+    element: <CreateProjectPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_EDIT,
+    element: <EditProjectPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_DETAIL,
+    element: <ProjectDetailPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_RENEWAL_TYPES,
+    element: <RenewalTypesPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.CLIENT_PROJECTS,
+    element: <ClientProjectsPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+    roles: ["CLIENT"],
+  },
+  {
+    path: ROUTES_CONFIG.USER.CLIENT_PROJECT_DETAIL,
+    element: <ClientProjectDetailPage />,
+    moduleCode: "PROJECT_MANAGEMENT",
+    roles: ["CLIENT"],
   },
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,

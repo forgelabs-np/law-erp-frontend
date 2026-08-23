@@ -59,7 +59,11 @@ const PARTY_TYPES: PartyType[] = [
   "APPLICANT",
 ];
 
-const REPRESENTATIONS: PartyRepresentation[] = ["REPRESENTED", "OPPOSING", "SELF"];
+const REPRESENTATIONS: PartyRepresentation[] = [
+  "REPRESENTED",
+  "OPPOSING",
+  "SELF",
+];
 
 export const AddPartyModal = ({
   isOpen,
@@ -119,7 +123,11 @@ export const AddPartyModal = ({
     const timer = setTimeout(() => {
       setMatchLoading(true);
       matchPartyMutation.mutate(
-        { fullName: name, mobileNo: phone || undefined, email: mail || undefined },
+        {
+          fullName: name,
+          mobileNo: phone || undefined,
+          email: mail || undefined,
+        },
         {
           onSuccess: (response) => setMatches(response?.data?.data ?? []),
           onSettled: () => setMatchLoading(false),
@@ -210,7 +218,11 @@ export const AddPartyModal = ({
                   name="email"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} type="email" placeholder="name@mail.com" />
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder="name@mail.com"
+                    />
                   )}
                 />
               </Box>
@@ -218,7 +230,9 @@ export const AddPartyModal = ({
               {matchLoading && (
                 <HStack gap={2} color="gray.500">
                   <Spinner size="xs" />
-                  <Text fontSize="sm">Searching existing clients and parties...</Text>
+                  <Text fontSize="sm">
+                    Searching existing clients and parties...
+                  </Text>
                 </HStack>
               )}
 
@@ -257,7 +271,10 @@ export const AddPartyModal = ({
                         >
                           {PARTY_TYPES.map((type) => (
                             <option key={type} value={type}>
-                              {type.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}
+                              {type
+                                .replace(/_/g, " ")
+                                .toLowerCase()
+                                .replace(/\b\w/g, (c) => c.toUpperCase())}
                             </option>
                           ))}
                         </select>
@@ -293,7 +310,9 @@ export const AddPartyModal = ({
                         >
                           {REPRESENTATIONS.map((rep) => (
                             <option key={rep} value={rep}>
-                              {rep.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())}
+                              {rep
+                                .toLowerCase()
+                                .replace(/\b\w/g, (c) => c.toUpperCase())}
                             </option>
                           ))}
                         </select>

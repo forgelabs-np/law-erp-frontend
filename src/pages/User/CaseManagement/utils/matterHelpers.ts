@@ -52,7 +52,10 @@ export const formatTime = (value?: string | null): string => {
 };
 
 const toLabel = (value: string) =>
-  value.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  value
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 
 export const matterTypeLabel = (type?: MatterType | null): string => {
   if (!type) return "-";
@@ -81,7 +84,9 @@ export const representationLabel = (
   return toLabel(representation);
 };
 
-export const courtCaseStatusLabel = (status?: CourtCaseStatus | null): string => {
+export const courtCaseStatusLabel = (
+  status?: CourtCaseStatus | null
+): string => {
   if (!status) return "-";
   return toLabel(status);
 };

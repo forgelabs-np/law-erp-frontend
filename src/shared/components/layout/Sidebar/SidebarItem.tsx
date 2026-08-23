@@ -20,9 +20,9 @@ export const LinkItem = ({
   onClick,
   hasSubItems,
   isExpanded,
-}: SidebarItemProps & { 
-  isCollapsed?: boolean; 
-  hasSubItems?: boolean; 
+}: SidebarItemProps & {
+  isCollapsed?: boolean;
+  hasSubItems?: boolean;
   isExpanded?: boolean;
 }) => {
   const location = useLocation();
@@ -114,8 +114,8 @@ export const LinkItem = ({
 };
 
 export const SidebarItem = (
-  props: SidebarItemProps & { 
-    isCollapsed?: boolean; 
+  props: SidebarItemProps & {
+    isCollapsed?: boolean;
     moduleCode?: string;
     expandedModules?: string[];
   }
@@ -123,7 +123,8 @@ export const SidebarItem = (
   const location = useLocation();
   const subItems = props.subItems;
   const hasSubItems = Array.isArray(subItems) && subItems.length > 0;
-  const isExpanded = props.expandedModules?.includes(props.moduleCode || props.name) ?? false;
+  const isExpanded =
+    props.expandedModules?.includes(props.moduleCode || props.name) ?? false;
 
   // When collapsed, don't use accordion - just show the icon
   if (props.isCollapsed) {
@@ -132,13 +133,17 @@ export const SidebarItem = (
 
   return (
     <AccordionItem value={props.moduleCode || props.name} borderWidth="0">
-      <AccordionItemTrigger 
-        hasIndicator={false} 
-        py="0" 
+      <AccordionItemTrigger
+        hasIndicator={false}
+        py="0"
         cursor="pointer"
         disabled={!hasSubItems && !props.href}
       >
-        <LinkItem {...props} hasSubItems={hasSubItems} isExpanded={isExpanded} />
+        <LinkItem
+          {...props}
+          hasSubItems={hasSubItems}
+          isExpanded={isExpanded}
+        />
       </AccordionItemTrigger>
 
       {hasSubItems && (
@@ -205,7 +210,9 @@ export const SidebarItem = (
                           width="5px"
                           height="5px"
                           borderRadius="full"
-                          background={subItemActive ? "primary.500" : "gray.400"}
+                          background={
+                            subItemActive ? "primary.500" : "gray.400"
+                          }
                           transform="translateX(-2.5px)"
                         />
                       </Box>

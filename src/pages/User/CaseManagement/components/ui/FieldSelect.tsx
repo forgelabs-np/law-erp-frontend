@@ -33,13 +33,18 @@ export const FieldSelect = ({
       borderRadius="md"
       p={size === "sm" ? 1 : 2}
       bg="white"
-      _focusWithin={{ borderColor: "blue.400", boxShadow: "0 0 0 1px blue.400" }}
+      _focusWithin={{
+        borderColor: "blue.400",
+        boxShadow: "0 0 0 1px blue.400",
+      }}
       opacity={disabled ? 0.6 : 1}
     >
       <select
         value={value}
         disabled={disabled}
-        onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+          onChange(e.target.value)
+        }
         style={{
           width: w,
           background: "transparent",

@@ -41,7 +41,11 @@ const buildMonthCells = (year: number, month: number): NepaliDateParts[] => {
   const daysInPrev = getNepaliDaysInMonth(prevYear, prevMonth);
 
   for (let i = 0; i < leading; i++) {
-    cells.push({ year: prevYear, month: prevMonth, day: daysInPrev - leading + 1 + i });
+    cells.push({
+      year: prevYear,
+      month: prevMonth,
+      day: daysInPrev - leading + 1 + i,
+    });
   }
   for (let day = 1; day <= daysInMonth; day++) {
     cells.push({ year, month, day });
@@ -62,7 +66,12 @@ const formatForApi = (date: NepaliDateParts): string => {
   return `${date.year}-${date.month + 1}-${date.day}`;
 };
 
-export const NepaliDatePicker = ({ value, onChange, placeholder = "Select BS date", disabled }: NepaliDatePickerProps) => {
+export const NepaliDatePicker = ({
+  value,
+  onChange,
+  placeholder = "Select BS date",
+  disabled,
+}: NepaliDatePickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState<NepaliDateParts>(
     value || { year: 2083, month: 4, day: 1 }
@@ -94,7 +103,11 @@ export const NepaliDatePicker = ({ value, onChange, placeholder = "Select BS dat
   const displayValue = value ? formatDateForDisplay(value) : "";
 
   return (
-    <PopoverRoot open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} positioning={{ placement: "bottom-start" }}>
+    <PopoverRoot
+      open={isOpen}
+      onOpenChange={(e) => setIsOpen(e.open)}
+      positioning={{ placement: "bottom-start" }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -147,7 +160,8 @@ export const NepaliDatePicker = ({ value, onChange, placeholder = "Select BS dat
               color="#1F2937"
               fontFamily={NEPALI_FONT_STACK}
             >
-              {NEPALI_MONTH_NAMES[currentMonth.month]} {toNepaliDigits(currentMonth.year)}
+              {NEPALI_MONTH_NAMES[currentMonth.month]}{" "}
+              {toNepaliDigits(currentMonth.year)}
             </Text>
             <Button
               variant="ghost"

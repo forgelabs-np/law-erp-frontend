@@ -47,7 +47,8 @@ const EventBlock = ({ event }: { event: CalendarEvent }) => {
   const endMins = timeToMinutes(endTime);
   const top = minutesToPx(startMins);
   const height = ((endMins - startMins) / 60) * HOUR_HEIGHT;
-  const colorKey: "blue" | "purple" = event.eventType === "PESHI" ? "purple" : "blue";
+  const colorKey: "blue" | "purple" =
+    event.eventType === "PESHI" ? "purple" : "blue";
   const colors = COLOR_MAP[colorKey];
 
   return (

@@ -1,10 +1,4 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
 import { LucideIcon } from "lucide-react";
 
 interface PageHeaderCardProps {

@@ -64,15 +64,21 @@ const CourtCaseDetailPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
 
-  const { data: courtCase, isLoading, isError } = useGetCourtCaseQuery(
-    courtCaseRef ?? ""
-  );
+  const {
+    data: courtCase,
+    isLoading,
+    isError,
+  } = useGetCourtCaseQuery(courtCaseRef ?? "");
   const { data: events = [] } = useGetCourtCaseEventsQuery(courtCaseRef ?? "");
   const { data: matter } = useGetMatterQuery(matterNumber ?? "");
 
   // Hearing status query - using courtCaseNumber as caseNoInternal
   const caseNoInternal = courtCase?.courtCaseNumber;
-  const { data: hearingStatus, isLoading: hearingLoading, refetch: refetchHearing } = useCaseHearingStatus(caseNoInternal ?? "");
+  const {
+    data: hearingStatus,
+    isLoading: hearingLoading,
+    refetch: refetchHearing,
+  } = useCaseHearingStatus(caseNoInternal ?? "");
   const [isRefreshingHearing, setIsRefreshingHearing] = useState(false);
 
   const updateStageMutation = useUpdateCourtCaseStageMutation();
@@ -104,7 +110,10 @@ const CourtCaseDetailPage = () => {
         <Text fontSize="lg" fontWeight="500" color="gray.600">
           Court case not found
         </Text>
-        <Button variant="outline" onClick={() => navigate(`/cases/${matterNumber ?? ""}`)}>
+        <Button
+          variant="outline"
+          onClick={() => navigate(`/cases/${matterNumber ?? ""}`)}
+        >
           Back to Matter
         </Button>
       </VStack>
@@ -154,7 +163,14 @@ const CourtCaseDetailPage = () => {
   return (
     <Stack gap={8} padding={8} bg="gray.50" minH="100vh">
       {/* Header */}
-      <Box bg="white" borderRadius="xl" border="1px solid" borderColor="gray.200" boxShadow="sm" p={6}>
+      <Box
+        bg="white"
+        borderRadius="xl"
+        border="1px solid"
+        borderColor="gray.200"
+        boxShadow="sm"
+        p={6}
+      >
         <HStack gap={2} mb={4}>
           <Button
             variant="ghost"
@@ -163,15 +179,27 @@ const CourtCaseDetailPage = () => {
           >
             <ArrowLeft size={14} /> Matter
           </Button>
-          <Text fontSize="sm" color="gray.500">/</Text>
+          <Text fontSize="sm" color="gray.500">
+            /
+          </Text>
           <Text fontSize="sm" color="gray.900" fontWeight="600">
             {courtCase.ourCourtCaseRef}
           </Text>
         </HStack>
 
-        <HStack justify="space-between" align="flex-start" flexWrap="wrap" gap={4}>
+        <HStack
+          justify="space-between"
+          align="flex-start"
+          flexWrap="wrap"
+          gap={4}
+        >
           <Stack gap={3}>
-            <Text fontSize="2xl" fontWeight="700" color="gray.900" fontFamily="monospace">
+            <Text
+              fontSize="2xl"
+              fontWeight="700"
+              color="gray.900"
+              fontFamily="monospace"
+            >
               {courtCase.ourCourtCaseRef}
             </Text>
             <HStack gap={2} flexWrap="wrap">
@@ -181,45 +209,70 @@ const CourtCaseDetailPage = () => {
             </HStack>
           </Stack>
           <HStack gap={2}>
-            <Button variant="outline" size="sm" onClick={() => setIsEventFormOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEventFormOpen(true)}
+            >
               <Calendar size={14} /> Schedule Event
             </Button>
             {!courtCase.judgmentSummary && (
-              <Button variant="outline" size="sm" onClick={() => setIsJudgmentOpen(true)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsJudgmentOpen(true)}
+              >
                 <Gavel size={14} /> Record Judgment
               </Button>
             )}
           </HStack>
         </HStack>
 
-        <Box bg="gray.50" borderRadius="lg" p={4} border="1px solid" borderColor="gray.100" mt={6}>
+        <Box
+          bg="gray.50"
+          borderRadius="lg"
+          p={4}
+          border="1px solid"
+          borderColor="gray.100"
+          mt={6}
+        >
           <HStack gap={6} flexWrap="wrap">
             <HStack gap={2}>
-              <Text fontSize="sm" color="gray.500">Court:</Text>
+              <Text fontSize="sm" color="gray.500">
+                Court:
+              </Text>
               <Text fontSize="sm" fontWeight="600" color="gray.900">
                 {courtCase.courtName} ({courtCase.courtLevel})
               </Text>
             </HStack>
             <HStack gap={2}>
-              <Text fontSize="sm" color="gray.500">Case No.:</Text>
+              <Text fontSize="sm" color="gray.500">
+                Case No.:
+              </Text>
               <Text fontSize="sm" fontWeight="600" color="gray.900">
                 {courtCase.courtCaseNumber}
               </Text>
             </HStack>
             <HStack gap={2}>
-              <Text fontSize="sm" color="gray.500">Filed:</Text>
+              <Text fontSize="sm" color="gray.500">
+                Filed:
+              </Text>
               <Text fontSize="sm" fontWeight="600" color="gray.900">
                 {formatDate(courtCase.filingDate)}
               </Text>
             </HStack>
             <HStack gap={2}>
-              <Text fontSize="sm" color="gray.500">Judge:</Text>
+              <Text fontSize="sm" color="gray.500">
+                Judge:
+              </Text>
               <Text fontSize="sm" fontWeight="600" color="gray.900">
                 {courtCase.judgeName || "-"}
               </Text>
             </HStack>
             <HStack gap={2}>
-              <Text fontSize="sm" color="gray.500">Events:</Text>
+              <Text fontSize="sm" color="gray.500">
+                Events:
+              </Text>
               <Text fontSize="sm" fontWeight="600" color="gray.900">
                 {events.length}
               </Text>
@@ -255,69 +308,140 @@ const CourtCaseDetailPage = () => {
               <StageChangeMenu
                 currentStage={courtCase.stage}
                 matterType={matter?.matterType ?? "CIVIL"}
-                disabled={courtCase.status === "CLOSED" || courtCase.status === "DECIDED"}
+                disabled={
+                  courtCase.status === "CLOSED" ||
+                  courtCase.status === "DECIDED"
+                }
                 onStageChange={handleStageChange}
               />
             </HStack>
             <Text fontSize="xs" color="gray.500" mt={3}>
-              The backend validates every stage transition. Invalid transitions show the
-              court&apos;s business rule message.
+              The backend validates every stage transition. Invalid transitions
+              show the court&apos;s business rule message.
             </Text>
           </SectionCard>
 
           <SectionCard title="Case Information" icon={FileText}>
-            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={4}>
+            <Grid
+              templateColumns={{
+                base: "1fr",
+                md: "repeat(2, 1fr)",
+                lg: "repeat(3, 1fr)",
+              }}
+              gap={4}
+            >
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Relation
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{relationTypeLabel(courtCase.relationType)}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {relationTypeLabel(courtCase.relationType)}
+                </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Court Level
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{courtCase.courtLevel}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {courtCase.courtLevel}
+                </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Status
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{courtCase.status}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {courtCase.status}
+                </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Court Name
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{courtCase.courtName}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {courtCase.courtName}
+                </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Court Case Number
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{courtCase.courtCaseNumber}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {courtCase.courtCaseNumber}
+                </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Filing Date
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{formatDate(courtCase.filingDate)}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {formatDate(courtCase.filingDate)}
+                </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Advocate
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{courtCase.advocateId ? "Assigned" : "-"}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {courtCase.advocateId ? "Assigned" : "-"}
+                </Text>
               </Box>
               <Box>
-                <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                <Text
+                  fontSize="xs"
+                  fontWeight="600"
+                  color="gray.500"
+                  textTransform="uppercase"
+                >
                   Judge
                 </Text>
-                <Text fontSize="sm" fontWeight="600">{courtCase.judgeName || "-"}</Text>
+                <Text fontSize="sm" fontWeight="600">
+                  {courtCase.judgeName || "-"}
+                </Text>
               </Box>
               {courtCase.partyIsState !== undefined && (
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Party is State
                   </Text>
                   <Text fontSize="sm" fontWeight="600">
@@ -333,24 +457,52 @@ const CourtCaseDetailPage = () => {
             courtCase.mediationOutcome ||
             courtCase.writtenStatementDeadline) && (
             <SectionCard title="Civil Case Details" icon={FileText}>
-              <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={4}>
+              <Grid
+                templateColumns={{
+                  base: "1fr",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(3, 1fr)",
+                }}
+                gap={4}
+              >
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Mediation Date
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{formatDate(courtCase.mediationDate)}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {formatDate(courtCase.mediationDate)}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Mediation Outcome
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{courtCase.mediationOutcome || "-"}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {courtCase.mediationOutcome || "-"}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Written Statement Deadline
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{formatDate(courtCase.writtenStatementDeadline)}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {formatDate(courtCase.writtenStatementDeadline)}
+                  </Text>
                 </Box>
               </Grid>
             </SectionCard>
@@ -365,48 +517,104 @@ const CourtCaseDetailPage = () => {
             courtCase.chargeSheetDate ||
             courtCase.bailStatus) && (
             <SectionCard title="Criminal Case Details" icon={FileText}>
-              <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={4}>
+              <Grid
+                templateColumns={{
+                  base: "1fr",
+                  md: "repeat(2, 1fr)",
+                  lg: "repeat(3, 1fr)",
+                }}
+                gap={4}
+              >
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     FIR Number
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{courtCase.firNumber || "-"}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {courtCase.firNumber || "-"}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     FIR Date
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{formatDate(courtCase.firDate)}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {formatDate(courtCase.firDate)}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Police Station
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{courtCase.policeStation || "-"}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {courtCase.policeStation || "-"}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Investigation Authority
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{courtCase.investigationAuthority || "-"}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {courtCase.investigationAuthority || "-"}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Arrest Date
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{formatDate(courtCase.arrestDate)}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {formatDate(courtCase.arrestDate)}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Charge Sheet Date
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{formatDate(courtCase.chargeSheetDate)}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {formatDate(courtCase.chargeSheetDate)}
+                  </Text>
                 </Box>
                 <Box>
-                  <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+                  <Text
+                    fontSize="xs"
+                    fontWeight="600"
+                    color="gray.500"
+                    textTransform="uppercase"
+                  >
                     Bail Status
                   </Text>
-                  <Text fontSize="sm" fontWeight="600">{courtCase.bailStatus || "-"}</Text>
+                  <Text fontSize="sm" fontWeight="600">
+                    {courtCase.bailStatus || "-"}
+                  </Text>
                 </Box>
               </Grid>
             </SectionCard>
@@ -415,7 +623,13 @@ const CourtCaseDetailPage = () => {
           {/* Judgment */}
           {(courtCase.judgmentDate || courtCase.judgmentSummary) && (
             <SectionCard title="Judgment" icon={Gavel}>
-              <Box p={4} bg="green.50" border="1px solid" borderColor="green.200" borderRadius="lg">
+              <Box
+                p={4}
+                bg="green.50"
+                border="1px solid"
+                borderColor="green.200"
+                borderRadius="lg"
+              >
                 <Text fontSize="sm" fontWeight="700" color="green.800" mb={1}>
                   Delivered on {formatDate(courtCase.judgmentDate)}
                 </Text>
@@ -461,23 +675,55 @@ const CourtCaseDetailPage = () => {
                 {parties.map((party) => {
                   const role = roles.find((r) => r.matterPartyId === party.id);
                   return (
-                    <HStack key={party.id} p={4} bg="gray.50" borderRadius="lg" justify="space-between" flexWrap="wrap" gap={3}>
+                    <HStack
+                      key={party.id}
+                      p={4}
+                      bg="gray.50"
+                      borderRadius="lg"
+                      justify="space-between"
+                      flexWrap="wrap"
+                      gap={3}
+                    >
                       <Text fontSize="sm" fontWeight="600" color="gray.900">
                         {party.fullName}
                       </Text>
                       <HStack gap={2} flexWrap="wrap">
                         {role && (
                           <>
-                            <Badge bg="blue.100" color="blue.700" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+                            <Badge
+                              bg="blue.100"
+                              color="blue.700"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                              fontSize="xs"
+                              fontWeight="600"
+                            >
                               {role.roleType.replace(/_/g, " ")}
                             </Badge>
-                            <Badge bg="purple.100" color="purple.700" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+                            <Badge
+                              bg="purple.100"
+                              color="purple.700"
+                              px={3}
+                              py={1}
+                              borderRadius="full"
+                              fontSize="xs"
+                              fontWeight="600"
+                            >
                               {role.representation.replace(/_/g, " ")}
                             </Badge>
                           </>
                         )}
                         {party.isOurClient && (
-                          <Badge bg="green.100" color="green.700" px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+                          <Badge
+                            bg="green.100"
+                            color="green.700"
+                            px={3}
+                            py={1}
+                            borderRadius="full"
+                            fontSize="xs"
+                            fontWeight="600"
+                          >
                             Our Client
                           </Badge>
                         )}
@@ -508,7 +754,9 @@ const CourtCaseDetailPage = () => {
           setIsEventFormOpen(false);
           setSelectedEvent(null);
         }}
-        isSubmitting={createEventMutation.isPending || updateEventMutation.isPending}
+        isSubmitting={
+          createEventMutation.isPending || updateEventMutation.isPending
+        }
         initialData={selectedEvent}
         onSubmit={(data) => {
           if (selectedEvent) {

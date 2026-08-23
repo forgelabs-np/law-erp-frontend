@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Input,
-  Textarea,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Input, Textarea, Text, VStack } from "@chakra-ui/react";
 import {
   DialogRoot,
   DialogContent,
@@ -68,8 +61,7 @@ export const JudgmentModal = ({
     onSubmit({
       judgmentDate: values.judgmentDate,
       judgmentSummary: values.judgmentSummary.trim(),
-      decisionInFavorOfPartyId:
-        values.decisionInFavorOfPartyId || undefined,
+      decisionInFavorOfPartyId: values.decisionInFavorOfPartyId || undefined,
       partyIsState: values.partyIsState,
     });
   };

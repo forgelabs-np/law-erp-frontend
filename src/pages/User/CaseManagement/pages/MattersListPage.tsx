@@ -18,7 +18,10 @@ import { Tooltip } from "@/shared/components/ui";
 import { FieldSelect } from "../components/ui";
 
 import { useGetMattersQuery } from "../api/matter.api";
-import { MatterFilters as MatterFiltersType, MatterSummary } from "../types/matter.types";
+import {
+  MatterFilters as MatterFiltersType,
+  MatterSummary,
+} from "../types/matter.types";
 import { formatDate } from "../utils/matterHelpers";
 import { MatterStatusBadge, MatterTypeBadge } from "../components/MatterBadges";
 
@@ -131,7 +134,12 @@ const MattersListPage = () => {
 
   return (
     <Stack gap={6} padding={8}>
-      <HStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={4}>
+      <HStack
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+        gap={4}
+      >
         <Stack gap={2}>
           <Text textStyle="heading_4">All Matters</Text>
           <Text textStyle="paragraph_regular" color="gray.500">
@@ -140,7 +148,10 @@ const MattersListPage = () => {
         </Stack>
 
         <HStack gap={2}>
-          <Button variant="outline" onClick={() => navigate("/case-management")}>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/case-management")}
+          >
             Dashboard
           </Button>
           <Button variant="primary" onClick={() => navigate("/cases/create")}>
@@ -169,7 +180,10 @@ const MattersListPage = () => {
             value={filters.matterType ?? ""}
             onChange={(value) =>
               updateFilters({
-                matterType: (value || undefined) as "CIVIL" | "CRIMINAL" | undefined,
+                matterType: (value || undefined) as
+                  | "CIVIL"
+                  | "CRIMINAL"
+                  | undefined,
               })
             }
             placeholder="All Types"
@@ -183,7 +197,11 @@ const MattersListPage = () => {
             value={filters.status ?? ""}
             onChange={(value) =>
               updateFilters({
-                status: (value || undefined) as "ACTIVE" | "DORMANT" | "CLOSED" | undefined,
+                status: (value || undefined) as
+                  | "ACTIVE"
+                  | "DORMANT"
+                  | "CLOSED"
+                  | undefined,
               })
             }
             placeholder="All Statuses"
@@ -225,7 +243,8 @@ const MattersListPage = () => {
             Clear Filters
           </Button>
         </VStack>
-      ) : !isLoading && (!mattersData?.content || mattersData.content.length === 0) ? (
+      ) : !isLoading &&
+        (!mattersData?.content || mattersData.content.length === 0) ? (
         <VStack py={12} gap={4}>
           <Text fontSize="lg" fontWeight="500" color="gray.600">
             No matters created yet

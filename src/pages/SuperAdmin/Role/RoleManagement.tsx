@@ -1,33 +1,78 @@
-import { Button, HStack, Stack, Text, Avatar, Badge, Box, Grid, Flex, IconButton, VStack, useBreakpointValue, Input } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Stack,
+  Text,
+  Avatar,
+  Badge,
+  Box,
+  Grid,
+  Flex,
+  IconButton,
+  VStack,
+  useBreakpointValue,
+  Input,
+} from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import { useSuperAdminUsersQuery, UserResponseType } from "@/api/userManagement";
+import {
+  useSuperAdminUsersQuery,
+  UserResponseType,
+} from "@/api/userManagement";
 import { useGetFirmsQuery, FirmResponse } from "@/api/firmManagement";
-import { RefreshCw, Users, Shield, Building, Ban, ChevronRight, ShieldCheck, Users2Icon, ShieldBan, Building2Icon, BanIcon, Eye } from "lucide-react";
-import { Datatable, FormProvider, ReactSelect, SearchInput } from "@/shared/components";
+import {
+  RefreshCw,
+  Users,
+  Shield,
+  Building,
+  Ban,
+  ChevronRight,
+  ShieldCheck,
+  Users2Icon,
+  ShieldBan,
+  Building2Icon,
+  BanIcon,
+  Eye,
+} from "lucide-react";
+import {
+  Datatable,
+  FormProvider,
+  ReactSelect,
+  SearchInput,
+} from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { Tooltip } from "@/shared/components/ui";
 
 // StatCard Component
 interface StatCardProps {
-  icon: React.ComponentType<{ size?: number | string; color?: string; className?: string }>;
+  icon: React.ComponentType<{
+    size?: number | string;
+    color?: string;
+    className?: string;
+  }>;
   label: string;
   value: number;
   description: string;
   color: string;
 }
 
-const StatCard = ({ icon: Icon, label, value, description, color }: StatCardProps) => {
+const StatCard = ({
+  icon: Icon,
+  label,
+  value,
+  description,
+  color,
+}: StatCardProps) => {
   const colorMap: Record<string, string> = {
     blue: "blue.500",
     purple: "purple.500",
     green: "green.500",
     red: "red.500",
   };
-  
+
   const bgMap: Record<string, string> = {
     blue: "blue.50",
     purple: "purple.50",
@@ -86,7 +131,11 @@ const RoleSetup = () => {
     defaultValues: { userType: "", firm: "" },
   });
 
-  const { data: usersData, isLoading, refetch } = useSuperAdminUsersQuery({
+  const {
+    data: usersData,
+    isLoading,
+    refetch,
+  } = useSuperAdminUsersQuery({
     page: 1,
     pageSize: 10,
     q: searchQuery,
@@ -115,15 +164,21 @@ const RoleSetup = () => {
   ];
 
   // We fallback to checking if it's paginated, but if not we just use array
-  const list: UserResponseType[] = Array.isArray(usersData) ? usersData : usersData?.datalist ?? [];
-  const totalRecords = Array.isArray(usersData) ? usersData.length : usersData?.totalRecords ?? 0;
-  const pageCount = Array.isArray(usersData) ? 1 : usersData?.totalPages ?? 1;
+  const list: UserResponseType[] = Array.isArray(usersData)
+    ? usersData
+    : (usersData?.datalist ?? []);
+  const totalRecords = Array.isArray(usersData)
+    ? usersData.length
+    : (usersData?.totalRecords ?? 0);
+  const pageCount = Array.isArray(usersData) ? 1 : (usersData?.totalPages ?? 1);
 
   // Calculate statistics
   const totalUsers = totalRecords;
-  const uniqueRoles = new Set(list.map(user => user.roleName).filter(Boolean)).size;
-  const uniqueFirms = new Set(list.map(user => user.firmName).filter(Boolean)).size;
-  const blockedUsers = list.filter(user => user.isBlocked).length;
+  const uniqueRoles = new Set(list.map((user) => user.roleName).filter(Boolean))
+    .size;
+  const uniqueFirms = new Set(list.map((user) => user.firmName).filter(Boolean))
+    .size;
+  const blockedUsers = list.filter((user) => user.isBlocked).length;
 
   const columns: Array<ColumnDef<UserResponseType>> = useMemo(
     () => [
@@ -136,8 +191,12 @@ const RoleSetup = () => {
               <Avatar.Fallback name={row.original.fullName} />
             </Avatar.Root>
             <Stack gap={0}>
-              <Text fontWeight="600" fontSize="md">{row.original.fullName}</Text>
-              <Text fontSize="sm" color="gray.500">@{row.original.username}</Text>
+              <Text fontWeight="600" fontSize="md">
+                {row.original.fullName}
+              </Text>
+              <Text fontSize="sm" color="gray.500">
+                @{row.original.username}
+              </Text>
               {row.original.isBlocked && (
                 <Badge size="sm" colorPalette="red" mt={1}>
                   Blocked
@@ -175,7 +234,9 @@ const RoleSetup = () => {
             PARALEGAL: "orange",
             CLIENT: "gray",
           };
-          const color = row.original.roleName ? roleColorMap[row.original.roleName] || "gray" : "gray";
+          const color = row.original.roleName
+            ? roleColorMap[row.original.roleName] || "gray"
+            : "gray";
           return row.original.roleName ? (
             <HStack gap={2}>
               {/* <ShieldCheck size={14} color={color === "gray" ? "gray" : undefined} /> */}
@@ -191,18 +252,21 @@ const RoleSetup = () => {
       {
         accessorKey: "firmName",
         header: "Firm",
-        cell: ({ row }) => (
+        cell: ({ row }) =>
           row.original.firmName ? (
             <Stack gap={0}>
-              <Text fontWeight="600" fontSize="sm">{row.original.firmName}</Text>
+              <Text fontWeight="600" fontSize="sm">
+                {row.original.firmName}
+              </Text>
               {row.original.firmCode && (
-                <Text fontSize="xs" color="gray.500">{row.original.firmCode}</Text>
+                <Text fontSize="xs" color="gray.500">
+                  {row.original.firmCode}
+                </Text>
               )}
             </Stack>
           ) : (
             <Text color="gray.400">—</Text>
-          )
-        ),
+          ),
       },
       {
         accessorKey: "isActive",
@@ -223,19 +287,24 @@ const RoleSetup = () => {
         header: "Action",
         cell: ({ row }) => (
           <Tooltip content="View Role">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                         onClick={() => navigate(
-              ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(":userId", row.original.id),
-              { state: { user: row.original } }
-            )}
-                          aria-label="View Profile"
-                        >
-                          <Eye size={18} />
-                        </Button>
-                      </Tooltip>
-          
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() =>
+                navigate(
+                  ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(
+                    ":userId",
+                    row.original.id
+                  ),
+                  { state: { user: row.original } }
+                )
+              }
+              aria-label="View Profile"
+            >
+              <Eye size={18} />
+            </Button>
+          </Tooltip>
+
           // <Button
           //   size="sm"
           //   variant="ghost"
@@ -277,7 +346,10 @@ const RoleSetup = () => {
       </Flex>
 
       {/* Statistics Cards */}
-      <Grid templateColumns={{ base: "1fr", md: "2fr 2fr", lg: "1fr 1fr 1fr 1fr" }} gap={4}>
+      <Grid
+        templateColumns={{ base: "1fr", md: "2fr 2fr", lg: "1fr 1fr 1fr 1fr" }}
+        gap={4}
+      >
         <StatCard
           icon={Users2Icon}
           label="Total Users"
@@ -437,24 +509,39 @@ const RoleSetup = () => {
                     <Avatar.Fallback name={user.fullName} />
                   </Avatar.Root>
                   <Stack gap={1} flex="1">
-                    <Text fontWeight="600" fontSize="md">{user.fullName}</Text>
-                    <Text fontSize="sm" color="gray.500">@{user.username}</Text>
+                    <Text fontWeight="600" fontSize="md">
+                      {user.fullName}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      @{user.username}
+                    </Text>
                     {user.isBlocked && (
-                      <Badge size="sm" colorPalette="red" mt={1} width="fit-content">
+                      <Badge
+                        size="sm"
+                        colorPalette="red"
+                        mt={1}
+                        width="fit-content"
+                      >
                         Blocked
                       </Badge>
                     )}
                   </Stack>
                 </Flex>
-                
+
                 <VStack gap={3} align="stretch">
                   <Flex justify="space-between" align="center">
-                    <Text fontSize="sm" color="gray.500">User Type</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      User Type
+                    </Text>
                     <Badge
                       colorPalette={
-                        user.userType === "SUPER_ADMIN" ? "purple" :
-                        user.userType === "FIRM_USER" ? "blue" :
-                        user.userType === "CLIENT" ? "orange" : "gray"
+                        user.userType === "SUPER_ADMIN"
+                          ? "purple"
+                          : user.userType === "FIRM_USER"
+                            ? "blue"
+                            : user.userType === "CLIENT"
+                              ? "orange"
+                              : "gray"
                       }
                       px={2}
                       py={1}
@@ -464,19 +551,25 @@ const RoleSetup = () => {
                       {user.userType}
                     </Badge>
                   </Flex>
-                  
+
                   <Flex justify="space-between" align="center">
-                    <Text fontSize="sm" color="gray.500">Role</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Role
+                    </Text>
                     {user.roleName ? (
                       <HStack gap={1}>
                         <ShieldCheck size={12} color="gray" />
                         <Badge
                           colorPalette={
-                            user.roleName === "SUPER_ADMIN" ? "purple" :
-                            user.roleName === "FIRM_ADMIN" ? "indigo" :
-                            user.roleName === "LAWYER" ? "green" :
-                            user.roleName === "PARALEGAL" ? "orange" :
-                            "gray"
+                            user.roleName === "SUPER_ADMIN"
+                              ? "purple"
+                              : user.roleName === "FIRM_ADMIN"
+                                ? "indigo"
+                                : user.roleName === "LAWYER"
+                                  ? "green"
+                                  : user.roleName === "PARALEGAL"
+                                    ? "orange"
+                                    : "gray"
                           }
                           px={2}
                           py={1}
@@ -487,22 +580,32 @@ const RoleSetup = () => {
                         </Badge>
                       </HStack>
                     ) : (
-                      <Text color="gray.400" fontSize="sm">—</Text>
+                      <Text color="gray.400" fontSize="sm">
+                        —
+                      </Text>
                     )}
                   </Flex>
-                  
+
                   {user.firmName && (
                     <Box>
-                      <Text fontSize="sm" color="gray.500" mb={1}>Firm</Text>
-                      <Text fontWeight="600" fontSize="sm">{user.firmName}</Text>
+                      <Text fontSize="sm" color="gray.500" mb={1}>
+                        Firm
+                      </Text>
+                      <Text fontWeight="600" fontSize="sm">
+                        {user.firmName}
+                      </Text>
                       {user.firmCode && (
-                        <Text fontSize="xs" color="gray.500">{user.firmCode}</Text>
+                        <Text fontSize="xs" color="gray.500">
+                          {user.firmCode}
+                        </Text>
                       )}
                     </Box>
                   )}
-                  
+
                   <Flex justify="space-between" align="center">
-                    <Text fontSize="sm" color="gray.500">Status</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      Status
+                    </Text>
                     <Badge
                       colorPalette={user.isBlocked ? "red" : "green"}
                       px={2}
@@ -513,16 +616,21 @@ const RoleSetup = () => {
                       {user.isBlocked ? "Blocked" : "Active"}
                     </Badge>
                   </Flex>
-                  
+
                   <Button
                     size="sm"
                     variant="ghost"
                     width="full"
                     mt={2}
-                    onClick={() => navigate(
-                      ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(":userId", user.id),
-                      { state: { user } }
-                    )}
+                    onClick={() =>
+                      navigate(
+                        ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(
+                          ":userId",
+                          user.id
+                        ),
+                        { state: { user } }
+                      )
+                    }
                   >
                     <HStack gap={2} justify="center">
                       <Text>View Role</Text>
@@ -534,11 +642,7 @@ const RoleSetup = () => {
             ))}
           </VStack>
         ) : (
-          <Datatable
-            isLoading={isLoading}
-            columns={columns}
-            data={list}
-          />
+          <Datatable isLoading={isLoading} columns={columns} data={list} />
         )}
       </Box>
     </Stack>

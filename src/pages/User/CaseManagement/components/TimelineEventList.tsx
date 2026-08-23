@@ -16,21 +16,14 @@ interface TimelineEventListProps {
   maxH?: string | number | Record<string, string | number>;
 }
 
-export const TimelineEventList = ({
-  groups,
-  maxH,
-}: TimelineEventListProps) => {
+export const TimelineEventList = ({ groups, maxH }: TimelineEventListProps) => {
   const totalEvents = groups.reduce(
     (total, group) => total + group.events.length,
     0
   );
 
   return (
-    <Box
-      maxH={maxH}
-      overflowY="auto"
-      pr={2}
-    >
+    <Box maxH={maxH} overflowY="auto" pr={2}>
       <Box position="relative">
         {/* Continuous timeline line */}
         {totalEvents > 1 && (
@@ -58,4 +51,4 @@ export const TimelineEventList = ({
       </Box>
     </Box>
   );
-};  
+};

@@ -40,7 +40,13 @@ export const NextEventBanner = ({ event, mt }: NextEventBannerProps) => {
           <CalendarClock size={18} />
         </Box>
         <Stack gap={0}>
-          <Text fontSize="xs" fontWeight="600" color="blue.600" textTransform="uppercase" letterSpacing="0.05em">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="blue.600"
+            textTransform="uppercase"
+            letterSpacing="0.05em"
+          >
             Next Court Date
           </Text>
           <HStack gap={2} flexWrap="wrap">
