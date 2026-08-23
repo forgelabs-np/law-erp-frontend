@@ -133,6 +133,7 @@ export const api = {
     DASHBOARD: "projects/dashboard",
     PROJECTS: "projects",
     PROJECT_BY_CODE: "projects/{projectCode}",
+    PROJECT_DELETE: "projects/{projectCode}",
     PROJECT_STATUS: "projects/{projectCode}/status",
     PROJECT_MEMBERS: "projects/{projectCode}/members",
     PROJECT_MEMBER_DELETE: "projects/{projectCode}/members/{userId}",

@@ -18,7 +18,10 @@ import {
 } from "@/shared/components/ui/Dialog";
 import { useEffect, useState } from "react";
 
-import { CreateCredentialRequest, ProjectCredential } from "../types/project.types";
+import {
+  CreateCredentialRequest,
+  ProjectCredential,
+} from "../types/project.types";
 
 interface AddCredentialModalProps {
   isOpen: boolean;

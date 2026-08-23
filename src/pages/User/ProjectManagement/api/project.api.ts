@@ -20,6 +20,7 @@ import {
   RevealCredentialResponse,
   Renewal,
   RenewalInstance,
+  RenewalStatus,
   RenewalType,
   UpdateProjectRequest,
   UpdateRenewalInstanceRequest,
@@ -230,6 +231,31 @@ export const useChangeProjectStatusMutation = () => {
       toastFail(
         error?.response?.data?.message ?? "Failed to update project status"
       );
+    },
+  });
+};
+
+// ============================================================
+// Delete Project
+// ============================================================
+
+const deleteProject = (projectCode: string) => {
+  return LawFirmCRMClient.delete<ApiResponse<void>>(
+    api.PROJECT_MANAGEMENT.PROJECT_DELETE.replace("{projectCode}", projectCode)
+  );
+};
+
+export const useDeleteProjectMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteProject,
+    onSuccess: () => {
+      toastSuccess("Project deleted successfully");
+      queryClient.invalidateQueries({ queryKey: projectKeys.projects() });
+      queryClient.invalidateQueries({ queryKey: projectKeys.dashboard });
+    },
+    onError: (error: any) => {
+      toastFail(error?.response?.data?.message ?? "Failed to delete project");
     },
   });
 };
@@ -648,7 +674,7 @@ const changeRenewalStatus = ({
 }: {
   projectCode: string;
   renewalId: number;
-  status: string;
+  status: RenewalStatus;
 }) => {
   return LawFirmCRMClient.patch<ApiResponse<Renewal>>(
     api.PROJECT_MANAGEMENT.RENEWAL_STATUS.replace(

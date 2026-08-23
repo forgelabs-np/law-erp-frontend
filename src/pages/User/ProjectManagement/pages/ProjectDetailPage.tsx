@@ -2,10 +2,13 @@ import {
   Badge,
   Box,
   Button,
+  Flex,
   Grid,
   HStack,
   IconButton,
   Input,
+  Separator,
+  SimpleGrid,
   Stack,
   Text,
   Textarea,
@@ -22,13 +25,17 @@ import {
   Eye,
   EyeOff,
   FileKey,
+  Lock,
   MoreVertical,
+  PauseCircle,
   Plus,
   RefreshCw,
+  Shield,
   Trash2,
   Users,
   XCircle,
 } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -43,6 +50,7 @@ import {
   useUpdateCredentialMutation,
   useDeleteCredentialMutation,
   useChangeProjectStatusMutation,
+  useDeleteProjectMutation,
   useAddProjectMemberMutation,
   useRemoveProjectMemberMutation,
   useCreateRenewalMutation,
@@ -58,6 +66,7 @@ import {
   ProjectCredential,
   ProjectMember,
   Renewal,
+  RenewalStatus,
   RenewalInstanceStatus,
   CreateCredentialRequest,
 } from "../types/project.types";
@@ -80,6 +89,8 @@ import { AddCredentialModal } from "../components/AddCredentialModal";
 import NoDataAvailable from "@/shared/components/NoDataAvailable/NoDataAvailable";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
+import { RiLockPasswordLine } from "react-icons/ri";
+
 
 // ============================================================
 // Status Badge
@@ -92,6 +103,55 @@ const ProjectStatusBadge = ({ status }: { status: ProjectStatus }) => {
   > = {
     ACTIVE: { bg: "green.50", color: "green.700", label: "Active" },
     ON_HOLD: { bg: "yellow.50", color: "yellow.700", label: "On Hold" },
+    COMPLETED: { bg: "blue.50", color: "blue.700", label: "Completed" },
+    CANCELLED: { bg: "gray.50", color: "gray.700", label: "Cancelled" },
+  };
+
+  const config = statusConfig[status] || statusConfig.ACTIVE;
+
+  return (
+    <Badge
+      px={2}
+      py={0.5}
+      borderRadius="full"
+      fontSize="xs"
+      fontWeight="600"
+      bg={config.bg}
+      color={config.color}
+    >
+      {config.label}
+    </Badge>
+  );
+};
+
+// ============================================================
+// Helpers
+// ============================================================
+
+const formatDateDisplay = (value?: string | null): string => {
+  if (!value) return "—";
+  try {
+    return format(parseISO(value), "dd MMM yyyy");
+  } catch {
+    return value;
+  }
+};
+
+const displayValue = (value?: string | null): string => {
+  if (!value || value.trim() === "") return "N/A";
+  return value;
+};
+
+// ============================================================
+// Renewal Status Badge
+// ============================================================
+
+const RenewalStatusBadge = ({ status }: { status: RenewalStatus }) => {
+  const statusConfig: Record<
+    RenewalStatus,
+    { bg: string; color: string; label: string }
+  > = {
+    ACTIVE: { bg: "green.50", color: "green.700", label: "Active" },
     COMPLETED: { bg: "blue.50", color: "blue.700", label: "Completed" },
     CANCELLED: { bg: "gray.50", color: "gray.700", label: "Cancelled" },
   };
@@ -261,75 +321,38 @@ const CredentialRow = ({
 
   return (
     <Box
-      p={4}
-      bg="gray.50"
-      borderRadius="md"
+      bg="white"
       border="1px solid"
       borderColor="gray.200"
+      borderRadius="lg"
+      overflow="hidden"
     >
-      <HStack
-        justify="space-between"
-        align="flex-start"
-        flexWrap="wrap"
-        gap={2}
-      >
-        <VStack align="flex-start" gap={1} flex={1} minW="200px">
-          <Text fontSize="sm" fontWeight="600" color="gray.900">
-            {credential.siteName}
-          </Text>
-          <Text fontSize="xs" color="gray.500">
-            {credential.siteType}
-          </Text>
-          {credential.siteUrl && (
-            <a
-              href={credential.siteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "12px",
-                color: "#3182ce",
-                textDecoration: "none",
-              }}
-            >
-              {credential.siteUrl}
-            </a>
-          )}
-          <Text fontSize="xs" color="gray.500">
-            {credential.usernameOrEmail}
-          </Text>
-        </VStack>
-        <VStack align="flex-start" gap={1}>
-          <HStack gap={2} align="center">
-            <Text
-              fontSize="sm"
-              fontFamily="monospace"
-              color="gray.900"
-              bg="white"
-              px={2}
-              py={1}
+      {/* ---- Card Body ---- */}
+      <Stack p={5} gap={4}>
+        {/* Header: Icon + Name + Actions */}
+        <Flex gap={3} align="center" justify="space-between">
+          <HStack gap={3} flex={1} minW="0">
+            <Flex
+              w={10}
+              h={10}
+              bg="primary.50"
               borderRadius="md"
-              border="1px solid"
-              borderColor="gray.200"
+              align="center"
+              justify="center"
+              flexShrink={0}
             >
-              {showPassword && revealedPassword
-                ? revealedPassword
-                : "••••••••••••"}
-            </Text>
-            <IconButton
-              size="xs"
-              variant="ghost"
-              onClick={handleReveal}
-              disabled={revealMutation.isPending}
-              aria-label={showPassword ? "Hide password" : "Reveal password"}
-            >
-              {revealMutation.isPending ? (
-                <RefreshCw size={14} className="animate-spin" />
-              ) : showPassword ? (
-                <EyeOff size={14} />
-              ) : (
-                <Eye size={14} />
-              )}
-            </IconButton>
+              <RiLockPasswordLine size={18} color="black" />
+            </Flex>
+            <VStack align="flex-start" gap={0} minW="0">
+              <Text fontSize="sm" fontWeight="600" color="gray.900">
+                {credential.siteName}
+              </Text>
+              <Text fontSize="xs" color="gray.500" >
+                {credential.siteType}
+              </Text>
+            </VStack>
+          </HStack>
+          <HStack gap={1}>
             <IconButton
               size="xs"
               variant="ghost"
@@ -348,19 +371,127 @@ const CredentialRow = ({
               <Trash2 size={14} />
             </IconButton>
           </HStack>
-        </VStack>
-      </HStack>
-      {credential.contactPerson && (
-        <Text fontSize="xs" color="gray.600" mt={2}>
-          Contact: {credential.contactPerson}
-          {credential.contactPhone && ` (${credential.contactPhone})`}
+        </Flex>
+
+        {/* Information Grid */}
+        <SimpleGrid
+          columns={{ base: 1, sm: 2 }}
+          gap={{ base: 3, md: 6 }}
+        >
+          <VStack align="flex-start" gap={0}>
+            <Text fontSize="xs" color="gray.500">
+              Username / Email
+            </Text>
+            <Text fontSize="sm" color="gray.800" >
+              {displayValue(credential.usernameOrEmail)}
+            </Text>
+          </VStack>
+          <VStack align="flex-start" gap={0}>
+            <Text fontSize="xs" color="gray.500">
+              Password
+            </Text>
+            <HStack gap={1} align="center">
+              <Text
+                fontSize="sm"
+                fontFamily="monospace"
+                color="gray.800"
+              >
+                {showPassword && revealedPassword
+                  ? revealedPassword
+                  : "••••••••••••"}
+              </Text>
+              <IconButton
+                size="xs"
+                variant="ghost"
+                onClick={handleReveal}
+                disabled={revealMutation.isPending}
+                aria-label={showPassword ? "Hide password" : "Reveal password"}
+              >
+                {revealMutation.isPending ? (
+                  <RefreshCw size={12} className="animate-spin" />
+                ) : showPassword ? (
+                  <EyeOff size={12} />
+                ) : (
+                  <Eye size={12} />
+                )}
+              </IconButton>
+            </HStack>
+          </VStack>
+          <VStack align="flex-start" gap={0}>
+            <Text fontSize="xs" color="gray.500">
+              Contact Person
+            </Text>
+            <Text fontSize="sm" color="gray.800" >
+              {displayValue(credential.contactPerson)}
+            </Text>
+          </VStack>
+          <VStack align="flex-start" gap={0}>
+            <Text fontSize="xs" color="gray.500">
+              Contact Email
+            </Text>
+            <Text fontSize="sm" color="gray.800"  >
+              {displayValue(credential.contactEmail)}
+            </Text>
+          </VStack>
+          <VStack align="flex-start" gap={0}>
+            <Text fontSize="xs" color="gray.500">
+              Contact Phone
+            </Text>
+            <Text fontSize="sm" color="gray.800" >
+              {displayValue(credential.contactPhone)}
+            </Text>
+          </VStack>
+          <VStack align="flex-start" gap={0}>
+            <Text fontSize="xs" color="gray.500">
+              Site URL
+            </Text>
+            {credential.siteUrl ? (
+              <a
+                href={credential.siteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: "14px",
+                  color: "#3182ce",
+                  textDecoration: "none",
+                  maxWidth: "100%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  display: "block",
+                  width: "100%",
+                }}
+              >
+                {credential.siteUrl}
+              </a>
+            ) : (
+              <Text fontSize="sm" color="gray.800">
+                N/A
+              </Text>
+            )}
+          </VStack>
+        </SimpleGrid>
+
+        {/* Notes */}
+        {credential.notes && credential.notes.trim() !== "" && (
+          <Box>
+            <Text fontSize="xs" color="gray.500" mb={1}>
+              Notes
+            </Text>
+            <Text fontSize="sm" color="gray.600">
+              {credential.notes}
+            </Text>
+          </Box>
+        )}
+      </Stack>
+
+      {/* ---- Footer ---- */}
+      <Separator borderColor="gray.200" />
+      <Flex px={5} py={3} justify="flex-end" align="center">
+        <Text fontSize="xs" color="gray.500">
+          Created {formatDateDisplay(credential.createdAt)}
         </Text>
-      )}
-      {credential.notes && (
-        <Text fontSize="xs" color="gray.600" mt={1}>
-          Notes: {credential.notes}
-        </Text>
-      )}
+      </Flex>
     </Box>
   );
 };
@@ -418,16 +549,16 @@ const CredentialsTab = ({ projectCode }: { projectCode: string }) => {
 
   if (isLoading) {
     return (
-      <Stack gap={3}>
+      <Stack gap={4}>
         {[1, 2, 3].map((i) => (
-          <Box key={i} h="80px" bg="gray.100" borderRadius="md" />
+          <Box key={i} h="200px" bg="gray.100" borderRadius="lg" />
         ))}
       </Stack>
     );
   }
 
   return (
-    <Stack gap={3}>
+    <Stack gap={4}>
       <HStack justify="flex-end">
         <Button variant="primary" size="sm" onClick={onAddDialogOpen}>
           <Plus size={16} color="white" /> Add Credential
@@ -582,9 +713,14 @@ const RenewalCard = ({
   const { data: renewalTypes } = useRenewalTypesQuery();
   const { data: employees } = useGetEmployeesQuery();
   const employeeList = employees?.content ?? [];
-  const [deleteActionStatus, setDeleteActionStatus] = useState<string | null>(
+  const [statusToChange, setStatusToChange] = useState<RenewalStatus | null>(
     null
   );
+  const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+
+  const availableStatuses: RenewalStatus[] = ["ACTIVE", "COMPLETED", "CANCELLED"].filter(
+    (s) => s !== renewal.status
+  ) as RenewalStatus[];
 
   const [formData, setFormData] = useState({
     renewalTypeId: renewal.renewalTypeId,
@@ -611,8 +747,9 @@ const RenewalCard = ({
     );
   };
 
-  const handleChangeStatus = (status: string) => {
-    setDeleteActionStatus(status);
+  const handleChangeStatus = (status: RenewalStatus) => {
+    setIsStatusMenuOpen(false);
+    setStatusToChange(status);
   };
 
   const handleUpdateInstance = (
@@ -630,75 +767,233 @@ const RenewalCard = ({
 
   return (
     <>
-      <Box p={4} bg="gray.50" borderRadius="md">
-        <HStack
-          justify="space-between"
-          align="flex-start"
-          flexWrap="wrap"
-          gap={2}
-        >
-          <VStack align="flex-start" gap={1} flex={1} minW="200px">
-            <Text fontSize="sm" fontWeight="600" color="gray.900">
-              {renewal.title}
+      <Box
+        bg="white"
+        border="1px solid"
+        borderColor="gray.200"
+        borderRadius="lg"
+        overflow="hidden"
+      >
+        {/* ---- Card Body ---- */}
+        <Stack p={5} gap={4}>
+          {/* Header: Icon + Title + Status */}
+          <Flex gap={3} align="center" justify="space-between">
+            <HStack gap={3} flex={1} minW="0">
+              <Flex
+                w={10}
+                h={10}
+                bg="primary.50"
+                borderRadius="md"
+                align="center"
+                justify="center"
+                flexShrink={0}
+              >
+                <RefreshCw size={18} color="black" />
+              </Flex>
+              <VStack align="flex-start" gap={0} minW="0">
+                <Text fontSize="sm" fontWeight="600" color="gray.900">
+                  {renewal.title}
+                </Text>
+                <Text fontSize="xs" color="gray.500">
+                  {renewal.renewalTypeName}
+                </Text>
+              </VStack>
+            </HStack>
+            <RenewalStatusBadge status={renewal.status} />
+          </Flex>
+
+          {/* Description */}
+          {renewal.description && renewal.description.trim() !== "" && (
+            <Text fontSize="xs" color="gray.600">
+              {renewal.description}
             </Text>
-            <Text fontSize="xs" color="gray.500">
-              {renewal.renewalTypeName}
-            </Text>
-            {renewal.description && (
-              <Text fontSize="xs" color="gray.600">
-                {renewal.description}
-              </Text>
-            )}
-          </VStack>
-          <HStack gap={3} flexWrap="wrap">
-            <VStack align="flex-start" gap={1}>
+          )}
+
+          {/* Information Grid */}
+          <SimpleGrid
+            columns={{ base: 1, sm: 2, md: 3 }}
+            gap={{ base: 3, md: 6 }}
+          >
+            <VStack align="flex-start" gap={0}>
               <Text fontSize="xs" color="gray.500">
                 Recurrence
               </Text>
-              <Text fontSize="sm" fontWeight="500" color="gray.900">
+              <Text fontSize="sm" color="gray.800">
                 {renewal.recurrence}
               </Text>
             </VStack>
-            <VStack align="flex-start" gap={1}>
+            <VStack align="flex-start" gap={0}>
               <Text fontSize="xs" color="gray.500">
                 Assigned To
               </Text>
-              <Text fontSize="sm" fontWeight="500" color="gray.900">
+              <Text fontSize="sm" color="gray.800">
                 {renewal.assignedToName || "Unassigned"}
               </Text>
             </VStack>
-            <VStack align="flex-start" gap={1}>
+            <VStack align="flex-start" gap={0}>
               <Text fontSize="xs" color="gray.500">
-                Status
+                Start Date
               </Text>
-              <Badge
-                px={2}
-                py={0.5}
-                borderRadius="full"
-                fontSize="xs"
-                fontWeight="600"
-                bg={renewal.status === "ACTIVE" ? "green.50" : "gray.50"}
-                color={renewal.status === "ACTIVE" ? "green.700" : "gray.700"}
-              >
-                {renewal.status}
-              </Badge>
+              <Text fontSize="sm" color="gray.800">
+                {formatDateDisplay(renewal.startDate)}
+              </Text>
             </VStack>
-          </HStack>
-          <HStack gap={2}>
+            <VStack align="flex-start" gap={0}>
+              <Text fontSize="xs" color="gray.500">
+                End Date
+              </Text>
+              <Text fontSize="sm" color="gray.800">
+                {formatDateDisplay(renewal.endDate)}
+              </Text>
+            </VStack>
+            <VStack align="flex-start" gap={0}>
+              <Text fontSize="xs" color="gray.500">
+                Instances
+              </Text>
+              <Text fontSize="sm" color="gray.800">
+                {renewal.instances.length}
+              </Text>
+            </VStack>
+          </SimpleGrid>
+        </Stack>
+
+        {/* ---- Instances (expandable) ---- */}
+        {showInstances && (
+          <Box px={5} pb={4}>
+            <Stack
+              gap={2}
+              pt={4}
+              borderTop="1px solid"
+              borderColor="gray.200"
+            >
+              <Text fontSize="xs" fontWeight="600" color="gray.700">
+                Renewal Instances
+              </Text>
+              {renewal.instances.length === 0 ? (
+                <Text fontSize="xs" color="gray.500">
+                  No instances yet
+                </Text>
+              ) : (
+                renewal.instances.map((instance) => (
+                  <Box
+                    key={instance.id}
+                    p={3}
+                    bg="gray.50"
+                    borderRadius="md"
+                    border="1px solid"
+                    borderColor="gray.200"
+                  >
+                    <HStack
+                      justify="space-between"
+                      align="flex-start"
+                      flexWrap="wrap"
+                      gap={2}
+                    >
+                      <VStack align="flex-start" gap={1}>
+                        <Text fontSize="xs" color="gray.500">
+                          Due Date
+                        </Text>
+                        <Text fontSize="sm" fontWeight="500" color="gray.900">
+                          {formatDateDisplay(instance.dueDate)}
+                        </Text>
+                      </VStack>
+                      <HStack gap={2} align="center">
+                        <RenewalInstanceStatusBadge status={instance.status} />
+                        {instance.status === "PENDING" && (
+                          <Button
+                            variant="ghost"
+                            size="xs"
+                            colorScheme="green"
+                            onClick={() => {
+                              const notes = prompt(
+                                "Enter completion notes (optional):"
+                              );
+                              handleUpdateInstance(
+                                instance.id,
+                                "COMPLETED",
+                                notes ?? undefined
+                              );
+                            }}
+                            loading={updateInstanceMutation.isPending}
+                          >
+                            <CheckCircle size={12} />
+                          </Button>
+                        )}
+                        {instance.status === "COMPLETED" && (
+                          <Button
+                            variant="ghost"
+                            size="xs"
+                            onClick={() => {
+                              handleUpdateInstance(instance.id, "PENDING");
+                            }}
+                            loading={updateInstanceMutation.isPending}
+                          >
+                            <RefreshCw size={12} />
+                          </Button>
+                        )}
+                      </HStack>
+                    </HStack>
+                    {instance.completedAt && (
+                      <Text fontSize="xs" color="gray.600" mt={2}>
+                        Completed:{" "}
+                        {formatDateDisplay(instance.completedAt)} by{" "}
+                        {instance.completedByName}
+                      </Text>
+                    )}
+                    {instance.notes && (
+                      <Text fontSize="xs" color="gray.600" mt={1}>
+                        Notes: {instance.notes}
+                      </Text>
+                    )}
+                  </Box>
+                ))
+              )}
+            </Stack>
+          </Box>
+        )}
+
+        {/* ---- Footer ---- */}
+        <Separator borderColor="gray.200" />
+        <Flex px={5} py={3} justify="space-between" align="center" flexWrap="wrap" gap={2}>
+          <Text fontSize="xs" color="gray.500">
+            Created {formatDateDisplay(renewal.createdAt)}
+          </Text>
+          <HStack gap={1}>
             <Button variant="ghost" size="sm" onClick={onEditDialogOpen}>
               <Edit size={14} />
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                handleChangeStatus(
-                  renewal.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"
-                )
-              }
-            >
-              {renewal.status === "ACTIVE" ? "Deactivate" : "Activate"}
-            </Button>
+            {availableStatuses.length > 0 && (
+              <PopoverRoot
+                open={isStatusMenuOpen}
+                onOpenChange={(details) => setIsStatusMenuOpen(details.open)}
+              >
+                <PopoverTrigger>
+                  <Button variant="ghost" size="sm">
+                    Change Status
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent width="160px">
+                  <Stack gap={0} p={1.5}>
+                    {availableStatuses.map((status) => (
+                      <Button
+                        key={status}
+                        variant="ghost"
+                        size="sm"
+                        justifyContent="flex-start"
+                        color="gray.700"
+                        _hover={{ bg: "gray.100" }}
+                        onClick={() => handleChangeStatus(status)}
+                      >
+                        {status === "ACTIVE" && <CheckCircle size={14} color="green.500" />}
+                        {status === "COMPLETED" && <CheckCircle size={14} color="green" />}
+                        {status === "CANCELLED" && <XCircle size={14} color="red" />}
+                        {status.charAt(0) + status.slice(1).toLowerCase()}
+                      </Button>
+                    ))}
+                  </Stack>
+                </PopoverContent>
+              </PopoverRoot>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -709,100 +1004,7 @@ const RenewalCard = ({
                 : `Show Instances (${renewal.instances.length})`}
             </Button>
           </HStack>
-        </HStack>
-
-        {showInstances && (
-          <Stack
-            gap={2}
-            mt={4}
-            pt={4}
-            borderTop="1px solid"
-            borderColor="gray.200"
-          >
-            <Text fontSize="xs" fontWeight="600" color="gray.700">
-              Renewal Instances
-            </Text>
-            {renewal.instances.length === 0 ? (
-              <Text fontSize="xs" color="gray.500">
-                No instances yet
-              </Text>
-            ) : (
-              renewal.instances.map((instance) => (
-                <Box
-                  key={instance.id}
-                  p={3}
-                  bg="white"
-                  borderRadius="md"
-                  border="1px solid"
-                  borderColor="gray.200"
-                >
-                  <HStack
-                    justify="space-between"
-                    align="flex-start"
-                    flexWrap="wrap"
-                    gap={2}
-                  >
-                    <VStack align="flex-start" gap={1}>
-                      <Text fontSize="xs" color="gray.500">
-                        Due Date
-                      </Text>
-                      <Text fontSize="sm" fontWeight="500" color="gray.900">
-                        {new Date(instance.dueDate).toLocaleDateString()}
-                      </Text>
-                    </VStack>
-                    <HStack gap={2} align="center">
-                      <RenewalInstanceStatusBadge status={instance.status} />
-                      {instance.status === "PENDING" && (
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          colorScheme="green"
-                          onClick={() => {
-                            const notes = prompt(
-                              "Enter completion notes (optional):"
-                            );
-                            handleUpdateInstance(
-                              instance.id,
-                              "COMPLETED",
-                              notes ?? undefined
-                            );
-                          }}
-                          loading={updateInstanceMutation.isPending}
-                        >
-                          <CheckCircle size={12} />
-                        </Button>
-                      )}
-                      {instance.status === "COMPLETED" && (
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          onClick={() => {
-                            handleUpdateInstance(instance.id, "PENDING");
-                          }}
-                          loading={updateInstanceMutation.isPending}
-                        >
-                          <RefreshCw size={12} />
-                        </Button>
-                      )}
-                    </HStack>
-                  </HStack>
-                  {instance.completedAt && (
-                    <Text fontSize="xs" color="gray.600" mt={2}>
-                      Completed:{" "}
-                      {new Date(instance.completedAt).toLocaleDateString()} by{" "}
-                      {instance.completedByName}
-                    </Text>
-                  )}
-                  {instance.notes && (
-                    <Text fontSize="xs" color="gray.600" mt={1}>
-                      Notes: {instance.notes}
-                    </Text>
-                  )}
-                </Box>
-              ))
-            )}
-          </Stack>
-        )}
+        </Flex>
       </Box>
 
       <DialogRoot
@@ -953,19 +1155,19 @@ const RenewalCard = ({
       </DialogRoot>
 
       <ConfirmationDialog
-        open={!!deleteActionStatus}
-        onClose={() => setDeleteActionStatus(null)}
+        open={!!statusToChange}
+        onClose={() => setStatusToChange(null)}
         title="Change Renewal Status"
-        action={`change the renewal status to ${deleteActionStatus}`}
+        action={`change the renewal status to ${statusToChange?.toLowerCase()}`}
         handleSubmit={() => {
-          if (deleteActionStatus) {
+          if (statusToChange) {
             changeStatusMutation.mutate(
               {
                 projectCode,
                 renewalId: renewal.id,
-                status: deleteActionStatus,
+                status: statusToChange,
               },
-              { onSuccess: () => setDeleteActionStatus(null) }
+              { onSuccess: () => setStatusToChange(null) }
             );
           }
         }}
@@ -1034,16 +1236,16 @@ const RenewalsTab = ({ projectCode }: { projectCode: string }) => {
 
   if (isLoading) {
     return (
-      <Stack gap={3}>
+      <Stack gap={4}>
         {[1, 2, 3].map((i) => (
-          <Box key={i} h="120px" bg="gray.100" borderRadius="md" />
+          <Box key={i} h="240px" bg="gray.100" borderRadius="lg" />
         ))}
       </Stack>
     );
   }
 
   return (
-    <Stack gap={3}>
+    <Stack gap={4}>
       <HStack justify="flex-end">
         <Button variant="primary" size="sm" onClick={onAddDialogOpen}>
           <Plus size={16} color="white" /> Add Renewal
@@ -1445,6 +1647,7 @@ const ProjectDetailPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [statusToChange, setStatusToChange] = useState<string | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const {
     data: project,
@@ -1454,14 +1657,24 @@ const ProjectDetailPage = () => {
   } = useProjectByCodeQuery(projectCode || "");
   const updateProjectMutation = useUpdateProjectMutation();
   const changeStatusMutation = useChangeProjectStatusMutation();
+  const deleteProjectMutation = useDeleteProjectMutation();
 
   const handleEditProject = () => {
     navigate(`/projects/${projectCode}/edit`);
   };
 
   const handleDeleteProject = () => {
-    // TODO: Implement delete functionality with confirmation dialog
-    console.log("Delete project:", projectCode);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteProject = () => {
+    if (!projectCode) return;
+    deleteProjectMutation.mutate(projectCode, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        navigate("/projects");
+      },
+    });
   };
 
   const handleChangeStatus = (status: string) => {
@@ -1541,9 +1754,9 @@ const ProjectDetailPage = () => {
           <ArrowLeft size={16} /> Back to Projects
         </Button>
         <HStack gap={2}>
-          <Button variant="ghost" size="sm" onClick={() => refetch()}>
+          {/* <Button variant="ghost" size="sm" onClick={() => refetch()}>
             <RefreshCw size={16} />
-          </Button>
+          </Button> */}
           <Button variant="outline" size="sm" onClick={handleEditProject}>
             <Edit size={16} /> Edit
           </Button>
@@ -1557,39 +1770,44 @@ const ProjectDetailPage = () => {
               </IconButton>
             </PopoverTrigger>
             <PopoverContent width="200px">
-              <Stack gap={1} p={2}>
+              <Stack gap={0} p={1.5}>
+                {project.status !== "ACTIVE" && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    justifyContent="flex-start"
+                    gap={2}
+                    color="green.600"
+                    _hover={{ bg: "gray.100" }}
+                    onClick={() => handleChangeStatus("ACTIVE")}
+                  >
+                    <CheckCircle size={14} color="green" /> Set Active
+                  </Button>
+                )}
+                {project.status !== "ON_HOLD" && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    justifyContent="flex-start"
+                    gap={2}
+                    color="gray.700"
+                    _hover={{ bg: "gray.100" }}
+                    onClick={() => handleChangeStatus("ON_HOLD")}
+                  >
+                    <PauseCircle size={14} /> Put on Hold
+                  </Button>
+                )}
+                <Box borderTop="1px solid" borderColor="gray.200" mx={2} my={1} />
                 <Button
                   variant="ghost"
                   size="sm"
                   justifyContent="flex-start"
-                  onClick={handleEditProject}
-                >
-                  <Edit size={14} className="mr-2" /> Edit Project
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  justifyContent="flex-start"
-                  onClick={() => handleChangeStatus("ACTIVE")}
-                >
-                  <CheckCircle size={14} className="mr-2" /> Set Active
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  justifyContent="flex-start"
-                  onClick={() => handleChangeStatus("ON_HOLD")}
-                >
-                  <Clock size={14} className="mr-2" /> Put on Hold
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  justifyContent="flex-start"
-                  colorScheme="red"
+                  gap={2}
+                  color="red.600"
+                  _hover={{ bg: "red.50" }}
                   onClick={handleDeleteProject}
                 >
-                  <Trash2 size={14} className="mr-2" /> Delete Project
+                  <Trash2 size={14} /> Delete Project
                 </Button>
               </Stack>
             </PopoverContent>
@@ -1689,6 +1907,15 @@ const ProjectDetailPage = () => {
           }
         }}
         submitActionPending={changeStatusMutation.isPending}
+      />
+
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        title="Delete Project"
+        action="permanently delete this project and all its data"
+        handleSubmit={confirmDeleteProject}
+        submitActionPending={deleteProjectMutation.isPending}
       />
     </Stack>
   );

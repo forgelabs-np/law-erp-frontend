@@ -1,13 +1,15 @@
 import {
   Box,
   Button,
-  Grid,
-  HStack,
+  Flex,
   Input,
+  Separator,
+  SimpleGrid,
+  Skeleton,
   Stack,
   Text,
-  VStack,
   Textarea,
+  VStack,
 } from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -80,38 +82,73 @@ const EditProjectPage = () => {
     }
   };
 
+  // Loading state
   if (isLoading) {
     return (
-      <Stack gap={6} padding={2}>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/projects")}>
-          <ArrowLeft size={16} /> Back to Projects
-        </Button>
-        <Stack gap={4}>
-          <Box h="40px" bg="gray.100" borderRadius="md" />
-          <Box
-            p={6}
-            bg="white"
-            border="1px solid"
-            borderColor="gray.200"
-            borderRadius="lg"
+      <Stack gap={6} maxW="4xl" w="full" mx="auto">
+        <Box>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/projects")}
+            color="gray.600"
           >
-            <Stack gap={4}>
-              <Box h="40px" bg="gray.100" borderRadius="md" />
-              <Box h="40px" bg="gray.100" borderRadius="md" />
-              <Box h="80px" bg="gray.100" borderRadius="md" />
-            </Stack>
-          </Box>
+            <ArrowLeft size={16} />
+            Back to Projects
+          </Button>
+        </Box>
+
+        <Stack gap={1}>
+          <Skeleton h="28px" w="180px" borderRadius="md" />
+          <Skeleton h="16px" w="260px" borderRadius="md" />
         </Stack>
+
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="lg"
+          overflow="hidden"
+        >
+          <Stack px={6} pt={6} pb={4}>
+            <Skeleton h="16px" w="120px" borderRadius="md" />
+            <Skeleton h="12px" w="220px" borderRadius="md" />
+          </Stack>
+          <Stack px={6} pb={6} gap={5}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} gap={5}>
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <VStack key={i} align="flex-start" gap={1.5}>
+                  <Skeleton h="14px" w="80px" borderRadius="md" />
+                  <Skeleton h="32px" w="full" borderRadius="md" />
+                </VStack>
+              ))}
+            </SimpleGrid>
+            <VStack align="flex-start" gap={1.5}>
+              <Skeleton h="14px" w="80px" borderRadius="md" />
+              <Skeleton h="64px" w="full" borderRadius="md" />
+            </VStack>
+          </Stack>
+        </Box>
       </Stack>
     );
   }
 
+  // Error state
   if (isError || !project) {
     return (
-      <Stack gap={6} padding={2}>
-        <Button variant="ghost" size="sm" onClick={() => navigate("/projects")}>
-          <ArrowLeft size={16} /> Back to Projects
-        </Button>
+      <Stack gap={6} maxW="4xl" w="full" mx="auto">
+        <Box>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/projects")}
+            color="gray.600"
+            _hover={{ color: "primary.500" }}
+          >
+            <ArrowLeft size={16} />
+            Back to Projects
+          </Button>
+        </Box>
         <Box
           p={6}
           bg="red.50"
@@ -132,149 +169,176 @@ const EditProjectPage = () => {
   }
 
   return (
-    <Stack gap={6} padding={2}>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => navigate(`/projects/${projectCode}`)}
-      >
-        <ArrowLeft size={16} /> Back to Project
-      </Button>
+    <Stack gap={6} maxW="4xl" w="full" mx="auto">
+      {/* Back link */}
+      <Box>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(`/projects/${projectCode}`)}
+          color="gray.600"
+          _hover={{ color: "primary.500" }}
+        >
+          <ArrowLeft size={16} />
+          Back to Project
+        </Button>
+      </Box>
 
+      {/* Page header */}
+      <Stack gap={1}>
+        <Text textStyle="heading_4">Edit Project</Text>
+        <Text fontSize="sm" color="gray.500">
+          Update the project details below.
+        </Text>
+      </Stack>
+
+      {/* Form card */}
       <Box
-        p={6}
+        as="form"
+        onSubmit={handleSubmit}
         bg="white"
         border="1px solid"
         borderColor="gray.200"
         borderRadius="lg"
+        overflow="hidden"
       >
-        <Text textStyle="heading_4" mb={6}>
-          Edit Project
-        </Text>
+        {/* Section heading */}
+        <Stack px={6} pt={6} pb={4}>
+          <Text fontSize="sm" fontWeight="600" color="gray.800">
+            Project Details
+          </Text>
+        </Stack>
 
-        <form onSubmit={handleSubmit}>
-          <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
-            <VStack align="flex-start" gap={4}>
-              <Box w="full">
-                <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
-                  Project Name *
-                </Text>
-                <Input
-                  value={formData.name || ""}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  placeholder="Enter project name"
-                  required
-                  maxLength={200}
-                />
-              </Box>
-
-              <Box w="full">
-                <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
-                  Client Name *
-                </Text>
-                <Input
-                  value={formData.clientName || ""}
-                  onChange={(e) => handleChange("clientName", e.target.value)}
-                  placeholder="Enter client name"
-                  required
-                  maxLength={200}
-                />
-              </Box>
-
-              <Box w="full">
-                <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
-                  Client User
-                </Text>
-                <FieldSelect
-                  placeholder="Select client user (optional)"
-                  value={formData.clientUserId || ""}
-                  onChange={(value) => handleChange("clientUserId", value)}
-                >
-                  {employeeList.map((emp: any) => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.fullName}
-                    </option>
-                  ))}
-                </FieldSelect>
-              </Box>
-
-              <Box w="full">
-                <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
-                  Start Date *
-                </Text>
-                <Input
-                  type="date"
-                  value={formData.startDate || ""}
-                  onChange={(e) => handleChange("startDate", e.target.value)}
-                  required
-                />
-              </Box>
-
-              <Box w="full">
-                <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
-                  Target End Date
-                </Text>
-                <Input
-                  type="date"
-                  value={formData.targetEndDate || ""}
-                  onChange={(e) =>
-                    handleChange("targetEndDate", e.target.value)
-                  }
-                  min={formData.startDate || undefined}
-                />
-              </Box>
+        {/* Form fields */}
+        <Stack px={6} pb={6} gap={5}>
+          <SimpleGrid columns={{ base: 1, md: 2 }} gap={5}>
+            <VStack align="flex-start" gap={1.5}>
+              <Text fontSize="sm" fontWeight="500" color="gray.700">
+                Project Name <Text as="span" color="red.500">*</Text>
+              </Text>
+              <Input
+                value={formData.name || ""}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder="Enter project name"
+                required
+                maxLength={200}
+                size="sm"
+              />
             </VStack>
 
-            <VStack align="flex-start" gap={4}>
-              <Box w="full">
-                <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
-                  Description
-                </Text>
-                <Textarea
-                  value={formData.description || ""}
-                  onChange={(e) => handleChange("description", e.target.value)}
-                  placeholder="Enter project description"
-                  rows={8}
-                  maxLength={1000}
-                />
-              </Box>
-
-              <Box w="full">
-                <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
-                  Project Owner *
-                </Text>
-                <FieldSelect
-                  placeholder="Select project owner"
-                  value={formData.ownerId || ""}
-                  onChange={(value) => handleChange("ownerId", value)}
-                >
-                  {employeeList.map((emp: any) => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.fullName} - {emp.designation}
-                    </option>
-                  ))}
-                </FieldSelect>
-              </Box>
+            <VStack align="flex-start" gap={1.5}>
+              <Text fontSize="sm" fontWeight="500" color="gray.700">
+                Client Name <Text as="span" color="red.500">*</Text>
+              </Text>
+              <Input
+                value={formData.clientName || ""}
+                onChange={(e) => handleChange("clientName", e.target.value)}
+                placeholder="Enter client name"
+                required
+                maxLength={200}
+                size="sm"
+              />
             </VStack>
-          </Grid>
 
-          <HStack justify="flex-end" gap={3} mt={6}>
-            <Button
-              variant="outline"
-              onClick={() => navigate(`/projects/${projectCode}`)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              loading={isSubmitting || updateMutation.isPending}
-            >
-              Save Changes
-            </Button>
-          </HStack>
-        </form>
+            <VStack align="flex-start" gap={1.5}>
+              <Text fontSize="sm" fontWeight="500" color="gray.700">
+                Client User
+              </Text>
+              <FieldSelect
+                placeholder="Select client user (optional)"
+                value={formData.clientUserId || ""}
+                onChange={(value) => handleChange("clientUserId", value)}
+                size="sm"
+              >
+                {employeeList.map((emp: any) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.fullName}
+                  </option>
+                ))}
+              </FieldSelect>
+            </VStack>
+
+            <VStack align="flex-start" gap={1.5}>
+              <Text fontSize="sm" fontWeight="500" color="gray.700">
+                Project Owner <Text as="span" color="red.500">*</Text>
+              </Text>
+              <FieldSelect
+                placeholder="Select project owner"
+                value={formData.ownerId || ""}
+                onChange={(value) => handleChange("ownerId", value)}
+                size="sm"
+              >
+                {employeeList.map((emp: any) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.fullName} - {emp.designation}
+                  </option>
+                ))}
+              </FieldSelect>
+            </VStack>
+
+            <VStack align="flex-start" gap={1.5}>
+              <Text fontSize="sm" fontWeight="500" color="gray.700">
+                Start Date <Text as="span" color="red.500">*</Text>
+              </Text>
+              <Input
+                type="date"
+                value={formData.startDate || ""}
+                onChange={(e) => handleChange("startDate", e.target.value)}
+                size="sm"
+              />
+            </VStack>
+
+            <VStack align="flex-start" gap={1.5}>
+              <Text fontSize="sm" fontWeight="500" color="gray.700">
+                Target End Date
+              </Text>
+              <Input
+                type="date"
+                value={formData.targetEndDate || ""}
+                onChange={(e) => handleChange("targetEndDate", e.target.value)}
+                min={formData.startDate || undefined}
+                size="sm"
+              />
+            </VStack>
+          </SimpleGrid>
+
+          {/* Description - full width */}
+          <VStack align="flex-start" gap={1.5}>
+            <Text fontSize="sm" fontWeight="500" color="gray.700">
+              Description
+            </Text>
+            <Textarea
+              value={formData.description || ""}
+              onChange={(e) => handleChange("description", e.target.value)}
+              placeholder="Enter project description"
+              rows={3}
+              size="sm"
+              maxLength={1000}
+              resize="vertical"
+            />
+          </VStack>
+        </Stack>
+
+        {/* Divider + Footer */}
+        <Separator borderColor="gray.200" />
+        <Flex px={6} py={3} justify="flex-end" gap={3}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/projects/${projectCode}`)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            type="submit"
+            loading={isSubmitting || updateMutation.isPending}
+          >
+            Save Changes
+          </Button>
+        </Flex>
       </Box>
     </Stack>
   );

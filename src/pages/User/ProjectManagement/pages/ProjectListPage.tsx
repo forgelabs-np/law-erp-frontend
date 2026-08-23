@@ -2,14 +2,18 @@ import {
   Badge,
   Box,
   Button,
+  Flex,
   Grid,
   HStack,
   Input,
+  Separator,
+  SimpleGrid,
   Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { Briefcase, Plus, Search, X } from "lucide-react";
+import { Briefcase, Calendar, ChevronRight, CircleEqual, Plus, Search, X } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +22,8 @@ import { Project, ProjectStatus } from "../types/project.types";
 import NoDataAvailable from "@/shared/components/NoDataAvailable/NoDataAvailable";
 import { InputGroup } from "@/shared/components/ui";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
+import { MdAutorenew, MdPeopleAlt } from "react-icons/md";
+import { LuUser } from "react-icons/lu";
 
 // ============================================================
 // Status Badge
@@ -52,10 +58,23 @@ const ProjectStatusBadge = ({ status }: { status: ProjectStatus }) => {
 };
 
 // ============================================================
-// Project Row
+// Helpers
 // ============================================================
 
-const ProjectRow = ({
+const formatDateDisplay = (value?: string | null): string => {
+  if (!value) return "—";
+  try {
+    return format(parseISO(value), "dd MMM yyyy");
+  } catch {
+    return value;
+  }
+};
+
+// ============================================================
+// Project Card
+// ============================================================
+
+const ProjectCard = ({
   project,
   onClick,
 }: {
@@ -63,59 +82,163 @@ const ProjectRow = ({
   onClick: () => void;
 }) => (
   <Box
-    p={4}
     bg="white"
     border="1px solid"
     borderColor="gray.200"
     borderRadius="lg"
-    cursor="pointer"
-    onClick={onClick}
-    _hover={{ borderColor: "blue.300", boxShadow: "sm" }}
-    transition="all 0.15s ease"
+    overflow="hidden"
+    _hover={{ borderColor: "gray.300" }}
+    transition="border-color 0.15s ease"
   >
-    <HStack justify="space-between" flexWrap="wrap" gap={2}>
-      <VStack align="flex-start" gap={1} flex={1} minW="200px">
-        <Text fontSize="sm" fontWeight="600" color="gray.900">
-          {project.name}
-        </Text>
-        <Text fontSize="xs" color="gray.500" fontFamily="monospace">
-          {project.projectCode}
-        </Text>
-      </VStack>
-      <HStack gap={4} flexWrap="wrap">
-        <Text fontSize="sm" color="gray.600">
-          {project.clientName}
-        </Text>
-        <ProjectStatusBadge status={project.status} />
-        <Text fontSize="sm" color="gray.600">
-          {project.ownerName}
-        </Text>
-        <HStack gap={3}>
-          <Text fontSize="xs" color="gray.500">
-            <Briefcase size={12} className="inline mr-1" />
-            {project.credentialCount}
-          </Text>
-          <Text fontSize="xs" color="gray.500">
-            <Search size={12} className="inline mr-1" />
-            {project.renewalCount}
-          </Text>
-        </HStack>
-        {project.overdueInstances > 0 && (
-          <Badge
-            px={2}
-            py={0.5}
-            borderRadius="full"
-            fontSize="xs"
-            fontWeight="600"
-            bg="red.100"
-            color="red.700"
+    {/* ---- Card Body ---- */}
+    <Stack p={5} gap={4}>
+      {/* Row 1: Icon + Name + Status + Metrics */}
+      <Flex
+        gap={4}
+        align={{ base: "flex-start", md: "center" }}
+        justify="space-between"
+        flexWrap="wrap"
+      >
+        {/* Left: Icon + Name + Code */}
+        <HStack gap={3} flex={1} minW="0">
+          <Flex
+            w={10}
+            h={10}
+            bg="primary.50"
+            borderRadius="md"
+            align="center"
+            justify="center"
+            flexShrink={0}
           >
-            {project.overdueInstances} overdue
-          </Badge>
-        )}
-      </HStack>
-    </HStack>
-  </Box>
+            <Briefcase size={18} color="gray" />
+          </Flex>
+          <VStack align="flex-start" gap={0} minW="0">
+            <Text
+              fontSize="sm"
+              fontWeight="600"
+              color="gray.900"
+            >
+              {project.name}
+            </Text>
+            <Text
+              fontSize="xs"
+              color="gray.500"
+              fontFamily="monospace"
+            >
+              {project.projectCode}
+            </Text>
+          </VStack>
+        </HStack>
+
+        {/* Right: Status + Metrics */}
+        <HStack gap={3} flexWrap="wrap" align="center">
+          <ProjectStatusBadge status={project.status} />
+          <HStack gap={3}>
+            <Text fontSize="xs" color="gray.500">
+              <Briefcase size={11} style={{ display: "inline", marginRight: 4 }} />
+              {project.credentialCount} Credentials
+            </Text>
+            <Text fontSize="xs" color="gray.500">
+              <MdAutorenew
+                size={11} style={{ display: "inline", marginRight: 4 }} />
+              {project.renewalCount} Renewals
+            </Text>
+            {project.overdueInstances > 0 && (
+              <Badge
+                px={1.5}
+                py={0.5}
+                borderRadius="full"
+                fontSize="xs"
+                fontWeight="600"
+                bg="red.100"
+                color="red.700"
+              >
+                {project.overdueInstances} overdue
+              </Badge>
+            )}
+          </HStack>
+        </HStack>
+      </Flex>
+
+      {/* Row 2: Dates + Owner + Client */}
+      <SimpleGrid
+        columns={{ base: 1, sm: 2, md: 4 }}
+        gap={{ base: 3, md: 6 }}
+      >
+        <VStack align="flex-start" >
+          <HStack gap={1}>
+            <Calendar size={11} color="gray" />
+            <Text fontSize="xs" color="gray.500">
+              Start Date
+            </Text>
+          </HStack>
+          <Text fontSize="sm" color="gray.800">
+            {formatDateDisplay(project.startDate)}
+          </Text>
+        </VStack>
+        <VStack align="flex-start" >
+          <HStack gap={1}>
+            <Calendar size={11} color="gray" />
+            <Text fontSize="xs" color="gray.500">
+              Target End Date
+            </Text>
+          </HStack>
+          <Text fontSize="sm" color="gray.800">
+            {formatDateDisplay(project.targetEndDate)}
+          </Text>
+        </VStack>
+        <VStack align="flex-start">
+          <HStack>
+            <LuUser size={11} color="gray" />
+
+
+            <Text fontSize="xs" color="gray.500">
+              Owner
+            </Text>
+          </HStack>
+          <Text fontSize="sm" color="gray.800" >
+            {project.ownerName}
+          </Text>
+        </VStack>
+        <VStack align="flex-start" gap={0}>
+          <HStack>
+            <MdPeopleAlt size={11} color="gray" />
+
+
+            <Text fontSize="xs" color="gray.500">
+              Client
+            </Text>
+          </HStack>
+          <Text fontSize="sm" color="gray.800" >
+            {project.clientName}
+          </Text>
+        </VStack>
+      </SimpleGrid>
+    </Stack>
+
+    {/* ---- Footer ---- */}
+    <Separator borderColor="gray.200" />
+    <Flex
+      px={5}
+      py={3}
+      justify="space-between"
+      align="center"
+    >
+      <Text fontSize="xs" color="gray.500">
+        Created {formatDateDisplay(project.createdAt)}
+      </Text>
+      <Button
+        variant="ghost"
+        size="sm"
+        color="primary.500"
+        onClick={onClick}
+      // rightIcon={<ChevronRight size={14} />}
+      >
+        <ChevronRight size={14} />
+        View Details
+      </Button>
+    </Flex>
+  </Box >
 );
 
 // ============================================================
@@ -175,9 +298,9 @@ const ProjectListPage = () => {
           <Box h="40px" w="300px" bg="gray.100" borderRadius="md" />
           <Box h="40px" w="200px" bg="gray.100" borderRadius="md" />
         </HStack>
-        <Stack gap={3}>
+        <Stack gap={4}>
           {[1, 2, 3, 4, 5].map((i) => (
-            <Box key={i} h="80px" bg="gray.100" borderRadius="lg" />
+            <Box key={i} h="160px" bg="gray.100" borderRadius="lg" />
           ))}
         </Stack>
       </Stack>
@@ -310,9 +433,9 @@ const ProjectListPage = () => {
         </Box>
       ) : (
         <>
-          <Stack gap={3}>
+          <Stack gap={4}>
             {projects.map((project) => (
-              <ProjectRow
+              <ProjectCard
                 key={project.id}
                 project={project}
                 onClick={() => navigate(`/projects/${project.projectCode}`)}
