@@ -1,4 +1,10 @@
-import { Table as ChakraTable, Skeleton, Stack, Text, Box } from "@chakra-ui/react";
+import {
+  Table as ChakraTable,
+  Skeleton,
+  Stack,
+  Text,
+  Box,
+} from "@chakra-ui/react";
 import {
   flexRender,
   getCoreRowModel,
@@ -46,8 +52,8 @@ export const TableUI = <T,>({
       >
         <ChakraTable.Header position={"sticky"} top={"0px"} zIndex={10}>
           {table.getHeaderGroups().map((headerGroup) => (
-            <ChakraTable.Row 
-              key={headerGroup.id} 
+            <ChakraTable.Row
+              key={headerGroup.id}
               backgroundColor={"gray.50"}
               borderBottom="1px solid"
               borderColor="gray.200"
@@ -111,7 +117,7 @@ export const TableUI = <T,>({
             </ChakraTable.Row>
           ) : (
             table.getRowModel().rows?.map((row) => (
-              <ChakraTable.Row 
+              <ChakraTable.Row
                 key={row.id}
                 borderBottom="1px solid"
                 borderColor="gray.100"
@@ -128,7 +134,10 @@ export const TableUI = <T,>({
                       px="4"
                       verticalAlign="middle"
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </ChakraTable.Cell>
                   );
                 })}

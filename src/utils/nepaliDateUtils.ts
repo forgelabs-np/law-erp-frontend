@@ -12,7 +12,18 @@ export interface NepaliDateParts {
 }
 
 /** Devanagari digits ०–९ (index = the Arabic digit). */
-export const NEPALI_DIGITS = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"] as const;
+export const NEPALI_DIGITS = [
+  "०",
+  "१",
+  "२",
+  "३",
+  "४",
+  "५",
+  "६",
+  "७",
+  "८",
+  "९",
+] as const;
 
 /** Convert a number or digit-string to Nepali (Devanagari) numerals, e.g. 2083 -> "२०८३". */
 export const toNepaliDigits = (value: number | string): string =>
@@ -85,7 +96,11 @@ export const formatApiDate = (date: Date): string => format(date, "yyyy-MM-dd");
 /** Convert a Gregorian/AD (JS Date) to Nepali BS parts. */
 export const gregorianToNepali = (date: Date): NepaliDateParts => {
   const nepali = NepaliDate.fromAD(date);
-  return { year: nepali.getYear(), month: nepali.getMonth(), day: nepali.getDate() };
+  return {
+    year: nepali.getYear(),
+    month: nepali.getMonth(),
+    day: nepali.getDate(),
+  };
 };
 
 /** Convert Nepali BS parts to a Gregorian/AD (JS Date, local midnight). */
@@ -97,7 +112,11 @@ export const getNepaliDaysInMonth = (year: number, month: number): number => {
   const start = nepaliToGregorian({ year, month, day: 1 }).getTime();
   const nextYear = month === 11 ? year + 1 : year;
   const nextMonth = (month + 1) % 12;
-  const end = nepaliToGregorian({ year: nextYear, month: nextMonth, day: 1 }).getTime();
+  const end = nepaliToGregorian({
+    year: nextYear,
+    month: nextMonth,
+    day: 1,
+  }).getTime();
   return Math.round((end - start) / MS_PER_DAY);
 };
 
@@ -110,15 +129,25 @@ export const getNepaliMonthEnd = (year: number, month: number): Date =>
   nepaliToGregorian({ year, month, day: getNepaliDaysInMonth(year, month) });
 
 /** Add a number of days to a Nepali date (BS arithmetic through AD). */
-export const addNepaliDays = (parts: NepaliDateParts, days: number): NepaliDateParts =>
+export const addNepaliDays = (
+  parts: NepaliDateParts,
+  days: number
+): NepaliDateParts =>
   gregorianToNepali(addDays(nepaliToGregorian(parts), days));
 
 /** Shift a Nepali date by whole months, clamping the day to the target month length. */
-export const shiftNepaliMonth = (parts: NepaliDateParts, delta: number): NepaliDateParts => {
+export const shiftNepaliMonth = (
+  parts: NepaliDateParts,
+  delta: number
+): NepaliDateParts => {
   const total = parts.month + delta;
   const year = parts.year + Math.floor(total / 12);
   const month = ((total % 12) + 12) % 12;
-  return { year, month, day: Math.min(parts.day, getNepaliDaysInMonth(year, month)) };
+  return {
+    year,
+    month,
+    day: Math.min(parts.day, getNepaliDaysInMonth(year, month)),
+  };
 };
 
 /** Sunday of the week (Sun–Sat) containing the given Nepali date. */
@@ -138,7 +167,10 @@ export const formatNepaliMonthYear = (year: number, month: number): string =>
   `${NEPALI_MONTH_NAMES[month]} ${toNepaliDigits(year)}`;
 
 /** e.g. "२४ – ३० श्रावण २०८३" or "२५ श्रावण – १ भदौ २०८३". */
-export const formatNepaliDateRange = (start: NepaliDateParts, end: NepaliDateParts): string => {
+export const formatNepaliDateRange = (
+  start: NepaliDateParts,
+  end: NepaliDateParts
+): string => {
   if (start.year === end.year && start.month === end.month) {
     return `${toNepaliDigits(start.day)} – ${toNepaliDigits(end.day)} ${NEPALI_MONTH_NAMES[start.month]} ${toNepaliDigits(start.year)}`;
   }

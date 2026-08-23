@@ -1,4 +1,7 @@
-import { CourtEventStatus, CourtEventType } from "@/pages/User/CaseManagement/types/matter.types";
+import {
+  CourtEventStatus,
+  CourtEventType,
+} from "@/pages/User/CaseManagement/types/matter.types";
 
 export type TaskStatus = "todo" | "in_progress" | "completed";
 

@@ -1,6 +1,11 @@
 import { LawFirmCRMClient } from "./service-axios";
 import { api } from "./service-api";
-import { ApiResponse, CaseHearingStatus, ScrapeResult, HearingExportResult } from "../types/scraper.types";
+import {
+  ApiResponse,
+  CaseHearingStatus,
+  ScrapeResult,
+  HearingExportResult,
+} from "../types/scraper.types";
 
 // ============================================================
 // Case Hearing Status
@@ -38,7 +43,7 @@ export const generateWeeklyExport = async () => {
     api.SCRAPER.ADMIN_EXPORT,
     {},
     {
-      responseType: 'blob',
+      responseType: "blob",
     }
   );
 };

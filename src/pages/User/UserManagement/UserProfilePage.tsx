@@ -28,7 +28,6 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { TbActivityHeartbeat } from "react-icons/tb";
 
-
 import {
   useUserProfileQuery,
   useUserPermissionsQuery,
@@ -200,7 +199,8 @@ export const UserProfilePage = () => {
               onClick={onResetOpen}
             >
               Reset Password
-            </Button>            <UserX size={20} />
+            </Button>{" "}
+            <UserX size={20} />
             <Button
               size="sm"
               variant="ghost"
@@ -462,8 +462,7 @@ export const UserProfilePage = () => {
             {activities.slice(0, 5).map((activity: any, index: number) => (
               <HStack key={activity.id || index} gap={3} py={2}>
                 <Box bg={"gray.100"} borderRadius="full" p={2} flexShrink={0}>
-                 <TbActivityHeartbeat />
-
+                  <TbActivityHeartbeat />
                 </Box>
                 <Stack gap={0} flex={1}>
                   <Text fontSize="sm" fontWeight="500" color="gray.700">

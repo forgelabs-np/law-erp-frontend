@@ -29,11 +29,7 @@ import {
   CasePositioning,
   TodayEvent,
 } from "../types/dashboard.types";
-import {
-  formatDate,
-  formatDateTime,
-  formatTime,
-} from "../utils/matterHelpers";
+import { formatDate, formatDateTime, formatTime } from "../utils/matterHelpers";
 import {
   CourtEventStatusBadge,
   CourtEventTypeBadge,
@@ -53,7 +49,13 @@ interface MetricCardProps {
   onClick?: () => void;
 }
 
-const MetricCard = ({ label, value, icon, color, onClick }: MetricCardProps) => (
+const MetricCard = ({
+  label,
+  value,
+  icon,
+  color,
+  onClick,
+}: MetricCardProps) => (
   <Box
     p={5}
     bg="white"
@@ -113,7 +115,13 @@ const MetricCardSkeleton = () => (
 );
 
 const EventSkeleton = () => (
-  <Box p={4} bg="white" border="1px solid" borderColor="gray.200" borderRadius="lg">
+  <Box
+    p={4}
+    bg="white"
+    border="1px solid"
+    borderColor="gray.200"
+    borderRadius="lg"
+  >
     <Stack gap={2}>
       <Box h="16px" w="200px" bg="gray.100" borderRadius="md" />
       <Box h="12px" w="140px" bg="gray.100" borderRadius="md" />
@@ -409,7 +417,11 @@ const CaseDashboardPage = () => {
               Today's Court Events
             </Text>
           </HStack>
-          <Button variant="ghost" size="sm" onClick={() => navigate("/task-calendar")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/task-calendar")}
+          >
             Open Calendar <ArrowRight size={14} />
           </Button>
         </HStack>
@@ -489,7 +501,8 @@ const CaseDashboardPage = () => {
                 </HStack>
                 <HStack gap={4} mt={2}>
                   <Text fontSize="sm" color="gray.600">
-                    {formatTime(event.scheduledTime) || formatDate(event.scheduledDate)}
+                    {formatTime(event.scheduledTime) ||
+                      formatDate(event.scheduledDate)}
                   </Text>
                   {event.courtRoom && (
                     <Text fontSize="sm" color="gray.600">
@@ -576,12 +589,14 @@ const CaseDashboardPage = () => {
                 <HStack gap={4} mt={2} flexWrap="wrap">
                   {matter.lastHearingDate && (
                     <Text fontSize="xs" color="gray.500">
-                      Last: {formatDate(matter.lastHearingDate)} · {matter.lastHearingType}
+                      Last: {formatDate(matter.lastHearingDate)} ·{" "}
+                      {matter.lastHearingType}
                     </Text>
                   )}
                   {matter.nextEventDate && (
                     <Text fontSize="xs" color="gray.500">
-                      Next: {formatDate(matter.nextEventDate)} · {matter.nextEventType}
+                      Next: {formatDate(matter.nextEventDate)} ·{" "}
+                      {matter.nextEventType}
                     </Text>
                   )}
                   <Badge
@@ -623,7 +638,11 @@ const CaseDashboardPage = () => {
               Stale Matters
             </Text>
           </HStack>
-          <Button variant="ghost" size="sm" onClick={() => navigate("/stale-matters")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/stale-matters")}
+          >
             View All <ArrowRight size={14} />
           </Button>
         </HStack>

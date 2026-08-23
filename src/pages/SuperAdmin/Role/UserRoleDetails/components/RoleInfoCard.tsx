@@ -10,14 +10,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import {
-  FileText,
-  Info,
-  Shield,
-  ShieldCheck,
-  Users,
-  Zap,
-} from "lucide-react";
+import { FileText, Info, Shield, ShieldCheck, Users, Zap } from "lucide-react";
 import { useRoleByIdQuery } from "@/api/roleSetup.ts/index.ts";
 
 interface MetricCardProps {
@@ -27,7 +20,12 @@ interface MetricCardProps {
   iconBg?: string;
 }
 
-const MetricCard = ({ icon, label, value, iconBg = "gray.50" }: MetricCardProps) => (
+const MetricCard = ({
+  icon,
+  label,
+  value,
+  iconBg = "gray.50",
+}: MetricCardProps) => (
   <Box
     bg="white"
     border="1px solid"
@@ -196,7 +194,13 @@ export const RoleInfoCard = ({ roleId }: { roleId: string }) => {
         >
           <HStack gap={2} mb={1.5}>
             <Info size={14} color="#3b82f6" />
-            <Text fontSize="xs" fontWeight="600" color="blue.700" textTransform="uppercase" letterSpacing="wider">
+            <Text
+              fontSize="xs"
+              fontWeight="600"
+              color="blue.700"
+              textTransform="uppercase"
+              letterSpacing="wider"
+            >
               About this Role
             </Text>
           </HStack>

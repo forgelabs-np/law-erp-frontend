@@ -1,15 +1,13 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
 import { ReactNode } from "react";
 
 import { MatterResponse } from "../types/matter.types";
-import { formatDate, matterStatusLabel, matterTypeLabel } from "../utils/matterHelpers";
+import {
+  formatDate,
+  matterStatusLabel,
+  matterTypeLabel,
+} from "../utils/matterHelpers";
 import { MatterStatusBadge, MatterTypeBadge } from "./MatterBadges";
 import { NextEventBanner } from "./NextEventBanner";
 
@@ -33,14 +31,14 @@ export const MatterHeaderCard = ({
     { label: "Status", value: matterStatusLabel(matter.status) },
     {
       label: "Current Court",
-      value:
-        matter.currentCourtCase?.courtName ??
-        matter.courtName ??
-        null,
+      value: matter.currentCourtCase?.courtName ?? matter.courtName ?? null,
     },
     {
       label: "Court Case No.",
-      value: matter.currentCourtCase?.courtCaseNumber ?? matter.courtCaseNumber ?? null,
+      value:
+        matter.currentCourtCase?.courtCaseNumber ??
+        matter.courtCaseNumber ??
+        null,
     },
     {
       label: "Stage",
@@ -83,12 +81,23 @@ export const MatterHeaderCard = ({
         >
           {matter.matterNumber}
         </Text>
-        <Button variant="ghost" size="xs" onClick={copyMatterNumber} color="gray.500">
+        <Button
+          variant="ghost"
+          size="xs"
+          onClick={copyMatterNumber}
+          color="gray.500"
+        >
           Copy
         </Button>
       </HStack>
 
-      <HStack justify="space-between" align="flex-start" mb={6} flexWrap="wrap" gap={4}>
+      <HStack
+        justify="space-between"
+        align="flex-start"
+        mb={6}
+        flexWrap="wrap"
+        gap={4}
+      >
         <Stack gap={3} minW={0}>
           <Text fontSize="2xl" fontWeight="700" color="gray.900">
             {matter.title}
@@ -99,7 +108,11 @@ export const MatterHeaderCard = ({
           </HStack>
         </Stack>
 
-        {actions && <HStack gap={2} flexWrap="wrap">{actions}</HStack>}
+        {actions && (
+          <HStack gap={2} flexWrap="wrap">
+            {actions}
+          </HStack>
+        )}
       </HStack>
 
       {quickInfo.length > 0 && (

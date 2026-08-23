@@ -13,7 +13,10 @@ interface TimelineDateGroupProps {
  * heading followed by that day's events. The connecting line is rendered
  * by the parent `TimelineEventList` and runs behind these rows.
  */
-export const TimelineDateGroup = ({ label, events }: TimelineDateGroupProps) => (
+export const TimelineDateGroup = ({
+  label,
+  events,
+}: TimelineDateGroupProps) => (
   <Stack gap={3}>
     <Text
       fontSize="xs"

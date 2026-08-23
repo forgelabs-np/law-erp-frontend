@@ -294,11 +294,7 @@ const DashboardError = ({
         {message || "Something went wrong while loading the platform overview."}
       </Text>
     </Stack>
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={onRetry}
-    >
+    <Button variant="outline" size="sm" onClick={onRetry}>
       Try again
     </Button>
   </Stack>

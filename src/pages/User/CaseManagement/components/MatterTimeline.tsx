@@ -9,7 +9,10 @@ import {
   TimelineEventType,
 } from "../types/matter.types";
 import { timelineEventTypeLabel } from "../utils/matterHelpers";
-import { groupEventsByDay, TimelineDateGroupData } from "../utils/timelineHelpers";
+import {
+  groupEventsByDay,
+  TimelineDateGroupData,
+} from "../utils/timelineHelpers";
 import { FieldSelect } from "./ui";
 import { NextHearingCard } from "./NextHearingCard";
 import { TimelineEventList } from "./TimelineEventList";
@@ -102,7 +105,8 @@ const upcomingFromTimeline = (
   const best = candidates[0];
   if (!best) return undefined;
 
-  const text = `${best.event.title} ${best.event.description ?? ""}`.toUpperCase();
+  const text =
+    `${best.event.title} ${best.event.description ?? ""}`.toUpperCase();
   return {
     id: best.event.id,
     courtCaseId: best.event.courtCaseId ?? "",
@@ -205,7 +209,12 @@ export const MatterTimeline = ({
       p={{ base: 4, md: 6 }}
     >
       {/* ==================== Header ==================== */}
-      <HStack justify="space-between" align="flex-start" gap={4} flexWrap="wrap">
+      <HStack
+        justify="space-between"
+        align="flex-start"
+        gap={4}
+        flexWrap="wrap"
+      >
         <HStack gap={3} align="flex-start">
           <Box
             w="10"

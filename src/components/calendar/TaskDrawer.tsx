@@ -32,7 +32,7 @@ import {
   MapPin,
   MoreHorizontal,
   FileText,
-  Scale
+  Scale,
 } from "lucide-react";
 import { getTaskColor } from "../../utils/calendarHelpers";
 
@@ -74,13 +74,9 @@ export const TaskDrawer = ({
       size="md"
       placement="end"
     >
-      <DrawerContent
-        bg="gray.50"
-        _dark={{ bg: "gray.900" }}
-      >
+      <DrawerContent bg="gray.50" _dark={{ bg: "gray.900" }}>
         <DrawerHeader pb={6} w={"full"}>
           <Stack w={"100%"}>
-
             {/* </Stack> */}
             <Flex justify="space-between" align="flex-start" mb={4}>
               <Badge
@@ -104,7 +100,13 @@ export const TaskDrawer = ({
               <DrawerCloseTrigger position="relative" inset="auto" />
             </Flex>
 
-            <DrawerTitle fontSize="32px" fontWeight="bold" lineHeight="tight" color="gray.800" _dark={{ color: "white" }}>
+            <DrawerTitle
+              fontSize="32px"
+              fontWeight="bold"
+              lineHeight="tight"
+              color="gray.800"
+              _dark={{ color: "white" }}
+            >
               {task.title}
             </DrawerTitle>
 
@@ -152,7 +154,6 @@ export const TaskDrawer = ({
               </Button>
             </HStack>
           </Stack>
-
         </DrawerHeader>
 
         <DrawerBody pt={5}>
@@ -182,7 +183,14 @@ export const TaskDrawer = ({
                     {format(new Date(task.startDate), "h:mm a")} -{" "}
                     {format(new Date(task.endDate), "h:mm a")}
                   </Text>
-                  <Badge bg="gray.100" color="gray.600" fontSize="2xs" borderRadius="md">NPT</Badge>
+                  <Badge
+                    bg="gray.100"
+                    color="gray.600"
+                    fontSize="2xs"
+                    borderRadius="md"
+                  >
+                    NPT
+                  </Badge>
                 </HStack>
               </Box>
             </Grid>
@@ -192,7 +200,12 @@ export const TaskDrawer = ({
               <Text fontSize="sm" color="gray.500" fontWeight="600" mb={1}>
                 Description
               </Text>
-              <Text fontSize="md" fontWeight="600" color="gray.800" _dark={{ color: "gray.200" }}>
+              <Text
+                fontSize="md"
+                fontWeight="600"
+                color="gray.800"
+                _dark={{ color: "gray.200" }}
+              >
                 {task.description || "No description available."}
               </Text>
             </Box>
@@ -200,7 +213,13 @@ export const TaskDrawer = ({
             {/* Lawyer & Client Card */}
             <Box {...cardStyles}>
               <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr" }} gap={4}>
-                <Box borderRightWidth={{ base: "0", sm: "1px" }} borderBottomWidth={{ base: "1px", sm: "0" }} borderColor="gray.100" _dark={{ borderColor: "gray.700" }} pb={{ base: 4, sm: 0 }}>
+                <Box
+                  borderRightWidth={{ base: "0", sm: "1px" }}
+                  borderBottomWidth={{ base: "1px", sm: "0" }}
+                  borderColor="gray.100"
+                  _dark={{ borderColor: "gray.700" }}
+                  pb={{ base: 4, sm: 0 }}
+                >
                   <HStack mb={2}>
                     <User size={16} color="gray" />
                     <Text fontSize="sm" color="gray.500" fontWeight="500">
@@ -233,11 +252,18 @@ export const TaskDrawer = ({
                   Case Details
                 </Text>
               </HStack>
-              <Grid templateColumns="120px 10px 1fr" gap={3} alignItems="center" ml={2}>
+              <Grid
+                templateColumns="120px 10px 1fr"
+                gap={3}
+                alignItems="center"
+                ml={2}
+              >
                 <Text fontSize="sm" color="gray.500" fontWeight="500">
                   Case Number
                 </Text>
-                <Text fontSize="sm" color="gray.500">:</Text>
+                <Text fontSize="sm" color="gray.500">
+                  :
+                </Text>
                 <Text fontSize="sm" fontWeight="600">
                   {task.caseNumber || "—"}
                 </Text>
@@ -245,7 +271,9 @@ export const TaskDrawer = ({
                 <Text fontSize="sm" color="gray.500" fontWeight="500">
                   Case Title
                 </Text>
-                <Text fontSize="sm" color="gray.500">:</Text>
+                <Text fontSize="sm" color="gray.500">
+                  :
+                </Text>
                 <Text fontSize="sm" fontWeight="600">
                   {task.caseName || "—"}
                 </Text>
@@ -260,11 +288,18 @@ export const TaskDrawer = ({
                   Hearing Details
                 </Text>
               </HStack>
-              <Grid templateColumns="120px 10px 1fr" gap={3} alignItems="center" ml={2}>
+              <Grid
+                templateColumns="120px 10px 1fr"
+                gap={3}
+                alignItems="center"
+                ml={2}
+              >
                 <Text fontSize="sm" color="gray.500" fontWeight="500">
                   Court Room
                 </Text>
-                <Text fontSize="sm" color="gray.500">:</Text>
+                <Text fontSize="sm" color="gray.500">
+                  :
+                </Text>
                 <HStack>
                   <Text fontSize="sm" fontWeight="600">
                     {task.description?.split(" - ")[1] || "—"}
@@ -274,7 +309,9 @@ export const TaskDrawer = ({
                 <Text fontSize="sm" color="gray.500" fontWeight="500">
                   Hearing Type
                 </Text>
-                <Text fontSize="sm" color="gray.500">:</Text>
+                <Text fontSize="sm" color="gray.500">
+                  :
+                </Text>
                 <Box>
                   <Badge
                     bg="purple.100"
@@ -293,7 +330,9 @@ export const TaskDrawer = ({
                 <Text fontSize="sm" color="gray.500" fontWeight="500">
                   Status
                 </Text>
-                <Text fontSize="sm" color="gray.500">:</Text>
+                <Text fontSize="sm" color="gray.500">
+                  :
+                </Text>
                 <Box>
                   <Badge
                     bg={
@@ -338,7 +377,9 @@ export const TaskDrawer = ({
                 <Text fontSize="sm" color="gray.500" fontWeight="500">
                   Judge Name
                 </Text>
-                <Text fontSize="sm" color="gray.500">:</Text>
+                <Text fontSize="sm" color="gray.500">
+                  :
+                </Text>
                 <Text fontSize="sm" fontWeight="600">
                   —
                 </Text>
@@ -346,7 +387,9 @@ export const TaskDrawer = ({
                 <Text fontSize="sm" color="gray.500" fontWeight="500">
                   Attendees
                 </Text>
-                <Text fontSize="sm" color="gray.500">:</Text>
+                <Text fontSize="sm" color="gray.500">
+                  :
+                </Text>
                 <Text fontSize="sm" fontWeight="600">
                   —
                 </Text>
@@ -370,7 +413,13 @@ export const TaskDrawer = ({
           </VStack>
         </DrawerBody>
 
-        <DrawerFooter borderTopWidth="1px" pt={4} pb={4} bg="white" _dark={{ bg: "gray.800" }}>
+        <DrawerFooter
+          borderTopWidth="1px"
+          pt={4}
+          pb={4}
+          bg="white"
+          _dark={{ bg: "gray.800" }}
+        >
           <Flex w="100%" justify="space-between" align="center">
             <Button
               variant="outline"
@@ -384,7 +433,12 @@ export const TaskDrawer = ({
               </HStack>
             </Button>
             <HStack gap={3}>
-              <Button variant="outline" onClick={onClose} borderRadius="8px" fontWeight="600">
+              <Button
+                variant="outline"
+                onClick={onClose}
+                borderRadius="8px"
+                fontWeight="600"
+              >
                 Close
               </Button>
               {task.status !== "Completed" && (
@@ -406,6 +460,6 @@ export const TaskDrawer = ({
           </Flex>
         </DrawerFooter>
       </DrawerContent>
-    </DrawerRoot >
+    </DrawerRoot>
   );
 };

@@ -16,10 +16,21 @@ import {
   DialogCloseTrigger,
   DialogTitle,
 } from "@/shared/components/ui/Dialog";
-import { Calendar, Clock, MapPin, User, FileText, ArrowRight } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  User,
+  FileText,
+  ArrowRight,
+} from "lucide-react";
 
 import { CourtEvent } from "../types/matter.types";
-import { formatDate, formatTime, outcomeTypeLabel } from "../utils/matterHelpers";
+import {
+  formatDate,
+  formatTime,
+  outcomeTypeLabel,
+} from "../utils/matterHelpers";
 import { CourtEventStatusBadge, CourtEventTypeBadge } from "./MatterBadges";
 
 interface CourtEventDetailsModalProps {
@@ -42,7 +53,8 @@ export const CourtEventDetailsModal = ({
   if (!event) return null;
 
   const canEditOrCancel = event.status === "SCHEDULED";
-  const canMarkHeld = event.status === "SCHEDULED" || event.status === "ADJOURNED";
+  const canMarkHeld =
+    event.status === "SCHEDULED" || event.status === "ADJOURNED";
 
   return (
     <DialogRoot
@@ -113,7 +125,10 @@ export const CourtEventDetailsModal = ({
             {event.outcome && (
               <Box bg="gray.50" p={3} borderRadius="md">
                 <Text fontSize="sm" fontWeight="600" mb={1}>
-                  Outcome{event.outcomeType ? ` · ${outcomeTypeLabel(event.outcomeType)}` : ""}
+                  Outcome
+                  {event.outcomeType
+                    ? ` · ${outcomeTypeLabel(event.outcomeType)}`
+                    : ""}
                 </Text>
                 <Text fontSize="sm">{event.outcome}</Text>
               </Box>

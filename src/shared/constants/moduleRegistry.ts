@@ -12,6 +12,7 @@ import {
   FolderOpen,
   Archive,
   Database,
+  Briefcase,
 } from "lucide-react";
 import { ComponentType } from "react";
 
@@ -72,13 +73,21 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Main",
     order: 11,
   },
+  PROJECT_MANAGEMENT: {
+    moduleCode: "PROJECT_MANAGEMENT",
+    label: "Project Management",
+    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT,
+    icon: Briefcase,
+    section: "Main",
+    order: 12,
+  },
   EMPLOYEE: {
     moduleCode: "EMPLOYEE",
     label: "Employee Management",
     path: ROUTES_CONFIG.USER.EMPLOYEE_MANAGEMENT,
     icon: User,
     section: "Main",
-    order: 12,
+    order: 13,
   },
   CALENDAR: {
     moduleCode: "CALENDAR",
@@ -86,7 +95,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     path: ROUTES_CONFIG.USER.TASK_CALENDAR,
     icon: IoCalendarOutline,
     section: "Main",
-    order: 13,
+    order: 14,
   },
   DOCUMENT_MANAGEMENT: {
     moduleCode: "DOCUMENT_MANAGEMENT",
@@ -94,7 +103,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     path: ROUTES_CONFIG.USER.FOLDER,
     icon: FolderOpen,
     section: "Main",
-    order: 14,
+    order: 15,
   },
   ARCHIVE: {
     moduleCode: "ARCHIVE",
@@ -102,7 +111,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     path: ROUTES_CONFIG.USER.ARCHIVE,
     icon: Archive,
     section: "Main",
-    order: 15,
+    order: 16,
   },
   CASE_TYPE_SETUP: {
     moduleCode: "CASE_TYPE_SETUP",
@@ -110,7 +119,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     path: ROUTES_CONFIG.USER.CASE_TYPE_SETUP,
     icon: FileText,
     section: "Main",
-    order: 16,
+    order: 17,
   },
   USER_MANAGEMENT: {
     moduleCode: "USER_MANAGEMENT",

@@ -41,21 +41,15 @@ export const Layout = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <HStack 
-      alignItems="stretch" 
-      gap="3" 
-      height="100vh"
-      bg="#F5F6F8"
-      p="3"
-    >
+    <HStack alignItems="stretch" gap="3" height="100vh" bg="#F5F6F8" p="3">
       <Sidebar />
 
       <VStack alignItems="stretch" flex="1" gap="0">
         {/* <Navbar /> */}
 
         <Box overflowY="auto" flex="1">
-          <Box 
-            padding="4" 
+          <Box
+            padding="4"
             borderRadius="12px"
             boxShadow="0 1px 3px rgba(0, 0, 0, 0.08)"
             borderWidth="1px"

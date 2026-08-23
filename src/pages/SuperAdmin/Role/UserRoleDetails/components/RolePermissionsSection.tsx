@@ -1,7 +1,10 @@
 import { Stack, Button, HStack, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useAddEditRoleMutation, useRoleByIdQuery } from "@/api/roleSetup.ts/index.ts";
+import {
+  useAddEditRoleMutation,
+  useRoleByIdQuery,
+} from "@/api/roleSetup.ts/index.ts";
 import { RoleSetupForm } from "../../component/RoleSetupForm";
 import { RoleFormValues, RoleSetupPayload } from "../../types";
 import { errorNotification } from "@/shared/utils/notification";

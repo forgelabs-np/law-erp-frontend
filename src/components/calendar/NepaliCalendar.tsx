@@ -58,7 +58,11 @@ const buildMonthCells = (year: number, month: number): DayCell[] => {
 
   for (let i = 0; i < leading; i++) {
     cells.push({
-      nepali: { year: prevYear, month: prevMonth, day: daysInPrev - leading + 1 + i },
+      nepali: {
+        year: prevYear,
+        month: prevMonth,
+        day: daysInPrev - leading + 1 + i,
+      },
       isCurrentMonth: false,
     });
   }
@@ -68,7 +72,10 @@ const buildMonthCells = (year: number, month: number): DayCell[] => {
   const nextYear = month === 11 ? year + 1 : year;
   const nextMonth = month === 11 ? 0 : month + 1;
   for (let day = 1; cells.length < TOTAL_CELLS; day++) {
-    cells.push({ nepali: { year: nextYear, month: nextMonth, day }, isCurrentMonth: false });
+    cells.push({
+      nepali: { year: nextYear, month: nextMonth, day },
+      isCurrentMonth: false,
+    });
   }
   return cells;
 };
@@ -122,14 +129,18 @@ const DayEvents = ({
   const rowsThatFit =
     listHeight === null
       ? DEFAULT_ROW_COUNT
-      : Math.max(1, Math.floor((listHeight + ROW_GAP) / (pillHeight + ROW_GAP)));
+      : Math.max(
+          1,
+          Math.floor((listHeight + ROW_GAP) / (pillHeight + ROW_GAP))
+        );
   const visible = tasks.slice(0, Math.min(tasks.length, rowsThatFit));
   const overflow = tasks.slice(visible.length);
 
   const handleEventClick = (task: Task) => {
     setIsPopoverOpen(false);
     onEventClick(task);
-  };  return (
+  };
+  return (
     <>
       <Box
         ref={listRef}
@@ -209,7 +220,12 @@ const DayEvents = ({
               +{overflow.length} more
             </Button>
           </PopoverTrigger>
-          <PopoverContent width="280px" maxH="320px" overflowY="auto" boxShadow="lg">
+          <PopoverContent
+            width="280px"
+            maxH="320px"
+            overflowY="auto"
+            boxShadow="lg"
+          >
             <PopoverCloseTrigger />
             <PopoverBody p={2}>
               {overflow.map((task) => (
@@ -331,7 +347,11 @@ export const NepaliCalendar = ({
                     _dark={
                       isSelected
                         ? { color: "white" }
-                        : { color: cell.isCurrentMonth ? "gray.300" : "gray.600" }
+                        : {
+                            color: cell.isCurrentMonth
+                              ? "gray.300"
+                              : "gray.600",
+                          }
                     }
                   >
                     {toNepaliDigits(cell.nepali.day)}
@@ -347,7 +367,11 @@ export const NepaliCalendar = ({
                           : "gray.300"
                     }
                     _dark={{
-                      color: isSelected ? "whiteAlpha.800" : cell.isCurrentMonth ? "gray.500" : "gray.600",
+                      color: isSelected
+                        ? "whiteAlpha.800"
+                        : cell.isCurrentMonth
+                          ? "gray.500"
+                          : "gray.600",
                     }}
                   >
                     • {gregorianDay}
@@ -397,7 +421,15 @@ export const NepaliCalendar = ({
             {format(nepaliToGregorian(displayNepali), "MMMM d, yyyy")}
           </Text>
         </Box>
-        <Box flex="1" minH={0} overflowY="auto" p={4} display="flex" flexDirection="column" gap={2}>
+        <Box
+          flex="1"
+          minH={0}
+          overflowY="auto"
+          p={4}
+          display="flex"
+          flexDirection="column"
+          gap={2}
+        >
           {tasks.length === 0 ? (
             <Text fontSize="sm" color="gray.500">
               No hearings or events on this day.
@@ -451,7 +483,11 @@ export const NepaliCalendar = ({
       <Box
         display="grid"
         gridTemplateColumns="repeat(7, minmax(0, 1fr))"
-        gridTemplateRows={view === "dayGridMonth" ? "repeat(6, minmax(0, 1fr))" : "minmax(0, 1fr)"}
+        gridTemplateRows={
+          view === "dayGridMonth"
+            ? "repeat(6, minmax(0, 1fr))"
+            : "minmax(0, 1fr)"
+        }
         flex="1"
         minH={0}
       >
@@ -476,7 +512,10 @@ export const NepaliCalendar = ({
               p={1}
               bg={isToday || isSelected ? "blue.50" : "transparent"}
               _dark={{
-                bg: isToday || isSelected ? "rgba(59, 130, 246, 0.12)" : "transparent",
+                bg:
+                  isToday || isSelected
+                    ? "rgba(59, 130, 246, 0.12)"
+                    : "transparent",
                 borderColor: "gray.700",
               }}
               borderLeftWidth={col === 0 ? 0 : "1px"}
@@ -485,7 +524,13 @@ export const NepaliCalendar = ({
               onClick={() => onDayClick(cell.nepali)}
               _hover={{ bg: "gray.50", _dark: { bg: "gray.800" } }}
             >
-              <Box display="flex" flexDirection="column" alignItems="flex-start" gap="2px" flexShrink={0}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-start"
+                gap="2px"
+                flexShrink={0}
+              >
                 <Box
                   w={isSelected ? "34px" : undefined}
                   h={isSelected ? "34px" : undefined}
@@ -513,7 +558,11 @@ export const NepaliCalendar = ({
                     _dark={
                       isSelected
                         ? { color: "white" }
-                        : { color: cell.isCurrentMonth ? "gray.200" : "gray.600" }
+                        : {
+                            color: cell.isCurrentMonth
+                              ? "gray.200"
+                              : "gray.600",
+                          }
                     }
                   >
                     {toNepaliDigits(cell.nepali.day)}
@@ -523,7 +572,9 @@ export const NepaliCalendar = ({
                   fontSize="xs"
                   lineHeight="1"
                   color={cell.isCurrentMonth ? "gray.400" : "gray.300"}
-                  _dark={{ color: cell.isCurrentMonth ? "gray.500" : "gray.600" }}
+                  _dark={{
+                    color: cell.isCurrentMonth ? "gray.500" : "gray.600",
+                  }}
                 >
                   • {gregorianDay}
                 </Text>

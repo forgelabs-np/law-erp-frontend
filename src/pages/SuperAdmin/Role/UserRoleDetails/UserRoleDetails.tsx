@@ -1,4 +1,11 @@
-import { HStack, Stack, Text, IconButton, Spinner, Center } from "@chakra-ui/react";
+import {
+  HStack,
+  Stack,
+  Text,
+  IconButton,
+  Spinner,
+  Center,
+} from "@chakra-ui/react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { ROUTES_CONFIG } from "@/shared/config";
@@ -25,16 +32,22 @@ export const UserRoleDetails = () => {
       <Stack gap={4}>
         <HStack gap={2}>
           <Link to={ROUTES_CONFIG.USER.ROLE_MANAGEMENT}>
-            <Text fontSize="sm" color="gray.500" _hover={{ color: "blue.500", textDecoration: "underline" }}>
+            <Text
+              fontSize="sm"
+              color="gray.500"
+              _hover={{ color: "blue.500", textDecoration: "underline" }}
+            >
               Role Management
             </Text>
           </Link>
-          <Text fontSize="sm" color="gray.400">/</Text>
+          <Text fontSize="sm" color="gray.400">
+            /
+          </Text>
           <Text fontSize="sm" color="gray.900" fontWeight="600">
             {user.fullName}
           </Text>
         </HStack>
-        
+
         <HStack gap={4}>
           <IconButton
             variant="ghost"
@@ -53,7 +66,7 @@ export const UserRoleDetails = () => {
       </Stack>
 
       <UserInfoCard user={user} />
-      
+
       {user.roleId ? (
         <Stack gap={8}>
           <RoleInfoCard roleId={user.roleId} />

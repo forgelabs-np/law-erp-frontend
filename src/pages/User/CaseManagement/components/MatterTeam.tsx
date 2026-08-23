@@ -65,7 +65,12 @@ const AddTeamMemberModal = ({
   matterNumber: string;
   onCreate: (data: {
     userId: string;
-    assignmentRole: "PRIMARY_ADVOCATE" | "CO_ADVOCATE" | "PARALEGAL" | "JUNIOR" | "SUPERVISOR";
+    assignmentRole:
+      | "PRIMARY_ADVOCATE"
+      | "CO_ADVOCATE"
+      | "PARALEGAL"
+      | "JUNIOR"
+      | "SUPERVISOR";
   }) => void;
 }) => {
   const [selectedUserId, setSelectedUserId] = useState("");
@@ -208,9 +213,8 @@ interface MatterTeamProps {
 }
 
 export const MatterTeam = ({ matterNumber, matterTitle }: MatterTeamProps) => {
-  const { data: assignments = [], isLoading } = useMatterAssignmentsQuery(
-    matterNumber
-  );
+  const { data: assignments = [], isLoading } =
+    useMatterAssignmentsQuery(matterNumber);
   const createMutation = useCreateMatterAssignmentMutation();
   const removeMutation = useRemoveMatterAssignmentMutation();
 
@@ -218,7 +222,12 @@ export const MatterTeam = ({ matterNumber, matterTitle }: MatterTeamProps) => {
 
   const handleAddMember = (data: {
     userId: string;
-    assignmentRole: "PRIMARY_ADVOCATE" | "CO_ADVOCATE" | "PARALEGAL" | "JUNIOR" | "SUPERVISOR";
+    assignmentRole:
+      | "PRIMARY_ADVOCATE"
+      | "CO_ADVOCATE"
+      | "PARALEGAL"
+      | "JUNIOR"
+      | "SUPERVISOR";
   }) => {
     createMutation.mutate({
       matterNumber,
@@ -254,7 +263,13 @@ export const MatterTeam = ({ matterNumber, matterTitle }: MatterTeamProps) => {
 
   if (isLoading) {
     return (
-      <Box p={6} bg="white" border="1px solid" borderColor="gray.200" borderRadius="lg">
+      <Box
+        p={6}
+        bg="white"
+        border="1px solid"
+        borderColor="gray.200"
+        borderRadius="lg"
+      >
         <Stack gap={3}>
           <Box h="20px" w="150px" bg="gray.100" borderRadius="md" />
           <Box h="40px" w="100%" bg="gray.100" borderRadius="md" />
@@ -264,7 +279,13 @@ export const MatterTeam = ({ matterNumber, matterTitle }: MatterTeamProps) => {
   }
 
   return (
-    <Box p={6} bg="white" border="1px solid" borderColor="gray.200" borderRadius="lg">
+    <Box
+      p={6}
+      bg="white"
+      border="1px solid"
+      borderColor="gray.200"
+      borderRadius="lg"
+    >
       <HStack justify="space-between" align="flex-start" mb={4}>
         <HStack gap={2}>
           <Users size={18} color="#6b7280" />

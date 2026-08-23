@@ -110,7 +110,8 @@ export const Sidebar = () => {
           location.pathname.startsWith(prefix)
         );
 
-      const isActive = location.pathname === item.path || isCaseManagementActive;
+      const isActive =
+        location.pathname === item.path || isCaseManagementActive;
 
       const subItems = item.subModules?.map((sub: any) =>
         mapModuleToSidebarItem(sub, true)

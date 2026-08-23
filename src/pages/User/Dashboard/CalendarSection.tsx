@@ -46,8 +46,10 @@ export const CalendarSection = ({
   const emptyTasksByNepaliDate = useMemo(() => new Map(), []);
   const todayNepali = useMemo(() => gregorianToNepali(new Date()), []);
 
-  const handlePrevMonth = () => setDisplayNepali((prev) => shiftNepaliMonth(prev, -1));
-  const handleNextMonth = () => setDisplayNepali((prev) => shiftNepaliMonth(prev, 1));
+  const handlePrevMonth = () =>
+    setDisplayNepali((prev) => shiftNepaliMonth(prev, -1));
+  const handleNextMonth = () =>
+    setDisplayNepali((prev) => shiftNepaliMonth(prev, 1));
 
   return (
     <Box
@@ -110,7 +112,12 @@ export const CalendarSection = ({
       </Box>
 
       <Box>
-        <Text fontSize="sm" fontWeight={600} mb={3} fontFamily={NEPALI_FONT_STACK}>
+        <Text
+          fontSize="sm"
+          fontWeight={600}
+          mb={3}
+          fontFamily={NEPALI_FONT_STACK}
+        >
           Today • {formatNepaliDate(todayNepali)}
         </Text>
         <Stack gap={2}>

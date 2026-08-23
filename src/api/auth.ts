@@ -5,7 +5,10 @@ import toast from "react-hot-toast";
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import TokenService, { TokenDetails } from "@/shared/service/service-token";
-import { errorNotification, successNotification } from "@/shared/utils/notification";
+import {
+  errorNotification,
+  successNotification,
+} from "@/shared/utils/notification";
 
 export interface LoginDetails {
   username: string;
@@ -76,7 +79,9 @@ export const useLoginMutation = (type: LoginType) => {
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       errorNotification(
-        err.response?.data?.message ?? err.response?.data?.error ?? "Login failed!"
+        err.response?.data?.message ??
+          err.response?.data?.error ??
+          "Login failed!"
       );
     },
   });

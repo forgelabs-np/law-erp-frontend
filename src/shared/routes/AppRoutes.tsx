@@ -15,7 +15,6 @@ const toRouterRoute = (route: (typeof USER_ROUTES)[number]): RouteObject => {
   return routerRoute;
 };
 
-
 export const AppRoutes = () => {
   const authenticated = TokenService.isAuthenticated();
   const userRole = useRole();
@@ -31,7 +30,10 @@ export const AppRoutes = () => {
   const filteredUserRoutes = USER_ROUTES.filter((route) => {
     if (!route.roles) return true; // No role restriction, allow access
     // Handle both string role and object role with code property
-    const roleCode = typeof userRole === 'object' && (userRole as any)?.code ? (userRole as any).code : userRole;
+    const roleCode =
+      typeof userRole === "object" && (userRole as any)?.code
+        ? (userRole as any).code
+        : userRole;
     return route.roles.includes(roleCode); // Check if user's role code is in allowed roles
   });
 

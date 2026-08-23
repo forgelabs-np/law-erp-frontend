@@ -32,7 +32,15 @@ export const HearingSourceBadge = ({ source }: HearingSourceBadgeProps) => {
   const { bg, color, label } = getBadgeProps();
 
   return (
-    <Badge bg={bg} color={color} px={3} py={1} borderRadius="full" fontSize="xs" fontWeight="600">
+    <Badge
+      bg={bg}
+      color={color}
+      px={3}
+      py={1}
+      borderRadius="full"
+      fontSize="xs"
+      fontWeight="600"
+    >
       {label}
     </Badge>
   );

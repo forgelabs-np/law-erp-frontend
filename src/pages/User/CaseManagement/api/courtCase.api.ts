@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-  
+
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import { ApiErrorResponse, ApiResponse } from "@/shared/types/response";
@@ -45,7 +45,10 @@ export const useGetCourtCaseQuery = (courtCaseRef: string) => {
   });
 };
 
-const updateCourtCase = (courtCaseRef: string, data: UpdateCourtCaseRequest) => {
+const updateCourtCase = (
+  courtCaseRef: string,
+  data: UpdateCourtCaseRequest
+) => {
   return LawFirmCRMClient.put<ApiResponse<CourtCase>>(
     api.COURT_CASES.PUT.replace("{ourCourtCaseRef}", courtCaseRef),
     { data }
@@ -119,7 +122,10 @@ export const useAddCourtCaseMutation = () => {
 // Stage management
 // ============================================================
 
-const updateStage = (courtCaseRef: string, data: UpdateCourtCaseStageRequest) => {
+const updateStage = (
+  courtCaseRef: string,
+  data: UpdateCourtCaseStageRequest
+) => {
   return LawFirmCRMClient.put<ApiResponse<CourtCase>>(
     api.COURT_CASES.UPDATE_STAGE.replace("{ourCourtCaseRef}", courtCaseRef),
     { data }
@@ -158,10 +164,7 @@ export const useUpdateCourtCaseStageMutation = () => {
 // Judgment
 // ============================================================
 
-const recordJudgment = (
-  courtCaseRef: string,
-  data: RecordJudgmentRequest
-) => {
+const recordJudgment = (courtCaseRef: string, data: RecordJudgmentRequest) => {
   return LawFirmCRMClient.put<ApiResponse<CourtCase>>(
     api.COURT_CASES.JUDGMENT.replace("{ourCourtCaseRef}", courtCaseRef),
     { data }

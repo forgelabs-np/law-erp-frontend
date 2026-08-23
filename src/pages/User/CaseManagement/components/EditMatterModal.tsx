@@ -21,7 +21,11 @@ import { useEffect } from "react";
 
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
 
-import { MatterResponse, MatterStatus, UpdateMatterRequest } from "../types/matter.types";
+import {
+  MatterResponse,
+  MatterStatus,
+  UpdateMatterRequest,
+} from "../types/matter.types";
 
 interface EditMatterModalProps {
   isOpen: boolean;
@@ -115,7 +119,11 @@ export const EditMatterModal = ({
                   name="description"
                   control={control}
                   render={({ field }) => (
-                    <Textarea {...field} rows={4} placeholder="Matter description" />
+                    <Textarea
+                      {...field}
+                      rows={4}
+                      placeholder="Matter description"
+                    />
                   )}
                 />
               </Box>

@@ -53,7 +53,12 @@ export const TimelineEventRow = ({
         cursor={onClick ? "pointer" : undefined}
         onClick={onClick}
       >
-        <HStack justify="space-between" align="flex-start" gap={2} flexWrap="wrap">
+        <HStack
+          justify="space-between"
+          align="flex-start"
+          gap={2}
+          flexWrap="wrap"
+        >
           <Stack gap={1} minW="0">
             <Text
               fontSize="sm"

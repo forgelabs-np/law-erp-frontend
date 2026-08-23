@@ -21,7 +21,8 @@ import {
 export const dashboardKeys = {
   firm: ["firm-dashboard"] as const,
   global: ["global-dashboard"] as const,
-  assignments: (matterNumber: string) => ["matter-assignments", matterNumber] as const,
+  assignments: (matterNumber: string) =>
+    ["matter-assignments", matterNumber] as const,
 };
 
 // ============================================================
@@ -106,17 +107,19 @@ export const useCreateMatterAssignmentMutation = () => {
       });
     },
     onError: (error: any) => {
-      toastFail(error?.response?.data?.message ?? "Failed to assign team member");
+      toastFail(
+        error?.response?.data?.message ?? "Failed to assign team member"
+      );
     },
   });
 };
 
 const removeMatterAssignment = (matterNumber: string, userId: string) => {
   return LawFirmCRMClient.delete<ApiResponse<void>>(
-    api.MATTER_ASSIGNMENTS.DELETE.replace("{matterNumber}", matterNumber).replace(
-      "{userId}",
-      userId
-    )
+    api.MATTER_ASSIGNMENTS.DELETE.replace(
+      "{matterNumber}",
+      matterNumber
+    ).replace("{userId}", userId)
   );
 };
 
@@ -137,7 +140,9 @@ export const useRemoveMatterAssignmentMutation = () => {
       });
     },
     onError: (error: any) => {
-      toastFail(error?.response?.data?.message ?? "Failed to remove team member");
+      toastFail(
+        error?.response?.data?.message ?? "Failed to remove team member"
+      );
     },
   });
 };
