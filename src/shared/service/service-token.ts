@@ -34,6 +34,8 @@ function setToken(token: TokenDetails) {
     // localStorage.setItem("auth", JSON.stringify(token));
     localStorage.setItem("token", token.access_token);
     localStorage.setItem("refresh_token", token.refresh_token);
+    // Dispatch custom event to notify components of token change
+    window.dispatchEvent(new CustomEvent('tokenChanged', { detail: token }));
   } catch (e) {
     // console.error("Error storing token", e);
   }

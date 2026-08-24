@@ -157,20 +157,22 @@ export const useSignupMutation = (type: RegisterType) => {
 };
 export const initRefreshToken = async () => {
   try {
+    const refreshToken = TokenService.getToken()?.refresh_token;
+    if (!refreshToken) {
+      return false;
+    }
+
     const response = await LawFirmCRMClient.get<TokenDetails>(
       api.refreshToken,
       {
         params: {
-          refreshToken: TokenService.getToken()?.refresh_token,
-        },
-        headers: {
-          Authorization: "",
+          refreshToken,
         },
       }
     );
     const tokens = {
       access_token: response.data.access_token,
-      refresh_token: response.data.refresh_token,
+      refresh_token: response.data.refresh_token || refreshToken,
     };
     TokenService.setToken(tokens);
     return true;
