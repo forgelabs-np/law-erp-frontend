@@ -271,14 +271,14 @@ export const RecentActivity = ({
           css={
             compact
               ? {
-                "&::-webkit-scrollbar": { width: "4px" },
-                "&::-webkit-scrollbar-track": { bg: "transparent" },
-                "&::-webkit-scrollbar-thumb": {
-                  bg: "gray.200",
-                  borderRadius: "full",
-                },
-                "&::-webkit-scrollbar-thumb:hover": { bg: "gray.300" },
-              }
+                  "&::-webkit-scrollbar": { width: "4px" },
+                  "&::-webkit-scrollbar-track": { bg: "transparent" },
+                  "&::-webkit-scrollbar-thumb": {
+                    bg: "gray.200",
+                    borderRadius: "full",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": { bg: "gray.300" },
+                }
               : undefined
           }
         >

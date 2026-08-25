@@ -6,14 +6,22 @@ import type { FirmOverviewData } from "./types";
  * Centralized hook for all Global Dashboard data.
  * Wraps the existing API hook and adds computed fields.
  */
-export function useGlobalDashboard() {
-  const query = useGlobalDashboardQuery();
+export function useGlobalDashboard(days: number = 30) {
+  const query = useGlobalDashboardQuery(days);
 
   const computedData = useMemo(() => {
     if (!query.data) return undefined;
 
-    const { userStats, firmStats, caseStats, scraperStats, recentActivity } =
-      query.data;
+    const {
+      userStats,
+      firmStats,
+      caseStats,
+      scraperStats,
+      recentActivity,
+      userTrends,
+      firmTrends,
+      matterTrends,
+    } = query.data;
 
     // Compute firm overview data
     const inactiveFirms =
@@ -33,6 +41,9 @@ export function useGlobalDashboard() {
       caseStats,
       scraperStats,
       recentActivity: recentActivity ?? [],
+      userTrends: userTrends ?? [],
+      firmTrends: firmTrends ?? [],
+      matterTrends: matterTrends ?? [],
     };
   }, [query.data]);
 

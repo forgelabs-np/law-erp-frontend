@@ -10,12 +10,15 @@ import {
 import {
   Activity,
   Building2,
+  Calendar,
   FileText,
   RefreshCw,
   Users,
   XOctagon,
 } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+
+import { FieldSelect } from "../components/ui";
 
 import { DashboardKpiCard } from "../components/dashboard/DashboardKpiCard";
 import { UserRoleDistribution } from "../components/dashboard/UserRoleDistribution";
@@ -27,10 +30,7 @@ import { TodaysEvents } from "../components/dashboard/TodaysEvents";
 import { QuickInsights } from "../components/dashboard/QuickInsights";
 import { ReportCta } from "../components/dashboard/ReportCta";
 import { useGlobalDashboard } from "../components/dashboard/useGlobalDashboard";
-import {
-  getDashboardInsights,
-  generateSparklineData,
-} from "../components/dashboard/dashboardInsights";
+import { getDashboardInsights } from "../components/dashboard/dashboardInsights";
 
 // ============================================================
 // Skeleton Loaders
@@ -197,8 +197,9 @@ const ForbiddenState = () => (
 // ============================================================
 
 const GlobalDashboardPage = () => {
+  const [days, setDays] = useState(30);
   const { computedData, isLoading, isError, error, refetch, isFetching } =
-    useGlobalDashboard();
+    useGlobalDashboard(days);
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -227,6 +228,28 @@ const GlobalDashboardPage = () => {
   const insights = useMemo(
     () => getDashboardInsights(computedData),
     [computedData]
+  );
+
+  // Build sparkline data from real trend data (must be before early returns)
+  const userTrendsData = useMemo(
+    () => computedData?.userTrends ?? [],
+    [computedData]
+  );
+  const totalUsersSparkline = useMemo(
+    () => userTrendsData.map((t) => t.totalUsers),
+    [userTrendsData]
+  );
+  const activeUsersSparkline = useMemo(
+    () => userTrendsData.map((t) => t.activeUsers),
+    [userTrendsData]
+  );
+  const inactiveUsersSparkline = useMemo(
+    () => userTrendsData.map((t) => t.inactiveUsers),
+    [userTrendsData]
+  );
+  const clientsSparkline = useMemo(
+    () => userTrendsData.map((t) => t.clients),
+    [userTrendsData]
   );
 
   // Loading state
@@ -317,8 +340,14 @@ const GlobalDashboardPage = () => {
 
   if (!computedData) return null;
 
-  const { userStats, firmStats, caseStats, scraperStats, recentActivity } =
-    computedData;
+  const {
+    userStats,
+    firmStats,
+    caseStats,
+    scraperStats,
+    recentActivity,
+    matterTrends,
+  } = computedData;
 
   // KPI card data
   const kpiCards = [
@@ -328,8 +357,11 @@ const GlobalDashboardPage = () => {
       icon: <Users size={20} />,
       color: "gray",
       sparklineColor: "#6b7280",
-      sparklineData: generateSparklineData(userStats.totalUsers),
-      trend: { value: 20, label: "vs last 7 days" },
+      sparklineData:
+        totalUsersSparkline.length > 0
+          ? totalUsersSparkline
+          : [userStats.totalUsers],
+      trend: { value: 0, label: `Last ${days} days` },
     },
     {
       label: "Active Users",
@@ -337,8 +369,11 @@ const GlobalDashboardPage = () => {
       icon: <Activity size={20} />,
       color: "green",
       sparklineColor: "#10b981",
-      sparklineData: generateSparklineData(userStats.activeUsers),
-      trend: { value: 20, label: "vs last 7 days" },
+      sparklineData:
+        activeUsersSparkline.length > 0
+          ? activeUsersSparkline
+          : [userStats.activeUsers],
+      trend: { value: 0, label: `Last ${days} days` },
     },
     {
       label: "Inactive Users",
@@ -346,11 +381,14 @@ const GlobalDashboardPage = () => {
       icon: <Users size={20} />,
       color: "red",
       sparklineColor: "#ef4444",
-      sparklineData: generateSparklineData(userStats.inactiveUsers),
+      sparklineData:
+        inactiveUsersSparkline.length > 0
+          ? inactiveUsersSparkline
+          : [userStats.inactiveUsers],
       trend:
         userStats.inactiveUsers === 0
           ? undefined
-          : { value: -10, label: "vs last 7 days" },
+          : { value: 0, label: `Last ${days} days` },
     },
     {
       label: "Total Clients",
@@ -358,8 +396,11 @@ const GlobalDashboardPage = () => {
       icon: <Users size={20} />,
       color: "purple",
       sparklineColor: "#8b5cf6",
-      sparklineData: generateSparklineData(userStats.totalClients),
-      trend: { value: 50, label: "vs last 7 days" },
+      sparklineData:
+        clientsSparkline.length > 0
+          ? clientsSparkline
+          : [userStats.totalClients],
+      trend: { value: 0, label: `Last ${days} days` },
     },
   ];
 
@@ -381,6 +422,19 @@ const GlobalDashboardPage = () => {
           </Text>
         </Stack>
         <HStack gap={2}>
+          <HStack gap={2}>
+            <Calendar size={14} color="gray.400" />
+            <FieldSelect
+              size="sm"
+              value={String(days)}
+              onChange={(val) => setDays(Number(val))}
+              w="110px"
+            >
+              <option value="7">Last 7 Days</option>
+              <option value="30">Last 30 Days</option>
+              <option value="90">Last 90 Days</option>
+            </FieldSelect>
+          </HStack>
           <Button
             variant="ghost"
             size="sm"
@@ -493,7 +547,7 @@ const GlobalDashboardPage = () => {
               Case Overview
             </Text>
           </HStack>
-          <CaseOverview data={caseStats} />
+          <CaseOverview data={caseStats} trends={matterTrends} />
         </Box>
       </Grid>
 

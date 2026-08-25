@@ -144,7 +144,8 @@ export const DashboardKpiCard = ({
               dataKey="value"
               stroke={sparklineColor}
               strokeWidth={2}
-              fill={`url(#gradient-${label})`}
+              // fill={`url(#gradient-${label})`}
+              fill={sparklineColor}
               dot={false}
               activeDot={{
                 r: 3,

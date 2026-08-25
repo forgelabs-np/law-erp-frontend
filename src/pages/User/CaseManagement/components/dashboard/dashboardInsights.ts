@@ -78,26 +78,3 @@ export function getDashboardInsights(
 
   return insights;
 }
-
-/**
- * Generate fake sparkline data for KPI cards.
- * In a real implementation, this would come from the API.
- * For now, generates plausible-looking trend data based on the current value.
- */
-export function generateSparklineData(
-  currentValue: number,
-  length = 7
-): number[] {
-  if (currentValue === 0) return Array(length).fill(0);
-  const data: number[] = [];
-  const max = Math.max(currentValue, 1);
-  for (let i = 0; i < length; i++) {
-    const variance = max * 0.3;
-    const trend = (currentValue / length) * (i + 1);
-    const noise = Math.sin(i * 1.7) * variance;
-    data.push(Math.max(0, Math.round((trend + noise) * 10) / 10));
-  }
-  // Ensure the last point equals the current value
-  data[data.length - 1] = currentValue;
-  return data;
-}

@@ -10,10 +10,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { GlobalCaseStats } from "../../types/dashboard.types";
+import type { GlobalCaseStats, MatterTrend } from "../../types/dashboard.types";
 
 interface CaseOverviewProps {
   data: GlobalCaseStats;
+  trends?: MatterTrend[];
+}
+
+/**
+ * Format a date string like "2026-08-25" to "Aug 25"
+ */
+function formatShortDate(dateStr: string): string {
+  try {
+    const date = new Date(dateStr + "T00:00:00");
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } catch {
+    return dateStr;
+  }
 }
 
 /**
@@ -23,7 +36,7 @@ interface CaseOverviewProps {
  */
 function generateTrendData(
   activeMatters: number
-): Array<{ date: string; matters: number }> {
+): Array<{ date: string; active: number; closed: number; stale: number }> {
   const days = [
     "May 18",
     "May 19",
@@ -37,7 +50,12 @@ function generateTrendData(
   return days.map((date, i) => {
     const progress = (i + 1) / days.length;
     const value = Math.max(0, Math.round(count * progress * 10) / 10);
-    return { date, matters: i === days.length - 1 ? count : value };
+    return { 
+      date, 
+      active: i === days.length - 1 ? count : value,
+      closed: 0,
+      stale: 0
+    };
   });
 }
 
@@ -47,7 +65,7 @@ const TrendTooltip = ({
   label,
 }: {
   active?: boolean;
-  payload?: Array<{ value: number }>;
+  payload?: Array<{ name: string; value: number; color: string }>;
   label?: string;
 }) => {
   if (!active || !payload?.[0]) return null;
@@ -62,24 +80,39 @@ const TrendTooltip = ({
       boxShadow="md"
       fontSize="xs"
     >
-      <Text fontWeight="600" color="gray.900">
+      <Text fontWeight="600" color="gray.900" mb={1}>
         {label}
       </Text>
-      <HStack gap={1} mt={1}>
-        <Box w="2" h="2" borderRadius="full" bg="green.500" />
-        <Text color="gray.600">Matters: {payload[0].value}</Text>
-      </HStack>
+      {payload.map((entry, index) => (
+        <HStack key={index} gap={1.5}>
+          <Box w="2" h="2" borderRadius="full" bg={entry.color} />
+          <Text color="gray.600">
+            {entry.name}: {entry.value}
+          </Text>
+        </HStack>
+      ))}
     </Box>
   );
 };
 
-export const CaseOverview = ({ data }: CaseOverviewProps) => {
+export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
   const { totalMatters, activeMatters, closedMatters, staleMatters } = data;
 
-  const trendData = useMemo(
-    () => generateTrendData(activeMatters),
-    [activeMatters]
-  );
+  // Use real trend data from API, falling back to generated data if empty
+  const trendData = useMemo(() => {
+    if (trends.length > 0) {
+      return [...trends]
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map((t) => ({
+          date: formatShortDate(t.date),
+          active: t.activeMatters,
+          closed: t.closedMatters,
+          stale: t.staleMatters,
+        }));
+    }
+    // Fallback: generate simple trend from current stats
+    return generateTrendData(activeMatters);
+  }, [trends, activeMatters]);
 
   return (
     <Stack gap={5}>
@@ -122,7 +155,7 @@ export const CaseOverview = ({ data }: CaseOverviewProps) => {
           Matters Trend
         </Text>
 
-        {totalMatters > 0 ? (
+        {trendData.length > 0 ? (
           <Box h="200px">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
@@ -166,16 +199,11 @@ export const CaseOverview = ({ data }: CaseOverviewProps) => {
                 <Tooltip content={<TrendTooltip />} />
                 <Area
                   type="monotone"
-                  dataKey="matters"
+                  dataKey="active"
                   stroke="#10b981"
                   strokeWidth={2}
                   fill="url(#mattersGradient)"
-                  dot={{
-                    r: 3,
-                    fill: "#10b981",
-                    stroke: "white",
-                    strokeWidth: 2,
-                  }}
+                  dot={false}
                   activeDot={{
                     r: 5,
                     fill: "#10b981",
