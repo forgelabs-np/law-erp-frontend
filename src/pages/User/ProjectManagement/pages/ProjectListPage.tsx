@@ -12,7 +12,15 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { Briefcase, Calendar, ChevronRight, CircleEqual, Plus, Search, X } from "lucide-react";
+import {
+  Briefcase,
+  Calendar,
+  ChevronRight,
+  CircleEqual,
+  Plus,
+  Search,
+  X,
+} from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -113,18 +121,10 @@ const ProjectCard = ({
             <Briefcase size={18} color="gray" />
           </Flex>
           <VStack align="flex-start" gap={0} minW="0">
-            <Text
-              fontSize="sm"
-              fontWeight="600"
-              color="gray.900"
-            >
+            <Text fontSize="sm" fontWeight="600" color="gray.900">
               {project.name}
             </Text>
-            <Text
-              fontSize="xs"
-              color="gray.500"
-              fontFamily="monospace"
-            >
+            <Text fontSize="xs" color="gray.500" fontFamily="monospace">
               {project.projectCode}
             </Text>
           </VStack>
@@ -135,12 +135,17 @@ const ProjectCard = ({
           <ProjectStatusBadge status={project.status} />
           <HStack gap={3}>
             <Text fontSize="xs" color="gray.500">
-              <Briefcase size={11} style={{ display: "inline", marginRight: 4 }} />
+              <Briefcase
+                size={11}
+                style={{ display: "inline", marginRight: 4 }}
+              />
               {project.credentialCount} Credentials
             </Text>
             <Text fontSize="xs" color="gray.500">
               <MdAutorenew
-                size={11} style={{ display: "inline", marginRight: 4 }} />
+                size={11}
+                style={{ display: "inline", marginRight: 4 }}
+              />
               {project.renewalCount} Renewals
             </Text>
             {project.overdueInstances > 0 && (
@@ -161,11 +166,8 @@ const ProjectCard = ({
       </Flex>
 
       {/* Row 2: Dates + Owner + Client */}
-      <SimpleGrid
-        columns={{ base: 1, sm: 2, md: 4 }}
-        gap={{ base: 3, md: 6 }}
-      >
-        <VStack align="flex-start" >
+      <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gap={{ base: 3, md: 6 }}>
+        <VStack align="flex-start">
           <HStack gap={1}>
             <Calendar size={11} color="gray" />
             <Text fontSize="xs" color="gray.500">
@@ -176,7 +178,7 @@ const ProjectCard = ({
             {formatDateDisplay(project.startDate)}
           </Text>
         </VStack>
-        <VStack align="flex-start" >
+        <VStack align="flex-start">
           <HStack gap={1}>
             <Calendar size={11} color="gray" />
             <Text fontSize="xs" color="gray.500">
@@ -191,12 +193,11 @@ const ProjectCard = ({
           <HStack>
             <LuUser size={11} color="gray" />
 
-
             <Text fontSize="xs" color="gray.500">
               Owner
             </Text>
           </HStack>
-          <Text fontSize="sm" color="gray.800" >
+          <Text fontSize="sm" color="gray.800">
             {project.ownerName}
           </Text>
         </VStack>
@@ -204,12 +205,11 @@ const ProjectCard = ({
           <HStack>
             <MdPeopleAlt size={11} color="gray" />
 
-
             <Text fontSize="xs" color="gray.500">
               Client
             </Text>
           </HStack>
-          <Text fontSize="sm" color="gray.800" >
+          <Text fontSize="sm" color="gray.800">
             {project.clientName}
           </Text>
         </VStack>
@@ -218,12 +218,7 @@ const ProjectCard = ({
 
     {/* ---- Footer ---- */}
     <Separator borderColor="gray.200" />
-    <Flex
-      px={5}
-      py={3}
-      justify="space-between"
-      align="center"
-    >
+    <Flex px={5} py={3} justify="space-between" align="center">
       <Text fontSize="xs" color="gray.500">
         Created {formatDateDisplay(project.createdAt)}
       </Text>
@@ -232,13 +227,13 @@ const ProjectCard = ({
         size="sm"
         color="primary.500"
         onClick={onClick}
-      // rightIcon={<ChevronRight size={14} />}
+        // rightIcon={<ChevronRight size={14} />}
       >
         <ChevronRight size={14} />
         View Details
       </Button>
     </Flex>
-  </Box >
+  </Box>
 );
 
 // ============================================================

@@ -62,7 +62,7 @@ const handleSuperAdminLogin = (
   if (resData.accessToken && resData.refreshToken) {
     // Clear any stale tokens before setting new ones
     TokenService.clearToken();
-    
+
     TokenService.setToken({
       access_token: resData.accessToken,
       refresh_token: resData.refreshToken,
@@ -105,12 +105,11 @@ const Login = () => {
         case "SUCCESS":
           // Clear any stale tokens before setting new ones
           TokenService.clearToken();
-          
+
           TokenService.setToken({
             access_token: resData.accessToken,
             refresh_token: resData.refreshToken,
           });
-          
 
           if (loginType === "super-admin") {
             handleSuperAdminLogin(resData, navigate);

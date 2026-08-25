@@ -4,6 +4,7 @@ import {
   Button,
   Grid,
   HStack,
+  Spinner,
   Stack,
   Text,
   VStack,
@@ -339,7 +340,7 @@ const CaseDashboardPage = () => {
             onClick={handleRefresh}
             disabled={isFetching}
           >
-            <RefreshCw size={16} className={isFetching ? "animate-spin" : ""} />
+            {isFetching ? <Spinner size="sm" /> : <RefreshCw size={16} />}
             {isFetching ? "Refreshing..." : "Refresh"}
           </Button>
           <Button variant="outline" onClick={() => navigate("/cases")}>

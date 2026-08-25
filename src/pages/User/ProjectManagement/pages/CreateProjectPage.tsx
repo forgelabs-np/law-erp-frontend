@@ -100,7 +100,10 @@ const CreateProjectPage = () => {
           <SimpleGrid columns={{ base: 1, md: 2 }} gap={5}>
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Name <Text as="span" color="red.500">*</Text>
+                Project Name{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <Input
                 value={formData.name}
@@ -114,7 +117,10 @@ const CreateProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Client Name <Text as="span" color="red.500">*</Text>
+                Client Name{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <Input
                 value={formData.clientName}
@@ -146,7 +152,10 @@ const CreateProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Owner <Text as="span" color="red.500">*</Text>
+                Project Owner{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <FieldSelect
                 placeholder="Select project owner"
@@ -164,7 +173,10 @@ const CreateProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Start Date <Text as="span" color="red.500">*</Text>
+                Start Date{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <DatePicker
                 value={formData.startDate}
@@ -213,7 +225,12 @@ const CreateProjectPage = () => {
           >
             Cancel
           </Button>
-          <Button variant="primary" size="sm" type="submit" loading={isSubmitting}>
+          <Button
+            variant="primary"
+            size="sm"
+            type="submit"
+            loading={isSubmitting}
+          >
             Create Project
           </Button>
         </Flex>

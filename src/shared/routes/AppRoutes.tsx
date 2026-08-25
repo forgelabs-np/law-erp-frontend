@@ -26,14 +26,14 @@ export const AppRoutes = () => {
     const initializeAuth = async () => {
       const token = TokenService.getToken();
       const tokenDetails = TokenService.getTokenDetails();
-      
+
       // If we have a valid access token (not expired), use it
       if (tokenDetails && tokenDetails.exp * 1000 > Date.now()) {
         setAuthenticated(true);
         setIsInitializing(false);
         return;
       }
-      
+
       // If access token is expired but we have a refresh token, attempt refresh
       if (token?.refresh_token) {
         const refreshSuccess = await checkAuthentication();
@@ -42,7 +42,7 @@ export const AppRoutes = () => {
         // No valid tokens
         setAuthenticated(false);
       }
-      
+
       setIsInitializing(false);
     };
 
@@ -57,8 +57,8 @@ export const AppRoutes = () => {
       setAuthenticated(isValid || false);
     };
 
-    window.addEventListener('tokenChanged', handleTokenChange);
-    return () => window.removeEventListener('tokenChanged', handleTokenChange);
+    window.addEventListener("tokenChanged", handleTokenChange);
+    return () => window.removeEventListener("tokenChanged", handleTokenChange);
   }, []);
 
   const authRoutes = [
@@ -88,14 +88,16 @@ export const AppRoutes = () => {
   // Show loading state during auth initialization
   if (isInitializing) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontSize: '16px',
-        color: '#666'
-      }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "16px",
+          color: "#666",
+        }}
+      >
         Loading...
       </div>
     );

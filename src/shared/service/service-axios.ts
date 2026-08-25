@@ -54,12 +54,17 @@ LawFirmCRMClient.interceptors.request.use(
 LawFirmCRMClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     // If error is 401 and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       // Don't retry if this is a public endpoint or refresh endpoint itself
-      if (isPublicEndpoint(originalRequest.url || "") || originalRequest.url?.includes("auth/refresh")) {
+      if (
+        isPublicEndpoint(originalRequest.url || "") ||
+        originalRequest.url?.includes("auth/refresh")
+      ) {
         return Promise.reject(error);
       }
 

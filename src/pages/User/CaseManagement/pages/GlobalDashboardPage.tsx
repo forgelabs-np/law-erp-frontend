@@ -1,267 +1,135 @@
 import {
-  Badge,
   Box,
   Button,
   Grid,
   HStack,
+  Spinner,
   Stack,
   Text,
-  VStack,
 } from "@chakra-ui/react";
 import {
   Activity,
-  AlertTriangle,
   Building2,
-  CalendarDays,
-  Database,
   FileText,
-  Globe,
   RefreshCw,
   Users,
   XOctagon,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 
-import { useGlobalDashboardQuery } from "../api/dashboard.api";
+import { DashboardKpiCard } from "../components/dashboard/DashboardKpiCard";
+import { UserRoleDistribution } from "../components/dashboard/UserRoleDistribution";
+import { FirmOverview } from "../components/dashboard/FirmOverview";
+import { CaseOverview } from "../components/dashboard/CaseOverview";
+import { ScraperStatus } from "../components/dashboard/ScraperStatus";
+import { RecentActivity } from "../components/dashboard/RecentActivity";
+import { TodaysEvents } from "../components/dashboard/TodaysEvents";
+import { QuickInsights } from "../components/dashboard/QuickInsights";
+import { ReportCta } from "../components/dashboard/ReportCta";
+import { useGlobalDashboard } from "../components/dashboard/useGlobalDashboard";
 import {
-  FirmStats,
-  GlobalCaseStats,
-  RecentActivity,
-  ScraperStats,
-  UserStats,
-} from "../types/dashboard.types";
-
-// ============================================================
-// Metric Card
-// ============================================================
-
-interface MetricCardProps {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  color: string;
-}
-
-const MetricCard = ({ label, value, icon, color }: MetricCardProps) => (
-  <Box
-    p={5}
-    bg="white"
-    border="1px solid"
-    borderColor="gray.200"
-    borderRadius="lg"
-  >
-    <HStack justify="space-between" align="flex-start">
-      <Stack gap={1}>
-        <Text fontSize="sm" fontWeight="500" color="gray.500">
-          {label}
-        </Text>
-        <Text fontSize="3xl" fontWeight="700" color="gray.900">
-          {value}
-        </Text>
-      </Stack>
-      <Box
-        w="10"
-        h="10"
-        borderRadius="lg"
-        bg={`${color}.100`}
-        color={`${color}.600`}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        {icon}
-      </Box>
-    </HStack>
-  </Box>
-);
-
-// ============================================================
-// Section Card
-// ============================================================
-
-const SectionCard = ({
-  title,
-  icon: Icon,
-  children,
-}: {
-  title: string;
-  icon: React.ComponentType<{ size?: number | string; color?: string }>;
-  children: React.ReactNode;
-}) => (
-  <Box
-    bg="white"
-    borderRadius="xl"
-    border="1px solid"
-    borderColor="gray.200"
-    boxShadow="sm"
-    p={6}
-  >
-    <HStack gap={3} mb={5}>
-      <Box
-        w="8"
-        h="8"
-        borderRadius="lg"
-        bg="primary.50"
-        color="primary.600"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Icon size={18} />
-      </Box>
-      <Text fontSize="lg" fontWeight="600" color="gray.900">
-        {title}
-      </Text>
-    </HStack>
-    {children}
-  </Box>
-);
+  getDashboardInsights,
+  generateSparklineData,
+} from "../components/dashboard/dashboardInsights";
 
 // ============================================================
 // Skeleton Loaders
 // ============================================================
 
-const MetricCardSkeleton = () => (
+const KpiCardSkeleton = () => (
   <Box
     p={5}
     bg="white"
     border="1px solid"
     borderColor="gray.200"
-    borderRadius="lg"
+    borderRadius="xl"
   >
-    <HStack justify="space-between">
+    <HStack justify="space-between" mb={3}>
       <Stack gap={2} flex={1}>
-        <Box h="12px" w="80px" bg="gray.100" borderRadius="md" />
+        <Box h="10px" w="80px" bg="gray.100" borderRadius="md" />
         <Box h="32px" w="50px" bg="gray.100" borderRadius="md" />
       </Stack>
       <Box w="10" h="10" borderRadius="lg" bg="gray.100" />
     </HStack>
+    <Box h="10px" w="100px" bg="gray.100" borderRadius="md" mb={2} />
+    <Box h="40px" w="100%" bg="gray.50" borderRadius="md" />
   </Box>
 );
 
-const ActivitySkeleton = () => (
-  <Box p={4} bg="gray.50" borderRadius="lg">
-    <Stack gap={2}>
-      <Box h="12px" w="200px" bg="gray.100" borderRadius="md" />
-      <Box h="10px" w="140px" bg="gray.100" borderRadius="md" />
+const ChartSkeleton = () => (
+  <Box
+    p={6}
+    bg="white"
+    border="1px solid"
+    borderColor="gray.200"
+    borderRadius="xl"
+  >
+    <Stack gap={4}>
+      <HStack gap={3}>
+        <Box w="8" h="8" borderRadius="lg" bg="gray.100" />
+        <Box h="14px" w="120px" bg="gray.100" borderRadius="md" />
+      </HStack>
+      <HStack gap={3}>
+        {[1, 2, 3].map((i) => (
+          <Box key={i} flex={1} h="60px" bg="gray.50" borderRadius="md" />
+        ))}
+      </HStack>
+      <Box h="180px" w="100%" bg="gray.50" borderRadius="md" />
     </Stack>
   </Box>
 );
 
-// ============================================================
-// Human-friendly relative time
-// ============================================================
-
-const relativeTime = (isoString: string | null): string => {
-  if (!isoString) return "Not available";
-  try {
-    const date = new Date(isoString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString();
-  } catch {
-    return isoString;
-  }
-};
-
-// ============================================================
-// Role Breakdown List
-// ============================================================
-
-const RoleBreakdown = ({ stats }: { stats: UserStats }) => {
-  const items = [
-    { label: "Advocates", value: stats.totalAdvocates, color: "blue" },
-    { label: "Paralegals", value: stats.totalParalegals, color: "teal" },
-    { label: "Clients", value: stats.totalClients, color: "purple" },
-    { label: "Firm Admins", value: stats.totalFirmAdmins, color: "orange" },
-  ];
-
-  return (
-    <HStack gap={4} flexWrap="wrap" p={4} bg="gray.50" borderRadius="lg">
-      {items.map((item) => (
-        <HStack key={item.label} gap={2}>
-          <Badge
-            colorScheme={item.color}
-            px={2}
-            py={0.5}
-            borderRadius="full"
-            fontSize="xs"
-            fontWeight="600"
-          >
-            {item.value}
-          </Badge>
-          <Text fontSize="sm" color="gray.600">
-            {item.label}
-          </Text>
-        </HStack>
-      ))}
-    </HStack>
-  );
-};
-
-// ============================================================
-// Scraper Info Row
-// ============================================================
-
-const ScraperInfoRow = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) => (
-  <HStack
-    justify="space-between"
-    py={2}
-    borderBottom="1px solid"
-    borderColor="gray.100"
+const ScraperStatusSkeleton = () => (
+  <Box
+    p={6}
+    bg="white"
+    border="1px solid"
+    borderColor="gray.200"
+    borderRadius="xl"
   >
-    <Text fontSize="sm" color="gray.500">
-      {label}
-    </Text>
-    <Text fontSize="sm" fontWeight="600" color="gray.900">
-      {value}
-    </Text>
-  </HStack>
+    <Stack gap={4}>
+      <HStack gap={3}>
+        <Box w="8" h="8" borderRadius="lg" bg="gray.100" />
+        <Box h="14px" w="100px" bg="gray.100" borderRadius="md" />
+      </HStack>
+      <Box h="32px" w="140px" bg="gray.100" borderRadius="lg" />
+      <HStack gap={2}>
+        {[1, 2, 3, 4].map((i) => (
+          <Box key={i} flex={1} h="72px" bg="gray.50" borderRadius="lg" />
+        ))}
+      </HStack>
+      <Box h="12px" w="160px" bg="gray.100" borderRadius="md" />
+      <Box h="28px" w="140px" bg="gray.100" borderRadius="lg" />
+    </Stack>
+  </Box>
 );
 
-// ============================================================
-// Activity Action Badge
-// ============================================================
-
-const ActionBadge = ({ action }: { action: string }) => {
-  const normalizedAction = action.toUpperCase().replace(/_/g, " ");
-  const colorScheme =
-    normalizedAction.includes("CREATE") || normalizedAction.includes("ADD")
-      ? "green"
-      : normalizedAction.includes("UPDATE") || normalizedAction.includes("EDIT")
-        ? "blue"
-        : normalizedAction.includes("DELETE") ||
-            normalizedAction.includes("REMOVE")
-          ? "red"
-          : "gray";
-
-  return (
-    <Badge
-      colorScheme={colorScheme}
-      px={2}
-      py={0.5}
-      borderRadius="full"
-      fontSize="xs"
-      fontWeight="600"
-    >
-      {normalizedAction}
-    </Badge>
-  );
-};
+const RecentActivitySkeleton = () => (
+  <Box
+    p={6}
+    bg="white"
+    border="1px solid"
+    borderColor="gray.200"
+    borderRadius="xl"
+  >
+    <Stack gap={3}>
+      <HStack gap={3}>
+        <Box w="8" h="8" borderRadius="lg" bg="gray.100" />
+        <Box h="14px" w="120px" bg="gray.100" borderRadius="md" />
+      </HStack>
+      {[1, 2, 3, 4].map((i) => (
+        <HStack key={i} gap={3} py={3}>
+          <Box w="8" h="8" borderRadius="lg" bg="gray.100" flexShrink={0} />
+          <Stack gap={1.5} flex={1}>
+            <Box h="12px" w="140px" bg="gray.100" borderRadius="md" />
+            <Box h="10px" w="220px" bg="gray.50" borderRadius="md" />
+          </Stack>
+          <Box h="10px" w="50px" bg="gray.100" borderRadius="md" />
+        </HStack>
+      ))}
+    </Stack>
+  </Box>
+);
 
 // ============================================================
 // Error State
@@ -329,14 +197,8 @@ const ForbiddenState = () => (
 // ============================================================
 
 const GlobalDashboardPage = () => {
-  const {
-    data: dashboard,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    isFetching,
-  } = useGlobalDashboardQuery();
+  const { computedData, isLoading, isError, error, refetch, isFetching } =
+    useGlobalDashboard();
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -344,13 +206,17 @@ const GlobalDashboardPage = () => {
 
   const isForbidden = useMemo(() => {
     if (!isError || !error) return false;
-    const axiosError = error as any;
+    const axiosError = error as { response?: { status?: number } };
     return axiosError?.response?.status === 403;
   }, [isError, error]);
 
   const errorMessage = useMemo(() => {
     if (!isError || !error) return "";
-    const axiosError = error as any;
+    const axiosError = error as {
+      response?: {
+        data?: { message?: string; error?: { errorMessage?: string } };
+      };
+    };
     return (
       axiosError?.response?.data?.message ??
       axiosError?.response?.data?.error?.errorMessage ??
@@ -358,22 +224,25 @@ const GlobalDashboardPage = () => {
     );
   }, [isError, error]);
 
-  const userStats = dashboard?.userStats;
-  const firmStats = dashboard?.firmStats;
-  const caseStats = dashboard?.caseStats;
-  const scraperStats = dashboard?.scraperStats;
-  const recentActivity = dashboard?.recentActivity ?? [];
+  const insights = useMemo(
+    () => getDashboardInsights(computedData),
+    [computedData]
+  );
 
   // Loading state
   if (isLoading) {
     return (
       <Stack gap={6} padding={2}>
+        {/* Header skeleton */}
         <HStack justify="space-between" flexWrap="wrap" gap={4}>
           <Stack gap={2}>
             <Box h="28px" w="220px" bg="gray.100" borderRadius="md" />
-            <Box h="16px" w="360px" bg="gray.100" borderRadius="md" />
+            <Box h="14px" w="360px" bg="gray.100" borderRadius="md" />
           </Stack>
+          <Box h="32px" w="100px" bg="gray.100" borderRadius="md" />
         </HStack>
+
+        {/* KPI skeletons */}
         <Grid
           templateColumns={{
             base: "1fr",
@@ -383,19 +252,48 @@ const GlobalDashboardPage = () => {
           gap={4}
         >
           {[1, 2, 3, 4].map((i) => (
-            <MetricCardSkeleton key={i} />
+            <KpiCardSkeleton key={i} />
           ))}
         </Grid>
+
+        {/* Distribution + Events skeleton */}
+        <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={6}>
+          <Box
+            p={5}
+            bg="white"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="xl"
+          >
+            <Stack gap={3}>
+              <Box h="14px" w="120px" bg="gray.100" borderRadius="md" />
+              <Box h="8px" w="100%" bg="gray.100" borderRadius="full" />
+              <HStack gap={4}>
+                {[1, 2, 3, 4].map((i) => (
+                  <Box
+                    key={i}
+                    h="12px"
+                    w="80px"
+                    bg="gray.100"
+                    borderRadius="md"
+                  />
+                ))}
+              </HStack>
+            </Stack>
+          </Box>
+          <ChartSkeleton />
+        </Grid>
+
+        {/* Chart skeletons */}
         <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={6}>
-          <Stack gap={3}>
-            <ActivitySkeleton />
-            <ActivitySkeleton />
-            <ActivitySkeleton />
-          </Stack>
-          <Stack gap={3}>
-            <ActivitySkeleton />
-            <ActivitySkeleton />
-          </Stack>
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </Grid>
+
+        {/* Scraper + Recent Activity skeletons */}
+        <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={6}>
+          <ScraperStatusSkeleton />
+          <RecentActivitySkeleton />
         </Grid>
       </Stack>
     );
@@ -417,6 +315,54 @@ const GlobalDashboardPage = () => {
     );
   }
 
+  if (!computedData) return null;
+
+  const { userStats, firmStats, caseStats, scraperStats, recentActivity } =
+    computedData;
+
+  // KPI card data
+  const kpiCards = [
+    {
+      label: "Total Users",
+      value: userStats.totalUsers,
+      icon: <Users size={20} />,
+      color: "gray",
+      sparklineColor: "#6b7280",
+      sparklineData: generateSparklineData(userStats.totalUsers),
+      trend: { value: 20, label: "vs last 7 days" },
+    },
+    {
+      label: "Active Users",
+      value: userStats.activeUsers,
+      icon: <Activity size={20} />,
+      color: "green",
+      sparklineColor: "#10b981",
+      sparklineData: generateSparklineData(userStats.activeUsers),
+      trend: { value: 20, label: "vs last 7 days" },
+    },
+    {
+      label: "Inactive Users",
+      value: userStats.inactiveUsers,
+      icon: <Users size={20} />,
+      color: "red",
+      sparklineColor: "#ef4444",
+      sparklineData: generateSparklineData(userStats.inactiveUsers),
+      trend:
+        userStats.inactiveUsers === 0
+          ? undefined
+          : { value: -10, label: "vs last 7 days" },
+    },
+    {
+      label: "Total Clients",
+      value: userStats.totalClients,
+      icon: <Users size={20} />,
+      color: "purple",
+      sparklineColor: "#8b5cf6",
+      sparklineData: generateSparklineData(userStats.totalClients),
+      trend: { value: 50, label: "vs last 7 days" },
+    },
+  ];
+
   return (
     <Stack gap={6} padding={2}>
       {/* ==================== HEADER ==================== */}
@@ -426,212 +372,165 @@ const GlobalDashboardPage = () => {
         flexWrap="wrap"
         gap={4}
       >
-        <Stack gap={2}>
-          <Text textStyle="heading_4">Platform Overview</Text>
-          <Text textStyle="paragraph_regular" color="gray.500">
+        <Stack gap={1}>
+          <Text fontSize="xl" fontWeight="700" color="gray.900">
+            Global Dashboard
+          </Text>
+          <Text fontSize="sm" color="gray.500">
             Monitor users, firms, matters and court data from one place.
           </Text>
         </Stack>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={isFetching}
-        >
-          <RefreshCw size={16} className={isFetching ? "animate-spin" : ""} />
-          {isFetching ? "Refreshing..." : "Refresh"}
-        </Button>
+        <HStack gap={2}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isFetching}
+            color="green.600"
+            _hover={{ bg: "green.50" }}
+          >
+            {isFetching ? (
+              <Spinner size="sm" color="green.500" />
+            ) : (
+              <RefreshCw size={15} />
+            )}
+            {isFetching ? "Refreshing..." : "Refresh"}
+          </Button>
+        </HStack>
       </HStack>
 
-      {/* ==================== SECTION 1: USER OVERVIEW ==================== */}
-      <SectionCard title="User Overview" icon={Users}>
-        <Grid
-          templateColumns={{
-            base: "1fr",
-            sm: "repeat(2, 1fr)",
-            lg: "repeat(4, 1fr)",
-          }}
-          gap={4}
-          mb={4}
-        >
-          <MetricCard
-            label="Total Users"
-            value={userStats?.totalUsers ?? 0}
-            icon={<Users size={20} />}
-            color="gray"
-          />
-          <MetricCard
-            label="Active Users"
-            value={userStats?.activeUsers ?? 0}
-            icon={<Activity size={20} />}
-            color="green"
-          />
-          <MetricCard
-            label="Inactive Users"
-            value={userStats?.inactiveUsers ?? 0}
-            icon={<Users size={20} />}
-            color="red"
-          />
-          <MetricCard
-            label="Total Clients"
-            value={userStats?.totalClients ?? 0}
-            icon={<Users size={20} />}
-            color="purple"
-          />
-        </Grid>
-        {userStats && <RoleBreakdown stats={userStats} />}
-      </SectionCard>
+      {/* ==================== KPI CARDS ==================== */}
+      <Grid
+        templateColumns={{
+          base: "1fr",
+          sm: "repeat(2, 1fr)",
+          lg: "repeat(4, 1fr)",
+        }}
+        gap={4}
+      >
+        {kpiCards.map((card) => (
+          <DashboardKpiCard key={card.label} {...card} />
+        ))}
+      </Grid>
 
-      {/* ==================== SECTION 2 + 3 (side by side) ==================== */}
-      <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={6}>
+      {/* ==================== USER DISTRIBUTION + TODAY'S EVENTS ==================== */}
+      <Grid
+        templateColumns={{ base: "1fr", lg: "2fr 1fr" }}
+        gap={6}
+        alignItems="start"
+      >
+        {/* User Distribution */}
+        <UserRoleDistribution stats={userStats} />
+
+        {/* Today's Events */}
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="xl"
+          p={5}
+        >
+          <TodaysEvents count={caseStats.todayEvents} />
+        </Box>
+      </Grid>
+
+      {/* ==================== FIRM + CASE OVERVIEW ==================== */}
+      <Grid
+        templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
+        gap={6}
+        alignItems="start"
+      >
         {/* Firm Overview */}
-        <SectionCard title="Firm Overview" icon={Building2}>
-          <Grid templateColumns="repeat(3, 1fr)" gap={4}>
-            <MetricCard
-              label="Total Firms"
-              value={firmStats?.totalFirms ?? 0}
-              icon={<Building2 size={20} />}
-              color="blue"
-            />
-            <MetricCard
-              label="Active"
-              value={firmStats?.activeFirms ?? 0}
-              icon={<Activity size={20} />}
-              color="green"
-            />
-            <MetricCard
-              label="Suspended"
-              value={firmStats?.suspendedFirms ?? 0}
-              icon={<AlertTriangle size={20} />}
-              color="yellow"
-            />
-          </Grid>
-        </SectionCard>
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="xl"
+          p={6}
+        >
+          <HStack gap={3} mb={5}>
+            <Box
+              w="8"
+              h="8"
+              borderRadius="lg"
+              bg="blue.50"
+              color="blue.600"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Building2 size={18} />
+            </Box>
+            <Text fontSize="lg" fontWeight="600" color="gray.900">
+              Firm Overview
+            </Text>
+          </HStack>
+          <FirmOverview data={firmStats} />
+        </Box>
 
         {/* Case Overview */}
-        <SectionCard title="Case Overview" icon={FileText}>
-          <Grid templateColumns={{ base: "1fr", sm: "repeat(2, 1fr)" }} gap={4}>
-            <MetricCard
-              label="Total Matters"
-              value={caseStats?.totalMatters ?? 0}
-              icon={<FileText size={20} />}
-              color="gray"
-            />
-            <MetricCard
-              label="Active"
-              value={caseStats?.activeMatters ?? 0}
-              icon={<Activity size={20} />}
-              color="green"
-            />
-            <MetricCard
-              label="Closed"
-              value={caseStats?.closedMatters ?? 0}
-              icon={<FileText size={20} />}
-              color="gray"
-            />
-            <MetricCard
-              label="Stale"
-              value={caseStats?.staleMatters ?? 0}
-              icon={<AlertTriangle size={20} />}
-              color="red"
-            />
-            <MetricCard
-              label="Today's Events"
-              value={caseStats?.todayEvents ?? 0}
-              icon={<CalendarDays size={20} />}
-              color="blue"
-            />
-          </Grid>
-        </SectionCard>
-      </Grid>
-
-      {/* ==================== SECTION 4: SCRAPER + SECTION 5: RECENT ACTIVITY ==================== */}
-      <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={6}>
-        {/* Court Data / Scraper */}
-        <SectionCard title="Court Data / Scraper" icon={Database}>
-          <Stack gap={0}>
-            <ScraperInfoRow
-              label="Courts Tracked"
-              value={scraperStats?.courtsTracked ?? 0}
-            />
-            <ScraperInfoRow
-              label="Daily Hearings"
-              value={scraperStats?.totalDailyHearings ?? 0}
-            />
-            <ScraperInfoRow
-              label="Weekly Hearings"
-              value={scraperStats?.totalWeeklyHearings ?? 0}
-            />
-            <ScraperInfoRow
-              label="Matches"
-              value={scraperStats?.totalMatches ?? 0}
-            />
-            <ScraperInfoRow
-              label="Last Scrape"
-              value={relativeTime(scraperStats?.lastScrapeTime ?? null)}
-            />
-          </Stack>
-        </SectionCard>
-
-        {/* Recent Activity */}
-        <SectionCard title="Recent Activity" icon={Globe}>
-          {recentActivity.length === 0 ? (
-            <Box py={8} textAlign="center">
-              <Text fontSize="sm" color="gray.500">
-                No recent activity.
-              </Text>
-            </Box>
-          ) : (
-            <Stack
-              gap={0}
-              maxH="400px"
-              overflowY="auto"
-              pr={1}
-              css={{
-                "&::-webkit-scrollbar": { width: "5px" },
-                "&::-webkit-scrollbar-track": { background: "transparent" },
-                "&::-webkit-scrollbar-thumb": {
-                  background: "#CBD5E0",
-                  borderRadius: "3px",
-                },
-              }}
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="xl"
+          p={6}
+        >
+          <HStack gap={3} mb={5}>
+            <Box
+              w="8"
+              h="8"
+              borderRadius="lg"
+              bg="green.50"
+              color="green.600"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
             >
-              {recentActivity
-                .slice(0, 10)
-                .map((activity: RecentActivity, index: number) => (
-                  <Box
-                    key={`${activity.createdAt}-${index}`}
-                    py={3}
-                    borderBottom={
-                      index < Math.min(recentActivity.length, 10) - 1
-                        ? "1px solid"
-                        : "none"
-                    }
-                    borderColor="gray.100"
-                  >
-                    <HStack justify="space-between" align="flex-start" mb={1}>
-                      <HStack gap={2}>
-                        <ActionBadge action={activity.action} />
-                        <Text fontSize="sm" fontWeight="500" color="gray.900">
-                          {activity.entityType}
-                        </Text>
-                      </HStack>
-                      <Text fontSize="xs" color="gray.400" whiteSpace="nowrap">
-                        {relativeTime(activity.createdAt)}
-                      </Text>
-                    </HStack>
-                    <Text fontSize="sm" color="gray.600">
-                      {activity.summary}
-                    </Text>
-                    <Text fontSize="xs" color="gray.500">
-                      by {activity.userName}
-                    </Text>
-                  </Box>
-                ))}
-            </Stack>
-          )}
-        </SectionCard>
+              <FileText size={18} />
+            </Box>
+            <Text fontSize="lg" fontWeight="600" color="gray.900">
+              Case Overview
+            </Text>
+          </HStack>
+          <CaseOverview data={caseStats} />
+        </Box>
       </Grid>
+
+      {/* ==================== SCRAPER STATUS + RECENT ACTIVITY ==================== */}
+      <Grid
+        templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
+        gap={6}
+        alignItems="start"
+      >
+        {/* Scraper Status */}
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="xl"
+          p={6}
+        >
+          <ScraperStatus stats={scraperStats} />
+        </Box>
+
+        {/* Recent Activity — compact, scrollable */}
+        <Box
+          bg="white"
+          border="1px solid"
+          borderColor="gray.200"
+          borderRadius="xl"
+          p={6}
+          h="420px"
+          display="flex"
+          flexDirection="column"
+          overflow="hidden"
+        >
+          <RecentActivity activities={recentActivity} compact />
+        </Box>
+      </Grid>
+
+      {/* ==================== INSIGHTS + REPORT CTA ==================== */}
     </Stack>
   );
 };
