@@ -43,6 +43,7 @@ export const api = {
     },
     PERMISSION_SETUP: {
       GET_PERMISSIONS: "admin/permissions",
+      GET_GROUPED_PERMISSIONS: "admin/permissions/grouped",
       POST: "admin/permissions",
       DELETE: "admin/permissions/{id}",
       TOGGLE: "admin/permissions/{idd}/toggle",

@@ -75,6 +75,9 @@ export const useAddEditPermissionMutation = () => {
       queryClient.invalidateQueries({
         queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_PERMISSIONS],
       });
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS],
+      });
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =
@@ -116,11 +119,52 @@ export const useTogglePermissionMutation = () => {
         queryKey: [api.USER_MANAGEMENT.MENU_MANAGEMENT.MODULE_MENUS],
       });
       queryClient.invalidateQueries({ queryKey: [`module-menu-${id}`] });
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS],
+      });
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =
         error?.response?.data?.message ?? "Something went wrong!";
       errorNotification(errorMessage);
     },
+  });
+};
+
+export interface GroupedPermission {
+  id: string;
+  action: string;
+  scope: string;
+  code: string;
+  description: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface PermissionModule {
+  moduleCode: string;
+  moduleName: string;
+  moduleDescription: string;
+  icon: string;
+  path: string;
+  displayOrder: number;
+  permissions: GroupedPermission[];
+}
+
+export interface GroupedPermissionsResponse {
+  modules: PermissionModule[];
+}
+
+const getGroupedPermissions = () => {
+  return LawFirmCRMClient.get<ApiResponse<GroupedPermissionsResponse>>(
+    api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS
+  );
+};
+
+export const useGetGroupedPermissionsQuery = () => {
+  return useQuery({
+    queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS],
+    queryFn: getGroupedPermissions,
+    select: (response) => response?.data?.data,
   });
 };
