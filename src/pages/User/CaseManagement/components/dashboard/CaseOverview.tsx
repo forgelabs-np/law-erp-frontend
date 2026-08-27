@@ -50,8 +50,8 @@ function generateTrendData(
   return days.map((date, i) => {
     const progress = (i + 1) / days.length;
     const value = Math.max(0, Math.round(count * progress * 10) / 10);
-    return { 
-      date, 
+    return {
+      date,
       active: i === days.length - 1 ? count : value,
       closed: 0,
       stale: 0
@@ -201,7 +201,7 @@ export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
                   type="monotone"
                   dataKey="active"
                   stroke="#10b981"
-                  strokeWidth={2}
+                  strokeWidth={1}
                   fill="url(#mattersGradient)"
                   dot={false}
                   activeDot={{

@@ -116,7 +116,7 @@ export const FirmOverview = ({ data }: FirmOverviewProps) => {
                     data={chartData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={55}
+                    innerRadius={75}
                     outerRadius={80}
                     dataKey="value"
                     strokeWidth={0}

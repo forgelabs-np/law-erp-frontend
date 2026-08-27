@@ -90,6 +90,7 @@ import NoDataAvailable from "@/shared/components/NoDataAvailable/NoDataAvailable
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { RiLockPasswordLine } from "react-icons/ri";
+import { ProjectFormModal } from "../components/ProjectFormModal";
 
 // ============================================================
 // Status Badge
@@ -1659,9 +1660,14 @@ const ProjectDetailPage = () => {
   const updateProjectMutation = useUpdateProjectMutation();
   const changeStatusMutation = useChangeProjectStatusMutation();
   const deleteProjectMutation = useDeleteProjectMutation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
+  const [selectedProjectCode, setSelectedProjectCode] = useState<string | undefined>();
 
   const handleEditProject = () => {
-    navigate(`/projects/${projectCode}/edit`);
+    setModalMode("edit");
+    setSelectedProjectCode(projectCode);
+    setModalOpen(true);
   };
 
   const handleDeleteProject = () => {
@@ -1922,6 +1928,14 @@ const ProjectDetailPage = () => {
         action="permanently delete this project and all its data"
         handleSubmit={confirmDeleteProject}
         submitActionPending={deleteProjectMutation.isPending}
+      />
+
+      {/* Project Form Modal */}
+      <ProjectFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        projectCode={selectedProjectCode}
       />
     </Stack>
   );

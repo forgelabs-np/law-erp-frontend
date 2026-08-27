@@ -120,7 +120,7 @@ export const DashboardKpiCard = ({
           <AreaChart data={chartData}>
             <defs>
               <linearGradient
-                id={`gradient-${label}`}
+                id={`gradient-${sparklineColor}`}
                 x1="0"
                 y1="0"
                 x2="0"
@@ -143,9 +143,8 @@ export const DashboardKpiCard = ({
               type="monotone"
               dataKey="value"
               stroke={sparklineColor}
-              strokeWidth={2}
-              // fill={`url(#gradient-${label})`}
-              fill={sparklineColor}
+              strokeWidth={1}
+              fill={`url(#gradient-${sparklineColor})`}
               dot={false}
               activeDot={{
                 r: 3,
