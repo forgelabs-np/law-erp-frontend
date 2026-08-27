@@ -65,15 +65,12 @@ export const AddorEditPermissions = ({
   const { data: permissionById, isLoading: isLoadingPermission } =
     usePermissionByIdQuery(id ?? "");
 
-  //   console.log(moduleData, "data");
-
   const methods = useForm<PermissionFormValues>({
     defaultValues,
   });
   const { handleSubmit, reset } = methods;
 
   const { mutate, isPending } = useAddEditPermissionMutation();
-  console.log(moduleData, "moduleData");
 
   const moduleOptions = useMemo(() => {
     return (
@@ -84,15 +81,16 @@ export const AddorEditPermissions = ({
     );
   }, [moduleData]);
 
+  // Reset to defaults when opening for Add (no id)
   useEffect(() => {
     if (open && !id) {
       reset(defaultValues);
-      setId("");
     }
-  }, [open, id, reset, setId]);
+  }, [open, id, reset]);
 
+  // Populate form from API response when editing
   useEffect(() => {
-    if (permissionById && id) {
+    if (open && permissionById && id) {
       reset({
         permission: {
           moduleId: permissionById.module?.code ?? "",
@@ -103,7 +101,7 @@ export const AddorEditPermissions = ({
         },
       });
     }
-  }, [permissionById, id, reset]);
+  }, [open, permissionById, id, reset]);
 
   const onSubmit = (data: PermissionFormValues) => {
     const payload = {
@@ -124,7 +122,8 @@ export const AddorEditPermissions = ({
   };
 
   const closeHandler = () => {
-    resetHandler();
+    reset(defaultValues);
+    setId("");
     onClose();
   };
   const resetHandler = () => {

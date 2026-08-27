@@ -12,7 +12,16 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { Briefcase, Calendar, ChevronRight, CircleEqual, Plus, Search, X } from "lucide-react";
+import {
+  Briefcase,
+  Calendar,
+  ChevronRight,
+  CircleEqual,
+  Edit,
+  Plus,
+  Search,
+  X,
+} from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +33,7 @@ import { InputGroup } from "@/shared/components/ui";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { MdAutorenew, MdPeopleAlt } from "react-icons/md";
 import { LuUser } from "react-icons/lu";
+import { ProjectFormModal } from "../components/ProjectFormModal";
 
 // ============================================================
 // Status Badge
@@ -77,30 +87,30 @@ const formatDateDisplay = (value?: string | null): string => {
 const ProjectCard = ({
   project,
   onClick,
+  onEdit,
 }: {
   project: Project;
   onClick: () => void;
+  onEdit: (projectCode: string) => void;
 }) => (
   <Box
-    bg="white"
+    bg="linear-gradient(180deg, rgba(236, 253, 245, 0.5) 0%, rgba(255, 255, 255, 0.95) 100%)"
     border="1px solid"
     borderColor="gray.200"
-    borderRadius="lg"
+    borderRadius="16px"
     overflow="hidden"
-    _hover={{ borderColor: "gray.300" }}
-    transition="border-color 0.15s ease"
+    boxShadow="0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)"
+    _hover={{ 
+      borderColor: "gray.300",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06)"
+    }}
+    transition="all 0.2s ease"
   >
     {/* ---- Card Body ---- */}
-    <Stack p={5} gap={4}>
-      {/* Row 1: Icon + Name + Status + Metrics */}
-      <Flex
-        gap={4}
-        align={{ base: "flex-start", md: "center" }}
-        justify="space-between"
-        flexWrap="wrap"
-      >
-        {/* Left: Icon + Name + Code */}
-        <HStack gap={3} flex={1} minW="0">
+    <VStack p={5} gap={4} align="stretch">
+      {/* Top Section: Icon + Name + ID + Status */}
+      <VStack gap={3} align="stretch">
+        <Flex gap={3} align="center">
           <Flex
             w={10}
             h={10}
@@ -112,60 +122,21 @@ const ProjectCard = ({
           >
             <Briefcase size={18} color="gray" />
           </Flex>
-          <VStack align="flex-start" gap={0} minW="0">
-            <Text
-              fontSize="sm"
-              fontWeight="600"
-              color="gray.900"
-            >
+          <VStack align="flex-start" gap={0} flex={1}>
+            <Text fontSize="sm" fontWeight="600" color="gray.900">
               {project.name}
             </Text>
-            <Text
-              fontSize="xs"
-              color="gray.500"
-              fontFamily="monospace"
-            >
+            <Text fontSize="xs" color="gray.500" fontFamily="monospace">
               {project.projectCode}
             </Text>
           </VStack>
-        </HStack>
-
-        {/* Right: Status + Metrics */}
-        <HStack gap={3} flexWrap="wrap" align="center">
           <ProjectStatusBadge status={project.status} />
-          <HStack gap={3}>
-            <Text fontSize="xs" color="gray.500">
-              <Briefcase size={11} style={{ display: "inline", marginRight: 4 }} />
-              {project.credentialCount} Credentials
-            </Text>
-            <Text fontSize="xs" color="gray.500">
-              <MdAutorenew
-                size={11} style={{ display: "inline", marginRight: 4 }} />
-              {project.renewalCount} Renewals
-            </Text>
-            {project.overdueInstances > 0 && (
-              <Badge
-                px={1.5}
-                py={0.5}
-                borderRadius="full"
-                fontSize="xs"
-                fontWeight="600"
-                bg="red.100"
-                color="red.700"
-              >
-                {project.overdueInstances} overdue
-              </Badge>
-            )}
-          </HStack>
-        </HStack>
-      </Flex>
+        </Flex>
+      </VStack>
 
-      {/* Row 2: Dates + Owner + Client */}
-      <SimpleGrid
-        columns={{ base: 1, sm: 2, md: 4 }}
-        gap={{ base: 3, md: 6 }}
-      >
-        <VStack align="flex-start" >
+      {/* Middle Section: 2-column layout for dates, owner, client */}
+      <SimpleGrid columns={2} gap={3}>
+        <VStack align="flex-start" gap={1}>
           <HStack gap={1}>
             <Calendar size={11} color="gray" />
             <Text fontSize="xs" color="gray.500">
@@ -176,69 +147,101 @@ const ProjectCard = ({
             {formatDateDisplay(project.startDate)}
           </Text>
         </VStack>
-        <VStack align="flex-start" >
+        <VStack align="flex-start" gap={1}>
           <HStack gap={1}>
             <Calendar size={11} color="gray" />
             <Text fontSize="xs" color="gray.500">
-              Target End Date
+              Target End
             </Text>
           </HStack>
           <Text fontSize="sm" color="gray.800">
             {formatDateDisplay(project.targetEndDate)}
           </Text>
         </VStack>
-        <VStack align="flex-start">
-          <HStack>
+        <VStack align="flex-start" gap={1}>
+          <HStack gap={1}>
             <LuUser size={11} color="gray" />
-
-
             <Text fontSize="xs" color="gray.500">
               Owner
             </Text>
           </HStack>
-          <Text fontSize="sm" color="gray.800" >
+          <Text fontSize="sm" color="gray.800">
             {project.ownerName}
           </Text>
         </VStack>
-        <VStack align="flex-start" gap={0}>
-          <HStack>
+        <VStack align="flex-start" gap={1}>
+          <HStack gap={1}>
             <MdPeopleAlt size={11} color="gray" />
-
-
             <Text fontSize="xs" color="gray.500">
               Client
             </Text>
           </HStack>
-          <Text fontSize="sm" color="gray.800" >
+          <Text fontSize="sm" color="gray.800">
             {project.clientName}
           </Text>
         </VStack>
       </SimpleGrid>
-    </Stack>
 
-    {/* ---- Footer ---- */}
-    <Separator borderColor="gray.200" />
-    <Flex
-      px={5}
-      py={3}
-      justify="space-between"
-      align="center"
-    >
-      <Text fontSize="xs" color="gray.500">
-        Created {formatDateDisplay(project.createdAt)}
-      </Text>
-      <Button
-        variant="ghost"
-        size="sm"
-        color="primary.500"
-        onClick={onClick}
-      // rightIcon={<ChevronRight size={14} />}
-      >
-        <ChevronRight size={14} />
-        View Details
-      </Button>
-    </Flex>
-  </Box >
+      {/* Bottom Section: Metrics + Created + View Details */}
+      <VStack gap={3} align="stretch">
+        <Flex gap={4} align="center" flexWrap="wrap">
+          <Text fontSize="xs" color="gray.500">
+            <Briefcase
+              size={11}
+              style={{ display: "inline", marginRight: 4 }}
+            />
+            {project.credentialCount} Credentials
+          </Text>
+          <Text fontSize="xs" color="gray.500">
+            <MdAutorenew
+              size={11}
+              style={{ display: "inline", marginRight: 4 }}
+            />
+            {project.renewalCount} Renewals
+          </Text>
+          {project.overdueInstances > 0 && (
+            <Badge
+              px={1.5}
+              py={0.5}
+              borderRadius="full"
+              fontSize="xs"
+              fontWeight="600"
+              bg="red.100"
+              color="red.700"
+            >
+              {project.overdueInstances} overdue
+            </Badge>
+          )}
+        </Flex>
+        <Separator borderColor="gray.200" />
+        <Flex justify="space-between" align="center">
+          <Text fontSize="xs" color="gray.500">
+            Created {formatDateDisplay(project.createdAt)}
+          </Text>
+          <HStack gap={2}>
+            <Button
+              variant="ghost"
+              size="sm"
+              color="primary.500"
+              onClick={() => onEdit(project.projectCode)}
+              fontWeight="500"
+            >
+              <Edit size={14} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              color="primary.500"
+              onClick={onClick}
+              fontWeight="500"
+            >
+              View Details <ChevronRight size={14} style={{ marginLeft: 4 }} />
+            </Button>
+          </HStack>
+        </Flex>
+      </VStack>
+    </VStack>
+  </Box>
 );
 
 // ============================================================
@@ -251,6 +254,9 @@ const ProjectListPage = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [page, setPage] = useState(0);
   const [size] = useState(20);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("create");
+  const [selectedProjectCode, setSelectedProjectCode] = useState<string | undefined>();
 
   const {
     data: projectsData,
@@ -267,6 +273,18 @@ const ProjectListPage = () => {
   const projects = projectsData?.content ?? [];
   const totalPages = projectsData?.totalPages ?? 0;
   const totalElements = projectsData?.totalElements ?? 0;
+
+  const handleCreateProject = () => {
+    setModalMode("create");
+    setSelectedProjectCode(undefined);
+    setModalOpen(true);
+  };
+
+  const handleEditProject = (projectCode: string) => {
+    setModalMode("edit");
+    setSelectedProjectCode(projectCode);
+    setModalOpen(true);
+  };
 
   const handleClearFilters = () => {
     setSearch("");
@@ -359,7 +377,7 @@ const ProjectListPage = () => {
             Manage your firm's projects ({totalElements} total)
           </Text>
         </Stack>
-        <Button variant="primary" onClick={() => navigate("/projects/create")}>
+        <Button variant="primary" onClick={handleCreateProject}>
           <Plus size={16} color="white" /> New Project
         </Button>
       </HStack>
@@ -433,15 +451,19 @@ const ProjectListPage = () => {
         </Box>
       ) : (
         <>
-          <Stack gap={4}>
-            {projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onClick={() => navigate(`/projects/${project.projectCode}`)}
-              />
-            ))}
-          </Stack>
+          <SimpleGrid 
+          columns={{ base: 1, lg: 3, md: 2 }} 
+          gap={6}
+        >
+          {projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onClick={() => navigate(`/projects/${project.projectCode}`)}
+              onEdit={handleEditProject}
+            />
+          ))}
+        </SimpleGrid>
 
           {/* ==================== PAGINATION ==================== */}
           {totalPages > 1 && (
@@ -469,6 +491,14 @@ const ProjectListPage = () => {
           )}
         </>
       )}
+
+      {/* Project Form Modal */}
+      <ProjectFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        projectCode={selectedProjectCode}
+      />
     </Stack>
   );
 };

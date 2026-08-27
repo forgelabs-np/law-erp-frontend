@@ -87,6 +87,9 @@ export interface GlobalDashboardData {
   caseStats: GlobalCaseStats;
   scraperStats: ScraperStats;
   recentActivity: RecentActivity[];
+  userTrends: UserTrend[];
+  firmTrends: FirmTrend[];
+  matterTrends: MatterTrend[];
 }
 
 export interface UserStats {
@@ -127,6 +130,33 @@ export interface RecentActivity {
   entityType: string;
   userName: string;
   createdAt: string;
+}
+
+// ============================================================
+// Trend Types
+// ============================================================
+
+export interface UserTrend {
+  date: string;
+  totalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
+  clients: number;
+}
+
+export interface FirmTrend {
+  date: string;
+  totalFirms: number;
+  activeFirms: number;
+  suspendedFirms: number;
+}
+
+export interface MatterTrend {
+  date: string;
+  totalMatters: number;
+  activeMatters: number;
+  closedMatters: number;
+  staleMatters: number;
 }
 
 // ============================================================

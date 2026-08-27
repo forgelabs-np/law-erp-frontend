@@ -140,7 +140,7 @@ export const TaskDrawer = ({
                   <Text fontWeight="600">Delete</Text>
                 </HStack>
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 bg="white"
@@ -151,7 +151,7 @@ export const TaskDrawer = ({
                   <MoreHorizontal size={16} />
                   <Text fontWeight="600">More</Text>
                 </HStack>
-              </Button>
+              </Button> */}
             </HStack>
           </Stack>
         </DrawerHeader>
@@ -421,7 +421,7 @@ export const TaskDrawer = ({
           _dark={{ bg: "gray.800" }}
         >
           <Flex w="100%" justify="space-between" align="center">
-            <Button
+            {/* <Button
               variant="outline"
               borderRadius="8px"
               borderColor="gray.200"
@@ -431,7 +431,7 @@ export const TaskDrawer = ({
                 <Calendar size={16} />
                 <Text fontWeight="600">Add to Calendar</Text>
               </HStack>
-            </Button>
+            </Button> */}
             <HStack gap={3}>
               <Button
                 variant="outline"
@@ -441,7 +441,7 @@ export const TaskDrawer = ({
               >
                 Close
               </Button>
-              {task.status !== "Completed" && (
+              {/* {task.status !== "Completed" && (
                 <Button
                   colorScheme="green"
                   bg="green.700"
@@ -455,7 +455,7 @@ export const TaskDrawer = ({
                     <Text fontWeight="600">Mark Complete</Text>
                   </HStack>
                 </Button>
-              )}
+              )} */}
             </HStack>
           </Flex>
         </DrawerFooter>

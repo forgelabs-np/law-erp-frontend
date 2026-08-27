@@ -90,7 +90,7 @@ import NoDataAvailable from "@/shared/components/NoDataAvailable/NoDataAvailable
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { RiLockPasswordLine } from "react-icons/ri";
-
+import { ProjectFormModal } from "../components/ProjectFormModal";
 
 // ============================================================
 // Status Badge
@@ -347,7 +347,7 @@ const CredentialRow = ({
               <Text fontSize="sm" fontWeight="600" color="gray.900">
                 {credential.siteName}
               </Text>
-              <Text fontSize="xs" color="gray.500" >
+              <Text fontSize="xs" color="gray.500">
                 {credential.siteType}
               </Text>
             </VStack>
@@ -374,15 +374,12 @@ const CredentialRow = ({
         </Flex>
 
         {/* Information Grid */}
-        <SimpleGrid
-          columns={{ base: 1, sm: 2 }}
-          gap={{ base: 3, md: 6 }}
-        >
+        <SimpleGrid columns={{ base: 1, sm: 2 }} gap={{ base: 3, md: 6 }}>
           <VStack align="flex-start" gap={0}>
             <Text fontSize="xs" color="gray.500">
               Username / Email
             </Text>
-            <Text fontSize="sm" color="gray.800" >
+            <Text fontSize="sm" color="gray.800">
               {displayValue(credential.usernameOrEmail)}
             </Text>
           </VStack>
@@ -391,11 +388,7 @@ const CredentialRow = ({
               Password
             </Text>
             <HStack gap={1} align="center">
-              <Text
-                fontSize="sm"
-                fontFamily="monospace"
-                color="gray.800"
-              >
+              <Text fontSize="sm" fontFamily="monospace" color="gray.800">
                 {showPassword && revealedPassword
                   ? revealedPassword
                   : "••••••••••••"}
@@ -421,7 +414,7 @@ const CredentialRow = ({
             <Text fontSize="xs" color="gray.500">
               Contact Person
             </Text>
-            <Text fontSize="sm" color="gray.800" >
+            <Text fontSize="sm" color="gray.800">
               {displayValue(credential.contactPerson)}
             </Text>
           </VStack>
@@ -429,7 +422,7 @@ const CredentialRow = ({
             <Text fontSize="xs" color="gray.500">
               Contact Email
             </Text>
-            <Text fontSize="sm" color="gray.800"  >
+            <Text fontSize="sm" color="gray.800">
               {displayValue(credential.contactEmail)}
             </Text>
           </VStack>
@@ -437,7 +430,7 @@ const CredentialRow = ({
             <Text fontSize="xs" color="gray.500">
               Contact Phone
             </Text>
-            <Text fontSize="sm" color="gray.800" >
+            <Text fontSize="sm" color="gray.800">
               {displayValue(credential.contactPhone)}
             </Text>
           </VStack>
@@ -718,9 +711,11 @@ const RenewalCard = ({
   );
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
 
-  const availableStatuses: RenewalStatus[] = ["ACTIVE", "COMPLETED", "CANCELLED"].filter(
-    (s) => s !== renewal.status
-  ) as RenewalStatus[];
+  const availableStatuses: RenewalStatus[] = [
+    "ACTIVE",
+    "COMPLETED",
+    "CANCELLED",
+  ].filter((s) => s !== renewal.status) as RenewalStatus[];
 
   const [formData, setFormData] = useState({
     renewalTypeId: renewal.renewalTypeId,
@@ -860,12 +855,7 @@ const RenewalCard = ({
         {/* ---- Instances (expandable) ---- */}
         {showInstances && (
           <Box px={5} pb={4}>
-            <Stack
-              gap={2}
-              pt={4}
-              borderTop="1px solid"
-              borderColor="gray.200"
-            >
+            <Stack gap={2} pt={4} borderTop="1px solid" borderColor="gray.200">
               <Text fontSize="xs" fontWeight="600" color="gray.700">
                 Renewal Instances
               </Text>
@@ -935,8 +925,7 @@ const RenewalCard = ({
                     </HStack>
                     {instance.completedAt && (
                       <Text fontSize="xs" color="gray.600" mt={2}>
-                        Completed:{" "}
-                        {formatDateDisplay(instance.completedAt)} by{" "}
+                        Completed: {formatDateDisplay(instance.completedAt)} by{" "}
                         {instance.completedByName}
                       </Text>
                     )}
@@ -954,7 +943,14 @@ const RenewalCard = ({
 
         {/* ---- Footer ---- */}
         <Separator borderColor="gray.200" />
-        <Flex px={5} py={3} justify="space-between" align="center" flexWrap="wrap" gap={2}>
+        <Flex
+          px={5}
+          py={3}
+          justify="space-between"
+          align="center"
+          flexWrap="wrap"
+          gap={2}
+        >
           <Text fontSize="xs" color="gray.500">
             Created {formatDateDisplay(renewal.createdAt)}
           </Text>
@@ -984,9 +980,15 @@ const RenewalCard = ({
                         _hover={{ bg: "gray.100" }}
                         onClick={() => handleChangeStatus(status)}
                       >
-                        {status === "ACTIVE" && <CheckCircle size={14} color="green.500" />}
-                        {status === "COMPLETED" && <CheckCircle size={14} color="green" />}
-                        {status === "CANCELLED" && <XCircle size={14} color="red" />}
+                        {status === "ACTIVE" && (
+                          <CheckCircle size={14} color="green.500" />
+                        )}
+                        {status === "COMPLETED" && (
+                          <CheckCircle size={14} color="green" />
+                        )}
+                        {status === "CANCELLED" && (
+                          <XCircle size={14} color="red" />
+                        )}
                         {status.charAt(0) + status.slice(1).toLowerCase()}
                       </Button>
                     ))}
@@ -1658,9 +1660,14 @@ const ProjectDetailPage = () => {
   const updateProjectMutation = useUpdateProjectMutation();
   const changeStatusMutation = useChangeProjectStatusMutation();
   const deleteProjectMutation = useDeleteProjectMutation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
+  const [selectedProjectCode, setSelectedProjectCode] = useState<string | undefined>();
 
   const handleEditProject = () => {
-    navigate(`/projects/${projectCode}/edit`);
+    setModalMode("edit");
+    setSelectedProjectCode(projectCode);
+    setModalOpen(true);
   };
 
   const handleDeleteProject = () => {
@@ -1797,7 +1804,12 @@ const ProjectDetailPage = () => {
                     <PauseCircle size={14} /> Put on Hold
                   </Button>
                 )}
-                <Box borderTop="1px solid" borderColor="gray.200" mx={2} my={1} />
+                <Box
+                  borderTop="1px solid"
+                  borderColor="gray.200"
+                  mx={2}
+                  my={1}
+                />
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1916,6 +1928,14 @@ const ProjectDetailPage = () => {
         action="permanently delete this project and all its data"
         handleSubmit={confirmDeleteProject}
         submitActionPending={deleteProjectMutation.isPending}
+      />
+
+      {/* Project Form Modal */}
+      <ProjectFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        projectCode={selectedProjectCode}
       />
     </Stack>
   );

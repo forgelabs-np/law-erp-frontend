@@ -47,16 +47,17 @@ export const useFirmDashboardQuery = () => {
 // Global Dashboard
 // ============================================================
 
-const getGlobalDashboard = () => {
+const getGlobalDashboard = (days: number = 30) => {
   return LawFirmCRMClient.get<ApiResponse<GlobalDashboardData>>(
-    api.DASHBOARD.GLOBAL_DASHBOARD
+    api.DASHBOARD.GLOBAL_DASHBOARD,
+    { params: { days } }
   );
 };
 
-export const useGlobalDashboardQuery = () => {
+export const useGlobalDashboardQuery = (days: number = 30) => {
   return useQuery({
-    queryKey: dashboardKeys.global,
-    queryFn: getGlobalDashboard,
+    queryKey: [...dashboardKeys.global, days],
+    queryFn: () => getGlobalDashboard(days),
     select: (response) => response?.data?.data,
   });
 };

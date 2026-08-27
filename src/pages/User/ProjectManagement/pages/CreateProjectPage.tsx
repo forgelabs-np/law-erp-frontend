@@ -10,6 +10,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { DatePicker } from "@/shared/components/ui";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -99,7 +100,10 @@ const CreateProjectPage = () => {
           <SimpleGrid columns={{ base: 1, md: 2 }} gap={5}>
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Name <Text as="span" color="red.500">*</Text>
+                Project Name{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <Input
                 value={formData.name}
@@ -113,7 +117,10 @@ const CreateProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Client Name <Text as="span" color="red.500">*</Text>
+                Client Name{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <Input
                 value={formData.clientName}
@@ -145,7 +152,10 @@ const CreateProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Owner <Text as="span" color="red.500">*</Text>
+                Project Owner{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <FieldSelect
                 placeholder="Select project owner"
@@ -163,13 +173,15 @@ const CreateProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Start Date <Text as="span" color="red.500">*</Text>
+                Start Date{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.startDate}
-                onChange={(e) => handleChange("startDate", e.target.value)}
-                size="sm"
+                onChange={(value) => handleChange("startDate", value)}
+                placeholder="Select start date"
               />
             </VStack>
 
@@ -177,12 +189,11 @@ const CreateProjectPage = () => {
               <Text fontSize="sm" fontWeight="500" color="gray.700">
                 Target End Date
               </Text>
-              <Input
-                type="date"
+              <DatePicker
                 value={formData.targetEndDate || ""}
-                onChange={(e) => handleChange("targetEndDate", e.target.value)}
-                min={formData.startDate || undefined}
-                size="sm"
+                onChange={(value) => handleChange("targetEndDate", value)}
+                placeholder="Select target end date"
+                minDate={formData.startDate || undefined}
               />
             </VStack>
           </SimpleGrid>
@@ -214,7 +225,12 @@ const CreateProjectPage = () => {
           >
             Cancel
           </Button>
-          <Button variant="primary" size="sm" type="submit" loading={isSubmitting}>
+          <Button
+            variant="primary"
+            size="sm"
+            type="submit"
+            loading={isSubmitting}
+          >
             Create Project
           </Button>
         </Flex>

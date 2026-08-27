@@ -80,8 +80,8 @@ export const useLoginMutation = (type: LoginType) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       errorNotification(
         err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Login failed!"
+        err.response?.data?.error ??
+        "Login failed!"
       );
     },
   });
@@ -91,12 +91,15 @@ export const useChangePasswordMutation = () => {
   return useMutation({
     mutationFn: (data: any) =>
       LawFirmCRMClient.post(api.changePassword, { data }),
+    onSuccess: (response) => {
+      successNotification(response.data.message || "Password changed successfully");
+    },
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       errorNotification(
         err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Failed to change password"
+        err.response?.data?.error ??
+        "Failed to change password"
       );
     },
   });
@@ -106,12 +109,15 @@ export const useConfirmMfaSetupMutation = () => {
   return useMutation({
     mutationFn: (data: any) =>
       LawFirmCRMClient.post(api.mfaSetupConfirm, { data }),
+    onSuccess: (response) => {
+      successNotification(response.data.message || "MFA setup successful");
+    },
     onError: (error) => {
       const err = error as AxiosError<{ message: string; error: string }>;
       errorNotification(
         err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Invalid code"
+        err.response?.data?.error ??
+        "Invalid code"
       );
     },
   });
@@ -127,8 +133,8 @@ export const useValidateMfaMutation = () => {
       const err = error as AxiosError<{ message: string; error: string }>;
       errorNotification(
         err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Invalid code"
+        err.response?.data?.error ??
+        "Invalid code"
       );
     },
   });
@@ -149,28 +155,30 @@ export const useSignupMutation = (type: RegisterType) => {
       const err = error as AxiosError<{ message?: string; error?: string }>;
       errorNotification(
         err.response?.data?.message ??
-          err.response?.data?.error ??
-          "Signup failed!"
+        err.response?.data?.error ??
+        "Signup failed!"
       );
     },
   });
 };
 export const initRefreshToken = async () => {
   try {
+    const refreshToken = TokenService.getToken()?.refresh_token;
+    if (!refreshToken) {
+      return false;
+    }
+
     const response = await LawFirmCRMClient.get<TokenDetails>(
       api.refreshToken,
       {
         params: {
-          refreshToken: TokenService.getToken()?.refresh_token,
-        },
-        headers: {
-          Authorization: "",
+          refreshToken,
         },
       }
     );
     const tokens = {
       access_token: response.data.access_token,
-      refresh_token: response.data.refresh_token,
+      refresh_token: response.data.refresh_token || refreshToken,
     };
     TokenService.setToken(tokens);
     return true;

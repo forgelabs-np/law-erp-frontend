@@ -80,13 +80,13 @@ const ChangePassword = () => {
             Your password must be updated before continuing.
           </Text>
         </Stack>
-        <CountdownTimer
+        {/* <CountdownTimer
           onExpire={() => {
             authState.clearTemporaryAuth();
             navigate("/auth/login");
           }}
           fontSize="sm"
-        />
+        /> */}
       </Stack>
 
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>

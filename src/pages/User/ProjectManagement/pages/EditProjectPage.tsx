@@ -214,7 +214,10 @@ const EditProjectPage = () => {
           <SimpleGrid columns={{ base: 1, md: 2 }} gap={5}>
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Name <Text as="span" color="red.500">*</Text>
+                Project Name{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <Input
                 value={formData.name || ""}
@@ -228,7 +231,10 @@ const EditProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Client Name <Text as="span" color="red.500">*</Text>
+                Client Name{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <Input
                 value={formData.clientName || ""}
@@ -260,7 +266,10 @@ const EditProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Owner <Text as="span" color="red.500">*</Text>
+                Project Owner{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <FieldSelect
                 placeholder="Select project owner"
@@ -278,7 +287,10 @@ const EditProjectPage = () => {
 
             <VStack align="flex-start" gap={1.5}>
               <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Start Date <Text as="span" color="red.500">*</Text>
+                Start Date{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <Input
                 type="date"
