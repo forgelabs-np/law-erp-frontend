@@ -12,8 +12,8 @@ import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 import { FirmFormValues, FirmPayload } from "./types";
 
 const FIRM_TYPE_OPTIONS = [
+  { label: "Firm", value: "FIRM" },
   { label: "Solo", value: "SOLO" },
-  { label: "Client", value: "CLIENT" },
 ];
 
 const defaultValues: FirmFormValues = {
