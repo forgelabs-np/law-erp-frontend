@@ -1,5 +1,6 @@
-import { Box, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, HStack, Image, Text, VStack } from "@chakra-ui/react";
 import { Building2, Scale, FileText, Shield } from "lucide-react";
+import { Logo } from "@/assets/images";
 
 export const BrandingPanel = () => {
   return (
@@ -14,14 +15,7 @@ export const BrandingPanel = () => {
       <VStack align="start" gap={8} flex={1} justify="center">
         {/* Logo */}
         <Box>
-          <Text
-            color="white"
-            fontSize="xl"
-            fontWeight="bold"
-            letterSpacing="wide"
-          >
-            LexElite
-          </Text>
+          <Image src={Logo} alt="LexElite" height="40px" width="max-content" mb={2} />
           <Text
             color="primary.200"
             fontSize="sm"

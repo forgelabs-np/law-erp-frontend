@@ -118,8 +118,8 @@ export const NepaliDatePicker = ({
           borderRadius="md"
           cursor={disabled ? "not-allowed" : "pointer"}
           disabled={disabled}
-          _hover={{ borderColor: "#0D6944" }}
-          _focus={{ borderColor: "#0D6944", boxShadow: "0 0 0 1px #0D6944" }}
+          _hover={{ borderColor: "#0056FF" }}
+          _focus={{ borderColor: "#0056FF", boxShadow: "0 0 0 1px #0056FF" }}
           _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
           minW="200px"
           justifyContent="space-between"
@@ -203,7 +203,7 @@ export const NepaliDatePicker = ({
                   variant="ghost"
                   onClick={() => handleDayClick(date)}
                   disabled={disabled}
-                  bg={isSelected ? "#0D6944" : "transparent"}
+                  bg={isSelected ? "#0056FF" : "transparent"}
                   color={
                     isSelected
                       ? "white"

@@ -108,12 +108,12 @@ const ScraperManagementPage = () => {
       {/* Header */}
       <Box>
         <HStack gap={3} mb={2} align="center">
-          <Database size={28} color="#0D6944" />
+          <Database size={28} color="#0056FF" />
           <Text fontSize="2xl" fontWeight="700" color="#1F2937">
             Court Data Sync
           </Text>
           <Badge
-            bg="#0D6944"
+            bg="#0056FF"
             color="white"
             px={3}
             py={1}
@@ -163,13 +163,13 @@ const ScraperManagementPage = () => {
                     key={court.id}
                     size="sm"
                     variant={selectedCourtId === court.id ? "solid" : "outline"}
-                    bg={selectedCourtId === court.id ? "#0D6944" : "white"}
+                    bg={selectedCourtId === court.id ? "#0056FF" : "white"}
                     borderColor="#E5E7EB"
                     color={selectedCourtId === court.id ? "white" : "#374151"}
                     _hover={
                       selectedCourtId === court.id
-                        ? { bg: "#0A5235" }
-                        : { bg: "#F3F4F6", borderColor: "#0D6944" }
+                        ? { bg: "#0048D9" }
+                        : { bg: "#E3E7FC", borderColor: "#0056FF" }
                     }
                     onClick={() => setSelectedCourtId(court.id)}
                     aria-label={`Select ${court.name}`}
@@ -200,10 +200,10 @@ const ScraperManagementPage = () => {
 
           {/* Run Sync Button */}
           <Button
-            bg="#0D6944"
+            bg="#0056FF"
             color="white"
-            _hover={{ bg: "#0A5235" }}
-            _active={{ bg: "#084229" }}
+            _hover={{ bg: "#0048D9" }}
+            _active={{ bg: "#003AB3" }}
             onClick={handleRunScrape}
             loading={manualScrapeMutation.isPending}
             maxW="fit-content"
@@ -291,9 +291,9 @@ const ScraperManagementPage = () => {
           {/* Generate Button */}
           <Button
             variant="outline"
-            borderColor="#0D6944"
-            color="#0D6944"
-            _hover={{ bg: "#F0FDF4", borderColor: "#0A5235" }}
+            borderColor="#0056FF"
+            color="#0056FF"
+            _hover={{ bg: "#E3E7FC", borderColor: "#0048D9" }}
             onClick={handleGenerateExport}
             loading={generateWeeklyExportMutation.isPending}
             maxW="fit-content"
@@ -377,7 +377,7 @@ const ScraperManagementPage = () => {
               >
                 Cancel
               </Button>
-              <Button colorScheme="green" onClick={confirmScrape}>
+              <Button colorScheme="blue" onClick={confirmScrape}>
                 Run Scrape
               </Button>
             </HStack>
@@ -410,7 +410,7 @@ const ScraperManagementPage = () => {
               >
                 Cancel
               </Button>
-              <Button colorScheme="green" onClick={confirmExport}>
+              <Button colorScheme="blue" onClick={confirmExport}>
                 Generate Export
               </Button>
             </HStack>
