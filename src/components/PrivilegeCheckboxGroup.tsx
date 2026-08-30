@@ -1,4 +1,12 @@
-import { Grid, HStack, Separator, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Grid,
+  HStack,
+  Separator,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 
 import { Checkbox, Switch } from "@/shared/components/ui";
@@ -25,41 +33,108 @@ function CheckboxGroup({
   };
 
   return (
-    <VStack w="full" borderRadius={12} align="flex-start" gap={2} bg="white">
-      <HStack w="full" justifyContent="space-between" alignItems="center">
-        <Text textStyle="subtitle_large">{capitalizeWords(label)}</Text>
+    <VStack w="full" align="stretch" gap={0}>
+      {/* Header Row: Label + Enable All */}
+      <Flex
+        w="full"
+        justifyContent="space-between"
+        alignItems="center"
+        px={{ base: 3, md: 4 }}
+        py={3}
+        bg="gray.50"
+        borderTopRadius="lg"
+      >
+        <Text
+          fontSize={{ base: "xs", md: "sm" }}
+          fontWeight="600"
+          color="gray.700"
+          textTransform="uppercase"
+          letterSpacing="wider"
+        >
+          {capitalizeWords(label)}
+        </Text>
         {options.length > 1 && (
-          <HStack w="fit-content" justifyContent="flex-end" gap={2}>
-            <Switch checked={allChecked} onCheckedChange={toggleAll} />
-            <Text textStyle="subtitle_large">Enable All</Text>
+          <HStack
+            gap={2}
+            cursor="pointer"
+            px={3}
+            py={1.5}
+            borderRadius="md"
+            _hover={{ bg: "primary.50" }}
+            transition="backgrounds 150ms ease"
+            role="group"
+            aria-label="Toggle all permissions"
+          >
+            <Switch
+              checked={allChecked}
+              onCheckedChange={toggleAll}
+            />
+            <Text
+              fontSize="xs"
+              fontWeight="600"
+              color={allChecked ? "primary.600" : "gray.600"}
+              transition="colors 150ms ease"
+            >
+              Enable All
+            </Text>
           </HStack>
         )}
-      </HStack>
+      </Flex>
 
-      <Separator />
-
-      <Grid
-        w="full"
-        templateColumns="repeat(auto-fit, minmax(100px, 1fr))"
-        gap={5}
-      >
-        {options.map((opt) => (
-          <Checkbox
-            key={opt.value}
-            checked={value.includes(opt.value)}
-            onCheckedChange={(e) =>
-              toggleOption(
-                opt.value,
-                (e as { checked: boolean | "indeterminate" }).checked
-              )
-            }
-            cursor="pointer"
-            size="sm"
-          >
-            {opt.label}
-          </Checkbox>
-        ))}
-      </Grid>
+      {/* Permission Options Grid */}
+      <Box px={{ base: 3, md: 4 }} py={3}>
+        <Grid
+          w="full"
+          templateColumns={{
+            base: "1fr",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(auto-fit, minmax(140px, 1fr))",
+          }}
+          gap={{ base: 1, md: 2 }}
+        >
+          {options.map((opt) => (
+            <Flex
+              key={opt.value}
+              alignItems="center"
+              gap={2.5}
+              px={3}
+              py={2}
+              borderRadius="md"
+              cursor="pointer"
+              _hover={{ bg: "lavender.50" }}
+              _focusWithin={{ ring: "2px", ringColor: "primary.400" }}
+              transition="backgrounds 150ms ease"
+              minH="40px"
+              role="checkbox"
+              aria-checked={value.includes(opt.value)}
+              aria-label={`Permission: ${opt.label}`}
+            >
+              <Checkbox
+                checked={value.includes(opt.value)}
+                onCheckedChange={(e) =>
+                  toggleOption(
+                    opt.value,
+                    (e as { checked: boolean | "indeterminate" }).checked
+                  )
+                }
+                cursor="pointer"
+                size="sm"
+                aria-label={opt.label}
+              />
+              <Text
+                fontSize={{ base: "sm", md: "sm" }}
+                color="gray.700"
+                fontWeight="400"
+                lineHeight="short"
+                userSelect="none"
+                truncate
+              >
+                {opt.label}
+              </Text>
+            </Flex>
+          ))}
+        </Grid>
+      </Box>
     </VStack>
   );
 }
@@ -81,7 +156,7 @@ export function PrivilegeCheckboxGroup<T extends FieldValues>({
             )
           : [];
         return (
-          <VStack w="full" align="flex-start" gap={1}>
+          <VStack w="full" align="stretch" gap={1}>
             <CheckboxGroup
               value={value}
               onChange={field.onChange}
@@ -89,7 +164,7 @@ export function PrivilegeCheckboxGroup<T extends FieldValues>({
               options={options}
             />
             {error?.message && (
-              <Text color="red.500" fontSize="sm">
+              <Text color="red.500" fontSize="sm" px={4}>
                 {error.message}
               </Text>
             )}
