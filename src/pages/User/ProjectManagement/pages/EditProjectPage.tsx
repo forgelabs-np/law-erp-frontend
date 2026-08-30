@@ -11,8 +11,10 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -22,6 +24,18 @@ import {
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
 import { UpdateProjectRequest } from "../types/project.types";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
+import { projectSchema, ProjectSchemaType } from "@/validations";
+import { DatePicker } from "@/shared/components/ui";
+
+const defaultValues: ProjectSchemaType = {
+  name: "",
+  clientName: "",
+  clientUserId: "",
+  description: "",
+  startDate: "",
+  targetEndDate: "",
+  ownerId: "",
+};
 
 const EditProjectPage = () => {
   const navigate = useNavigate();
@@ -37,20 +51,21 @@ const EditProjectPage = () => {
     refetch,
   } = useProjectByCodeQuery(projectCode || "");
 
-  const [formData, setFormData] = useState<UpdateProjectRequest>({
-    name: "",
-    clientName: "",
-    clientUserId: "",
-    description: "",
-    startDate: "",
-    targetEndDate: "",
-    ownerId: "",
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ProjectSchemaType>({
+    defaultValues,
+    resolver: yupResolver(projectSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (project) {
-      setFormData({
+      reset({
         name: project.name || "",
         clientName: project.clientName || "",
         clientUserId: project.clientUserId || "",
@@ -60,26 +75,16 @@ const EditProjectPage = () => {
         ownerId: project.ownerId || "",
       });
     }
-  }, [project]);
+  }, [project, reset]);
 
-  const handleChange = (field: keyof UpdateProjectRequest, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: ProjectSchemaType) => {
     if (!projectCode) return;
 
-    setIsSubmitting(true);
-    try {
-      await updateMutation.mutateAsync({
-        projectCode,
-        data: formData,
-      });
-      navigate(`/projects/${projectCode}`);
-    } catch (error) {
-      setIsSubmitting(false);
-    }
+    await updateMutation.mutateAsync({
+      projectCode,
+      data: data as UpdateProjectRequest,
+    });
+    navigate(`/projects/${projectCode}`);
   };
 
   // Loading state
@@ -195,7 +200,7 @@ const EditProjectPage = () => {
       {/* Form card */}
       <Box
         as="form"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         bg="white"
         border="1px solid"
         borderColor="gray.200"
@@ -212,123 +217,183 @@ const EditProjectPage = () => {
         {/* Form fields */}
         <Stack px={6} pb={6} gap={5}>
           <SimpleGrid columns={{ base: 1, md: 2 }} gap={5}>
-            <VStack align="flex-start" gap={1.5}>
-              <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Name{" "}
-                <Text as="span" color="red.500">
-                  *
-                </Text>
-              </Text>
-              <Input
-                value={formData.name || ""}
-                onChange={(e) => handleChange("name", e.target.value)}
-                placeholder="Enter project name"
-                required
-                maxLength={200}
-                size="sm"
-              />
-            </VStack>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <VStack align="flex-start" gap={1.5}>
+                  <Text fontSize="sm" fontWeight="500" color="gray.700">
+                    Project Name{" "}
+                    <Text as="span" color="red.500">
+                      *
+                    </Text>
+                  </Text>
+                  <Input
+                    {...field}
+                    placeholder="Enter project name"
+                    size="sm"
+                    borderColor={errors.name ? "red.500" : undefined}
+                  />
+                  {errors.name && (
+                    <Text fontSize="xs" color="red.500">
+                      {errors.name.message}
+                    </Text>
+                  )}
+                </VStack>
+              )}
+            />
 
-            <VStack align="flex-start" gap={1.5}>
-              <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Client Name{" "}
-                <Text as="span" color="red.500">
-                  *
-                </Text>
-              </Text>
-              <Input
-                value={formData.clientName || ""}
-                onChange={(e) => handleChange("clientName", e.target.value)}
-                placeholder="Enter client name"
-                required
-                maxLength={200}
-                size="sm"
-              />
-            </VStack>
+            <Controller
+              name="clientName"
+              control={control}
+              render={({ field }) => (
+                <VStack align="flex-start" gap={1.5}>
+                  <Text fontSize="sm" fontWeight="500" color="gray.700">
+                    Client Name{" "}
+                    <Text as="span" color="red.500">
+                      *
+                    </Text>
+                  </Text>
+                  <Input
+                    {...field}
+                    placeholder="Enter client name"
+                    size="sm"
+                    borderColor={errors.clientName ? "red.500" : undefined}
+                  />
+                  {errors.clientName && (
+                    <Text fontSize="xs" color="red.500">
+                      {errors.clientName.message}
+                    </Text>
+                  )}
+                </VStack>
+              )}
+            />
 
-            <VStack align="flex-start" gap={1.5}>
-              <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Client User
-              </Text>
-              <FieldSelect
-                placeholder="Select client user (optional)"
-                value={formData.clientUserId || ""}
-                onChange={(value) => handleChange("clientUserId", value)}
-                size="sm"
-              >
-                {employeeList.map((emp: any) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.fullName}
-                  </option>
-                ))}
-              </FieldSelect>
-            </VStack>
+            <Controller
+              name="clientUserId"
+              control={control}
+              render={({ field }) => (
+                <VStack align="flex-start" gap={1.5}>
+                  <Text fontSize="sm" fontWeight="500" color="gray.700">
+                    Client User
+                  </Text>
+                  <FieldSelect
+                    placeholder="Select client user (optional)"
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    size="sm"
+                  >
+                    {employeeList.map((emp: any) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.fullName}
+                      </option>
+                    ))}
+                  </FieldSelect>
+                </VStack>
+              )}
+            />
 
-            <VStack align="flex-start" gap={1.5}>
-              <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Project Owner{" "}
-                <Text as="span" color="red.500">
-                  *
-                </Text>
-              </Text>
-              <FieldSelect
-                placeholder="Select project owner"
-                value={formData.ownerId || ""}
-                onChange={(value) => handleChange("ownerId", value)}
-                size="sm"
-              >
-                {employeeList.map((emp: any) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.fullName} - {emp.designation}
-                  </option>
-                ))}
-              </FieldSelect>
-            </VStack>
+            <Controller
+              name="ownerId"
+              control={control}
+              render={({ field }) => (
+                <VStack align="flex-start" gap={1.5}>
+                  <Text fontSize="sm" fontWeight="500" color="gray.700">
+                    Project Owner{" "}
+                    <Text as="span" color="red.500">
+                      *
+                    </Text>
+                  </Text>
+                  <FieldSelect
+                    placeholder="Select project owner"
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    size="sm"
+                  >
+                    {employeeList.map((emp: any) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.fullName} - {emp.designation}
+                      </option>
+                    ))}
+                  </FieldSelect>
+                  {errors.ownerId && (
+                    <Text fontSize="xs" color="red.500">
+                      {errors.ownerId.message}
+                    </Text>
+                  )}
+                </VStack>
+              )}
+            />
 
-            <VStack align="flex-start" gap={1.5}>
-              <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Start Date{" "}
-                <Text as="span" color="red.500">
-                  *
-                </Text>
-              </Text>
-              <Input
-                type="date"
-                value={formData.startDate || ""}
-                onChange={(e) => handleChange("startDate", e.target.value)}
-                size="sm"
-              />
-            </VStack>
+            <Controller
+              name="startDate"
+              control={control}
+              render={({ field }) => (
+                <VStack align="flex-start" gap={1.5}>
+                  <Text fontSize="sm" fontWeight="500" color="gray.700">
+                    Start Date{" "}
+                    <Text as="span" color="red.500">
+                      *
+                    </Text>
+                  </Text>
+                  <DatePicker
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select start date"
+                  />
+                  {errors.startDate && (
+                    <Text fontSize="xs" color="red.500">
+                      {errors.startDate.message}
+                    </Text>
+                  )}
+                </VStack>
+              )}
+            />
 
-            <VStack align="flex-start" gap={1.5}>
-              <Text fontSize="sm" fontWeight="500" color="gray.700">
-                Target End Date
-              </Text>
-              <Input
-                type="date"
-                value={formData.targetEndDate || ""}
-                onChange={(e) => handleChange("targetEndDate", e.target.value)}
-                min={formData.startDate || undefined}
-                size="sm"
-              />
-            </VStack>
+            <Controller
+              name="targetEndDate"
+              control={control}
+              render={({ field }) => (
+                <VStack align="flex-start" gap={1.5}>
+                  <Text fontSize="sm" fontWeight="500" color="gray.700">
+                    Target End Date
+                  </Text>
+                  <DatePicker
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                    placeholder="Select target end date"
+                  />
+                  {errors.targetEndDate && (
+                    <Text fontSize="xs" color="red.500">
+                      {errors.targetEndDate.message}
+                    </Text>
+                  )}
+                </VStack>
+              )}
+            />
           </SimpleGrid>
 
           {/* Description - full width */}
-          <VStack align="flex-start" gap={1.5}>
-            <Text fontSize="sm" fontWeight="500" color="gray.700">
-              Description
-            </Text>
-            <Textarea
-              value={formData.description || ""}
-              onChange={(e) => handleChange("description", e.target.value)}
-              placeholder="Enter project description"
-              rows={3}
-              size="sm"
-              maxLength={1000}
-              resize="vertical"
-            />
-          </VStack>
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <VStack align="flex-start" gap={1.5}>
+                <Text fontSize="sm" fontWeight="500" color="gray.700">
+                  Description
+                </Text>
+                <Textarea
+                  {...field}
+                  value={field.value ?? ""}
+                  placeholder="Enter project description"
+                  rows={3}
+                  size="sm"
+                  maxLength={1000}
+                  resize="vertical"
+                />
+              </VStack>
+            )}
+          />
         </Stack>
 
         {/* Divider + Footer */}
@@ -338,7 +403,7 @@ const EditProjectPage = () => {
             variant="outline"
             size="sm"
             onClick={() => navigate(`/projects/${projectCode}`)}
-            disabled={isSubmitting}
+            disabled={updateMutation.isPending}
           >
             Cancel
           </Button>
@@ -346,7 +411,7 @@ const EditProjectPage = () => {
             variant="primary"
             size="sm"
             type="submit"
-            loading={isSubmitting || updateMutation.isPending}
+            loading={updateMutation.isPending}
           >
             Save Changes
           </Button>

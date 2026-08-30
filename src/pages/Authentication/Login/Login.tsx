@@ -9,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { type LoginType, useLoginMutation } from "@/api/auth";
@@ -22,10 +23,11 @@ import {
   TextFieldInput,
 } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
+import { loginSchema, superAdminLoginSchema, LoginSchemaType, SuperAdminLoginSchemaType } from "@/validations";
 import { MdSafetyCheck, MdSecurityUpdate } from "react-icons/md";
 import { LuShieldCheck } from "react-icons/lu";
 
-const defaultValues = { username: "", password: "" };
+const defaultValues: LoginSchemaType = { lawFirmCode: "", username: "", password: "" };
 
 const resolveLoginType = (pathname: string): LoginType => {
   if (pathname.includes("/super-admin")) return "super-admin";
@@ -84,11 +86,17 @@ const Login = () => {
     (state) => state.setTemporaryAuth
   );
 
-  const methods = useForm({ defaultValues });
+  const isSuperAdmin = loginType === "super-admin";
+  const methods = useForm<LoginSchemaType | SuperAdminLoginSchemaType>({
+    defaultValues,
+    resolver: yupResolver(isSuperAdmin ? superAdminLoginSchema : loginSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
   const { handleSubmit } = methods;
   const { mutateAsync: login, isPending } = useLoginMutation(loginType);
 
-  const onSubmitHandler = async (data: typeof defaultValues) => {
+  const onSubmitHandler = async (data: LoginSchemaType | SuperAdminLoginSchemaType) => {
     try {
       const response = await login(data);
       const resData = response?.data?.data;

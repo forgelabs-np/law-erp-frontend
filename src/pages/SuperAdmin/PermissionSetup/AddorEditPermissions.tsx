@@ -1,6 +1,7 @@
 import { Stack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useGetModuleMenusQuery } from "@/api/menuSetup";
 import {
@@ -8,6 +9,7 @@ import {
   usePermissionByIdQuery,
 } from "@/api/permissionSetup";
 import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
+import { permissionSchema } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 import { PermissionFormValues } from "./types";
 
@@ -67,6 +69,9 @@ export const AddorEditPermissions = ({
 
   const methods = useForm<PermissionFormValues>({
     defaultValues,
+    resolver: yupResolver(permissionSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
   const { handleSubmit, reset } = methods;
 

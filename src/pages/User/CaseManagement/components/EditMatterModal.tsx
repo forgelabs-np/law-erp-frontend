@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/Dialog";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
@@ -26,6 +27,7 @@ import {
   MatterStatus,
   UpdateMatterRequest,
 } from "../types/matter.types";
+import { editMatterSchema } from "@/validations";
 
 interface EditMatterModalProps {
   isOpen: boolean;
@@ -54,13 +56,21 @@ export const EditMatterModal = ({
   const { data: employeesData } = useGetEmployeesQuery();
   const employees = employeesData?.content ?? [];
 
-  const { control, handleSubmit, reset } = useForm<EditMatterFormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<EditMatterFormValues>({
     defaultValues: {
       title: "",
       description: "",
       assignedPartnerId: "",
       status: "ACTIVE",
     },
+    resolver: yupResolver(editMatterSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   useEffect(() => {
@@ -75,7 +85,6 @@ export const EditMatterModal = ({
   }, [isOpen, matter, reset]);
 
   const onFormSubmit = (values: EditMatterFormValues) => {
-    if (!values.title.trim()) return;
     onSubmit({
       title: values.title.trim(),
       description: values.description.trim() || undefined,
@@ -106,9 +115,19 @@ export const EditMatterModal = ({
                 <Controller
                   name="title"
                   control={control}
-                  rules={{ required: "Title is required" }}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      placeholder="Enter matter title"
+                      borderColor={errors.title ? "red.500" : undefined}
+                    />
+                  )}
                 />
+                {errors.title && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.title.message}
+                  </Text>
+                )}
               </Box>
 
               <Box>
@@ -172,11 +191,10 @@ export const EditMatterModal = ({
                   <Controller
                     name="status"
                     control={control}
-                    rules={{ required: "Status is required" }}
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor="gray.200"
+                        borderColor={errors.status ? "red.500" : "gray.200"}
                         borderRadius="md"
                         p={2}
                       >
@@ -200,6 +218,11 @@ export const EditMatterModal = ({
                       </Box>
                     )}
                   />
+                  {errors.status && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.status.message}
+                    </Text>
+                  )}
                 </Box>
               </Flex>
             </VStack>

@@ -8,6 +8,7 @@ import {
   VStack,
   Spinner,
 } from "@chakra-ui/react";
+import { DatePicker } from "@/shared/components/ui";
 import {
   DialogRoot,
   DialogContent,
@@ -18,6 +19,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/Dialog";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useMemo } from "react";
 
 import { useGetMattersQuery } from "@/pages/User/CaseManagement/api/matter.api";
@@ -27,14 +29,15 @@ import {
   CourtEventType,
   CreateCourtEventRequest,
 } from "@/pages/User/CaseManagement/types/matter.types";
+import { calendarEventSchema } from "@/validations";
 
 interface CalendarEventFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateCourtEventRequest & { courtCaseRef: string }) => void;
   initialData?: CourtEvent | null;
-  prefilledDate?: string; // Optional - for calendar date click
-  onDelete?: (eventId: string) => void; // Optional - for cancel action
+  prefilledDate?: string;
+  onDelete?: (eventId: string) => void;
 }
 
 interface EventFormValues {
@@ -77,7 +80,13 @@ export const CalendarEventFormModal = ({
     [matters]
   );
 
-  const { control, handleSubmit, reset, watch } = useForm<EventFormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<EventFormValues>({
     defaultValues: {
       matterNumber: "",
       eventType: "PESHI",
@@ -89,6 +98,9 @@ export const CalendarEventFormModal = ({
       courtRoom: "",
       notes: "",
     },
+    resolver: yupResolver(calendarEventSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   useEffect(() => {
@@ -130,7 +142,7 @@ export const CalendarEventFormModal = ({
   const courtCaseRef = selectedMatter?.currentCourtCaseRef ?? "";
 
   const onFormSubmit = (values: EventFormValues) => {
-    if (!values.scheduledDate || !courtCaseRef) return;
+    if (!courtCaseRef) return;
 
     onSubmit({
       courtCaseRef,
@@ -175,11 +187,10 @@ export const CalendarEventFormModal = ({
                   <Controller
                     name="matterNumber"
                     control={control}
-                    rules={{ required: "Matter is required" }}
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor="gray.200"
+                        borderColor={errors.matterNumber ? "red.500" : "gray.200"}
                         borderRadius="md"
                         p={2}
                       >
@@ -205,6 +216,11 @@ export const CalendarEventFormModal = ({
                     )}
                   />
                 )}
+                {errors.matterNumber && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.matterNumber.message}
+                  </Text>
+                )}
               </Box>
 
               {selectedMatter && !courtCaseRef && (
@@ -222,11 +238,10 @@ export const CalendarEventFormModal = ({
                   <Controller
                     name="eventType"
                     control={control}
-                    rules={{ required: "Event type is required" }}
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor="gray.200"
+                        borderColor={errors.eventType ? "red.500" : "gray.200"}
                         borderRadius="md"
                         p={2}
                       >
@@ -250,6 +265,11 @@ export const CalendarEventFormModal = ({
                       </Box>
                     )}
                   />
+                  {errors.eventType && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.eventType.message}
+                    </Text>
+                  )}
                 </Box>
                 <Box flex={1}>
                   <Text mb={1} fontSize="sm" fontWeight="500">
@@ -258,9 +278,19 @@ export const CalendarEventFormModal = ({
                   <Controller
                     name="scheduledDate"
                     control={control}
-                    rules={{ required: "Date is required" }}
-                    render={({ field }) => <Input type="date" {...field} />}
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select date"
+                      />
+                    )}
                   />
+                  {errors.scheduledDate && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.scheduledDate.message}
+                    </Text>
+                  )}
                 </Box>
               </Flex>
 

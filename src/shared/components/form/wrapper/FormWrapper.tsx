@@ -7,9 +7,16 @@ export const FormWrapper = ({
   label,
   disabled,
   required,
+  errorText,
 }: FormWrapperProps) => {
   return (
-    <Field label={label} disabled={disabled} required={required}>
+    <Field
+      label={label}
+      disabled={disabled}
+      required={required}
+      errorText={errorText}
+      invalid={!!errorText}
+    >
       {children}
     </Field>
   );

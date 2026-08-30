@@ -1,5 +1,6 @@
 import { Box, Button, Image, Stack, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 
 import { useChangePasswordMutation } from "@/api/auth";
@@ -9,26 +10,24 @@ import { useTemporaryAuthStore } from "@/store/temporaryAuthStore";
 import { CountdownTimer } from "@/shared/components/ui/CountdownTimer";
 import { toastFail, toastSuccess } from "@/shared/toast";
 import { ROUTES_CONFIG } from "@/shared/config";
+import { changePasswordSchema, ChangePasswordSchemaType } from "@/validations";
 
-const defaultValues = { newPassword: "", confirmPassword: "" };
+const defaultValues: ChangePasswordSchemaType = { newPassword: "", confirmPassword: "" };
 
 const ChangePassword = () => {
   const navigate = useNavigate();
-  const methods = useForm({ defaultValues });
-  const { handleSubmit, setError } = methods;
+  const methods = useForm<ChangePasswordSchemaType>({
+    defaultValues,
+    resolver: yupResolver(changePasswordSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
+  const { handleSubmit } = methods;
   const { mutateAsync: changePassword, isPending } =
     useChangePasswordMutation();
   const authState = useTemporaryAuthStore();
 
-  const onSubmitHandler = async (data: typeof defaultValues) => {
-    if (data.newPassword !== data.confirmPassword) {
-      setError("confirmPassword", {
-        type: "manual",
-        message: "Passwords do not match",
-      });
-      return;
-    }
-
+  const onSubmitHandler = async (data: ChangePasswordSchemaType) => {
     try {
       const response = await changePassword({
         passwordChangeToken: authState.passwordChangeToken,

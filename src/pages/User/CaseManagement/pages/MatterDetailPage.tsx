@@ -199,7 +199,10 @@ const MatterDetailPage = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setIsEventFormOpen(true)}
+                onClick={() => {
+                  setSelectedEvent(null);
+                  setIsEventFormOpen(true);
+                }}
               >
                 <Calendar size={14} /> Schedule Event
               </Button>
@@ -662,7 +665,10 @@ const MatterDetailPage = () => {
               <CourtCaseEvents
                 events={events}
                 onView={handleOpenEvent}
-                onSchedule={() => setIsEventFormOpen(true)}
+                onSchedule={() => {
+                  setSelectedEvent(null);
+                  setIsEventFormOpen(true);
+                }}
               />
             )}
           </SectionCard>
@@ -678,7 +684,10 @@ const MatterDetailPage = () => {
           courtName={currentCourtCase?.courtName}
           matterNumber={matter.matterNumber}
           nextEvent={matter.nextEvent}
-          onSchedule={() => setIsEventFormOpen(true)}
+          onSchedule={() => {
+            setSelectedEvent(null);
+            setIsEventFormOpen(true);
+          }}
           onViewEvent={handleOpenEvent}
         />
       )}

@@ -1,6 +1,7 @@
 import { Stack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   SubMenuResponse,
@@ -8,6 +9,7 @@ import {
   useModuleMenuByIdQuery,
 } from "@/api/menuSetup";
 import { FormProvider } from "@/shared/components";
+import { menuSchema } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 import { MenuSetupForm } from "./component/MenuSetupForm";
 import { MenuSetupFormValues, ModuleMenuPayload } from "./types";
@@ -40,6 +42,9 @@ export const AddEditMenu = ({
 
   const methods = useForm<MenuSetupFormValues>({
     defaultValues,
+    resolver: yupResolver(menuSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
   const { control, handleSubmit, reset } = methods;
 

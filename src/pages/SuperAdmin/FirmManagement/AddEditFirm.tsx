@@ -1,12 +1,14 @@
 import { Grid, GridItem, Stack, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   useFirmByIdQuery,
   useCreateEditFirmMutation,
 } from "@/api/firmManagement";
 import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
+import { firmSchema, FirmSchemaType } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
 import { FirmFormValues, FirmPayload } from "./types";
@@ -50,7 +52,13 @@ export const AddEditFirm = ({
 
   console.log(firmById, "firmIddddddd");
 
-  const methods = useForm<FirmFormValues>({ defaultValues });
+  const methods = useForm<FirmFormValues>({
+    defaultValues,
+    resolver: yupResolver(firmSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+    context: { isEdit: !!id },
+  });
   const { handleSubmit, reset } = methods;
 
   const { mutate, isPending } = useCreateEditFirmMutation();

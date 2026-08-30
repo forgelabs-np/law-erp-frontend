@@ -8,6 +8,7 @@ import {
   VStack,
   Alert,
 } from "@chakra-ui/react";
+import { DatePicker } from "@/shared/components/ui";
 import {
   DialogRoot,
   DialogContent,
@@ -18,6 +19,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/Dialog";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 import { Info } from "lucide-react";
 
@@ -28,6 +30,7 @@ import {
   OutcomeType,
 } from "../types/matter.types";
 import { nextEventTypeLabel, outcomeTypeLabel } from "../utils/matterHelpers";
+import { eventHeldSchema } from "@/validations";
 
 interface EventHeldModalProps {
   isOpen: boolean;
@@ -75,7 +78,13 @@ export const EventHeldModal = ({
   event,
   onRecordJudgment,
 }: EventHeldModalProps) => {
-  const { control, handleSubmit, reset, watch } = useForm<HeldFormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<HeldFormValues>({
     defaultValues: {
       outcome: "",
       outcomeType: "ADJOURNED_NO_PROGRESS",
@@ -84,6 +93,9 @@ export const EventHeldModal = ({
       nextEventTime: "",
       notes: "",
     },
+    resolver: yupResolver(eventHeldSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const nextEventType = watch("nextEventType");
@@ -103,14 +115,6 @@ export const EventHeldModal = ({
   }, [isOpen, reset]);
 
   const onFormSubmit = (values: HeldFormValues) => {
-    if (!values.outcome.trim()) return;
-    if (
-      (values.nextEventType === "TARIK" || values.nextEventType === "PESHI") &&
-      !values.nextEventDate
-    ) {
-      return;
-    }
-
     onSubmit({
       outcome: values.outcome.trim(),
       outcomeType: values.outcomeType,
@@ -160,15 +164,20 @@ export const EventHeldModal = ({
                 <Controller
                   name="outcome"
                   control={control}
-                  rules={{ required: "Outcome is required" }}
                   render={({ field }) => (
                     <Textarea
                       {...field}
                       placeholder="e.g. Both sides heard; court adjourned to next hearing"
                       rows={3}
+                      borderColor={errors.outcome ? "red.500" : undefined}
                     />
                   )}
                 />
+                {errors.outcome && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.outcome.message}
+                  </Text>
+                )}
               </Box>
 
               <Box>
@@ -178,11 +187,10 @@ export const EventHeldModal = ({
                 <Controller
                   name="outcomeType"
                   control={control}
-                  rules={{ required: "Outcome type is required" }}
                   render={({ field }) => (
                     <Box
                       border="1px solid"
-                      borderColor="gray.200"
+                      borderColor={errors.outcomeType ? "red.500" : "gray.200"}
                       borderRadius="md"
                       p={2}
                     >
@@ -206,6 +214,11 @@ export const EventHeldModal = ({
                     </Box>
                   )}
                 />
+                {errors.outcomeType && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.outcomeType.message}
+                  </Text>
+                )}
               </Box>
 
               {outcomeType === "JUDGMENT_DELIVERED" && (
@@ -228,11 +241,10 @@ export const EventHeldModal = ({
                 <Controller
                   name="nextEventType"
                   control={control}
-                  rules={{ required: "Next event type is required" }}
                   render={({ field }) => (
                     <Box
                       border="1px solid"
-                      borderColor="gray.200"
+                      borderColor={errors.nextEventType ? "red.500" : "gray.200"}
                       borderRadius="md"
                       p={2}
                     >
@@ -256,6 +268,11 @@ export const EventHeldModal = ({
                     </Box>
                   )}
                 />
+                {errors.nextEventType && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.nextEventType.message}
+                  </Text>
+                )}
               </Box>
 
               {needsNextDate && (
@@ -267,9 +284,19 @@ export const EventHeldModal = ({
                     <Controller
                       name="nextEventDate"
                       control={control}
-                      rules={{ required: "Next date is required" }}
-                      render={({ field }) => <Input type="date" {...field} />}
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select next date"
+                        />
+                      )}
                     />
+                    {errors.nextEventDate && (
+                      <Text fontSize="xs" color="red.500" mt={1}>
+                        {errors.nextEventDate.message}
+                      </Text>
+                    )}
                   </Box>
                   <Box flex={1}>
                     <Text mb={1} fontSize="sm" fontWeight="500">

@@ -22,8 +22,8 @@ const handleLogout = () => {
 };
 
 const SUPPORT_MODULE_CODES = [
-  "TEMPLATES",
-  "HELP_DOCS",
+  // "TEMPLATES",
+  // "HELP_DOCS",
   "SETTINGS",
   "LOGOUT",
 ] as const;

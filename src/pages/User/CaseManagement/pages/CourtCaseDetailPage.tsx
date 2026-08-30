@@ -212,7 +212,10 @@ const CourtCaseDetailPage = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsEventFormOpen(true)}
+              onClick={() => {
+                setSelectedEvent(null);
+                setIsEventFormOpen(true);
+              }}
             >
               <Calendar size={14} /> Schedule Event
             </Button>
@@ -654,7 +657,10 @@ const CourtCaseDetailPage = () => {
             <CourtCaseEvents
               events={events}
               onView={handleOpenEvent}
-              onSchedule={() => setIsEventFormOpen(true)}
+              onSchedule={() => {
+                setSelectedEvent(null);
+                setIsEventFormOpen(true);
+              }}
             />
           </SectionCard>
         </VStack>

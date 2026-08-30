@@ -1,4 +1,5 @@
 import { Box, Button, Input, Textarea, Text, VStack } from "@chakra-ui/react";
+import { DatePicker } from "@/shared/components/ui";
 import {
   DialogRoot,
   DialogContent,
@@ -10,9 +11,11 @@ import {
 } from "@/shared/components/ui/Dialog";
 import { Checkbox } from "@/shared/components/ui";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 
 import { MatterParty, RecordJudgmentRequest } from "../types/matter.types";
+import { judgmentSchema } from "@/validations";
 
 interface JudgmentModalProps {
   isOpen: boolean;
@@ -36,13 +39,21 @@ export const JudgmentModal = ({
   isSubmitting = false,
   parties,
 }: JudgmentModalProps) => {
-  const { control, handleSubmit, reset } = useForm<JudgmentFormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<JudgmentFormValues>({
     defaultValues: {
       judgmentDate: new Date().toISOString().slice(0, 10),
       judgmentSummary: "",
       decisionInFavorOfPartyId: "",
       partyIsState: false,
     },
+    resolver: yupResolver(judgmentSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   useEffect(() => {
@@ -57,7 +68,6 @@ export const JudgmentModal = ({
   }, [isOpen, reset]);
 
   const onFormSubmit = (values: JudgmentFormValues) => {
-    if (!values.judgmentSummary.trim()) return;
     onSubmit({
       judgmentDate: values.judgmentDate,
       judgmentSummary: values.judgmentSummary.trim(),
@@ -88,9 +98,19 @@ export const JudgmentModal = ({
                 <Controller
                   name="judgmentDate"
                   control={control}
-                  rules={{ required: "Judgment date is required" }}
-                  render={({ field }) => <Input type="date" {...field} />}
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select judgment date"
+                    />
+                  )}
                 />
+                {errors.judgmentDate && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.judgmentDate.message}
+                  </Text>
+                )}
               </Box>
 
               <Box>
@@ -100,15 +120,20 @@ export const JudgmentModal = ({
                 <Controller
                   name="judgmentSummary"
                   control={control}
-                  rules={{ required: "Judgment summary is required" }}
                   render={({ field }) => (
                     <Textarea
                       {...field}
                       placeholder="e.g. Boundary fixed in favor of the plaintiff"
                       rows={4}
+                      borderColor={errors.judgmentSummary ? "red.500" : undefined}
                     />
                   )}
                 />
+                {errors.judgmentSummary && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.judgmentSummary.message}
+                  </Text>
+                )}
               </Box>
 
               <Box>

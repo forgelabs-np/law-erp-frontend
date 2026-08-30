@@ -1,9 +1,11 @@
 import { Grid, GridItem, Stack, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useConfigureFirmModuleMutation } from "@/api/firmModules";
 import { FormProvider, TextFieldInput } from "@/shared/components";
+import { configureModuleSchema } from "@/validations";
 import { Switch } from "@/shared/components/ui";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
@@ -29,7 +31,12 @@ export const ConfigureModuleDrawer = ({
   module: MergedModule | null;
   firmId: string;
 }) => {
-  const methods = useForm<ConfigureModuleFormValues>({ defaultValues });
+  const methods = useForm<ConfigureModuleFormValues>({
+    defaultValues,
+    resolver: yupResolver(configureModuleSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
   const { handleSubmit, reset, setValue, control } = methods;
 
   const { mutate: configureModule, isPending: isConfigurePending } =
