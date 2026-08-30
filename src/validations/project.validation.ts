@@ -15,39 +15,33 @@ export const projectSchema = yup.object({
     .max(200, "Client name must not exceed 200 characters"),
   clientUserId: yup.string().notRequired(),
   ownerId: yup.string().required("Project owner is required"),
-  startDate: yup
+  startDate: yup.string().required("Start date is required"),
+  targetEndDate: yup.string().when("startDate", {
+    is: (val: string) => !!val,
+    then: (schema) =>
+      schema.test(
+        "is-after-start",
+        "End date cannot be before start date",
+        (value, context) => {
+          if (!value) return true;
+          return value >= (context.parent.startDate || "");
+        }
+      ),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  description: yup
     .string()
-    .required("Start date is required"),
-  targetEndDate: yup
-    .string()
-    .when("startDate", {
-      is: (val: string) => !!val,
-      then: (schema) =>
-        schema.test(
-          "is-after-start",
-          "End date cannot be before start date",
-          (value, context) => {
-            if (!value) return true;
-            return value >= (context.parent.startDate || "");
-          }
-        ),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  description: yup.string().trim().notRequired().max(1000, "Description must not exceed 1000 characters"),
+    .trim()
+    .notRequired()
+    .max(1000, "Description must not exceed 1000 characters"),
 });
 
 export type ProjectSchemaType = yup.InferType<typeof projectSchema>;
 
 // Credential Form
 export const credentialSchema = yup.object({
-  siteName: yup
-    .string()
-    .trim()
-    .required("Site name is required"),
-  siteType: yup
-    .string()
-    .trim()
-    .required("Site type is required"),
+  siteName: yup.string().trim().required("Site name is required"),
+  siteType: yup.string().trim().required("Site type is required"),
   siteUrl: yup.string().trim().notRequired(),
   usernameOrEmail: yup
     .string()

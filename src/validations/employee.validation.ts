@@ -30,19 +30,11 @@ export const employeeSchema = yup.object({
     otherwise: (schema) => schema.notRequired(),
   }),
   roleId: yup.string().required("Role is required"),
-  designation: yup
-    .string()
-    .trim()
-    .required("Designation is required"),
-  departmentId: yup
-    .string()
-    .trim()
-    .required("Department is required"),
+  designation: yup.string().trim().required("Designation is required"),
+  departmentId: yup.string().trim().required("Department is required"),
   barCouncilNo: yup.string().trim().notRequired(),
   specialization: yup.string().trim().notRequired(),
-  joiningDate: yup
-    .string()
-    .required("Joining date is required"),
+  joiningDate: yup.string().required("Joining date is required"),
   emergencyContactName: yup.string().trim().notRequired(),
   emergencyContactPhone: yup.string().trim().notRequired(),
   notes: yup.string().trim().notRequired(),

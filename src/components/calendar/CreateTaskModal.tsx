@@ -34,11 +34,7 @@ export const CreateTaskModal = ({
   onSubmit,
   initialData,
 }: CreateTaskModalProps) => {
-  const {
-    control,
-    handleSubmit,
-    reset,
-  } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: initialData || {
       title: "",
       description: "",

@@ -1,17 +1,5 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Stack,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
-import {
-  AlertTriangle,
-  ArrowRight,
-  Clock,
-  CheckCircle2,
-} from "lucide-react";
+import { Box, Button, HStack, Stack, Text, Tooltip } from "@chakra-ui/react";
+import { AlertTriangle, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { CasePositioning } from "../../types/dashboard.types";
@@ -167,14 +155,14 @@ export const StaleMatters = ({ matters, isLoading }: StaleMattersProps) => {
         </HStack>
         {matters.length > 0 && (
           // <Tooltip label="View all stale matters">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/stale-matters")}
-            >
-              View All
-              <ArrowRight size={14} />
-            </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/stale-matters")}
+          >
+            View All
+            <ArrowRight size={14} />
+          </Button>
           // </Tooltip>
         )}
       </HStack>

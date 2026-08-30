@@ -190,7 +190,9 @@ export const CalendarEventFormModal = ({
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor={errors.matterNumber ? "red.500" : "gray.200"}
+                        borderColor={
+                          errors.matterNumber ? "red.500" : "gray.200"
+                        }
                         borderRadius="md"
                         p={2}
                       >

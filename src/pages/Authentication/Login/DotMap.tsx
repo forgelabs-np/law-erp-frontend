@@ -212,11 +212,11 @@ export const TravelConnectSidePanel = () => {
           px="5"
           pt="5"
           pb="6"
-        // style={{
-        //   borderTop: "1px solid rgba(255,255,255,0.08)",
-        //   background: "rgba(0,0,0,0.25)",
-        //   backdropFilter: "blur(8px)",
-        // }}
+          // style={{
+          //   borderTop: "1px solid rgba(255,255,255,0.08)",
+          //   background: "rgba(0,0,0,0.25)",
+          //   backdropFilter: "blur(8px)",
+          // }}
         >
           <Stack direction="row" gap="3" justify="center">
             {PILLARS.map(({ label, icon }) => (

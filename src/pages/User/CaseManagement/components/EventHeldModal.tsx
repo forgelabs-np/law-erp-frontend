@@ -244,7 +244,9 @@ export const EventHeldModal = ({
                   render={({ field }) => (
                     <Box
                       border="1px solid"
-                      borderColor={errors.nextEventType ? "red.500" : "gray.200"}
+                      borderColor={
+                        errors.nextEventType ? "red.500" : "gray.200"
+                      }
                       borderRadius="md"
                       p={2}
                     >

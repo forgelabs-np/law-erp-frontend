@@ -15,7 +15,13 @@ export const BrandingPanel = () => {
       <VStack align="start" gap={8} flex={1} justify="center">
         {/* Logo */}
         <Box>
-          <Image src={Logo} alt="LexElite" height="40px" width="max-content" mb={2} />
+          <Image
+            src={Logo}
+            alt="LexElite"
+            height="40px"
+            width="max-content"
+            mb={2}
+          />
           <Text
             color="primary.200"
             fontSize="sm"

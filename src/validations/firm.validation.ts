@@ -7,9 +7,7 @@ export const firmSchema = yup.object({
     .trim()
     .required("Firm name is required")
     .min(2, "Firm name must be at least 2 characters"),
-  firmType: yup
-    .string()
-    .required("Firm type is required"),
+  firmType: yup.string().required("Firm type is required"),
   email: yup
     .string()
     .trim()
@@ -20,14 +18,8 @@ export const firmSchema = yup.object({
     .trim()
     .required("Phone number is required")
     .min(10, "Enter a valid phone number"),
-  address: yup
-    .string()
-    .trim()
-    .required("Address is required"),
-  jurisdiction: yup
-    .string()
-    .trim()
-    .required("Jurisdiction is required"),
+  address: yup.string().trim().required("Address is required"),
+  jurisdiction: yup.string().trim().required("Jurisdiction is required"),
   adminUsername: yup
     .string()
     .trim()
@@ -43,16 +35,14 @@ export const firmSchema = yup.object({
     .trim()
     .required("Admin mobile number is required")
     .min(10, "Enter a valid mobile number"),
-  adminPassword: yup
-    .string()
-    .when("$isEdit", {
-      is: false,
-      then: (schema) =>
-        schema
-          .required("Admin password is required")
-          .min(6, "Password must be at least 6 characters"),
-      otherwise: (schema) => schema.notRequired(),
-    }),
+  adminPassword: yup.string().when("$isEdit", {
+    is: false,
+    then: (schema) =>
+      schema
+        .required("Admin password is required")
+        .min(6, "Password must be at least 6 characters"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   adminFullName: yup
     .string()
     .trim()

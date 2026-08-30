@@ -21,7 +21,10 @@ import {
   useUpdateProjectMutation,
 } from "../api/project.api";
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
-import { CreateProjectRequest, UpdateProjectRequest } from "../types/project.types";
+import {
+  CreateProjectRequest,
+  UpdateProjectRequest,
+} from "../types/project.types";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import {
   DialogRoot,
@@ -129,10 +132,14 @@ export const ProjectFormModal = ({
   const canSubmit = !isSubmitting && !isProjectLoading;
 
   const title = mode === "create" ? "Create Project" : "Edit Project";
-  const submitButtonText = mode === "create" ? "Create Project" : "Save Changes";
+  const submitButtonText =
+    mode === "create" ? "Create Project" : "Save Changes";
 
   return (
-    <DialogRoot open={open} onOpenChange={(details) => onOpenChange(details.open)}>
+    <DialogRoot
+      open={open}
+      onOpenChange={(details) => onOpenChange(details.open)}
+    >
       <DialogContent maxW="4xl" maxH="90vh">
         {/* Form wraps both body and footer so the submit button is inside the form */}
         <Box
@@ -176,7 +183,12 @@ export const ProjectFormModal = ({
                 <Text fontSize="sm" color="red.700">
                   Failed to load project. Please try again.
                 </Text>
-                <Button variant="outline" size="sm" mt={4} onClick={() => refetch()}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  mt={4}
+                  onClick={() => refetch()}
+                >
                   Retry
                 </Button>
               </Box>
@@ -203,7 +215,9 @@ export const ProjectFormModal = ({
                       <VStack align="flex-start" gap={1.5}>
                         <Text fontSize="sm" fontWeight="500" color="gray.700">
                           Project Name{" "}
-                          <Text as="span" color="red.500">*</Text>
+                          <Text as="span" color="red.500">
+                            *
+                          </Text>
                         </Text>
                         <Input
                           {...field}
@@ -228,14 +242,18 @@ export const ProjectFormModal = ({
                       <VStack align="flex-start" gap={1.5}>
                         <Text fontSize="sm" fontWeight="500" color="gray.700">
                           Client Name{" "}
-                          <Text as="span" color="red.500">*</Text>
+                          <Text as="span" color="red.500">
+                            *
+                          </Text>
                         </Text>
                         <Input
                           {...field}
                           placeholder="Enter client name"
                           size="sm"
                           disabled={isSubmitting}
-                          borderColor={errors.clientName ? "red.500" : undefined}
+                          borderColor={
+                            errors.clientName ? "red.500" : undefined
+                          }
                         />
                         {errors.clientName && (
                           <Text fontSize="xs" color="red.500">
@@ -278,7 +296,9 @@ export const ProjectFormModal = ({
                       <VStack align="flex-start" gap={1.5}>
                         <Text fontSize="sm" fontWeight="500" color="gray.700">
                           Project Owner{" "}
-                          <Text as="span" color="red.500">*</Text>
+                          <Text as="span" color="red.500">
+                            *
+                          </Text>
                         </Text>
                         <FieldSelect
                           placeholder="Select project owner"
@@ -309,7 +329,9 @@ export const ProjectFormModal = ({
                       <VStack align="flex-start" gap={1.5}>
                         <Text fontSize="sm" fontWeight="500" color="gray.700">
                           Start Date{" "}
-                          <Text as="span" color="red.500">*</Text>
+                          <Text as="span" color="red.500">
+                            *
+                          </Text>
                         </Text>
                         <DatePicker
                           value={field.value}

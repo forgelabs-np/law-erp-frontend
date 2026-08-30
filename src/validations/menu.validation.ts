@@ -21,10 +21,7 @@ const subMenuSchema = yup.object({
 
 export const menuSchema = yup.object({
   menu: yup.object({
-    displayOrder: yup
-      .string()
-      .trim()
-      .required("Display order is required"),
+    displayOrder: yup.string().trim().required("Display order is required"),
     menuName: yup
       .string()
       .trim()

@@ -54,7 +54,7 @@ function generateTrendData(
       date,
       active: i === days.length - 1 ? count : value,
       closed: 0,
-      stale: 0
+      stale: 0,
     };
   });
 }

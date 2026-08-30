@@ -1,20 +1,10 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Stack,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Stack, Text, Tooltip } from "@chakra-ui/react";
 import { CalendarDays, CalendarOff, ArrowRight, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { TodayEvent } from "../../types/dashboard.types";
 import { formatTime, formatDate } from "../../utils/matterHelpers";
-import {
-  CourtEventTypeBadge,
-  CourtEventStatusBadge,
-} from "../MatterBadges";
+import { CourtEventTypeBadge, CourtEventStatusBadge } from "../MatterBadges";
 
 // ============================================================
 // Event Row
@@ -39,7 +29,12 @@ const EventRow = ({ event }: EventRowProps) => {
       _hover={{ borderColor: "blue.300", boxShadow: "sm" }}
       transition="all 0.15s ease"
     >
-      <HStack justify="space-between" align="flex-start" flexWrap="wrap" gap={2}>
+      <HStack
+        justify="space-between"
+        align="flex-start"
+        flexWrap="wrap"
+        gap={2}
+      >
         <Stack gap={1} flex={1} minW="200px">
           <Text fontSize="sm" fontWeight="600" color="gray.900">
             {event.matterTitle}
@@ -175,15 +170,15 @@ export const TodaysCourtEvents = ({
           </Stack>
         </HStack>
         {/* <Tooltip label="Open full calendar"> */}
-          <Button
-            variant="ghost"
-            size="sm"
-            // rightIcon={<ArrowRight size={14} />}
-            onClick={() => navigate("/task-calendar")}
-          >
-            Open Calendar
-            <ArrowRight size={14} />
-          </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          // rightIcon={<ArrowRight size={14} />}
+          onClick={() => navigate("/task-calendar")}
+        >
+          Open Calendar
+          <ArrowRight size={14} />
+        </Button>
         {/* </Tooltip> */}
       </HStack>
 

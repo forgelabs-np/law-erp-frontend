@@ -159,7 +159,11 @@ export const AddCredentialModal = ({
                     <Text mb={1} fontSize="sm" fontWeight="500">
                       Site URL
                     </Text>
-                    <Input {...field} value={field.value ?? ""} placeholder="https://..." />
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="https://..."
+                    />
                   </Box>
                 )}
               />
@@ -175,7 +179,9 @@ export const AddCredentialModal = ({
                     <Input
                       {...field}
                       placeholder="Enter username or email"
-                      borderColor={errors.usernameOrEmail ? "red.500" : undefined}
+                      borderColor={
+                        errors.usernameOrEmail ? "red.500" : undefined
+                      }
                     />
                     {errors.usernameOrEmail && (
                       <Text fontSize="xs" color="red.500" mt={1}>
@@ -222,7 +228,11 @@ export const AddCredentialModal = ({
                       <Text mb={1} fontSize="sm" fontWeight="500">
                         Contact Person
                       </Text>
-                      <Input {...field} value={field.value ?? ""} placeholder="Contact person name" />
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        placeholder="Contact person name"
+                      />
                     </Box>
                   )}
                 />
@@ -234,7 +244,11 @@ export const AddCredentialModal = ({
                       <Text mb={1} fontSize="sm" fontWeight="500">
                         Contact Phone
                       </Text>
-                      <Input {...field} value={field.value ?? ""} placeholder="Contact phone number" />
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        placeholder="Contact phone number"
+                      />
                     </Box>
                   )}
                 />
@@ -288,10 +302,7 @@ export const AddCredentialModal = ({
             <Button variant="outline" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              loading={isSubmitting}
-            >
+            <Button type="submit" loading={isSubmitting}>
               {initialData ? "Save Changes" : "Add Credential"}
             </Button>
           </DialogFooter>

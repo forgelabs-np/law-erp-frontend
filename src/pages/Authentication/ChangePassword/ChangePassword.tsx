@@ -12,7 +12,10 @@ import { toastFail, toastSuccess } from "@/shared/toast";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { changePasswordSchema, ChangePasswordSchemaType } from "@/validations";
 
-const defaultValues: ChangePasswordSchemaType = { newPassword: "", confirmPassword: "" };
+const defaultValues: ChangePasswordSchemaType = {
+  newPassword: "",
+  confirmPassword: "",
+};
 
 const ChangePassword = () => {
   const navigate = useNavigate();

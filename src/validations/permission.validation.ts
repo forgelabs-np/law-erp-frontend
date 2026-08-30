@@ -2,15 +2,9 @@ import * as yup from "yup";
 
 export const permissionSchema = yup.object({
   permission: yup.object({
-    moduleId: yup
-      .string()
-      .required("Module is required"),
-    action: yup
-      .string()
-      .required("Action is required"),
-    scope: yup
-      .string()
-      .required("Scope is required"),
+    moduleId: yup.string().required("Module is required"),
+    action: yup.string().required("Action is required"),
+    scope: yup.string().required("Scope is required"),
     code: yup
       .string()
       .trim()

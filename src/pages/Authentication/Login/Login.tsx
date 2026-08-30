@@ -23,11 +23,20 @@ import {
   TextFieldInput,
 } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
-import { loginSchema, superAdminLoginSchema, LoginSchemaType, SuperAdminLoginSchemaType } from "@/validations";
+import {
+  loginSchema,
+  superAdminLoginSchema,
+  LoginSchemaType,
+  SuperAdminLoginSchemaType,
+} from "@/validations";
 import { MdSafetyCheck, MdSecurityUpdate } from "react-icons/md";
 import { LuShieldCheck } from "react-icons/lu";
 
-const defaultValues: LoginSchemaType = { lawFirmCode: "", username: "", password: "" };
+const defaultValues: LoginSchemaType = {
+  lawFirmCode: "",
+  username: "",
+  password: "",
+};
 
 const resolveLoginType = (pathname: string): LoginType => {
   if (pathname.includes("/super-admin")) return "super-admin";
@@ -96,7 +105,9 @@ const Login = () => {
   const { handleSubmit } = methods;
   const { mutateAsync: login, isPending } = useLoginMutation(loginType);
 
-  const onSubmitHandler = async (data: LoginSchemaType | SuperAdminLoginSchemaType) => {
+  const onSubmitHandler = async (
+    data: LoginSchemaType | SuperAdminLoginSchemaType
+  ) => {
     try {
       const response = await login(data);
       const resData = response?.data?.data;

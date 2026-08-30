@@ -3,9 +3,7 @@ import * as yup from "yup";
 // Court Event Form (used in CourtEventFormModal and CalendarEventFormModal)
 export const courtEventSchema = yup.object({
   eventType: yup.string().required("Event type is required"),
-  scheduledDate: yup
-    .string()
-    .required("Date is required"),
+  scheduledDate: yup.string().required("Date is required"),
   scheduledTime: yup.string().notRequired(),
   endTime: yup.string().notRequired(),
   attendingAdvocateId: yup.string().notRequired(),
@@ -92,9 +90,7 @@ export type EventHeldSchemaType = yup.InferType<typeof eventHeldSchema>;
 
 // Judgment Form
 export const judgmentSchema = yup.object({
-  judgmentDate: yup
-    .string()
-    .required("Judgment date is required"),
+  judgmentDate: yup.string().required("Judgment date is required"),
   judgmentSummary: yup
     .string()
     .trim()

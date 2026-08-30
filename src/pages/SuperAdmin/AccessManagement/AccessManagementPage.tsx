@@ -23,7 +23,7 @@ import {
   useGetAllModulesQuery,
   useGetFirmModulesQuery,
 } from "@/api/firmModules";
-import { useGetRoleQuery, useRoleByIdQuery } from "@/api/roleSetup.ts";
+import { useRoleByIdQuery } from "@/api/roleSetup.ts";
 import { Datatable } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
 
@@ -175,9 +175,7 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
         header: "Enabled On",
         cell: ({ row }) => (
           <Text fontSize="sm">
-            {row.original.enabledAt
-              ? formatDate(row.original.enabledAt)
-              : "—"}
+            {row.original.enabledAt ? formatDate(row.original.enabledAt) : "—"}
           </Text>
         ),
       },
@@ -186,9 +184,7 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
         header: "Expires On",
         cell: ({ row }) => (
           <Text fontSize="sm">
-            {row.original.expiresAt
-              ? formatDate(row.original.expiresAt)
-              : "—"}
+            {row.original.expiresAt ? formatDate(row.original.expiresAt) : "—"}
           </Text>
         ),
       },
@@ -312,48 +308,19 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
 }
 
 // ─── PERMISSIONS TAB ─────────────────────────────────────────────────────────
-// Step 1: Resolve the Firm Admin role ID from the roles list.
-// Step 2: Use GET /admin/roles/:roleId to fetch role details.
-// Step 3: Render the existing RolePermissionsSection.
+// Uses GET /admin/roles/:roleId to load permissions for the selected firm's admin role.
+// roleId comes from the Firm Management API response (FirmResponse.roleId).
+// All permission checkbox logic and save flow are handled by RolePermissionsSection.
 
-function FirmPermissionsTab() {
-  // Fetch all roles to find the FIRM_ADMIN role's ID
-  const { data: rolesResponse, isLoading: isLoadingRoles } =
-    useGetRoleQuery();
+function FirmPermissionsTab({ roleId, roleName }: { roleId?: string; roleName?: string }) {
+  // Validate roleId before fetching
+  const validRoleId = roleId?.trim() || "";
 
-  // Extract roles array — useGetRoleQuery returns Axios response
-  const roles = useMemo(() => {
-    if (Array.isArray(rolesResponse)) return rolesResponse;
-    if (rolesResponse?.data && Array.isArray(rolesResponse.data))
-      return rolesResponse.data;
-    return [];
-  }, [rolesResponse]);
+  // Fetch role details using GET /admin/roles/:roleId (includes permissions)
+  const { data: roleDetails, isLoading: isLoadingRoleDetails, isError } =
+    useRoleByIdQuery(validRoleId);
 
-  const firmAdminRole = useMemo(
-    () => roles.find((r) => r.code === "FIRM_ADMIN"),
-    [roles]
-  );
-
-  const firmAdminRoleId = firmAdminRole?.id ? String(firmAdminRole.id) : "";
-
-  // Fetch role details using GET /admin/roles/:roleId
-  const {
-    data: roleDetails,
-    isLoading: isLoadingRoleDetails,
-  } = useRoleByIdQuery(firmAdminRoleId);
-
-  if (isLoadingRoles) {
-    return (
-      <Stack gap={4} py={8} alignItems="center">
-        <Spinner size="md" color="primary.500" />
-        <Text color="gray.500" fontSize="sm">
-          Loading roles...
-        </Text>
-      </Stack>
-    );
-  }
-
-  if (!firmAdminRoleId) {
+  if (!validRoleId) {
     return (
       <Box
         p={8}
@@ -364,11 +331,11 @@ function FirmPermissionsTab() {
       >
         <Shield size={32} color="gray" style={{ margin: "0 auto 12px" }} />
         <Text color="gray.600" fontWeight="500" mb={1}>
-          Firm Admin role not found
+          No role assigned
         </Text>
         <Text color="gray.400" fontSize="sm">
-          The system Firm Admin role (FIRM_ADMIN) does not exist. Please
-          configure it in Role Management.
+          This firm admin does not have an associated role.
+          Please assign a role via Role Management.
         </Text>
       </Box>
     );
@@ -379,13 +346,13 @@ function FirmPermissionsTab() {
       <Stack gap={4} py={8} alignItems="center">
         <Spinner size="md" color="primary.500" />
         <Text color="gray.500" fontSize="sm">
-          Loading permissions...
+          Loading {roleName || "role"} permissions...
         </Text>
       </Stack>
     );
   }
 
-  if (!roleDetails) {
+  if (isError || !roleDetails) {
     return (
       <Box
         p={8}
@@ -394,13 +361,20 @@ function FirmPermissionsTab() {
         borderRadius="md"
         borderWidth="1px"
       >
-        <Text color="gray.500">Failed to load role details.</Text>
+        <Shield size={32} color="gray" style={{ margin: "0 auto 12px" }} />
+        <Text color="gray.600" fontWeight="500" mb={1}>
+          Failed to load role permissions
+        </Text>
+        <Text color="gray.400" fontSize="sm">
+          Could not fetch permissions for role "{roleName || validRoleId}".
+          Please try again or contact an administrator.
+        </Text>
       </Box>
     );
   }
 
-  // Render the existing permission assignment component
-  return <RolePermissionsSection roleId={firmAdminRoleId} />;
+  // Delegate all permission checkbox state + save logic to RolePermissionsSection
+  return <RolePermissionsSection roleId={validRoleId} />;
 }
 
 // ─── MAIN PAGE ───────────────────────────────────────────────────────────────
@@ -412,12 +386,12 @@ export default function AccessManagementPage() {
 
   const { data: firmsData, isLoading: isLoadingFirms } = useGetFirmsQuery();
 
-  const firm = firmsData?.data?.find(
-    (f: FirmResponse) => f.firmId === firmId
-  );
+  const firm = firmsData?.data?.find((f: FirmResponse) => f.firmId === firmId);
 
   const firmName = firm?.name || "Firm";
   const firmCode = firm?.lawFirmCode || firmId || "";
+  const firmRoleId = firm?.roleId;
+  const firmRoleName = firm?.roleName;
 
   return (
     <Stack gap={6} padding={8}>
@@ -471,12 +445,8 @@ export default function AccessManagementPage() {
                 Type
               </Text>
               <Badge
-                bg={
-                  firm?.firmType === "SOLO" ? "blue.100" : "purple.100"
-                }
-                color={
-                  firm?.firmType === "SOLO" ? "blue.700" : "purple.700"
-                }
+                bg={firm?.firmType === "SOLO" ? "blue.100" : "purple.100"}
+                color={firm?.firmType === "SOLO" ? "blue.700" : "purple.700"}
                 px="2"
                 py="1"
                 borderRadius="md"
@@ -541,7 +511,12 @@ export default function AccessManagementPage() {
           </Tabs.Content>
           <Tabs.Content value="permissions">
             {/* Lazy: only renders when permissions tab is active */}
-            {activeTab === "permissions" && <FirmPermissionsTab />}
+            {activeTab === "permissions" && (
+              <FirmPermissionsTab
+                roleId={firmRoleId}
+                roleName={firmRoleName}
+              />
+            )}
           </Tabs.Content>
         </Box>
       </Tabs.Root>

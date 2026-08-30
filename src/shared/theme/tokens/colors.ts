@@ -15,12 +15,12 @@ export const THEME_COLORS = {
 
   // Current Brand Identity (Royal Blue)
   primary: {
-    50: { value: "#E3E7FC" },   // Soft Lavender
+    50: { value: "#E3E7FC" }, // Soft Lavender
     100: { value: "#C0CBF8" },
     200: { value: "#8AA5F3" },
     300: { value: "#5B83ED" },
-    400: { value: "#2277FF" },   // Azure Blue (secondary)
-    500: { value: "#0056FF" },   // Royal Blue (primary)
+    400: { value: "#2277FF" }, // Azure Blue (secondary)
+    500: { value: "#0056FF" }, // Royal Blue (primary)
     600: { value: "#0048D9" },
     700: { value: "#003AB3" },
     800: { value: "#002C8C" },
@@ -61,7 +61,7 @@ export const THEME_COLORS = {
     },
     select: {
       option: {
-        hover: { value: "#C0CBF8" },   // lavender-100
+        hover: { value: "#C0CBF8" }, // lavender-100
         focus: { value: "#C0CBF8" },
         selected: { value: "#0056FF" }, // primary-500
       },

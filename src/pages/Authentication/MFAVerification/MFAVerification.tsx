@@ -11,7 +11,10 @@ import { OtpInput } from "@/shared/components/inputField/OtpInput";
 import TokenService from "@/shared/service/service-token";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { FormProvider } from "@/shared/components";
-import { mfaVerificationSchema, MfaVerificationSchemaType } from "@/validations";
+import {
+  mfaVerificationSchema,
+  MfaVerificationSchemaType,
+} from "@/validations";
 
 const defaultValues: MfaVerificationSchemaType = {
   totpCode: "",

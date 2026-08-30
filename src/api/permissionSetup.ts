@@ -76,7 +76,9 @@ export const useAddEditPermissionMutation = () => {
         queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_PERMISSIONS],
       });
       queryClient.invalidateQueries({
-        queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS],
+        queryKey: [
+          api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS,
+        ],
       });
     },
     onError: (error: ApiErrorResponse) => {
@@ -120,7 +122,9 @@ export const useTogglePermissionMutation = () => {
       });
       queryClient.invalidateQueries({ queryKey: [`module-menu-${id}`] });
       queryClient.invalidateQueries({
-        queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS],
+        queryKey: [
+          api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS,
+        ],
       });
     },
     onError: (error: ApiErrorResponse) => {

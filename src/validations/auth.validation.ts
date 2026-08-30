@@ -51,10 +51,7 @@ export const signupSchema = yup.object({
     .required("Password is required")
     .min(6, "Password must be at least 6 characters"),
   barCouncilNumber: yup.string().trim().notRequired(),
-  panNumber: yup
-    .string()
-    .trim()
-    .required("PAN Number is required"),
+  panNumber: yup.string().trim().required("PAN Number is required"),
   address: yup
     .string()
     .trim()
@@ -63,7 +60,9 @@ export const signupSchema = yup.object({
 });
 
 export type LoginSchemaType = yup.InferType<typeof loginSchema>;
-export type SuperAdminLoginSchemaType = yup.InferType<typeof superAdminLoginSchema>;
+export type SuperAdminLoginSchemaType = yup.InferType<
+  typeof superAdminLoginSchema
+>;
 export type SignupSchemaType = yup.InferType<typeof signupSchema>;
 
 // Change Password
@@ -78,7 +77,9 @@ export const changePasswordSchema = yup.object({
     .oneOf([yup.ref("newPassword")], "Passwords do not match"),
 });
 
-export type ChangePasswordSchemaType = yup.InferType<typeof changePasswordSchema>;
+export type ChangePasswordSchemaType = yup.InferType<
+  typeof changePasswordSchema
+>;
 
 // MFA Verification
 export const mfaVerificationSchema = yup.object({
@@ -88,4 +89,6 @@ export const mfaVerificationSchema = yup.object({
     .length(6, "Code must be exactly 6 digits"),
 });
 
-export type MfaVerificationSchemaType = yup.InferType<typeof mfaVerificationSchema>;
+export type MfaVerificationSchemaType = yup.InferType<
+  typeof mfaVerificationSchema
+>;

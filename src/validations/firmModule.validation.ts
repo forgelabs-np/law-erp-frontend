@@ -24,4 +24,6 @@ export const configureModuleSchema = yup.object({
   notes: yup.string().trim().notRequired(),
 });
 
-export type ConfigureModuleSchemaType = yup.InferType<typeof configureModuleSchema>;
+export type ConfigureModuleSchemaType = yup.InferType<
+  typeof configureModuleSchema
+>;

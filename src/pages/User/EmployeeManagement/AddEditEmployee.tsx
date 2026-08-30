@@ -9,7 +9,12 @@ import {
   useUpdateEmployeeMutation,
 } from "@/api/employeeManagement";
 import { useGetRoleQuery } from "@/api/roleSetup.ts";
-import { FormProvider, ReactSelect, TextFieldInput, FormWrapper } from "@/shared/components";
+import {
+  FormProvider,
+  ReactSelect,
+  TextFieldInput,
+  FormWrapper,
+} from "@/shared/components";
 import { DatePicker } from "@/shared/components/ui";
 import { employeeSchema } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
@@ -224,7 +229,11 @@ export const AddEditEmployee = ({
               </GridItem>
 
               <GridItem>
-                <FormWrapper label="Joining Date" required errorText={methods.formState.errors.joiningDate?.message}>
+                <FormWrapper
+                  label="Joining Date"
+                  required
+                  errorText={methods.formState.errors.joiningDate?.message}
+                >
                   <Controller
                     name="joiningDate"
                     control={methods.control}

@@ -100,9 +100,9 @@ const ProjectCard = ({
     borderRadius="16px"
     overflow="hidden"
     boxShadow="0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1)"
-    _hover={{ 
+    _hover={{
       borderColor: "gray.300",
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06)"
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06)",
     }}
     transition="all 0.2s ease"
   >
@@ -256,7 +256,9 @@ const ProjectListPage = () => {
   const [size] = useState(20);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
-  const [selectedProjectCode, setSelectedProjectCode] = useState<string | undefined>();
+  const [selectedProjectCode, setSelectedProjectCode] = useState<
+    string | undefined
+  >();
 
   const {
     data: projectsData,
@@ -451,19 +453,16 @@ const ProjectListPage = () => {
         </Box>
       ) : (
         <>
-          <SimpleGrid 
-          columns={{ base: 1, lg: 3, md: 2 }} 
-          gap={6}
-        >
-          {projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onClick={() => navigate(`/projects/${project.projectCode}`)}
-              onEdit={handleEditProject}
-            />
-          ))}
-        </SimpleGrid>
+          <SimpleGrid columns={{ base: 1, lg: 3, md: 2 }} gap={6}>
+            {projects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onClick={() => navigate(`/projects/${project.projectCode}`)}
+                onEdit={handleEditProject}
+              />
+            ))}
+          </SimpleGrid>
 
           {/* ==================== PAGINATION ==================== */}
           {totalPages > 1 && (

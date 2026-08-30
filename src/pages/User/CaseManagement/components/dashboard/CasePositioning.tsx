@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Stack,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Box, Button, HStack, Stack, Text, Tooltip } from "@chakra-ui/react";
 import { Scale, ArrowRight, Hash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -39,20 +32,12 @@ const MatterRow = ({ matter }: MatterRowProps) => {
       {/* Title + Status */}
       <HStack justify="space-between" align="flex-start" mb={2}>
         <Stack gap={1} flex={1} minW="0">
-          <Text
-            fontSize="sm"
-            fontWeight="600"
-            color="gray.900"
-          >
+          <Text fontSize="sm" fontWeight="600" color="gray.900">
             {matter.matterTitle}
           </Text>
           <HStack gap={1.5}>
             <Hash size={11} color="#9ca3af" />
-            <Text
-              fontSize="xs"
-              color="gray.500"
-              fontFamily="monospace"
-            >
+            <Text fontSize="xs" color="gray.500" fontFamily="monospace">
               {matter.matterNumber}
             </Text>
           </HStack>
@@ -70,8 +55,7 @@ const MatterRow = ({ matter }: MatterRowProps) => {
         )}
         {matter.nextEventDate && (
           <Text fontSize="xs" color="gray.500">
-            Next: {formatDate(matter.nextEventDate)} ·{" "}
-            {matter.nextEventType}
+            Next: {formatDate(matter.nextEventDate)} · {matter.nextEventType}
           </Text>
         )}
       </HStack>
@@ -199,14 +183,10 @@ export const CasePositioningSection = ({
         </HStack>
         {matters.length > 0 && (
           // <Tooltip label="View all matters">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/cases")}
-            >
-              View All
-              <ArrowRight size={14} />
-            </Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/cases")}>
+            View All
+            <ArrowRight size={14} />
+          </Button>
           // </Tooltip>
         )}
       </HStack>

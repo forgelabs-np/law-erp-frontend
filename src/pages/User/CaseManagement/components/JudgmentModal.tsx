@@ -125,7 +125,9 @@ export const JudgmentModal = ({
                       {...field}
                       placeholder="e.g. Boundary fixed in favor of the plaintiff"
                       rows={4}
-                      borderColor={errors.judgmentSummary ? "red.500" : undefined}
+                      borderColor={
+                        errors.judgmentSummary ? "red.500" : undefined
+                      }
                     />
                   )}
                 />

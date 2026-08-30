@@ -46,7 +46,12 @@ export const ReactSelect = ({
     : options.find((item) => item.value === field.value);
 
   return (
-    <FormWrapper label={label} disabled={disabled} required={required} errorText={error?.message}>
+    <FormWrapper
+      label={label}
+      disabled={disabled}
+      required={required}
+      errorText={error?.message}
+    >
       <Select
         isMulti={isMulti}
         value={formattedValue}

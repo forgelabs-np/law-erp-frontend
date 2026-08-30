@@ -320,7 +320,9 @@ export const AddPartyModal = ({
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor={errors.representation ? "red.500" : "gray.200"}
+                        borderColor={
+                          errors.representation ? "red.500" : "gray.200"
+                        }
                         borderRadius="md"
                         p={2}
                       >

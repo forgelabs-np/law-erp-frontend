@@ -52,7 +52,8 @@ export const PermissionManagementTable = () => {
   } = useDisclosure();
 
   const { data: menuData, isLoading } = useGetGroupedPermissionsQuery();
-  const { mutate: toggleMenu, isPending: isTogglePending } = useTogglePermissionMutation();
+  const { mutate: toggleMenu, isPending: isTogglePending } =
+    useTogglePermissionMutation();
 
   const modules = menuData?.modules || [];
 
@@ -75,7 +76,11 @@ export const PermissionManagementTable = () => {
     const q = searchQuery.toLowerCase();
 
     return modules
-      .filter((module) => selectedModuleFilter === "ALL" || module.moduleCode === selectedModuleFilter)
+      .filter(
+        (module) =>
+          selectedModuleFilter === "ALL" ||
+          module.moduleCode === selectedModuleFilter
+      )
       .map((module) => {
         const filteredPerms = module.permissions.filter((perm) => {
           const matchesStatus =
@@ -90,7 +95,8 @@ export const PermissionManagementTable = () => {
             (perm.description && perm.description.toLowerCase().includes(q)) ||
             module.moduleName.toLowerCase().includes(q) ||
             module.moduleCode.toLowerCase().includes(q) ||
-            (module.moduleDescription && module.moduleDescription.toLowerCase().includes(q));
+            (module.moduleDescription &&
+              module.moduleDescription.toLowerCase().includes(q));
 
           return matchesStatus && matchesSearch;
         });
@@ -104,7 +110,9 @@ export const PermissionManagementTable = () => {
         (module) =>
           module.permissions.length > 0 ||
           (!q && selectedStatusFilter === "ALL") ||
-          (q && (module.moduleName.toLowerCase().includes(q) || module.moduleCode.toLowerCase().includes(q)))
+          (q &&
+            (module.moduleName.toLowerCase().includes(q) ||
+              module.moduleCode.toLowerCase().includes(q)))
       )
       .sort((a, b) => a.displayOrder - b.displayOrder);
   }, [modules, searchQuery, selectedModuleFilter, selectedStatusFilter]);
@@ -154,8 +162,16 @@ export const PermissionManagementTable = () => {
       <Grid templateColumns={{ base: "1fr", md: "repeat(4, 1fr)" }} gap={4}>
         <SummaryCard title="Total Modules" value={totalModules} />
         <SummaryCard title="Total Permissions" value={totalPermissionsCount} />
-        <SummaryCard title="Active Permissions" value={activePermissionsCount} color="green.500" />
-        <SummaryCard title="Inactive Permissions" value={inactivePermissionsCount} color="red.500" />
+        <SummaryCard
+          title="Active Permissions"
+          value={activePermissionsCount}
+          color="green.500"
+        />
+        <SummaryCard
+          title="Inactive Permissions"
+          value={inactivePermissionsCount}
+          color="red.500"
+        />
       </Grid>
 
       <HStack gap={4} flexWrap="wrap">
@@ -175,7 +191,9 @@ export const PermissionManagementTable = () => {
               onChange={(e) => setSelectedModuleFilter(e.target.value)}
             >
               {moduleOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </NativeSelect.Field>
             <NativeSelect.Indicator />
@@ -189,7 +207,9 @@ export const PermissionManagementTable = () => {
               onChange={(e) => setSelectedStatusFilter(e.target.value)}
             >
               {statusOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </NativeSelect.Field>
             <NativeSelect.Indicator />
@@ -200,19 +220,38 @@ export const PermissionManagementTable = () => {
       {isLoading ? (
         <Text>Loading permissions...</Text>
       ) : filteredModules.length === 0 ? (
-        <Box p={8} textAlign="center" bg="white" borderRadius="md" borderWidth="1px">
+        <Box
+          p={8}
+          textAlign="center"
+          bg="white"
+          borderRadius="md"
+          borderWidth="1px"
+        >
           <Text color="gray.500">No matching permissions found.</Text>
-          <Button mt={4} variant="outline" onClick={() => {
-            setSearchQuery("");
-            setSelectedModuleFilter("ALL");
-            setSelectedStatusFilter("ALL");
-          }}>Clear Filters</Button>
+          <Button
+            mt={4}
+            variant="outline"
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedModuleFilter("ALL");
+              setSelectedStatusFilter("ALL");
+            }}
+          >
+            Clear Filters
+          </Button>
         </Box>
       ) : (
         <AccordionRoot multiple defaultValue={[filteredModules[0]?.moduleCode]}>
           <Stack gap={4}>
             {filteredModules.map((module) => (
-              <AccordionItem key={module.moduleCode} value={module.moduleCode} bg="white" borderRadius="md" borderWidth="1px" overflow="hidden">
+              <AccordionItem
+                key={module.moduleCode}
+                value={module.moduleCode}
+                bg="white"
+                borderRadius="md"
+                borderWidth="1px"
+                overflow="hidden"
+              >
                 <AccordionItemTrigger px={4} py={3} _hover={{ bg: "gray.50" }}>
                   <HStack justify="space-between" w="full">
                     <HStack gap={4}>
@@ -222,7 +261,9 @@ export const PermissionManagementTable = () => {
                       <VStack align="start" gap={0}>
                         <Text fontWeight="600">{module.moduleName}</Text>
                         {module.moduleDescription && (
-                          <Text fontSize="sm" color="gray.500">{module.moduleDescription}</Text>
+                          <Text fontSize="sm" color="gray.500">
+                            {module.moduleDescription}
+                          </Text>
                         )}
                       </VStack>
                     </HStack>
@@ -233,10 +274,23 @@ export const PermissionManagementTable = () => {
                 </AccordionItemTrigger>
                 <AccordionItemContent pb={4} px={4}>
                   {module.permissions.length === 0 ? (
-                    <Text color="gray.500" py={4} textAlign="center">No permissions configured for this module.</Text>
+                    <Text color="gray.500" py={4} textAlign="center">
+                      No permissions configured for this module.
+                    </Text>
                   ) : (
                     <Stack gap={0} separator={<Box h="1px" bg="gray.100" />}>
-                      <Grid templateColumns="2fr 1fr 2fr 1fr 1fr" gap={4} py={2} px={4} bg="gray.50" fontSize="sm" fontWeight="600" color="gray.600" borderRadius="md" mt={2}>
+                      <Grid
+                        templateColumns="2fr 1fr 2fr 1fr 1fr"
+                        gap={4}
+                        py={2}
+                        px={4}
+                        bg="gray.50"
+                        fontSize="sm"
+                        fontWeight="600"
+                        color="gray.600"
+                        borderRadius="md"
+                        mt={2}
+                      >
                         <Text>Permission</Text>
                         <Text>Scope</Text>
                         <Text>Code</Text>
@@ -244,10 +298,24 @@ export const PermissionManagementTable = () => {
                         <Text>Action</Text>
                       </Grid>
                       {module.permissions.map((perm) => (
-                        <Grid key={perm.id} templateColumns="2fr 1fr 2fr 1fr 1fr" gap={4} py={3} px={4} alignItems="center" _hover={{ bg: "gray.50" }}>
+                        <Grid
+                          key={perm.id}
+                          templateColumns="2fr 1fr 2fr 1fr 1fr"
+                          gap={4}
+                          py={3}
+                          px={4}
+                          alignItems="center"
+                          _hover={{ bg: "gray.50" }}
+                        >
                           <Text fontWeight="500">{perm.action}</Text>
                           <Text fontSize="sm">{perm.scope}</Text>
-                          <Text fontSize="sm" fontFamily="mono" color="gray.600">{perm.code}</Text>
+                          <Text
+                            fontSize="sm"
+                            fontFamily="mono"
+                            color="gray.600"
+                          >
+                            {perm.code}
+                          </Text>
                           <HStack>
                             <Switch
                               checked={perm.isActive}
@@ -259,11 +327,19 @@ export const PermissionManagementTable = () => {
                                 onToggleConfirmOpen();
                               }}
                             />
-                            <Text fontSize="sm" color={perm.isActive ? "green.600" : "gray.500"}>
+                            <Text
+                              fontSize="sm"
+                              color={perm.isActive ? "green.600" : "gray.500"}
+                            >
                               {perm.isActive ? "Active" : "Inactive"}
                             </Text>
                           </HStack>
-                          <Button size="sm" variant="ghost" aria-label="Edit permission" onClick={() => handleEditClick(perm.id)}>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            aria-label="Edit permission"
+                            onClick={() => handleEditClick(perm.id)}
+                          >
                             <EditIcon /> Edit
                           </Button>
                         </Grid>
@@ -313,10 +389,22 @@ export const PermissionManagementTable = () => {
   );
 };
 
-const SummaryCard = ({ title, value, color = "gray.900" }: { title: string; value: number; color?: string }) => (
+const SummaryCard = ({
+  title,
+  value,
+  color = "gray.900",
+}: {
+  title: string;
+  value: number;
+  color?: string;
+}) => (
   <Box p={4} bg="white" borderRadius="lg" borderWidth="1px" boxShadow="sm">
-    <Text fontSize="sm" color="gray.500" mb={2}>{title}</Text>
-    <Text fontSize="2xl" fontWeight="700" color={color}>{value}</Text>
+    <Text fontSize="sm" color="gray.500" mb={2}>
+      {title}
+    </Text>
+    <Text fontSize="2xl" fontWeight="700" color={color}>
+      {value}
+    </Text>
   </Box>
 );
 
