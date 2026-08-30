@@ -1,4 +1,3 @@
-import { Badge } from "@chakra-ui/react";
 import { Button, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
@@ -10,6 +9,7 @@ import {
   useToggleFirmMutation,
 } from "@/api/firmManagement";
 import { AddIcon } from "@/assets/svgs";
+import { Shield } from "lucide-react";
 import { Datatable, TableActions } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch } from "@/shared/components/ui";
@@ -108,13 +108,17 @@ const FirmManagement = () => {
             <Button
               variant="outline"
               size="sm"
+              // leftIcon={<Shield size={14} />}
               onClick={() => {
                 navigate(
-                  `${ROUTES_CONFIG.USER.FIRM_MANAGEMENT}/${row.original.firmId}/modules`
+                  ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT.replace(
+                    ":firmId",
+                    String(row.original.firmId)
+                  )
                 );
               }}
             >
-              Manage Modules
+              Manage Access
             </Button>
             <TableActions
               onEdit={() => {

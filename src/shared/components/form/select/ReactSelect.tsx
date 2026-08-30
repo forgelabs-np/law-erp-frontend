@@ -22,7 +22,10 @@ export const ReactSelect = ({
 
   const { control } = useFormContext();
 
-  const { field } = useController({
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
     name,
     control,
   });
@@ -43,7 +46,12 @@ export const ReactSelect = ({
     : options.find((item) => item.value === field.value);
 
   return (
-    <FormWrapper label={label} disabled={disabled} required={required}>
+    <FormWrapper
+      label={label}
+      disabled={disabled}
+      required={required}
+      errorText={error?.message}
+    >
       <Select
         isMulti={isMulti}
         value={formattedValue}

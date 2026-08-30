@@ -1,5 +1,6 @@
 import { Box, Button, Image, Stack, Text, VStack } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { LoginType, useValidateMfaMutation } from "@/api/auth";
@@ -10,8 +11,12 @@ import { OtpInput } from "@/shared/components/inputField/OtpInput";
 import TokenService from "@/shared/service/service-token";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { FormProvider } from "@/shared/components";
+import {
+  mfaVerificationSchema,
+  MfaVerificationSchemaType,
+} from "@/validations";
 
-const defaultValues = {
+const defaultValues: MfaVerificationSchemaType = {
   totpCode: "",
 };
 
@@ -21,7 +26,12 @@ const MFAVerification = () => {
   const { mutateAsync: validateMfa, isPending } = useValidateMfaMutation();
   const authState = useTemporaryAuthStore();
 
-  const methods = useForm({ defaultValues });
+  const methods = useForm<MfaVerificationSchemaType>({
+    defaultValues,
+    resolver: yupResolver(mfaVerificationSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
   const { handleSubmit, control, watch } = methods;
   const totpCode = watch("totpCode");
 
@@ -33,9 +43,7 @@ const MFAVerification = () => {
 
   const loginType = resolveLoginType(location.pathname);
 
-  const handleVerify = async (data: typeof defaultValues) => {
-    if (data.totpCode.length !== 6) return;
-
+  const handleVerify = async (data: MfaVerificationSchemaType) => {
     try {
       const response = await validateMfa({
         mfaToken: authState.mfaToken,

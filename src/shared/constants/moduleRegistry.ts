@@ -49,8 +49,8 @@ export type ModuleConfig = Pick<
 >;
 
 export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
-  HOME: {
-    moduleCode: "HOME",
+  DASHBOARD_MANAGEMENT: {
+    moduleCode: "DASHBOARD_MANAGEMENT",
     label: "Dashboard",
     path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
     icon: LayoutGrid,

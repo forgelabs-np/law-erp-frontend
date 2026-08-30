@@ -120,7 +120,7 @@ export const TravelConnectSidePanel = () => {
         inset={0}
         style={{ background: "rgba(5, 20, 12, 0.72)" }}
       />
-      {/* Green gradient from bottom */}
+      {/* Blue gradient from bottom */}
       <Box
         position="absolute"
         inset={0}
@@ -189,7 +189,7 @@ export const TravelConnectSidePanel = () => {
                 lineHeight: 1.2,
               }}
             >
-              Law Firm <span style={{ color: "#62f15d" }}>CRM</span>
+              Law Firm <span style={{ color: "#2277FF" }}>CRM</span>
             </Text>
           </Stack>
         </Box>

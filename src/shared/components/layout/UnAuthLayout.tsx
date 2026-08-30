@@ -234,7 +234,7 @@ export const UnAuthLayoutAdmin = ({
       alignItems="center"
       padding={{ base: 4, md: 10, lg: 20 }}
       py={{ base: 0, md: 20 }}
-      bg={"#08272B"}
+      bg={"#0A1628"}
     >
       <Grid
         templateColumns={{

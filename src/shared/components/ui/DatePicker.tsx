@@ -98,6 +98,18 @@ export const DatePicker = ({
     [viewDate, onChange]
   );
 
+  const handleTodayClick = useCallback(() => {
+    const now = new Date();
+    const todayString = formatDate(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+    setSelectedDate(todayString);
+    onChange?.(todayString);
+    setIsOpen(false);
+  }, [onChange]);
+
   const handlePrevMonth = useCallback(() => {
     setViewDate((prev) => ({
       year: prev.month === 0 ? prev.year - 1 : prev.year,
@@ -188,24 +200,38 @@ export const DatePicker = ({
         viewDate.year === new Date().getFullYear();
 
       days.push(
-        <Button
-          key={day}
-          size="sm"
-          variant="ghost"
-          w="8"
-          h="8"
-          p={0}
-          borderRadius="full"
-          bg={isSelected ? "blue.500" : isToday ? "blue.50" : "transparent"}
-          color={isSelected ? "white" : "gray.700"}
-          _hover={{ bg: isSelected ? "blue.600" : "gray.100" }}
-          onClick={() => handleDateSelect(day)}
-          disabled={isDisabled}
-          fontSize="xs"
-          aria-label={`Select day ${day}`}
-        >
-          {day}
-        </Button>
+        <Box key={day} position="relative" w="8" h="8">
+          {/* Dotted circle indicator for today (behind the button) */}
+          {isToday && !isSelected && (
+            <Box
+              position="absolute"
+              inset="1px"
+              borderRadius="full"
+              border="1.5px dashed"
+              borderColor="blue.400"
+              pointerEvents="none"
+            />
+          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            w="8"
+            h="8"
+            p={0}
+            borderRadius="full"
+            bg={isSelected ? "blue.500" : "transparent"}
+            color={isSelected ? "white" : "gray.700"}
+            _hover={{ bg: isSelected ? "blue.600" : "gray.100" }}
+            onClick={() => handleDateSelect(day)}
+            disabled={isDisabled}
+            fontSize="xs"
+            position="relative"
+            zIndex={1}
+            aria-label={`Select day ${day}${isToday ? " (today)" : ""}`}
+          >
+            {day}
+          </Button>
+        </Box>
       );
     }
 
@@ -397,6 +423,25 @@ export const DatePicker = ({
               <Flex flexWrap="wrap" gap={1}>
                 {renderCalendar()}
               </Flex>
+
+              {/* Today Button */}
+              <Box w="full" pt={1} borderTop="1px solid" borderColor="gray.100">
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  w="full"
+                  fontSize="xs"
+                  color="gray.500"
+                  fontWeight="medium"
+                  h="7"
+                  _hover={{ bg: "gray.50", color: "gray.700" }}
+                  _focusVisible={{ boxShadow: "outline" }}
+                  onClick={handleTodayClick}
+                  aria-label="Select today's date"
+                >
+                  Today
+                </Button>
+              </Box>
             </>
           )}
 

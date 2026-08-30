@@ -1662,7 +1662,9 @@ const ProjectDetailPage = () => {
   const deleteProjectMutation = useDeleteProjectMutation();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
-  const [selectedProjectCode, setSelectedProjectCode] = useState<string | undefined>();
+  const [selectedProjectCode, setSelectedProjectCode] = useState<
+    string | undefined
+  >();
 
   const handleEditProject = () => {
     setModalMode("edit");

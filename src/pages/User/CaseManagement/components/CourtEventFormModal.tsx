@@ -7,6 +7,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { DatePicker } from "@/shared/components/ui";
 import {
   DialogRoot,
   DialogContent,
@@ -17,6 +18,7 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/Dialog";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
@@ -26,6 +28,7 @@ import {
   CourtEventType,
   CreateCourtEventRequest,
 } from "../types/matter.types";
+import { courtEventSchema } from "@/validations";
 
 interface CourtEventFormModalProps {
   isOpen: boolean;
@@ -60,7 +63,12 @@ export const CourtEventFormModal = ({
   const { data: employeesData } = useGetEmployeesQuery();
   const employees = employeesData?.content ?? [];
 
-  const { control, handleSubmit, reset } = useForm<EventFormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<EventFormValues>({
     defaultValues: {
       eventType: "PESHI",
       scheduledDate: prefilledDate ?? "",
@@ -71,6 +79,9 @@ export const CourtEventFormModal = ({
       courtRoom: "",
       notes: "",
     },
+    resolver: yupResolver(courtEventSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   useEffect(() => {
@@ -104,8 +115,6 @@ export const CourtEventFormModal = ({
   }, [isOpen, initialData, prefilledDate, reset]);
 
   const onFormSubmit = (values: EventFormValues) => {
-    if (!values.scheduledDate) return;
-
     onSubmit({
       eventType: values.eventType,
       scheduledDate: values.scheduledDate,
@@ -145,11 +154,10 @@ export const CourtEventFormModal = ({
                   <Controller
                     name="eventType"
                     control={control}
-                    rules={{ required: "Event type is required" }}
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor="gray.200"
+                        borderColor={errors.eventType ? "red.500" : "gray.200"}
                         borderRadius="md"
                         p={2}
                       >
@@ -173,6 +181,11 @@ export const CourtEventFormModal = ({
                       </Box>
                     )}
                   />
+                  {errors.eventType && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.eventType.message}
+                    </Text>
+                  )}
                 </Box>
                 <Box flex={1}>
                   <Text mb={1} fontSize="sm" fontWeight="500">
@@ -181,9 +194,19 @@ export const CourtEventFormModal = ({
                   <Controller
                     name="scheduledDate"
                     control={control}
-                    rules={{ required: "Date is required" }}
-                    render={({ field }) => <Input type="date" {...field} />}
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select date"
+                      />
+                    )}
                   />
+                  {errors.scheduledDate && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.scheduledDate.message}
+                    </Text>
+                  )}
                 </Box>
               </Flex>
 

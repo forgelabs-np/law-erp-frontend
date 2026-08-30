@@ -28,6 +28,7 @@ export const TextFieldInput = ({
 
   const {
     field: { value, onChange: hookFormOnChange, ref, onBlur },
+    fieldState: { error },
   } = useController({
     name,
     control,
@@ -43,7 +44,12 @@ export const TextFieldInput = ({
   };
 
   return (
-    <FormWrapper label={label} disabled={disabled} required={required}>
+    <FormWrapper
+      label={label}
+      disabled={disabled}
+      required={required}
+      errorText={error?.message}
+    >
       <InputGroup endElement={endElement} startElement={startElement}>
         <Input
           ref={ref}
@@ -57,6 +63,7 @@ export const TextFieldInput = ({
           autoComplete={autoComplete}
           height={inputHeight}
           borderRadius={inputBorderRadius}
+          borderColor={error ? "red.500" : undefined}
         />
       </InputGroup>
     </FormWrapper>

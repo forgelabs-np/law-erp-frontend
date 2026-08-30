@@ -1,9 +1,11 @@
 import { Grid, GridItem, Stack, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useCreateClientMutation } from "@/api/clientManagement";
 import { FormProvider, TextFieldInput } from "@/shared/components";
+import { clientSchema } from "@/validations";
 import { Switch } from "@/shared/components/ui";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
@@ -25,7 +27,12 @@ export const AddClient = ({
   open: boolean;
   onClose: () => void;
 }) => {
-  const methods = useForm<ClientFormValues>({ defaultValues });
+  const methods = useForm<ClientFormValues>({
+    defaultValues,
+    resolver: yupResolver(clientSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
   const { handleSubmit, reset } = methods;
 
   const { mutate: createClient, isPending: isCreatePending } =

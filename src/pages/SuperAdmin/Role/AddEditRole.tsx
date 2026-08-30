@@ -1,6 +1,7 @@
 import { Stack } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   useAddEditRoleMutation,
@@ -11,6 +12,7 @@ import { errorNotification } from "@/shared/utils/notification";
 
 import { RoleSetupForm } from "./component/RoleSetupForm";
 import { RoleFormValues, RoleSetupPayload } from "./types";
+import { roleSchema, RoleSchemaType } from "@/validations";
 
 const defaultValues: RoleFormValues = {
   name: "",
@@ -36,7 +38,9 @@ export const AddEditRole = ({
 
   const { control, handleSubmit, reset } = useForm<RoleFormValues>({
     defaultValues,
-    // resolver: yupResolver(roleSetupSchema),
+    resolver: yupResolver(roleSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
   const { mutate, isPending } = useAddEditRoleMutation();
 
@@ -72,11 +76,6 @@ export const AddEditRole = ({
     const permissionIds = Object.values(data.permissions ?? {})
       .flat()
       .filter(Boolean);
-
-    if (permissionIds.length === 0) {
-      errorNotification("Please select at least one permission.");
-      return;
-    }
 
     const payload: RoleSetupPayload = {
       ...(id ? { id } : {}),

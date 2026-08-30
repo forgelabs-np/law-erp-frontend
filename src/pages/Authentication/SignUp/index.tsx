@@ -1,12 +1,14 @@
 import { Box, Button, Image, Stack, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { type RegisterType, useSignupMutation } from "@/api/auth";
 import { Logo } from "@/assets/images";
 import { FormProvider, TextFieldInput } from "@/shared/components";
+import { signupSchema, SignupSchemaType } from "@/validations";
 
-const defaultValues = {
+const defaultValues: SignupSchemaType = {
   fullName: "",
   email: "",
   mobileNo: "",
@@ -50,13 +52,22 @@ const Signup = () => {
   // barCouncilNumber only relevant for solo lawyers
   const isSolo = registerType === "solo";
 
-  const methods = useForm({ defaultValues });
+  const methods = useForm<SignupSchemaType>({
+    defaultValues,
+    resolver: yupResolver(signupSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+  });
   const { handleSubmit } = methods;
   const { mutateAsync: signup, isPending } = useSignupMutation(registerType);
 
-  const onSubmitHandler = async (data: typeof defaultValues) => {
+  const onSubmitHandler = async (data: SignupSchemaType) => {
     try {
-      const response = await signup(data);
+      const payload = {
+        ...data,
+        barCouncilNumber: data.barCouncilNumber || "",
+      };
+      const response = await signup(payload);
       if (response?.status === 200 || response?.status === 201) {
         if (registerType === "client") navigate("/auth/client/login");
         else navigate("/auth/login");

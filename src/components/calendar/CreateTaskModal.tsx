@@ -17,7 +17,9 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/Dialog";
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Task } from "../../types/Task";
+import { createTaskSchema } from "@/validations";
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -32,12 +34,7 @@ export const CreateTaskModal = ({
   onSubmit,
   initialData,
 }: CreateTaskModalProps) => {
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: initialData || {
       title: "",
       description: "",
@@ -49,6 +46,9 @@ export const CreateTaskModal = ({
       startDate: new Date().toISOString(),
       endDate: new Date(new Date().getTime() + 3600000).toISOString(), // +1 hour
     },
+    resolver: yupResolver(createTaskSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const onFormSubmit = (data: any) => {

@@ -19,6 +19,7 @@ import {
 } from "@/shared/components/ui/Dialog";
 import { Switch } from "@/shared/components/ui";
 import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 
 import { useGetClientsQuery } from "@/api/clientManagement";
@@ -31,6 +32,7 @@ import {
 } from "../types/matter.types";
 import { PartyMatchSuggestions } from "./PartyMatchSuggestions";
 import { useMatchMatterPartyMutation } from "../api/matterParty.api";
+import { partySchema } from "@/validations";
 
 interface AddPartyModalProps {
   isOpen: boolean;
@@ -72,7 +74,13 @@ export const AddPartyModal = ({
   isSubmitting = false,
   defaultRepresentation = "REPRESENTED",
 }: AddPartyModalProps) => {
-  const { control, handleSubmit, reset, watch } = useForm<PartyFormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<PartyFormValues>({
     defaultValues: {
       fullName: "",
       mobileNo: "",
@@ -82,6 +90,9 @@ export const AddPartyModal = ({
       isOurClient: true,
       clientId: "",
     },
+    resolver: yupResolver(partySchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const [matches, setMatches] = useState<PartyMatch[]>([]);
@@ -140,7 +151,6 @@ export const AddPartyModal = ({
   }, [fullName, mobileNo, email, isOpen]);
 
   const onFormSubmit = (values: PartyFormValues) => {
-    if (!values.fullName.trim()) return;
     onSubmit({
       fullName: values.fullName.trim(),
       mobileNo: values.mobileNo.trim() || undefined,
@@ -190,11 +200,19 @@ export const AddPartyModal = ({
                   <Controller
                     name="fullName"
                     control={control}
-                    rules={{ required: "Full name is required" }}
                     render={({ field }) => (
-                      <Input {...field} placeholder="Enter full name" />
+                      <Input
+                        {...field}
+                        placeholder="Enter full name"
+                        borderColor={errors.fullName ? "red.500" : undefined}
+                      />
                     )}
                   />
+                  {errors.fullName && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.fullName.message}
+                    </Text>
+                  )}
                 </Box>
                 <Box flex={1}>
                   <Text mb={1} fontSize="sm" fontWeight="500">
@@ -222,9 +240,15 @@ export const AddPartyModal = ({
                       {...field}
                       type="email"
                       placeholder="name@mail.com"
+                      borderColor={errors.email ? "red.500" : undefined}
                     />
                   )}
                 />
+                {errors.email && (
+                  <Text fontSize="xs" color="red.500" mt={1}>
+                    {errors.email.message}
+                  </Text>
+                )}
               </Box>
 
               {matchLoading && (
@@ -250,11 +274,10 @@ export const AddPartyModal = ({
                   <Controller
                     name="roleType"
                     control={control}
-                    rules={{ required: "Role is required" }}
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor="gray.200"
+                        borderColor={errors.roleType ? "red.500" : "gray.200"}
                         borderRadius="md"
                         p={2}
                       >
@@ -281,6 +304,11 @@ export const AddPartyModal = ({
                       </Box>
                     )}
                   />
+                  {errors.roleType && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.roleType.message}
+                    </Text>
+                  )}
                 </Box>
                 <Box flex={1}>
                   <Text mb={1} fontSize="sm" fontWeight="500">
@@ -289,11 +317,12 @@ export const AddPartyModal = ({
                   <Controller
                     name="representation"
                     control={control}
-                    rules={{ required: "Representation is required" }}
                     render={({ field }) => (
                       <Box
                         border="1px solid"
-                        borderColor="gray.200"
+                        borderColor={
+                          errors.representation ? "red.500" : "gray.200"
+                        }
                         borderRadius="md"
                         p={2}
                       >
@@ -319,6 +348,11 @@ export const AddPartyModal = ({
                       </Box>
                     )}
                   />
+                  {errors.representation && (
+                    <Text fontSize="xs" color="red.500" mt={1}>
+                      {errors.representation.message}
+                    </Text>
+                  )}
                 </Box>
               </Flex>
 

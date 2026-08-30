@@ -1,6 +1,7 @@
 import { Grid, GridItem, Stack, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   useEmployeeByIdQuery,
@@ -8,7 +9,14 @@ import {
   useUpdateEmployeeMutation,
 } from "@/api/employeeManagement";
 import { useGetRoleQuery } from "@/api/roleSetup.ts";
-import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
+import {
+  FormProvider,
+  ReactSelect,
+  TextFieldInput,
+  FormWrapper,
+} from "@/shared/components";
+import { DatePicker } from "@/shared/components/ui";
+import { employeeSchema } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
 import { EmployeeFormValues } from "./types";
@@ -54,7 +62,13 @@ export const AddEditEmployee = ({
       value: String(role.id),
     })) ?? [];
 
-  const methods = useForm<EmployeeFormValues>({ defaultValues });
+  const methods = useForm<EmployeeFormValues>({
+    defaultValues,
+    resolver: yupResolver(employeeSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+    context: { isEdit: !!id },
+  });
   const { handleSubmit, reset } = methods;
 
   const { mutate: addEmployee, isPending: isAddPending } =
@@ -215,12 +229,23 @@ export const AddEditEmployee = ({
               </GridItem>
 
               <GridItem>
-                <TextFieldInput
-                  name="joiningDate"
+                <FormWrapper
                   label="Joining Date"
-                  type="date"
                   required
-                />
+                  errorText={methods.formState.errors.joiningDate?.message}
+                >
+                  <Controller
+                    name="joiningDate"
+                    control={methods.control}
+                    render={({ field }) => (
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select joining date"
+                      />
+                    )}
+                  />
+                </FormWrapper>
               </GridItem>
             </Grid>
 
