@@ -18,6 +18,7 @@ import { Tooltip } from "@/shared/components/ui";
 import { FieldSelect } from "../components/ui";
 
 import { useGetMattersQuery } from "../api/matter.api";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import {
   MatterFilters as MatterFiltersType,
   MatterSummary,
@@ -29,6 +30,7 @@ const DEFAULT_FILTERS: MatterFiltersType = { page: 0, size: 20 };
 
 const MattersListPage = () => {
   const navigate = useNavigate();
+  const { canCreate } = useModulePermissions("CASE_MANAGEMENT");
   const [filters, setFilters] = useState<MatterFiltersType>(DEFAULT_FILTERS);
   const [searchInput, setSearchInput] = useState("");
 
@@ -154,10 +156,12 @@ const MattersListPage = () => {
           >
             Dashboard
           </Button>
-          <Button variant="primary" onClick={() => navigate("/cases/create")}>
-            <AddIcon color="white" />
-            New Matter
-          </Button>
+          {canCreate && (
+            <Button variant="primary" onClick={() => navigate("/cases/create")}>
+              <AddIcon color="white" />
+              New Matter
+            </Button>
+          )}
         </HStack>
       </HStack>
 
@@ -252,10 +256,12 @@ const MattersListPage = () => {
           <Text fontSize="sm" color="gray.500">
             Create your first matter to get started
           </Text>
-          <Button variant="primary" onClick={() => navigate("/cases/create")}>
-            <AddIcon color="white" />
-            Create Matter
-          </Button>
+          {canCreate && (
+            <Button variant="primary" onClick={() => navigate("/cases/create")}>
+              <AddIcon color="white" />
+              Create Matter
+            </Button>
+          )}
         </VStack>
       ) : (
         <Datatable

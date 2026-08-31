@@ -9,6 +9,7 @@ interface CalendarHeaderProps {
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onFilterClick: () => void;
   onCreateClick: () => void;
+  showCreate?: boolean;
 }
 
 export const CalendarHeader = ({
@@ -16,6 +17,7 @@ export const CalendarHeader = ({
   onSearchChange,
   onFilterClick,
   onCreateClick,
+  showCreate = true,
 }: CalendarHeaderProps) => {
   return (
     <Flex
@@ -55,18 +57,20 @@ export const CalendarHeader = ({
           Filters
         </Button>
 
-        <Button
-          bg="black"
-          color="white"
-          _hover={{ bg: "gray.800" }}
-          _dark={{ bg: "white", color: "black", _hover: { bg: "gray.200" } }}
-          borderRadius="full"
-          onClick={onCreateClick}
-          size="md"
-        >
-          <Plus size={16} />
-          Create Task
-        </Button>
+        {showCreate && (
+          <Button
+            bg="black"
+            color="white"
+            _hover={{ bg: "gray.800" }}
+            _dark={{ bg: "white", color: "black", _hover: { bg: "gray.200" } }}
+            borderRadius="full"
+            onClick={onCreateClick}
+            size="md"
+          >
+            <Plus size={16} />
+            Create Task
+          </Button>
+        )}
       </Flex>
     </Flex>
   );

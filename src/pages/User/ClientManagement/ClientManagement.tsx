@@ -18,6 +18,7 @@ import { AddIcon, EyeIcon } from "@/assets/svgs";
 import { Datatable } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch } from "@/shared/components/ui";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 import {
   formatClientDate,
@@ -35,6 +36,8 @@ const ClientManagement = () => {
     id: string;
     enabled: boolean;
   } | null>(null);
+
+  const { canCreate } = useModulePermissions("CLIENT_MANAGEMENT");
 
   const {
     open: addClientOpen,
@@ -164,23 +167,6 @@ const ClientManagement = () => {
           );
         },
       },
-      // {
-      //   accessorKey: "createdAt",
-      //   header: "Created Date",
-      //   cell: ({ row }) => {
-      //     const { date, time } = formatClientDate(row.original.createdAt);
-      //     return (
-      //       <Stack gap="0">
-      //         <Text fontSize="sm" fontWeight="500">
-      //           {date}
-      //         </Text>
-      //         <Text fontSize="xs" color="gray.500">
-      //           {time}
-      //         </Text>
-      //       </Stack>
-      //     );
-      //   },
-      // },
       {
         accessorKey: "actions",
         header: "Actions",
@@ -224,16 +210,18 @@ const ClientManagement = () => {
           </Text>
         </Stack>
 
-        <Button
-          variant="primary"
-          onClick={() => {
-            setSelectedId("");
-            onAddClientOpen();
-          }}
-        >
-          <AddIcon color="white" />
-          Add Client
-        </Button>
+        {canCreate && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              setSelectedId("");
+              onAddClientOpen();
+            }}
+          >
+            <AddIcon color="white" />
+            Add Client
+          </Button>
+        )}
       </HStack>
 
       <Datatable

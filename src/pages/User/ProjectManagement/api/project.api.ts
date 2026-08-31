@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/shared/service/service-api";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import { ApiResponse, PaginatedResponse } from "@/shared/types/response";
 import { toastFail, toastSuccess } from "@/shared/toast";
@@ -69,9 +70,11 @@ const getProjectDashboard = () => {
 };
 
 export const useProjectDashboardQuery = () => {
+  const { canView } = useModulePermissions("PROJECT_MANAGEMENT");
   return useQuery({
     queryKey: projectKeys.dashboard,
     queryFn: getProjectDashboard,
+    enabled: canView,
     select: (response) => response?.data?.data,
   });
 };
@@ -98,9 +101,11 @@ export const useProjectsQuery = (params?: {
   page?: number;
   size?: number;
 }) => {
+  const { canView } = useModulePermissions("PROJECT_MANAGEMENT");
   return useQuery({
     queryKey: projectKeys.projects(params),
     queryFn: () => getProjects(params),
+    enabled: canView,
     select: (response) => response?.data?.data,
   });
 };

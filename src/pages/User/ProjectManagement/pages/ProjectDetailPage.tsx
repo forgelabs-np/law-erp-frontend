@@ -71,6 +71,7 @@ import {
   CreateCredentialRequest,
 } from "../types/project.types";
 import { Tabs } from "@/shared/components/ui/Tabs";
+import { Tooltip } from "@/shared/components/ui";
 import {
   PopoverRoot,
   PopoverTrigger,
@@ -86,6 +87,7 @@ import {
   DialogCloseTrigger,
 } from "@/shared/components/ui";
 import { AddCredentialModal } from "../components/AddCredentialModal";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import NoDataAvailable from "@/shared/components/NoDataAvailable/NoDataAvailable";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
@@ -296,6 +298,7 @@ const CredentialRow = ({
   onEdit: (credential: ProjectCredential) => void;
   onDelete: (id: number) => void;
 }) => {
+  const { canCredentialReveal } = useModulePermissions("PROJECT_MANAGEMENT");
   const [showPassword, setShowPassword] = useState(false);
   const [revealedPassword, setRevealedPassword] = useState("");
   const revealMutation = useRevealCredentialMutation();
@@ -393,13 +396,17 @@ const CredentialRow = ({
                   ? revealedPassword
                   : "••••••••••••"}
               </Text>
-              <IconButton
-                size="xs"
-                variant="ghost"
-                onClick={handleReveal}
-                disabled={revealMutation.isPending}
-                aria-label={showPassword ? "Hide password" : "Reveal password"}
-              >
+              <Tooltip content={canCredentialReveal ? (showPassword ? "Hide password" : "Reveal password") : "You don't have permission to reveal passwords"}>
+                <IconButton
+                  size="xs"
+                  variant="ghost"
+                  onClick={handleReveal}
+                  disabled={revealMutation.isPending || !canCredentialReveal}
+                  opacity={canCredentialReveal ? 1 : 0.4}
+                  cursor={canCredentialReveal ? "pointer" : "not-allowed"}
+                  aria-label={showPassword ? "Hide password" : "Reveal password"}
+                  aria-disabled={!canCredentialReveal}
+                >
                 {revealMutation.isPending ? (
                   <RefreshCw size={12} className="animate-spin" />
                 ) : showPassword ? (
@@ -408,6 +415,7 @@ const CredentialRow = ({
                   <Eye size={12} />
                 )}
               </IconButton>
+              </Tooltip>
             </HStack>
           </VStack>
           <VStack align="flex-start" gap={0}>
@@ -1646,6 +1654,7 @@ const TeamTab = ({ projectCode }: { projectCode: string }) => {
 const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const { projectCode } = useParams<{ projectCode: string }>();
+  const { canCreate, canEdit, canDelete, canCredentialView, canCredentialReveal } = useModulePermissions("PROJECT_MANAGEMENT");
   const [activeTab, setActiveTab] = useState("overview");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [statusToChange, setStatusToChange] = useState<string | null>(null);
@@ -1766,9 +1775,11 @@ const ProjectDetailPage = () => {
           {/* <Button variant="ghost" size="sm" onClick={() => refetch()}>
             <RefreshCw size={16} />
           </Button> */}
-          <Button variant="outline" size="sm" onClick={handleEditProject}>
-            <Edit size={16} /> Edit
-          </Button>
+          {canEdit && (
+            <Button variant="outline" size="sm" onClick={handleEditProject}>
+              <Edit size={16} /> Edit
+            </Button>
+          )}
           <PopoverRoot
             open={isMenuOpen}
             onOpenChange={(details) => setIsMenuOpen(details.open)}
@@ -1812,17 +1823,19 @@ const ProjectDetailPage = () => {
                   mx={2}
                   my={1}
                 />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  justifyContent="flex-start"
-                  gap={2}
-                  color="red.600"
-                  _hover={{ bg: "red.50" }}
-                  onClick={handleDeleteProject}
-                >
-                  <Trash2 size={14} /> Delete Project
-                </Button>
+                {canDelete && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    justifyContent="flex-start"
+                    gap={2}
+                    color="red.600"
+                    _hover={{ bg: "red.50" }}
+                    onClick={handleDeleteProject}
+                  >
+                    <Trash2 size={14} /> Delete Project
+                  </Button>
+                )}
               </Stack>
             </PopoverContent>
           </PopoverRoot>

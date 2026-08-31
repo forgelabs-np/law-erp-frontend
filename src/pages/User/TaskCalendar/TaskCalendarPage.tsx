@@ -1,6 +1,7 @@
 import { useState, useMemo, ChangeEvent } from "react";
 import { Box, Flex, Spinner, Text, Button } from "@chakra-ui/react";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import { CalendarToolbar } from "@/components/calendar/CalendarToolbar";
 import {
   NepaliCalendar,
@@ -43,6 +44,7 @@ import {
 } from "@/pages/User/CaseManagement/api/courtEvent.api";
 
 const TaskCalendarPage = () => {
+  const { canCreate, canSchedule } = useModulePermissions("CALENDAR");
   const [searchQuery, setSearchQuery] = useState("");
   // Single source of truth for what the Nepali calendar displays (BS).
   // The backend continues to receive Gregorian (AD) dates derived from this.
@@ -294,6 +296,7 @@ const TaskCalendarPage = () => {
         onSearchChange={handleSearchChange}
         onFilterClick={() => toast("Filters opening soon!")}
         onCreateClick={handleCreateEvent}
+        showCreate={canCreate || canSchedule}
       />
 
       <Box

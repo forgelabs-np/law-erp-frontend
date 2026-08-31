@@ -14,11 +14,13 @@ import { Datatable, TableActions } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 import { AddEditFirm } from "./AddEditFirm";
 
 const FirmManagement = () => {
   const navigate = useNavigate();
+  const { canCreate, canEdit } = useModulePermissions("FIRM_MANAGEMENT");
   const [selectedId, setSelectedId] = useState<string>();
   const [firmToToggle, setFirmToToggle] = useState<{
     id: string;
@@ -121,10 +123,14 @@ const FirmManagement = () => {
               Manage Access
             </Button>
             <TableActions
-              onEdit={() => {
-                setSelectedId(row.original.firmId.toString());
-                onAddEditOpen();
-              }}
+              onEdit={
+                canEdit
+                  ? () => {
+                      setSelectedId(row.original.firmId.toString());
+                      onAddEditOpen();
+                    }
+                  : undefined
+              }
             />
           </HStack>
         ),
@@ -143,16 +149,18 @@ const FirmManagement = () => {
           </Text>
         </Stack>
 
-        <Button
-          variant="primary"
-          onClick={() => {
-            setSelectedId("");
-            onAddEditOpen();
-          }}
-        >
-          <AddIcon color="white" />
-          Add Firm
-        </Button>
+        {canCreate && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              setSelectedId("");
+              onAddEditOpen();
+            }}
+          >
+            <AddIcon color="white" />
+            Add Firm
+          </Button>
+        )}
       </HStack>
 
       <Datatable

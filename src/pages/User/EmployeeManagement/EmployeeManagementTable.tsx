@@ -18,8 +18,10 @@ import {
   useGetFirmModulesQuery,
   useGetFirmRolesQuery,
 } from "@/api/firmManagement";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 const EmployeeManagementTable = () => {
+  const { canCreate, canEdit } = useModulePermissions("EMPLOYEE");
   const [selectedId, setSelectedId] = useState<string | undefined>();
   const [employeeToToggle, setEmployeeToToggle] = useState<{
     id: string;
@@ -97,10 +99,14 @@ const EmployeeManagementTable = () => {
         header: "Actions",
         cell: ({ row }) => (
           <TableActions
-            onEdit={() => {
-              setSelectedId(String(row.original.id));
-              onAddEditOpen();
-            }}
+            onEdit={
+              canEdit
+                ? () => {
+                    setSelectedId(String(row.original.id));
+                    onAddEditOpen();
+                  }
+                : undefined
+            }
           />
         ),
       },
@@ -122,16 +128,18 @@ const EmployeeManagementTable = () => {
           </Text>
         </Stack>
 
-        <Button
-          variant="primary"
-          onClick={() => {
-            setSelectedId("");
-            onAddEditOpen();
-          }}
-        >
-          <AddIcon color="white" />
-          Add Employee
-        </Button>
+        {canCreate && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              setSelectedId("");
+              onAddEditOpen();
+            }}
+          >
+            <AddIcon color="white" />
+            Add Employee
+          </Button>
+        )}
       </HStack>
 
       <Datatable

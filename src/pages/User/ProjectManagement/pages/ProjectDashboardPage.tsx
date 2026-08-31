@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useProjectDashboardQuery } from "../api/project.api";
 import { ProjectDashboard } from "../types/project.types";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 // ============================================================
 // Metric Card
@@ -183,6 +184,7 @@ const ForbiddenState = () => (
 
 const ProjectDashboardPage = () => {
   const navigate = useNavigate();
+  const { canCreate } = useModulePermissions("PROJECT_MANAGEMENT");
 
   const {
     data: dashboard,
@@ -298,12 +300,14 @@ const ProjectDashboardPage = () => {
           <Button variant="outline" onClick={() => navigate("/projects")}>
             View All Projects
           </Button>
-          <Button
-            variant="primary"
-            onClick={() => navigate("/projects/create")}
-          >
-            <Briefcase size={16} color="white" /> New Project
-          </Button>
+          {canCreate && (
+            <Button
+              variant="primary"
+              onClick={() => navigate("/projects/create")}
+            >
+              <Briefcase size={16} color="white" /> New Project
+            </Button>
+          )}
         </HStack>
       </HStack>
 

@@ -2,19 +2,44 @@ import { Navigate, useRoutes, type RouteObject } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { Layout } from "../components";
+import { ModuleRouteGuard } from "../components/ModuleRouteGuard";
 import { AUTHENTICATION_ROUTES, USER_ROUTES } from "../constants";
 import TokenService from "../service/service-token";
 import { useRole } from "../hooks/useAuth";
 import { checkAuthentication } from "@/api/auth";
 
 /**
- * Strip the custom `moduleCode` and `roles` properties (not standard RouteObject props)
- * from route objects before passing them to React Router's `useRoutes`.
- * This avoids any potential issues with extra properties on route objects.
+ * Strip the custom `moduleCode`, `requiredAction`, and `roles` properties
+ * (not standard RouteObject props) from route objects before passing them
+ * to React Router's `useRoutes`.
  */
 const toRouterRoute = (route: (typeof USER_ROUTES)[number]): RouteObject => {
-  const { moduleCode: _, roles: __, ...routerRoute } = route;
+  const { moduleCode: _, requiredAction: __, roles: ___, ...routerRoute } =
+    route;
   return routerRoute;
+};
+
+/**
+ * Wrap a route element with ModuleRouteGuard when it has a moduleCode.
+ * Passes `action` from the route's `requiredAction` so the guard
+ * checks both ACCESS and the specified action (e.g. VIEW).
+ */
+const wrapWithGuard = (route: (typeof USER_ROUTES)[number]) => {
+  const guardedElement = route.moduleCode ? (
+    <ModuleRouteGuard
+      moduleCode={route.moduleCode}
+      action={route.requiredAction}
+    >
+      {route.element}
+    </ModuleRouteGuard>
+  ) : (
+    route.element
+  );
+
+  return {
+    ...route,
+    element: guardedElement,
+  };
 };
 
 export const AppRoutes = () => {
@@ -75,11 +100,14 @@ export const AppRoutes = () => {
       typeof userRole === "object" && (userRole as any)?.code
         ? (userRole as any).code
         : userRole;
-    return route.roles.includes(roleCode); // Check if user's role code is in allowed roles
+    return route.roles.includes(roleCode);
   });
 
+  // Wrap each route with ModuleRouteGuard based on its moduleCode + requiredAction
+  const guardedRoutes = filteredUserRoutes.map(wrapWithGuard);
+
   const userRoutes = [
-    ...filteredUserRoutes.map(toRouterRoute),
+    ...guardedRoutes.map(toRouterRoute),
     { path: "*", element: <Navigate to="/" replace /> },
   ];
 
