@@ -47,7 +47,9 @@ export function PermissionDenied({
         alignItems="center"
         justifyContent="center"
       >
-        {icon || <ShieldOff size={36} color="var(--chakra-colors-red-500, #ef4444)" />}
+        {icon || (
+          <ShieldOff size={36} color="var(--chakra-colors-red-500, #ef4444)" />
+        )}
       </Box>
 
       <VStack gap={2}>

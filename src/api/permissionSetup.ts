@@ -159,6 +159,38 @@ export interface GroupedPermissionsResponse {
   modules: PermissionModule[];
 }
 
+// ─── DELETE PERMISSION ──────────────────────────────────────────────────────────
+
+const deletePermission = async (id: string) => {
+  const url = api.USER_MANAGEMENT.PERMISSION_SETUP.DELETE.replace("{id}", id);
+  return LawFirmCRMClient.delete<ApiResponse<string>>(url);
+};
+
+export const useDeletePermissionMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deletePermission(id),
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Permission deleted successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_PERMISSIONS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [
+          api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS,
+        ],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to delete permission";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
 const getGroupedPermissions = () => {
   return LawFirmCRMClient.get<ApiResponse<GroupedPermissionsResponse>>(
     api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS

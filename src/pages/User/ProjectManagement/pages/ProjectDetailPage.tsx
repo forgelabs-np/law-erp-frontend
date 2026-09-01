@@ -396,7 +396,15 @@ const CredentialRow = ({
                   ? revealedPassword
                   : "••••••••••••"}
               </Text>
-              <Tooltip content={canCredentialReveal ? (showPassword ? "Hide password" : "Reveal password") : "You don't have permission to reveal passwords"}>
+              <Tooltip
+                content={
+                  canCredentialReveal
+                    ? showPassword
+                      ? "Hide password"
+                      : "Reveal password"
+                    : "You don't have permission to reveal passwords"
+                }
+              >
                 <IconButton
                   size="xs"
                   variant="ghost"
@@ -404,17 +412,19 @@ const CredentialRow = ({
                   disabled={revealMutation.isPending || !canCredentialReveal}
                   opacity={canCredentialReveal ? 1 : 0.4}
                   cursor={canCredentialReveal ? "pointer" : "not-allowed"}
-                  aria-label={showPassword ? "Hide password" : "Reveal password"}
+                  aria-label={
+                    showPassword ? "Hide password" : "Reveal password"
+                  }
                   aria-disabled={!canCredentialReveal}
                 >
-                {revealMutation.isPending ? (
-                  <RefreshCw size={12} className="animate-spin" />
-                ) : showPassword ? (
-                  <EyeOff size={12} />
-                ) : (
-                  <Eye size={12} />
-                )}
-              </IconButton>
+                  {revealMutation.isPending ? (
+                    <RefreshCw size={12} className="animate-spin" />
+                  ) : showPassword ? (
+                    <EyeOff size={12} />
+                  ) : (
+                    <Eye size={12} />
+                  )}
+                </IconButton>
               </Tooltip>
             </HStack>
           </VStack>
@@ -1654,7 +1664,13 @@ const TeamTab = ({ projectCode }: { projectCode: string }) => {
 const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const { projectCode } = useParams<{ projectCode: string }>();
-  const { canCreate, canEdit, canDelete, canCredentialView, canCredentialReveal } = useModulePermissions("PROJECT_MANAGEMENT");
+  const {
+    canCreate,
+    canEdit,
+    canDelete,
+    canCredentialView,
+    canCredentialReveal,
+  } = useModulePermissions("PROJECT_MANAGEMENT");
   const [activeTab, setActiveTab] = useState("overview");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [statusToChange, setStatusToChange] = useState<string | null>(null);

@@ -94,7 +94,7 @@ export const USER_ROUTES: Array<{
     {
       path: "/calendar",
       element: <CalendarTasksPage />,
-      moduleCode: "TASK_CALENDAR",
+      moduleCode: "CALENDAR",
     },
     {
       path: ROUTES_CONFIG.USER.SOLO_DASHBOARD,
@@ -176,7 +176,7 @@ export const USER_ROUTES: Array<{
     {
       path: ROUTES_CONFIG.USER.TASK_CALENDAR,
       element: <TaskCalendarPage />,
-      moduleCode: "TASK_CALENDAR",
+      moduleCode: "CALENDAR",
       requiredAction: "VIEW",
     },
     {
@@ -291,7 +291,7 @@ export const USER_ROUTES: Array<{
     {
       path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
       element: <AuditLogs />,
-      moduleCode: "AUDIT_LOGS",
+      moduleCode: "AUDIT",
     },
     {
       path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,

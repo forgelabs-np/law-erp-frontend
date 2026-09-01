@@ -70,7 +70,8 @@ export const RoleSetupForm = ({
     [allPermissions, knownModuleCodes]
   );
 
-  const totalModules = groupedByModule.length + (orphanPermissions.length > 0 ? 1 : 0);
+  const totalModules =
+    groupedByModule.length + (orphanPermissions.length > 0 ? 1 : 0);
 
   return (
     <Stack gap={6}>
@@ -81,7 +82,13 @@ export const RoleSetupForm = ({
         borderColor="gray.200"
         overflow="hidden"
       >
-        <Card.Header px={{ base: 4, md: 6 }} py={4} bg="gray.50" borderBottomWidth="1px" borderColor="gray.100">
+        <Card.Header
+          px={{ base: 4, md: 6 }}
+          py={4}
+          bg="gray.50"
+          borderBottomWidth="1px"
+          borderColor="gray.100"
+        >
           <Text fontSize="sm" fontWeight="600" color="gray.700">
             Role Details
           </Text>
@@ -137,7 +144,9 @@ export const RoleSetupForm = ({
               Menu & Action Permissions
             </Text>
             <Text fontSize="xs" color="gray.500" mt={0.5}>
-              Configure action permissions for each module. {totalModules > 0 && `${totalModules} module${totalModules > 1 ? "s" : ""} available.`}
+              Configure action permissions for each module.{" "}
+              {totalModules > 0 &&
+                `${totalModules} module${totalModules > 1 ? "s" : ""} available.`}
             </Text>
           </Stack>
         </Card.Header>
@@ -199,7 +208,8 @@ export const RoleSetupForm = ({
                         fontSize="xs"
                         fontWeight="600"
                       >
-                        {permissions.length} permission{permissions.length !== 1 ? "s" : ""}
+                        {permissions.length} permission
+                        {permissions.length !== 1 ? "s" : ""}
                       </Box>
                     </Flex>
 
@@ -211,6 +221,7 @@ export const RoleSetupForm = ({
                       options={permissions.map((p: any) => ({
                         label: p.action,
                         value: p.id,
+                        disabled: p.isActive === false,
                       }))}
                     />
                   </Box>
@@ -266,7 +277,8 @@ export const RoleSetupForm = ({
                       fontSize="xs"
                       fontWeight="600"
                     >
-                      {orphanPermissions.length} permission{orphanPermissions.length !== 1 ? "s" : ""}
+                      {orphanPermissions.length} permission
+                      {orphanPermissions.length !== 1 ? "s" : ""}
                     </Box>
                   </Flex>
 
@@ -278,6 +290,7 @@ export const RoleSetupForm = ({
                     options={orphanPermissions.map((p: any) => ({
                       label: p.action,
                       value: p.id,
+                      disabled: p.isActive === false,
                     }))}
                   />
                 </Box>

@@ -3,6 +3,7 @@ import { GroupBase, OptionProps, SingleValueProps } from "react-select";
 export type SelectOptionType = {
   label: string;
   value: string;
+  disabled?: boolean;
 };
 
 export type ReactSelectProps = {

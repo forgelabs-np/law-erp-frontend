@@ -82,7 +82,7 @@ export const CaseHearingStatus = ({
               Case
             </Text>
             <Text fontSize="sm" fontWeight="600" color="gray.900">
-              {caseNoBs}
+              {caseNoBs || "-"}
             </Text>
           </Box>
           <Box>
@@ -96,7 +96,7 @@ export const CaseHearingStatus = ({
               Court
             </Text>
             <Text fontSize="sm" fontWeight="600" color="gray.900">
-              {courtName}
+              {courtName || "-"}
             </Text>
           </Box>
           <Box>

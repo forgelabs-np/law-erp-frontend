@@ -89,7 +89,8 @@ const CourtCaseDetailPage = () => {
   const cancelEventMutation = useCancelCourtEventMutation();
   const markHeldMutation = useMarkEventHeldMutation();
 
-  const { canCreate, canEdit, canUpdateStatus } = useModulePermissions("CASE_MANAGEMENT");
+  const { canCreate, canEdit, canUpdateStatus } =
+    useModulePermissions("CASE_MANAGEMENT");
 
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CourtEvent | null>(null);

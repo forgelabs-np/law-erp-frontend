@@ -14,8 +14,12 @@ import { checkAuthentication } from "@/api/auth";
  * to React Router's `useRoutes`.
  */
 const toRouterRoute = (route: (typeof USER_ROUTES)[number]): RouteObject => {
-  const { moduleCode: _, requiredAction: __, roles: ___, ...routerRoute } =
-    route;
+  const {
+    moduleCode: _,
+    requiredAction: __,
+    roles: ___,
+    ...routerRoute
+  } = route;
   return routerRoute;
 };
 
