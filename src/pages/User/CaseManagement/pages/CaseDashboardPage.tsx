@@ -20,6 +20,7 @@ import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useFirmDashboardQuery } from "../api/dashboard.api";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import { TodaysCourtEvents } from "../components/dashboard/TodaysCourtEvents";
 import { CasePositioningSection } from "../components/dashboard/CasePositioning";
 import { StaleMatters } from "../components/dashboard/StaleMatters";
@@ -168,6 +169,7 @@ const ForbiddenState = () => (
 
 const CaseDashboardPage = () => {
   const navigate = useNavigate();
+  const { canCreate } = useModulePermissions("CASE_MANAGEMENT");
 
   const {
     data: dashboard,
@@ -277,9 +279,11 @@ const CaseDashboardPage = () => {
           <Button variant="ghost" onClick={() => navigate("/stale-matters")}>
             Stale Matters
           </Button>
-          <Button variant="primary" onClick={() => navigate("/cases/create")}>
-            <Plus size={16} color="white" /> New Matter
-          </Button>
+          {canCreate && (
+            <Button variant="primary" onClick={() => navigate("/cases/create")}>
+              <Plus size={16} color="white" /> New Matter
+            </Button>
+          )}
         </HStack>
       </HStack>
 

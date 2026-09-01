@@ -23,10 +23,19 @@ function CheckboxGroup({
     options.length > 0 && options.every((opt) => value.includes(opt.value));
 
   const toggleAll = (details: { checked: boolean | "indeterminate" }) => {
-    onChange(details.checked === true ? options.map((o) => o.value) : []);
+    if (details.checked === true) {
+      // Only select options that are not disabled
+      onChange(options.filter((o) => !o.disabled).map((o) => o.value));
+    } else {
+      // Deselect only non-disabled options that are currently selected
+      onChange(value.filter((v) => !options.find((o) => o.value === v && o.disabled)));
+    }
   };
 
   const toggleOption = (option: string, checked: boolean | "indeterminate") => {
+    // Guard: do not allow toggling disabled/inactive permissions
+    const opt = options.find((o) => o.value === option);
+    if (opt?.disabled) return;
     const next =
       checked === true ? [...value, option] : value.filter((v) => v !== option);
     onChange(next);
@@ -65,10 +74,7 @@ function CheckboxGroup({
             role="group"
             aria-label="Toggle all permissions"
           >
-            <Switch
-              checked={allChecked}
-              onCheckedChange={toggleAll}
-            />
+            <Switch checked={allChecked} onCheckedChange={toggleAll} />
             <Text
               fontSize="xs"
               fontWeight="600"
@@ -92,47 +98,54 @@ function CheckboxGroup({
           }}
           gap={{ base: 1, md: 2 }}
         >
-          {options.map((opt) => (
-            <Flex
-              key={opt.value}
-              alignItems="center"
-              gap={2.5}
-              px={3}
-              py={2}
-              borderRadius="md"
-              cursor="pointer"
-              _hover={{ bg: "lavender.50" }}
-              _focusWithin={{ ring: "2px", ringColor: "primary.400" }}
-              transition="backgrounds 150ms ease"
-              minH="40px"
-              role="checkbox"
-              aria-checked={value.includes(opt.value)}
-              aria-label={`Permission: ${opt.label}`}
-            >
-              <Checkbox
-                checked={value.includes(opt.value)}
-                onCheckedChange={(e) =>
-                  toggleOption(
-                    opt.value,
-                    (e as { checked: boolean | "indeterminate" }).checked
-                  )
-                }
-                cursor="pointer"
-                size="sm"
-                aria-label={opt.label}
-              />
-              <Text
-                fontSize={{ base: "sm", md: "sm" }}
-                color="gray.700"
-                fontWeight="400"
-                lineHeight="short"
-                userSelect="none"
-                truncate
+          {options.map((opt) => {
+            const isDisabled = opt.disabled === true;
+            return (
+              <Flex
+                key={opt.value}
+                alignItems="center"
+                gap={2.5}
+                px={3}
+                py={2}
+                borderRadius="md"
+                cursor={isDisabled ? "not-allowed" : "pointer"}
+                opacity={isDisabled ? 0.5 : 1}
+                _hover={!isDisabled ? { bg: "lavender.50" } : undefined}
+                _focusWithin={{ ring: "2px", ringColor: "primary.400" }}
+                transition="backgrounds 150ms ease, opacity 150ms ease"
+                minH="40px"
+                role="checkbox"
+                aria-checked={value.includes(opt.value)}
+                aria-disabled={isDisabled}
+                aria-label={`Permission: ${opt.label}${isDisabled ? " (inactive)" : ""}`}
+                title={isDisabled ? "This permission is currently inactive" : undefined}
               >
-                {opt.label}
-              </Text>
-            </Flex>
-          ))}
+                <Checkbox
+                  checked={value.includes(opt.value)}
+                  onCheckedChange={(e) =>
+                    toggleOption(
+                      opt.value,
+                      (e as { checked: boolean | "indeterminate" }).checked
+                    )
+                  }
+                  disabled={isDisabled}
+                  cursor={isDisabled ? "not-allowed" : "pointer"}
+                  size="sm"
+                  aria-label={opt.label}
+                />
+                <Text
+                  fontSize={{ base: "sm", md: "sm" }}
+                  color={isDisabled ? "gray.400" : "gray.700"}
+                  fontWeight="400"
+                  lineHeight="short"
+                  userSelect="none"
+                  truncate
+                >
+                  {opt.label}
+                </Text>
+              </Flex>
+            );
+          })}
         </Grid>
       </Box>
     </VStack>

@@ -53,6 +53,7 @@ import { EventHeldModal } from "../components/EventHeldModal";
 import { JudgmentModal } from "../components/JudgmentModal";
 import { CaseHearingStatus } from "../components/HearingStatus/CaseHearingStatus";
 import { useCaseHearingStatus } from "@/shared/hooks/useScraper";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 type Tab = "overview" | "events" | "roles" | "hearing";
 
@@ -87,6 +88,9 @@ const CourtCaseDetailPage = () => {
   const updateEventMutation = useUpdateCourtEventMutation();
   const cancelEventMutation = useCancelCourtEventMutation();
   const markHeldMutation = useMarkEventHeldMutation();
+
+  const { canCreate, canEdit, canUpdateStatus } =
+    useModulePermissions("CASE_MANAGEMENT");
 
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CourtEvent | null>(null);
@@ -209,17 +213,19 @@ const CourtCaseDetailPage = () => {
             </HStack>
           </Stack>
           <HStack gap={2}>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setSelectedEvent(null);
-                setIsEventFormOpen(true);
-              }}
-            >
-              <Calendar size={14} /> Schedule Event
-            </Button>
-            {!courtCase.judgmentSummary && (
+            {canCreate && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelectedEvent(null);
+                  setIsEventFormOpen(true);
+                }}
+              >
+                <Calendar size={14} /> Schedule Event
+              </Button>
+            )}
+            {canCreate && !courtCase.judgmentSummary && (
               <Button
                 variant="outline"
                 size="sm"

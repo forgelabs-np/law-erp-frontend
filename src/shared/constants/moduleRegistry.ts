@@ -129,14 +129,6 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 20,
   },
-  // CASE_MANAGEMENT:{
-  //   moduleCode: "CASE_MANAGEMENT",
-  //   label: "Case Management",
-  //   path: "/cases",
-  //   icon: FileText,
-  //   section: "Main",
-  //   order: 11,
-  // },
   ROLE_MANAGEMENT: {
     moduleCode: "ROLE_MANAGEMENT",
     label: "Role Management",
@@ -181,7 +173,6 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     moduleCode: "CONFIGURATION",
     label: "Configuration",
     path: "",
-    // path: ROUTES_CONFIG.USER.CONFIGURATION,
     icon: Settings,
     section: "Administration",
     order: 26,
@@ -282,15 +273,31 @@ export interface ModuleSidebarData extends ModuleConfig {
 }
 
 export const mapEnabledModulesToSidebarData = (
-  modules: { moduleCode: string; enabled: boolean; subModules?: any[] }[]
+  modules: {
+    moduleCode: string;
+    enabled: boolean;
+    actions?: string[];
+    subModules?: any[];
+  }[]
 ): ModuleSidebarData[] => {
   const mapModule = (
-    module: { moduleCode: string; enabled: boolean; subModules?: any[] },
+    module: {
+      moduleCode: string;
+      enabled: boolean;
+      actions?: string[];
+      subModules?: any[];
+    },
     parentModuleCode?: string
   ): ModuleSidebarData | null => {
     const config = getModuleConfig(module.moduleCode);
     if (!config) {
       warnUnknownModule(module.moduleCode);
+      return null;
+    }
+
+    // Filter out modules that don't have ACCESS action
+    const actions = module.actions ?? [];
+    if (!actions.includes("ACCESS")) {
       return null;
     }
 

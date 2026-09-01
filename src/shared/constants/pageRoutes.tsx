@@ -59,231 +59,261 @@ import PermissionManagementTable from "@/pages/SuperAdmin/PermissionSetup/Permis
 import GlobalConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/GlobalConfiguration/GlobalConfigurationPage";
 import FirmConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/FirmConfiguration/FirmConfigurationPage";
 
-export const USER_ROUTES = [
-  {
-    path: ROUTES_CONFIG.USER.ARCHIVE,
-    element: <Archive />,
-    moduleCode: "ARCHIVE",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CASE_TYPE_SETUP,
-    element: <CaseTypeSetup />,
-    moduleCode: "CASE_TYPE_SETUP",
-  },
-  {
-    path: ROUTES_CONFIG.USER.FOLDER,
-    element: <Folder />,
-    moduleCode: "DOCUMENT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
-    element: <ClientDashboard />,
-    moduleCode: "HOME",
-  },
-  {
-    path: "/calendar",
-    element: <CalendarTasksPage />,
-    moduleCode: "TASK_CALENDAR",
-  },
-  {
-    path: ROUTES_CONFIG.USER.SOLO_DASHBOARD,
-    element: <SoloDashboard />,
-    moduleCode: "HOME",
-  },
-  {
-    path: ROUTES_CONFIG.USER.HOME,
-    element: <Home />,
-    moduleCode: "HOME",
-  },
-  {
-    path: ROUTES_CONFIG.USER.MY_FILES,
-    element: <MyFiles />,
-    moduleCode: "DOCUMENT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.OFFICE_SETUP,
-    element: <OfficeSetup />,
-    moduleCode: "FIRM_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.SHARED_WITH_ME,
-    element: <SharedWithMe />,
-    moduleCode: "DOCUMENT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.USER_MANAGEMENT,
-    element: <UserManagement />,
-    moduleCode: "USER_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.USER_PROFILE,
-    element: <UserProfilePage />,
-    moduleCode: "USER_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.USER_PERMISSIONS,
-    element: <UserPermissionsPage />,
-    moduleCode: "USER_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.USER_ACTIVITY,
-    element: <UserActivityPage />,
-    moduleCode: "USER_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT,
-    element: <RoleSetup />,
-    moduleCode: "ROLE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS,
-    element: <UserRoleDetails />,
-    moduleCode: "ROLE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
-    element: <MenuManagement />,
-    moduleCode: "MENU_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.PERMISSION_MANAGEMENT,
-    element: <PermissionManagementTable />,
-    moduleCode: "PERMISSION_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.FIRM_MANAGEMENT,
-    element: <FirmManagement />,
-    moduleCode: "FIRM_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.EMPLOYEE_MANAGEMENT,
-    element: <EmployeeManagement />,
-    moduleCode: "EMPLOYEE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.TASK_CALENDAR,
-    element: <TaskCalendarPage />,
-    moduleCode: "TASK_CALENDAR",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CLIENT_MANAGEMENT,
-    element: <ClientManagement />,
-    moduleCode: "CLIENT_MANAGEMENT",
-    roles: ["FIRM_ADMIN"],
-  },
-  {
-    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT,
-    element: <CaseDashboardPage />,
-    moduleCode: "CASE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_MATTERS,
-    element: <MattersListPage />,
-    moduleCode: "CASE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_CREATE,
-    element: <CreateMatterPage />,
-    moduleCode: "CASE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_DETAIL,
-    element: <MatterDetailPage />,
-    moduleCode: "CASE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_COURT_CASE,
-    element: <CourtCaseDetailPage />,
-    moduleCode: "CASE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.FIRM_ACTIVITY,
-    element: <FirmActivityPage />,
-    moduleCode: "CASE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.STALE_MATTERS,
-    element: <StaleMattersPage />,
-    moduleCode: "CASE_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.SCRAPER_MANAGEMENT,
-    element: <ScraperManagementPage />,
-    moduleCode: "SCRAPER_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
-    element: <GlobalDashboardPage />,
-    moduleCode: "GLOBAL_DASHBOARD",
-  },
-  {
-    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT,
-    element: <ProjectDashboardPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_PROJECTS,
-    element: <ProjectListPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_CREATE,
-    element: <CreateProjectPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_EDIT,
-    element: <EditProjectPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_DETAIL,
-    element: <ProjectDetailPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_RENEWAL_TYPES,
-    element: <RenewalTypesPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.USER.CLIENT_PROJECTS,
-    element: <ClientProjectsPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-    roles: ["CLIENT"],
-  },
-  {
-    path: ROUTES_CONFIG.USER.CLIENT_PROJECT_DETAIL,
-    element: <ClientProjectDetailPage />,
-    moduleCode: "PROJECT_MANAGEMENT",
-    roles: ["CLIENT"],
-  },
-  {
-    path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
-    element: <AuditLogs />,
-    moduleCode: "AUDIT_LOGS",
-  },
-  {
-    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,
-    element: <FirmModules />,
-    moduleCode: "FIRM_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT,
-    element: <AccessManagementPage />,
-    moduleCode: "FIRM_MANAGEMENT",
-  },
-  {
-    path: ROUTES_CONFIG.SUPER_ADMIN.GLOBAL_CONFIG,
-    element: <GlobalConfigurationPage />,
-    moduleCode: "GLOBAL_CONFIG",
-  },
-  {
-    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_CONFIG,
-    element: <FirmConfigurationPage />,
-    moduleCode: "FIRM_CONFIG",
-  },
-];
+/**
+ * Route-level permission configuration.
+ * `requiredAction` specifies which action from the module's actions array
+ * is required to access the route. If omitted, only ACCESS is checked.
+ */
+export const USER_ROUTES: Array<{
+  path: string;
+  element: React.ReactNode;
+  moduleCode: string;
+  requiredAction?: string;
+  roles?: string[];
+}> = [
+    {
+      path: ROUTES_CONFIG.USER.ARCHIVE,
+      element: <Archive />,
+      moduleCode: "ARCHIVE",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CASE_TYPE_SETUP,
+      element: <CaseTypeSetup />,
+      moduleCode: "CASE_TYPE_SETUP",
+    },
+    {
+      path: ROUTES_CONFIG.USER.FOLDER,
+      element: <Folder />,
+      moduleCode: "DOCUMENT_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
+      element: <ClientDashboard />,
+      moduleCode: "HOME",
+    },
+    {
+      path: "/calendar",
+      element: <CalendarTasksPage />,
+      moduleCode: "CALENDAR",
+    },
+    {
+      path: ROUTES_CONFIG.USER.SOLO_DASHBOARD,
+      element: <SoloDashboard />,
+      moduleCode: "HOME",
+    },
+    {
+      path: ROUTES_CONFIG.USER.HOME,
+      element: <Home />,
+      moduleCode: "HOME",
+    },
+    {
+      path: ROUTES_CONFIG.USER.MY_FILES,
+      element: <MyFiles />,
+      moduleCode: "DOCUMENT_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.OFFICE_SETUP,
+      element: <OfficeSetup />,
+      moduleCode: "FIRM_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.SHARED_WITH_ME,
+      element: <SharedWithMe />,
+      moduleCode: "DOCUMENT_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.USER_MANAGEMENT,
+      element: <UserManagement />,
+      moduleCode: "USER_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.USER_PROFILE,
+      element: <UserProfilePage />,
+      moduleCode: "USER_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.USER_PERMISSIONS,
+      element: <UserPermissionsPage />,
+      moduleCode: "USER_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.USER_ACTIVITY,
+      element: <UserActivityPage />,
+      moduleCode: "USER_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT,
+      element: <RoleSetup />,
+      moduleCode: "ROLE_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS,
+      element: <UserRoleDetails />,
+      moduleCode: "ROLE_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.MENU_MANAGEMENT,
+      element: <MenuManagement />,
+      moduleCode: "MENU_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.PERMISSION_MANAGEMENT,
+      element: <PermissionManagementTable />,
+      moduleCode: "PERMISSION_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.USER.FIRM_MANAGEMENT,
+      element: <FirmManagement />,
+      moduleCode: "FIRM_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.EMPLOYEE_MANAGEMENT,
+      element: <EmployeeManagement />,
+      moduleCode: "EMPLOYEE",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.TASK_CALENDAR,
+      element: <TaskCalendarPage />,
+      moduleCode: "CALENDAR",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CLIENT_MANAGEMENT,
+      element: <ClientManagement />,
+      moduleCode: "CLIENT_MANAGEMENT",
+      requiredAction: "VIEW",
+      roles: ["FIRM_ADMIN"],
+    },
+    {
+      path: ROUTES_CONFIG.USER.CASE_MANAGEMENT,
+      element: <CaseDashboardPage />,
+      moduleCode: "CASE_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_MATTERS,
+      element: <MattersListPage />,
+      moduleCode: "CASE_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_CREATE,
+      element: <CreateMatterPage />,
+      moduleCode: "CASE_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_DETAIL,
+      element: <MatterDetailPage />,
+      moduleCode: "CASE_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CASE_MANAGEMENT_COURT_CASE,
+      element: <CourtCaseDetailPage />,
+      moduleCode: "CASE_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.FIRM_ACTIVITY,
+      element: <FirmActivityPage />,
+      moduleCode: "CASE_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.STALE_MATTERS,
+      element: <StaleMattersPage />,
+      moduleCode: "CASE_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.SCRAPER_MANAGEMENT,
+      element: <ScraperManagementPage />,
+      moduleCode: "SCRAPER_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
+      element: <GlobalDashboardPage />,
+      moduleCode: "DASHBOARD_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT,
+      element: <ProjectDashboardPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_PROJECTS,
+      element: <ProjectListPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_CREATE,
+      element: <CreateProjectPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_EDIT,
+      element: <EditProjectPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_DETAIL,
+      element: <ProjectDetailPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.PROJECT_MANAGEMENT_RENEWAL_TYPES,
+      element: <RenewalTypesPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      requiredAction: "VIEW",
+    },
+    {
+      path: ROUTES_CONFIG.USER.CLIENT_PROJECTS,
+      element: <ClientProjectsPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      roles: ["CLIENT"],
+    },
+    {
+      path: ROUTES_CONFIG.USER.CLIENT_PROJECT_DETAIL,
+      element: <ClientProjectDetailPage />,
+      moduleCode: "PROJECT_MANAGEMENT",
+      roles: ["CLIENT"],
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,
+      element: <AuditLogs />,
+      moduleCode: "AUDIT",
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,
+      element: <FirmModules />,
+      moduleCode: "FIRM_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT,
+      element: <AccessManagementPage />,
+      moduleCode: "FIRM_MANAGEMENT",
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.GLOBAL_CONFIG,
+      element: <GlobalConfigurationPage />,
+      moduleCode: "GLOBAL_CONFIG",
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_CONFIG,
+      element: <FirmConfigurationPage />,
+      moduleCode: "FIRM_CONFIG",
+    },
+  ];
 
 export const AUTHENTICATION_ROUTES = [
   {

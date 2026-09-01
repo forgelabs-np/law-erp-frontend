@@ -17,6 +17,7 @@ import {
   useGenerateWeeklyExport,
 } from "@/shared/hooks/useScraper";
 import { useAuthStore } from "@/shared/stores/auth.store";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import {
   NepaliDatePicker,
   formatForApi,
@@ -31,6 +32,7 @@ const KNOWN_COURTS = [
 
 const ScraperManagementPage = () => {
   const role = useAuthStore((state) => state.role);
+  const { canCreate } = useModulePermissions("SCRAPER_MANAGEMENT");
 
   // Permission check - only FIRM_ADMIN can access
   // if (role?.name !== "FIRM_ADMIN") {
@@ -199,23 +201,25 @@ const ScraperManagementPage = () => {
           </HStack>
 
           {/* Run Sync Button */}
-          <Button
-            bg="#0056FF"
-            color="white"
-            _hover={{ bg: "#0048D9" }}
-            _active={{ bg: "#003AB3" }}
-            onClick={handleRunScrape}
-            loading={manualScrapeMutation.isPending}
-            maxW="fit-content"
-            disabled={!bsDate}
-            _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
-            aria-label="Run court data sync"
-          >
-            <HStack gap={2}>
-              <RefreshCw size={16} />
-              <Text>Run Court Sync</Text>
-            </HStack>
-          </Button>
+          {canCreate && (
+            <Button
+              bg="#0056FF"
+              color="white"
+              _hover={{ bg: "#0048D9" }}
+              _active={{ bg: "#003AB3" }}
+              onClick={handleRunScrape}
+              loading={manualScrapeMutation.isPending}
+              maxW="fit-content"
+              disabled={!bsDate}
+              _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
+              aria-label="Run court data sync"
+            >
+              <HStack gap={2}>
+                <RefreshCw size={16} />
+                <Text>Run Court Sync</Text>
+              </HStack>
+            </Button>
+          )}
 
           {/* Dynamic Sync Result */}
           {manualScrapeMutation.isPending && (

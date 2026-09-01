@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/shared/service/service-api";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import {
   ApiErrorResponse,
@@ -23,9 +24,11 @@ const getClients = () => {
 };
 
 export const useGetClientsQuery = () => {
+  const { canView } = useModulePermissions("CLIENT_MANAGEMENT");
   return useQuery({
     queryKey: [api.CLIENT_MANAGEMENT.GET_CLIENTS],
     queryFn: getClients,
+    enabled: canView,
     select: (response) => response?.data?.data,
   });
 };

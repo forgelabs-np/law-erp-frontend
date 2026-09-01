@@ -165,6 +165,36 @@ export const useToggleModuleMenuMutation = () => {
   });
 };
 
+// ─── DELETE MODULE ──────────────────────────────────────────────────────────
+
+const deleteModuleMenu = async (id: string) => {
+  const url = api.USER_MANAGEMENT.MENU_MANAGEMENT.DELETE.replace(
+    "{moduleId}",
+    id
+  );
+  return LawFirmCRMClient.delete<ApiResponse<string>>(url);
+};
+
+export const useDeleteModuleMenuMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteModuleMenu(id),
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Module deleted successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.MENU_MANAGEMENT.MODULE_MENUS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to delete module";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
 const assignModulePermissions = async (data: {
   moduleId: string;
   permissionIds: string[];

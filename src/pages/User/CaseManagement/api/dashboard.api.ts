@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/shared/service/service-api";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import { ApiResponse } from "@/shared/types/response";
 import { toastFail, toastSuccess } from "@/shared/toast";
@@ -36,9 +37,11 @@ const getFirmDashboard = () => {
 };
 
 export const useFirmDashboardQuery = () => {
+  const { canView } = useModulePermissions("CASE_MANAGEMENT");
   return useQuery({
     queryKey: dashboardKeys.firm,
     queryFn: getFirmDashboard,
+    enabled: canView,
     select: (response) => response?.data?.data,
   });
 };

@@ -34,6 +34,7 @@ import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { MdAutorenew, MdPeopleAlt } from "react-icons/md";
 import { LuUser } from "react-icons/lu";
 import { ProjectFormModal } from "../components/ProjectFormModal";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 // ============================================================
 // Status Badge
@@ -250,6 +251,7 @@ const ProjectCard = ({
 
 const ProjectListPage = () => {
   const navigate = useNavigate();
+  const { canCreate, canEdit } = useModulePermissions("PROJECT_MANAGEMENT");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [page, setPage] = useState(0);
@@ -379,9 +381,11 @@ const ProjectListPage = () => {
             Manage your firm's projects ({totalElements} total)
           </Text>
         </Stack>
-        <Button variant="primary" onClick={handleCreateProject}>
-          <Plus size={16} color="white" /> New Project
-        </Button>
+        {canCreate && (
+          <Button variant="primary" onClick={handleCreateProject}>
+            <Plus size={16} color="white" /> New Project
+          </Button>
+        )}
       </HStack>
 
       {/* ==================== FILTERS ==================== */}

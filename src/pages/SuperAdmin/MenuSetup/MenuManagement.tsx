@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import {
   ModuleMenuResponse,
+  useDeleteModuleMenuMutation,
   useGetModuleMenusQuery,
   useToggleModuleMenuMutation,
 } from "@/api/menuSetup";
@@ -20,6 +21,10 @@ const MenuManagement = () => {
     id: string;
     active: boolean;
   } | null>(null);
+  const [menuToDelete, setMenuToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const {
     open: addEditOpen,
@@ -33,9 +38,17 @@ const MenuManagement = () => {
     onClose: onToggleConfirmClose,
   } = useDisclosure();
 
+  const {
+    open: deleteConfirmOpen,
+    onOpen: onDeleteConfirmOpen,
+    onClose: onDeleteConfirmClose,
+  } = useDisclosure();
+
   const { data: menuData } = useGetModuleMenusQuery();
   const { mutate: toggleMenu, isPending: isTogglePending } =
     useToggleModuleMenuMutation();
+  const { mutate: deleteModuleMenu, isPending: isDeletePending } =
+    useDeleteModuleMenuMutation();
 
   const columns: Array<ColumnDef<ModuleMenuResponse>> = useMemo(
     () => [
@@ -77,6 +90,13 @@ const MenuManagement = () => {
             onEdit={() => {
               setSelectedId(row.original.id.toString());
               onAddEditOpen();
+            }}
+            onDelete={() => {
+              setMenuToDelete({
+                id: row.original.id.toString(),
+                name: row.original.name,
+              });
+              onDeleteConfirmOpen();
             }}
           />
         ),
@@ -132,6 +152,27 @@ const MenuManagement = () => {
           }
         }}
         submitActionPending={isTogglePending}
+      />
+
+      <ConfirmationDialog
+        open={deleteConfirmOpen}
+        onClose={() => {
+          onDeleteConfirmClose();
+          setMenuToDelete(null);
+        }}
+        title={`Delete "${menuToDelete?.name ?? ""}" module?`}
+        action="delete this module"
+        handleSubmit={() => {
+          if (menuToDelete) {
+            deleteModuleMenu(menuToDelete.id, {
+              onSuccess: () => {
+                onDeleteConfirmClose();
+                setMenuToDelete(null);
+              },
+            });
+          }
+        }}
+        submitActionPending={isDeletePending}
       />
     </Stack>
   );

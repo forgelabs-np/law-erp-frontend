@@ -312,13 +312,22 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
 // roleId comes from the Firm Management API response (FirmResponse.roleId).
 // All permission checkbox logic and save flow are handled by RolePermissionsSection.
 
-function FirmPermissionsTab({ roleId, roleName }: { roleId?: string; roleName?: string }) {
+function FirmPermissionsTab({
+  roleId,
+  roleName,
+}: {
+  roleId?: string;
+  roleName?: string;
+}) {
   // Validate roleId before fetching
   const validRoleId = roleId?.trim() || "";
 
   // Fetch role details using GET /admin/roles/:roleId (includes permissions)
-  const { data: roleDetails, isLoading: isLoadingRoleDetails, isError } =
-    useRoleByIdQuery(validRoleId);
+  const {
+    data: roleDetails,
+    isLoading: isLoadingRoleDetails,
+    isError,
+  } = useRoleByIdQuery(validRoleId);
 
   if (!validRoleId) {
     return (
@@ -334,8 +343,8 @@ function FirmPermissionsTab({ roleId, roleName }: { roleId?: string; roleName?: 
           No role assigned
         </Text>
         <Text color="gray.400" fontSize="sm">
-          This firm admin does not have an associated role.
-          Please assign a role via Role Management.
+          This firm admin does not have an associated role. Please assign a role
+          via Role Management.
         </Text>
       </Box>
     );
@@ -512,10 +521,7 @@ export default function AccessManagementPage() {
           <Tabs.Content value="permissions">
             {/* Lazy: only renders when permissions tab is active */}
             {activeTab === "permissions" && (
-              <FirmPermissionsTab
-                roleId={firmRoleId}
-                roleName={firmRoleName}
-              />
+              <FirmPermissionsTab roleId={firmRoleId} roleName={firmRoleName} />
             )}
           </Tabs.Content>
         </Box>

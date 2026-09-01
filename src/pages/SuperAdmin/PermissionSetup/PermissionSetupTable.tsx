@@ -12,10 +12,12 @@ import {
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 import {
+  useDeletePermissionMutation,
   useGetGroupedPermissionsQuery,
   useTogglePermissionMutation,
 } from "@/api/permissionSetup";
 import { AddIcon, EditIcon } from "@/assets/svgs";
+import { Trash2 } from "lucide-react";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch } from "@/shared/components/ui/Switch";
 import {
@@ -38,6 +40,10 @@ export const PermissionManagementTable = () => {
     id: string;
     active: boolean;
   } | null>(null);
+  const [permissionToDelete, setPermissionToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const {
     open: addEditOpen,
@@ -51,9 +57,17 @@ export const PermissionManagementTable = () => {
     onClose: onToggleConfirmClose,
   } = useDisclosure();
 
+  const {
+    open: deleteConfirmOpen,
+    onOpen: onDeleteConfirmOpen,
+    onClose: onDeleteConfirmClose,
+  } = useDisclosure();
+
   const { data: menuData, isLoading } = useGetGroupedPermissionsQuery();
   const { mutate: toggleMenu, isPending: isTogglePending } =
     useTogglePermissionMutation();
+  const { mutate: deletePermission, isPending: isDeletePending } =
+    useDeletePermissionMutation();
 
   const modules = menuData?.modules || [];
 
@@ -334,14 +348,31 @@ export const PermissionManagementTable = () => {
                               {perm.isActive ? "Active" : "Inactive"}
                             </Text>
                           </HStack>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            aria-label="Edit permission"
-                            onClick={() => handleEditClick(perm.id)}
-                          >
-                            <EditIcon /> Edit
-                          </Button>
+                          <HStack gap={1}>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              aria-label="Edit permission"
+                              onClick={() => handleEditClick(perm.id)}
+                            >
+                              <EditIcon />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              colorPalette="red"
+                              aria-label="Delete permission"
+                              onClick={() => {
+                                setPermissionToDelete({
+                                  id: perm.id,
+                                  name: perm.action,
+                                });
+                                onDeleteConfirmOpen();
+                              }}
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </HStack>
                         </Grid>
                       ))}
                     </Stack>
@@ -384,6 +415,27 @@ export const PermissionManagementTable = () => {
           }
         }}
         submitActionPending={isTogglePending}
+      />
+
+      <ConfirmationDialog
+        open={deleteConfirmOpen}
+        onClose={() => {
+          onDeleteConfirmClose();
+          setPermissionToDelete(null);
+        }}
+        title={`Delete "${permissionToDelete?.name ?? ""}" permission?`}
+        action="delete this permission"
+        handleSubmit={() => {
+          if (permissionToDelete) {
+            deletePermission(permissionToDelete.id, {
+              onSuccess: () => {
+                onDeleteConfirmClose();
+                setPermissionToDelete(null);
+              },
+            });
+          }
+        }}
+        submitActionPending={isDeletePending}
       />
     </Stack>
   );

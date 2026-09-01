@@ -71,6 +71,7 @@ import { CourtEventDetailsModal } from "../components/CourtEventDetailsModal";
 import { EventHeldModal } from "../components/EventHeldModal";
 import { JudgmentModal } from "../components/JudgmentModal";
 import { MatterTeam } from "../components/MatterTeam";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 type Tab = "overview" | "courtCases" | "parties" | "events" | "timeline";
 
@@ -78,6 +79,9 @@ const MatterDetailPage = () => {
   const { matterNumber } = useParams<{ matterNumber: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+
+  const { canCreate, canEdit, canDelete } =
+    useModulePermissions("CASE_MANAGEMENT");
 
   const {
     data: matter,
@@ -195,7 +199,7 @@ const MatterDetailPage = () => {
         onBack={() => navigate("/cases")}
         actions={
           <>
-            {currentCourtCase && (
+            {currentCourtCase && canCreate && (
               <Button
                 variant="outline"
                 size="sm"
@@ -207,29 +211,35 @@ const MatterDetailPage = () => {
                 <Calendar size={14} /> Schedule Event
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsAddPartyOpen(true)}
-            >
-              <User size={14} /> Add Party
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsEditOpen(true)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              colorScheme="red"
-              onClick={handleDeleteMatter}
-              disabled={deleteMatterMutation.isPending}
-            >
-              <Trash2 size={14} /> Delete
-            </Button>
+            {canCreate && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAddPartyOpen(true)}
+              >
+                <User size={14} /> Add Party
+              </Button>
+            )}
+            {canEdit && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditOpen(true)}
+              >
+                Edit
+              </Button>
+            )}
+            {canDelete && (
+              <Button
+                variant="outline"
+                size="sm"
+                colorScheme="red"
+                onClick={handleDeleteMatter}
+                disabled={deleteMatterMutation.isPending}
+              >
+                <Trash2 size={14} /> Delete
+              </Button>
+            )}
           </>
         }
       />
