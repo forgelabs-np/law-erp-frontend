@@ -37,6 +37,7 @@ import {
 } from "../components/wizard";
 import { CaseTypeSelector } from "../components/wizard/CaseTypeSelector";
 import { FieldSelect } from "../components/ui";
+import { DatePicker } from "@/shared/components/ui";
 import { AddPartyModal } from "../components/AddPartyModal";
 import { PartyMatchSuggestions } from "../components/PartyMatchSuggestions";
 import { useMatchMatterPartyMutation } from "../api/matterParty.api";
@@ -319,10 +320,10 @@ const CreateMatterPage = () => {
                 <Text mb={1} fontSize="sm" fontWeight="500">
                   Filing Date
                 </Text>
-                <Input
-                  type="date"
+                <DatePicker
                   value={filingDate}
-                  onChange={(e) => setFilingDate(e.target.value)}
+                  onChange={setFilingDate}
+                  placeholder="Select filing date"
                 />
               </Box>
             </Grid>

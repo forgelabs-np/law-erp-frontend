@@ -7,10 +7,13 @@ export type ApiResponse<T> = {
 
 export type PaginatedResponse<T> = {
   content: T[];
-  size: number;
+  empty: boolean;
+  first: boolean;
+  last: boolean;
   page: number;
-  totalPages: number;
+  size: number;
   totalElements: number;
+  totalPages: number;
 };
 
 export type ApiErrorResponse = {

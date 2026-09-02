@@ -70,6 +70,7 @@ export const api = {
       RESET_PASSWORD: "modules/users/{userId}/reset-password",
       BULK_ROLE_CHANGE: "modules/users/bulk-role-change",
       BULK_DEACTIVATE: "modules/users/bulk-deactivate",
+      RESET_MFA: "super-admin/mfa/reset",
     },
   },
   FIRM_MANAGEMENT: {
@@ -83,7 +84,7 @@ export const api = {
     GET_FIRM_ROLES: "firm/roles",
   },
   AUDIT_LOGS: {
-    PLATFORM_AUDIT: "super-admin/audit/actions",
+    PLATFORM_AUDIT: "super-admin/audit",
     FIRM_AUDIT: "super-admin/audit/firms/{firmId}",
   },
   MATTER_MANAGEMENT: {

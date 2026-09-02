@@ -93,6 +93,7 @@ import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { ProjectFormModal } from "../components/ProjectFormModal";
+import { DatePicker } from "@/shared/components/ui";
 
 // ============================================================
 // Status Badge
@@ -1107,26 +1108,25 @@ const RenewalCard = ({
                 <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
                   Start Date *
                 </Text>
-                <Input
-                  type="date"
+                <DatePicker
                   value={formData.startDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, startDate: e.target.value })
+                  onChange={(val) =>
+                    setFormData({ ...formData, startDate: val })
                   }
-                  required
+                  placeholder="Select start date"
                 />
               </Box>
               <Box>
                 <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
                   End Date
                 </Text>
-                <Input
-                  type="date"
+                <DatePicker
                   value={formData.endDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, endDate: e.target.value })
+                  onChange={(val) =>
+                    setFormData({ ...formData, endDate: val })
                   }
-                  min={formData.startDate || undefined}
+                  placeholder="Select end date"
+                  minDate={formData.startDate || undefined}
                 />
               </Box>
               <Box>
@@ -1370,26 +1370,25 @@ const RenewalsTab = ({ projectCode }: { projectCode: string }) => {
                 <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
                   Start Date *
                 </Text>
-                <Input
-                  type="date"
+                <DatePicker
                   value={formData.startDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, startDate: e.target.value })
+                  onChange={(val) =>
+                    setFormData({ ...formData, startDate: val })
                   }
-                  required
+                  placeholder="Select start date"
                 />
               </Box>
               <Box>
                 <Text fontSize="sm" fontWeight="500" color="gray.700" mb={2}>
                   End Date
                 </Text>
-                <Input
-                  type="date"
+                <DatePicker
                   value={formData.endDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, endDate: e.target.value })
+                  onChange={(val) =>
+                    setFormData({ ...formData, endDate: val })
                   }
-                  min={formData.startDate || undefined}
+                  placeholder="Select end date"
+                  minDate={formData.startDate || undefined}
                 />
               </Box>
               <Box>
