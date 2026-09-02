@@ -440,11 +440,11 @@ const GlobalDashboardPage = () => {
             size="sm"
             onClick={handleRefresh}
             disabled={isFetching}
-            color="green.600"
-            _hover={{ bg: "green.50" }}
+            color="blue.600"
+            _hover={{ bg: "blue.50" }}
           >
             {isFetching ? (
-              <Spinner size="sm" color="green.500" />
+              <Spinner size="sm" color="blue.500" />
             ) : (
               <RefreshCw size={15} />
             )}

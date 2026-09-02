@@ -55,7 +55,7 @@ const LayoutSlider = () => {
     ),
   };
   return (
-    <GridItem padding={"56px"} minW={0} display={"flex"} alignItems={"center"}>
+    <GridItem padding={{ base: "24px", md: "40px" }} minW={0} display={"flex"} alignItems={"center"}>
       <Box
         className="slider-container"
         css={{
@@ -68,11 +68,11 @@ const LayoutSlider = () => {
         minW={0}
       >
         <SlickSlider {...settings}>
-          <Stack display={"flex !important"} gap={8} alignItems={"center"}>
+          <Stack display={"flex !important"} gap={6} alignItems={"center"}>
             <Image
               src={UnauthLayoutDocs}
-              height={"200px"}
-              width={"200px"}
+              height={"160px"}
+              width={"160px"}
               alignSelf={"center"}
             />
             <Stack alignItems={"center"}>
@@ -89,11 +89,11 @@ const LayoutSlider = () => {
               </Text>
             </Stack>
           </Stack>
-          <Stack display={"flex !important"} gap={8} alignItems={"center"}>
+          <Stack display={"flex !important"} gap={6} alignItems={"center"}>
             <Image
               src={UnauthLayoutDocs}
-              height={"200px"}
-              width={"200px"}
+              height={"160px"}
+              width={"160px"}
               alignSelf={"center"}
             />
             <Stack alignItems={"center"}>
@@ -110,11 +110,11 @@ const LayoutSlider = () => {
               </Text>
             </Stack>
           </Stack>
-          <Stack display={"flex !important"} gap={8} alignItems={"center"}>
+          <Stack display={"flex !important"} gap={6} alignItems={"center"}>
             <Image
               src={UnauthLayoutDocs}
-              height={"200px"}
-              width={"200px"}
+              height={"160px"}
+              width={"160px"}
               alignSelf={"center"}
             />
             <Stack alignItems={"center"}>
@@ -162,8 +162,8 @@ export const UnAuthLayoutAdmin = ({
           flex={{ base: "1", lg: "0.45" }}
           flexDirection="column"
           justifyContent="center"
-          px={{ base: 6, md: 12, lg: 16 }}
-          py={{ base: 8, md: 12 }}
+          px={{ base: 4, md: 8, lg: 12 }}
+          py={{ base: 6, md: 8 }}
           bg="white"
         >
           <Box maxW="480px" width="100%" mx="auto">
@@ -177,8 +177,8 @@ export const UnAuthLayoutAdmin = ({
           flex="0.55"
           flexDirection="column"
           justifyContent="center"
-          px={16}
-          py={12}
+          px={{ base: 8, lg: 12 }}
+          py={{ base: 6, md: 8 }}
           position="relative"
           overflow="hidden"
           bg="gray.900"
@@ -232,8 +232,8 @@ export const UnAuthLayoutAdmin = ({
       backgroundSize="cover"
       justifyContent="center"
       alignItems="center"
-      padding={{ base: 4, md: 10, lg: 20 }}
-      py={{ base: 0, md: 20 }}
+      padding={{ base: 4, md: 8, lg: 12 }}
+      py={{ base: 4, md: 8 }}
       bg={"#0A1628"}
     >
       <Grid
@@ -249,12 +249,12 @@ export const UnAuthLayoutAdmin = ({
         flexShrink={0}
       >
         <GridItem
-          paddingX={10}
+          paddingX={8}
           borderRight={hasSideContent ? "1px solid" : "none"}
           borderColor="gray.200"
           as={Stack}
           gap={0}
-          paddingY={8}
+          paddingY={6}
         >
           {children}
         </GridItem>

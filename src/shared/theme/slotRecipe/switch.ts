@@ -22,7 +22,7 @@ export const switchSlotRecipe = defineSlotRecipe({
           bg: "gray.200",
           focusVisibleRing: "outside",
           _checked: {
-            bg: "green.600",
+            bg: "blue.600",
           },
         },
         thumb: {},
