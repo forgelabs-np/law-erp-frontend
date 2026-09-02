@@ -59,6 +59,7 @@ export function ModuleRouteGuard({
       <PermissionDenied
         title="Access Restricted"
         description={`You don't have permission to access this module. Contact your administrator if you believe this is an error.`}
+        showDashboard={false}
       />
     );
   }
@@ -69,6 +70,7 @@ export function ModuleRouteGuard({
       <PermissionDenied
         title="Permission Required"
         description={`You don't have the required permission to view this page. Please contact your administrator for access.`}
+        showDashboard={false}
       />
     );
   }

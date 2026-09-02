@@ -50,10 +50,10 @@ export const RolePermissionsSection = ({ roleId }: { roleId: string }) => {
       .flat()
       .filter(Boolean);
 
-    if (permissionIds.length === 0) {
-      errorNotification("Please select at least one permission.");
-      return;
-    }
+    // if (permissionIds.length === 0) {
+    //   errorNotification("Please select at least one permission.");
+    //   return;
+    // }
 
     const payload: RoleSetupPayload = {
       id: roleId,

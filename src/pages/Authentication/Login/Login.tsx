@@ -165,13 +165,13 @@ const Login = () => {
   };
 
   return (
-    <VStack gap={8} justifyContent="center" py={2} align="stretch">
+    <VStack gap={5} justifyContent="center" py={1} align="stretch">
       {/* Logo Area */}
       <HStack gap={2} align="flex-start">
         <Box>
-          <Image src={Logo} alt="Logo" height="48px" width="max-content" />
+          <Image src={Logo} alt="Logo" height="40px" width="max-content" />
         </Box>
-        <Stack gap={1}>
+        <Stack gap={0.5}>
           <Text fontSize="sm" fontWeight="600" color="gray.600">
             Law Firm CRM
           </Text>
@@ -182,13 +182,13 @@ const Login = () => {
       </HStack>
 
       {/* Header */}
-      <Stack gap={6}>
+      <Stack gap={4}>
         {/* Access type badge */}
         <Box
           display="inline-flex"
           alignSelf="flex-start"
           px={3}
-          py={1.5}
+          py={1}
           borderRadius="full"
           bg="gray.50"
           border="1px solid"
@@ -205,7 +205,7 @@ const Login = () => {
           </Text>
         </Box>
 
-        <Stack gap={3}>
+        <Stack gap={2}>
           <Text
             fontSize="3xl"
             fontWeight="700"
@@ -222,15 +222,15 @@ const Login = () => {
 
       {/* Form */}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
-        <Stack gap={6}>
-          <Stack gap={5}>
+        <Stack gap={4}>
+          <Stack gap={4}>
             {loginType !== "super-admin" && (
               <TextFieldInput
                 name="lawFirmCode"
                 label="Firm Code"
                 placeholder="Enter your firm code"
                 required
-                inputHeight="52px"
+                inputHeight="48px"
                 inputBorderRadius="lg"
               />
             )}
@@ -239,7 +239,7 @@ const Login = () => {
               label="Username"
               placeholder="Enter your username"
               required
-              inputHeight="52px"
+              inputHeight="48px"
               inputBorderRadius="lg"
             />
             <PasswordInput
@@ -247,7 +247,7 @@ const Login = () => {
               label="Password"
               placeholder="Enter your password"
               required
-              inputHeight="52px"
+              inputHeight="48px"
               inputBorderRadius="lg"
             />
             {loginType !== "super-admin" && (
@@ -274,7 +274,7 @@ const Login = () => {
             variant="solid"
             loading={isPending}
             width="full"
-            height="52px"
+            height="48px"
             borderRadius="lg"
             fontSize="md"
             fontWeight="600"
@@ -288,7 +288,7 @@ const Login = () => {
       </FormProvider>
 
       {/* Security Footer */}
-      <HStack gap={2} justify="center" pt={4}>
+      <HStack gap={2} justify="center" pt={2}>
         <LuShieldCheck />
         <Text fontSize="xs" color="gray.400">
           Secured with enterprise-grade encryption
@@ -296,7 +296,7 @@ const Login = () => {
       </HStack>
 
       {/* Bottom Links */}
-      <Stack gap={3} pt={2}>
+      <Stack gap={2} pt={0}>
         <HStack gap={5} justify="center" fontSize="xs" color="gray.400">
           <Text>Need help?</Text>
           <Text

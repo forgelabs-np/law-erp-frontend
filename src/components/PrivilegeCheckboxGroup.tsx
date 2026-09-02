@@ -20,15 +20,21 @@ function CheckboxGroup({
   options,
 }: CheckboxGroupProps) {
   const allChecked =
-    options.length > 0 && options.every((opt) => value.includes(opt.value));
+    options.length > 0 &&
+    options
+      .filter((opt) => !opt.disabled)
+      .every((opt) => value.includes(opt.value));
 
   const toggleAll = (details: { checked: boolean | "indeterminate" }) => {
     if (details.checked === true) {
-      // Only select options that are not disabled
-      onChange(options.filter((o) => !o.disabled).map((o) => o.value));
+      // Enable all non-disabled options
+      const enabledOptions = options.filter((o) => !o.disabled).map((o) => o.value);
+      onChange(enabledOptions);
     } else {
-      // Deselect only non-disabled options that are currently selected
-      onChange(value.filter((v) => !options.find((o) => o.value === v && o.disabled)));
+      // Disable all non-disabled options (keep only disabled ones that were selected)
+      const disabledOptionValues = options.filter((o) => o.disabled).map((o) => o.value);
+      const currentlySelectedDisabled = value.filter((v) => disabledOptionValues.includes(v));
+      onChange(currentlySelectedDisabled);
     }
   };
 
