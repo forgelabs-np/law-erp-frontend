@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
-import { ApiErrorResponse, ApiResponse } from "@/shared/types/response";
+import { ApiErrorResponse, ApiResponse, PaginatedResponse } from "@/shared/types/response";
 import {
   errorNotification,
   successNotification,
@@ -24,6 +24,15 @@ export interface UserResponseType {
   lastLogin?: string;
 }
 
+export interface UsersPaginationParams {
+  page?: number;
+  size?: number;
+  q?: string;
+  userType?: string;
+  roleId?: string;
+  active?: string;
+}
+
 export interface UserProfileType extends UserResponseType {
   mobileNo: string;
   designation: string;
@@ -31,28 +40,29 @@ export interface UserProfileType extends UserResponseType {
   joiningDate: string;
 }
 
-const getUsers = () => {
-  return LawFirmCRMClient.get<ApiResponse<UserResponseType[]>>(
-    api.USER_MANAGEMENT.USERS.GET_USERS
+const getUsers = (params?: UsersPaginationParams) => {
+  return LawFirmCRMClient.get<ApiResponse<PaginatedResponse<UserResponseType>>>(
+    api.USER_MANAGEMENT.USERS.GET_USERS,
+    { params }
   );
 };
 
-export const useGetUsersQuery = () => {
+export const useGetUsersQuery = (params?: UsersPaginationParams) => {
   return useQuery({
-    queryKey: [api.USER_MANAGEMENT.USERS.GET_USERS],
-    queryFn: getUsers,
+    queryKey: [api.USER_MANAGEMENT.USERS.GET_USERS, params],
+    queryFn: () => getUsers(params),
     select: (response) => response?.data?.data,
   });
 };
 
-const getSuperAdminUsers = (params: any) => {
-  return LawFirmCRMClient.get<ApiResponse<any>>(
+const getSuperAdminUsers = (params: UsersPaginationParams) => {
+  return LawFirmCRMClient.get<ApiResponse<PaginatedResponse<UserResponseType>>>(
     api.USER_MANAGEMENT.USERS.SUPER_ADMIN_GET_USERS,
     { params }
   );
 };
 
-export const useSuperAdminUsersQuery = (params: any) => {
+export const useSuperAdminUsersQuery = (params: UsersPaginationParams) => {
   return useQuery({
     queryKey: [api.USER_MANAGEMENT.USERS.SUPER_ADMIN_GET_USERS, params],
     queryFn: () => getSuperAdminUsers(params),
@@ -60,14 +70,14 @@ export const useSuperAdminUsersQuery = (params: any) => {
   });
 };
 
-const searchUsers = (params: any) => {
-  return LawFirmCRMClient.get<ApiResponse<UserResponseType[]>>(
+const searchUsers = (params: UsersPaginationParams) => {
+  return LawFirmCRMClient.get<ApiResponse<PaginatedResponse<UserResponseType>>>(
     api.USER_MANAGEMENT.USERS.SEARCH,
     { params }
   );
 };
 
-export const useSearchUsersQuery = (params: any) => {
+export const useSearchUsersQuery = (params: UsersPaginationParams) => {
   return useQuery({
     queryKey: [api.USER_MANAGEMENT.USERS.SEARCH, params],
     queryFn: () => searchUsers(params),
@@ -132,6 +142,38 @@ export const useResetPasswordMutation = () => {
     onSuccess: (response) => {
       successNotification(
         response?.data?.message || "Password reset successfully"
+      );
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ??
+        error?.response?.data?.error?.errorMessage ??
+        "Something went wrong!";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+export interface ResetMFARequest {
+  data: {
+    userId: string;
+    reason: string;
+  };
+}
+
+const resetMFA = (request: ResetMFARequest) => {
+  return LawFirmCRMClient.post<ApiResponse<string>>(
+    api.USER_MANAGEMENT.USERS.RESET_MFA,
+    request
+  );
+};
+
+export const useResetMFAMutation = () => {
+  return useMutation({
+    mutationFn: resetMFA,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "MFA reset successfully"
       );
     },
     onError: (error: ApiErrorResponse) => {

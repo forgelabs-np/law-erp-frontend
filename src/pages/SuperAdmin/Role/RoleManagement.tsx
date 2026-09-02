@@ -126,6 +126,8 @@ const RoleSetup = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [userTypeFilter, setUserTypeFilter] = useState("");
   const [firmFilter, setFirmFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const filterFormMethods = useForm({
     defaultValues: { userType: "", firm: "" },
@@ -136,11 +138,12 @@ const RoleSetup = () => {
     isLoading,
     refetch,
   } = useSuperAdminUsersQuery({
-    page: 1,
-    pageSize: 10,
-    q: searchQuery,
-    userType: userTypeFilter,
-    firmCode: firmFilter,
+    page: currentPage,
+    size: pageSize,
+    q: searchQuery || undefined,
+    userType: userTypeFilter || undefined,
+    roleId: undefined,
+    active: undefined,
   });
 
   const { data: firmsResponse } = useGetFirmsQuery();
@@ -163,14 +166,11 @@ const RoleSetup = () => {
     })),
   ];
 
-  // We fallback to checking if it's paginated, but if not we just use array
-  const list: UserResponseType[] = Array.isArray(usersData)
-    ? usersData
-    : (usersData?.datalist ?? []);
-  const totalRecords = Array.isArray(usersData)
-    ? usersData.length
-    : (usersData?.totalRecords ?? 0);
-  const pageCount = Array.isArray(usersData) ? 1 : (usersData?.totalPages ?? 1);
+  const list: UserResponseType[] = usersData?.content ?? [];
+  const totalRecords = usersData?.totalElements ?? 0;
+  const pageCount = usersData?.totalPages ?? 1;
+  const isFirstPage = usersData?.first ?? true;
+  const isLastPage = usersData?.last ?? true;
 
   // Calculate statistics
   const totalUsers = totalRecords;
@@ -437,6 +437,7 @@ const RoleSetup = () => {
                   setSearchQuery("");
                   setUserTypeFilter("");
                   setFirmFilter("");
+                  setCurrentPage(0);
                   filterFormMethods.reset({
                     userType: "",
                     firm: "",
@@ -482,6 +483,7 @@ const RoleSetup = () => {
                   setSearchQuery("");
                   setUserTypeFilter("");
                   setFirmFilter("");
+                  setCurrentPage(0);
                   filterFormMethods.reset({
                     userType: "",
                     firm: "",
@@ -642,7 +644,29 @@ const RoleSetup = () => {
             ))}
           </VStack>
         ) : (
-          <Datatable isLoading={isLoading} columns={columns} data={list} />
+          <Datatable
+            isLoading={isLoading}
+            columns={columns}
+            data={list}
+            pagination={
+              pageCount > 1
+                ? {
+                    pageSize: pageSize,
+                    currentPage: currentPage + 1,
+                    pageCount: pageCount,
+                    setPageSize: (newSize: number) => {
+                      setPageSize(newSize);
+                      setCurrentPage(0);
+                    },
+                    onPaginationChange: (newPage: number) => {
+                      setCurrentPage(newPage - 1);
+                    },
+                    isFirstPage: isFirstPage,
+                    isLastPage: isLastPage,
+                  }
+                : undefined
+            }
+          />
         )}
       </Box>
     </Stack>

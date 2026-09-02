@@ -5,8 +5,10 @@ import {
   HStack,
   MenuContent,
   MenuItem,
+  MenuPositioner,
   MenuRoot,
   MenuTrigger,
+  Portal,
   Stack,
   Text,
   useDisclosure,
@@ -14,7 +16,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, Eye, UserCog, UserX } from "lucide-react";
+import { ChevronDown, Eye, Settings, UserCog, UserX } from "lucide-react";
 import { MdLockReset } from "react-icons/md";
 
 import {
@@ -23,6 +25,7 @@ import {
   useResetPasswordMutation,
   useBulkRoleChangeMutation,
   useBulkDeactivateMutation,
+  useResetMFAMutation,
 } from "@/api/userManagement";
 import { useGetRoleQuery } from "@/api/roleSetup.ts";
 import {
@@ -32,6 +35,7 @@ import {
   SearchInput,
 } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
+import { ResetMFADialog } from "./components/ResetMFADialog";
 import {
   DialogBackdrop,
   DialogBody,
@@ -43,6 +47,7 @@ import {
 import { Checkbox as UICheckbox, Tooltip } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { useForm } from "react-hook-form";
+import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 interface BulkRoleDialogProps {
   open: boolean;
@@ -175,6 +180,9 @@ export const UserManagement = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [userToReset, setUserToReset] = useState<string | null>(null);
+  const [userToResetMFA, setUserToResetMFA] = useState<UserResponseType | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const filterFormMethods = useForm({
@@ -185,6 +193,12 @@ export const UserManagement = () => {
     open: resetConfirmOpen,
     onOpen: onResetConfirmOpen,
     onClose: onResetConfirmClose,
+  } = useDisclosure();
+
+  const {
+    open: resetMFAOpen,
+    onOpen: onResetMFAOpen,
+    onClose: onResetMFAClose,
   } = useDisclosure();
 
   const {
@@ -209,12 +223,36 @@ export const UserManagement = () => {
     };
   }, [searchQuery]);
 
-  const { data: usersData, isLoading, isError, refetch } = useGetUsersQuery();
+  const { data: usersData, isLoading, isError, refetch } = useGetUsersQuery({
+    page: currentPage,
+    size: pageSize,
+    q: debouncedSearch || undefined,
+    userType: userTypeFilter || undefined,
+    roleId: roleIdFilter || undefined,
+    active: statusFilter || undefined,
+  });
   const { data: rolesData } = useGetRoleQuery();
   const { mutate: resetPassword, isPending: isResetPending } =
     useResetPasswordMutation();
+  const { mutate: resetMFA, isPending: isResetMFAPending } =
+    useResetMFAMutation();
   const { mutate: bulkDeactivate, isPending: isDeactivatePending } =
     useBulkDeactivateMutation();
+
+  const { canResetMFA } = useModulePermissions("USER_MANAGEMENT");
+
+  const handleResetMFA = (reason: string) => {
+    if (!userToResetMFA) return;
+    resetMFA(
+      { data: { userId: userToResetMFA.id, reason } },
+      {
+        onSuccess: () => {
+          onResetMFAClose();
+          setUserToResetMFA(null);
+        },
+      }
+    );
+  };
 
   const roleOptions =
     rolesData?.data?.map((role) => ({
@@ -237,8 +275,14 @@ export const UserManagement = () => {
     { label: "Inactive", value: "false" },
   ];
 
+  const usersList = usersData?.content ?? [];
+  const totalPages = usersData?.totalPages ?? 1;
+  const totalElements = usersData?.totalElements ?? 0;
+  const isFirstPage = usersData?.first ?? true;
+  const isLastPage = usersData?.last ?? true;
+
   const filteredUsers = useMemo(() => {
-    let data = usersData ?? [];
+    let data = usersList;
 
     if (debouncedSearch) {
       const query = debouncedSearch.toLowerCase();
@@ -264,7 +308,7 @@ export const UserManagement = () => {
     }
 
     return data;
-  }, [usersData, debouncedSearch, userTypeFilter, roleIdFilter, statusFilter]);
+  }, [usersList, debouncedSearch, userTypeFilter, roleIdFilter, statusFilter]);
 
   const isAllSelected =
     filteredUsers.length > 0 && selectedIds.length === filteredUsers.length;
@@ -411,24 +455,56 @@ export const UserManagement = () => {
                 <Eye size={18} />
               </Button>
             </Tooltip>
-            <Tooltip content="Reset Password">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setUserToReset(String(row.original.id));
-                  onResetConfirmOpen();
-                }}
-                aria-label="Reset Password"
-              >
-                <MdLockReset size={18} />
-              </Button>
-            </Tooltip>
+            <MenuRoot positioning={{ placement: "right-start" }}>
+              <MenuTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  aria-label="Settings"
+                >
+                  <Settings size={18} />
+                </Button>
+              </MenuTrigger>
+              <Portal>
+                <MenuPositioner>
+                  <MenuContent >
+                    <MenuItem
+                    cursor={"pointer"}
+                      value="reset-password"
+                      onClick={() => {
+                        setUserToReset(String(row.original.id));
+                        onResetConfirmOpen();
+                      }}
+                    >
+                      <HStack gap={2}>
+                        <MdLockReset size={16} />
+                        <Text>Reset Password</Text>
+                      </HStack>
+                    </MenuItem>
+                    {/* {canResetMFA && ( */}
+                      <MenuItem
+                        cursor={"pointer"}
+                        value="reset-mfa"
+                        onClick={() => {
+                          setUserToResetMFA(row.original);
+                          onResetMFAOpen();
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <MdLockReset color="purple" size={16} />
+                          <Text color="purple">Reset MFA</Text>
+                        </HStack>
+                      </MenuItem>
+                    {/* )} */}
+                  </MenuContent>
+                </MenuPositioner>
+              </Portal>
+            </MenuRoot>
           </HStack>
         ),
       },
     ],
-    [selectedIds, isAllSelected, isIndeterminate, navigate, onResetConfirmOpen]
+    [selectedIds, isAllSelected, isIndeterminate, navigate, onResetConfirmOpen, canResetMFA, onResetMFAOpen]
   );
 
   return (
@@ -541,6 +617,7 @@ export const UserManagement = () => {
                   setRoleIdFilter("");
                   setStatusFilter("");
                   setSelectedIds([]);
+                  setCurrentPage(0);
                   filterFormMethods.reset({
                     userType: "",
                     roleId: "",
@@ -580,13 +657,20 @@ export const UserManagement = () => {
             data={filteredUsers ?? []}
             revisionKey={selectedIds.join(",")}
             pagination={
-              filteredUsers.length > 10
+              totalPages > 1
                 ? {
-                    pageSize: 10,
-                    currentPage: 1,
-                    pageCount: Math.ceil(filteredUsers.length / 10),
-                    setPageSize: () => {},
-                    onPaginationChange: () => {},
+                    pageSize: pageSize,
+                    currentPage: currentPage + 1,
+                    pageCount: totalPages,
+                    setPageSize: (newSize: number) => {
+                      setPageSize(newSize);
+                      setCurrentPage(0);
+                    },
+                    onPaginationChange: (newPage: number) => {
+                      setCurrentPage(newPage - 1);
+                    },
+                    isFirstPage: isFirstPage,
+                    isLastPage: isLastPage,
                   }
                 : undefined
             }
@@ -628,6 +712,17 @@ export const UserManagement = () => {
         action="deactivate these users"
         handleSubmit={handleBulkDeactivate}
         submitActionPending={isDeactivatePending}
+      />
+
+      <ResetMFADialog
+        open={resetMFAOpen}
+        onClose={() => {
+          onResetMFAClose();
+          setUserToResetMFA(null);
+        }}
+        user={userToResetMFA}
+        onSubmit={handleResetMFA}
+        isPending={isResetMFAPending}
       />
     </Stack>
   );

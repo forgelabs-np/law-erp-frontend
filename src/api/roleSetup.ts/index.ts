@@ -3,11 +3,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RoleSetupPayload } from "@/pages/SuperAdmin/Role/types";
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
-import { ApiErrorResponse, ApiResponse } from "@/shared/types/response";
+import { ApiErrorResponse, ApiResponse, PaginatedResponse } from "@/shared/types/response";
 import {
   errorNotification,
   successNotification,
 } from "@/shared/utils/notification";
+import { UserResponseType } from "@/api/userManagement";
 
 export interface Permission {
   featureId: number;
@@ -193,7 +194,7 @@ export const useDeleteRoleMutation = () => {
 };
 
 const getRoleUsers = async (roleId: string) => {
-  return LawFirmCRMClient.get(
+  return LawFirmCRMClient.get<ApiResponse<PaginatedResponse<UserResponseType>>>(
     api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLE_USERS.replace("{roleId}", roleId)
   );
 };

@@ -45,16 +45,18 @@ export const RoleUsersDrawer = ({
   );
 
   const users = useMemo(() => {
-    if (!data) return [];
-    if (!searchTerm) return data;
+    const usersList = data?.content ?? [];
+    if (!searchTerm) return usersList;
     const lower = searchTerm.toLowerCase();
-    return data.filter(
+    return usersList.filter(
       (user: any) =>
         user.fullName?.toLowerCase().includes(lower) ||
         user.username?.toLowerCase().includes(lower) ||
         user.email?.toLowerCase().includes(lower)
     );
   }, [data, searchTerm]);
+
+  const totalUsers = data?.totalElements ?? 0;
 
   return (
     <DrawerRoot
@@ -84,7 +86,7 @@ export const RoleUsersDrawer = ({
           >
             {roleName}
           </DrawerTitle>
-          {data && data.length > 5 && (
+          {data && totalUsers > 5 && (
             <Box mt={4}>
               <InputGroup startElement={<SearchIcon />}>
                 <Input
@@ -129,7 +131,7 @@ export const RoleUsersDrawer = ({
                 Retry
               </Button>
             </VStack>
-          ) : !data || data.length === 0 ? (
+          ) : !data || totalUsers === 0 ? (
             <NoDataAvailable content="No users assigned to this role." />
           ) : users.length === 0 ? (
             <NoDataAvailable content="No matching users found." />
@@ -206,7 +208,7 @@ export const RoleUsersDrawer = ({
         >
           <Flex w="100%" justify="space-between" align="center">
             <Text fontSize="sm" fontWeight="600" color="gray.600">
-              {data ? `${data.length} Total Assigned Users` : ""}
+              {data ? `${totalUsers} Total Assigned Users` : ""}
             </Text>
             <Button variant="outline" onClick={onClose} borderRadius="8px">
               Close
