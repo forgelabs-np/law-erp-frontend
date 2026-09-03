@@ -161,6 +161,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 24,
   },
+  BILLING: {
+    moduleCode: "BILLING",
+    label: "Billing",
+    path: ROUTES_CONFIG.SUPER_ADMIN.INVOICES,
+    icon: FileText,
+    section: "Administration",
+    order: 25,
+  },
   SCRAPER_MANAGEMENT: {
     moduleCode: "SCRAPER_MANAGEMENT",
     label: "Court Data Sync",

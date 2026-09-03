@@ -55,6 +55,10 @@ export const ROUTES_CONFIG = {
     FIRM_ACCESS_MANAGEMENT: "/firm-management/:firmId/access-management",
     GLOBAL_CONFIG: "/super-admin/configuration/global",
     FIRM_CONFIG: "/super-admin/configuration/firms",
+    INVOICES: "/super-admin/invoices",
+    INVOICES_CREATE: "/super-admin/invoices/create",
+    INVOICES_EDIT: "/super-admin/invoices/:id/edit",
+    INVOICES_DETAIL: "/super-admin/invoices/:id",
   },
 
   NO_MATCH: "*",

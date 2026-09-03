@@ -58,6 +58,10 @@ import PublicRoute from "../routes/PublicRoutes";
 import PermissionManagementTable from "@/pages/SuperAdmin/PermissionSetup/PermissionSetupTable";
 import GlobalConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/GlobalConfiguration/GlobalConfigurationPage";
 import FirmConfigurationPage from "@/pages/SuperAdmin/ConfigurationManagement/FirmConfiguration/FirmConfigurationPage";
+import InvoiceListPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceListPage";
+import CreateInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/CreateInvoicePage";
+import EditInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/EditInvoicePage";
+import InvoiceDetailPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceDetailPage";
 
 /**
  * Route-level permission configuration.
@@ -287,6 +291,34 @@ export const USER_ROUTES: Array<{
       element: <ClientProjectDetailPage />,
       moduleCode: "PROJECT_MANAGEMENT",
       roles: ["CLIENT"],
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.INVOICES,
+      element: <InvoiceListPage />,
+      moduleCode: "BILLING",
+      requiredAction: "VIEW",
+      roles: ["SUPER_ADMIN"],
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.INVOICES_CREATE,
+      element: <CreateInvoicePage />,
+      moduleCode: "BILLING",
+      requiredAction: "VIEW",
+      roles: ["SUPER_ADMIN"],
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.INVOICES_EDIT,
+      element: <EditInvoicePage />,
+      moduleCode: "BILLING",
+      requiredAction: "VIEW",
+      roles: ["SUPER_ADMIN"],
+    },
+    {
+      path: ROUTES_CONFIG.SUPER_ADMIN.INVOICES_DETAIL,
+      element: <InvoiceDetailPage />,
+      moduleCode: "BILLING",
+      requiredAction: "VIEW",
+      roles: ["SUPER_ADMIN"],
     },
     {
       path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,

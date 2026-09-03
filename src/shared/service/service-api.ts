@@ -158,4 +158,14 @@ export const api = {
     PROJECT_BY_CODE: "client/projects/{projectCode}",
     PROJECT_RENEWALS: "client/projects/{projectCode}/renewals",
   },
+  INVOICE_MANAGEMENT: {
+    LIST: "super-admin/invoices",
+    GET_BY_ID: "super-admin/invoices/{id}",
+    CREATE: "super-admin/invoices",
+    UPDATE: "super-admin/invoices/{id}",
+    DELETE: "super-admin/invoices/{id}",
+    SEND: "super-admin/invoices/{id}/send",
+    UPDATE_STATUS: "super-admin/invoices/{id}/status",
+    DOWNLOAD_PDF: "super-admin/invoices/{id}/pdf",
+  },
 };
