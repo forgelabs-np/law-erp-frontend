@@ -77,13 +77,13 @@ export const AddEditFirm = ({
         lawFirmCode: firmById.firmCode ?? firmById.lawFirmCode ?? "",
         name: firmById.name ?? firmById.firmName ?? "",
         firmType: firmById.firmType ?? "",
-        email: firmById.email ?? "",
-        phone: firmById.phone ?? "",
-        address: firmById.address ?? "",
+        email: firmById.firmEmail ?? "",
+        phone: firmById.firmPhone ?? "",
+        address: firmById.firmAddress ?? "",
         jurisdiction: firmById.jurisdiction ?? "",
         adminUsername: firmById.username ?? "",
-        adminEmail: firmById.adminEmail ?? "",
-        adminMobileNo: firmById.adminMobileNo ?? firmById.mobileNo ?? "",
+        adminEmail: firmById.email ?? "",
+        adminMobileNo: firmById.mobileNo ?? "",
         adminPassword: "",
         adminFullName: firmById.adminFullName ?? firmById.fullName ?? "",
       });
@@ -93,9 +93,9 @@ export const AddEditFirm = ({
   const onSubmit = (data: FirmFormValues) => {
     const payload: FirmPayload = {
       ...(id ? { id } : {}),
-      ...(data.lawFirmCode ? { lawFirmCode: data.lawFirmCode } : {}),
+      ...(data.lawFirmCode?.toUpperCase() ? { lawFirmCode: data.lawFirmCode?.toUpperCase() } : {}),
       name: data.name,
-      firmType: data.firmType as "SOLO" | "CLIENT",
+      firmType: data.firmType as "SOLO" | "FIRM",
       email: data.email,
       phone: data.phone,
       address: data.address,
@@ -189,7 +189,7 @@ export const AddEditFirm = ({
                 <TextFieldInput
                   name="phone"
                   label="Phone"
-                  placeholder="+977 98XXXXXXXX"
+                  placeholder="98XXXXXXXX"
                   required
                 />
               </GridItem>

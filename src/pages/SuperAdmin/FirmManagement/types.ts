@@ -1,4 +1,4 @@
-export type FirmType = "SOLO" | "CLIENT";
+export type FirmType = "SOLO" | "FIRM";
 
 export interface FirmPayload {
   id?: string;

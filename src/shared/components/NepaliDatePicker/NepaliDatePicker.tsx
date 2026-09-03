@@ -18,6 +18,7 @@ import {
   getNepaliDaysInMonth,
   getNepaliMonthStart,
   getNepaliWeekday,
+  gregorianToNepali,
   isSameNepaliDate,
   nepaliDateKey,
   toNepaliDigits,
@@ -77,7 +78,14 @@ export const NepaliDatePicker = ({
     value || { year: 2083, month: 4, day: 1 }
   );
 
+  const todayNepali = gregorianToNepali(new Date());
+
   const cells = buildMonthCells(currentMonth.year, currentMonth.month);
+
+  const handleTodayClick = () => {
+    setCurrentMonth({ year: todayNepali.year, month: todayNepali.month, day: 1 });
+    onChange(todayNepali);
+  };
 
   const handlePreviousMonth = () => {
     setCurrentMonth((prev) => {
@@ -135,24 +143,26 @@ export const NepaliDatePicker = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        width="320px"
-        p={4}
+        width="310px"
+        maxH="420px"
+        p={3}
         bg="white"
         border="1px solid"
         borderColor="#E5E7EB"
         borderRadius="12px"
         boxShadow="0 4px 6px -1px rgba(0, 0, 0, 0.1)"
       >
-        <VStack gap={4} align="stretch">
+        <VStack gap={3} align="stretch">
           {/* Month/Year Header */}
           <HStack justify="space-between" align="center">
             <Button
               variant="ghost"
-              size="sm"
+              size="xs"
+              p={1}
               onClick={handlePreviousMonth}
               disabled={disabled}
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={14} />
             </Button>
             <Text
               fontSize="sm"
@@ -165,24 +175,26 @@ export const NepaliDatePicker = ({
             </Text>
             <Button
               variant="ghost"
-              size="sm"
+              size="xs"
+              p={1}
               onClick={handleNextMonth}
               disabled={disabled}
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={14} />
             </Button>
           </HStack>
 
           {/* Weekday Headers */}
-          <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap={1}>
+          <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap={0}>
             {NEPALI_WEEKDAY_SHORT.map((day) => (
               <Text
                 key={day}
-                fontSize="10px"
+                fontSize="9px"
                 fontWeight="600"
                 color="#6B7280"
                 textAlign="center"
                 fontFamily={NEPALI_FONT_STACK}
+                py={0.5}
               >
                 {day}
               </Text>
@@ -190,42 +202,81 @@ export const NepaliDatePicker = ({
           </Box>
 
           {/* Calendar Grid */}
-          <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gap={1}>
+          <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gridTemplateRows="repeat(6, 1fr)" gap={0}>
             {cells.map((date, index) => {
               const isCurrentMonth = date.month === currentMonth.month;
               const isSelected = value && isSameNepaliDate(date, value);
-              const isToday = false; // Could add today check if needed
+              const isToday = isSameNepaliDate(date, todayNepali);
 
               return (
-                <Button
-                  key={nepaliDateKey(date)}
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleDayClick(date)}
-                  disabled={disabled}
-                  bg={isSelected ? "#0056FF" : "transparent"}
-                  color={
-                    isSelected
-                      ? "white"
-                      : isCurrentMonth
-                        ? "#1F2937"
-                        : "#9CA3AF"
-                  }
-                  _hover={
-                    !isSelected && isCurrentMonth
-                      ? { bg: "#F3F4F6" }
-                      : undefined
-                  }
-                  fontFamily={NEPALI_FONT_STACK}
-                  fontSize="sm"
-                  fontWeight={isToday ? 700 : 500}
-                  minH="32px"
-                  borderRadius="md"
-                >
-                  {toNepaliDigits(date.day)}
-                </Button>
+                <Box key={nepaliDateKey(date)} position="relative" w="100%" minH="30px">
+                  {/* Dotted circle indicator for today (behind the button) */}
+                  {isToday && !isSelected && (
+                    <Box
+                      position="absolute"
+                      inset="1px"
+                      borderRadius="full"
+                      border="1.5px dashed"
+                      borderColor="#3B82F6"
+                      pointerEvents="none"
+                      zIndex={0}
+                    />
+                  )}
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    w="100%"
+                    h="30px"
+                    p={0}
+                    minW={0}
+                    position="relative"
+                    zIndex={1}
+                    onClick={() => handleDayClick(date)}
+                    disabled={disabled}
+                    bg={isSelected ? "#0056FF" : "transparent"}
+                    color={
+                      isSelected
+                        ? "white"
+                        : isCurrentMonth
+                          ? "#1F2937"
+                          : "#9CA3AF"
+                    }
+                    _hover={
+                      !isSelected && isCurrentMonth
+                        ? { bg: "#F3F4F6" }
+                        : undefined
+                    }
+                    fontFamily={NEPALI_FONT_STACK}
+                    fontSize="13px"
+                    fontWeight={isToday ? 700 : 500}
+                    borderRadius="md"
+                    aria-label={`${toNepaliDigits(date.day)}${isToday ? " (today)" : ""}`}
+                  >
+                    {toNepaliDigits(date.day)}
+                  </Button>
+                </Box>
               );
             })}
+          </Box>
+
+          {/* Today Button */}
+          <Box w="full" pt={1} borderTop="1px solid" borderColor="gray.100">
+            <Button
+              size="xs"
+              variant="ghost"
+              w="full"
+              fontSize="xs"
+              color="gray.500"
+              fontWeight="medium"
+              h="7"
+              _hover={{ bg: "gray.50", color: "gray.700" }}
+              _focusVisible={{ boxShadow: "outline" }}
+              onClick={handleTodayClick}
+              disabled={disabled}
+              aria-label="Go to today's date"
+            >
+              Today
+            </Button>
           </Box>
         </VStack>
       </PopoverContent>

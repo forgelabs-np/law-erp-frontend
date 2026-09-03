@@ -17,7 +17,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Eye, Settings, UserCog, UserX } from "lucide-react";
-import { MdLockReset } from "react-icons/md";
+import { MdAdminPanelSettings, MdLockReset } from "react-icons/md";
 
 import {
   UserResponseType,
@@ -469,7 +469,7 @@ export const UserManagement = () => {
                 <MenuPositioner>
                   <MenuContent >
                     <MenuItem
-                    cursor={"pointer"}
+                      cursor={"pointer"}
                       value="reset-password"
                       onClick={() => {
                         setUserToReset(String(row.original.id));
@@ -482,19 +482,38 @@ export const UserManagement = () => {
                       </HStack>
                     </MenuItem>
                     {/* {canResetMFA && ( */}
-                      <MenuItem
-                        cursor={"pointer"}
-                        value="reset-mfa"
-                        onClick={() => {
-                          setUserToResetMFA(row.original);
-                          onResetMFAOpen();
-                        }}
-                      >
-                        <HStack gap={2}>
-                          <MdLockReset color="purple" size={16} />
-                          <Text color="purple">Reset MFA</Text>
-                        </HStack>
-                      </MenuItem>
+                    <MenuItem
+                      cursor={"pointer"}
+                      value="reset-mfa"
+                      onClick={() => {
+                        setUserToResetMFA(row.original);
+                        onResetMFAOpen();
+                      }}
+                    >
+                      <HStack gap={2}>
+                        <MdLockReset color="purple" size={16} />
+                        <Text color="purple">Reset MFA</Text>
+                      </HStack>
+                    </MenuItem>
+
+                    <MenuItem
+                      cursor="pointer"
+                      value="assignPermission"
+                      onClick={() =>
+                        navigate(
+                          ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(
+                            ":userId",
+                            row.original.id
+                          ),
+                          { state: { user: row.original } }
+                        )
+                      }
+                    >
+                      <HStack gap={2}>
+                        <MdAdminPanelSettings color="#32ab07ff" size={16} />
+                        <Text color="#32ab07ff">Assign Permission</Text>
+                      </HStack>
+                    </MenuItem>
                     {/* )} */}
                   </MenuContent>
                 </MenuPositioner>
@@ -607,27 +626,27 @@ export const UserManagement = () => {
               userTypeFilter ||
               roleIdFilter ||
               statusFilter) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchQuery("");
-                  setDebouncedSearch("");
-                  setUserTypeFilter("");
-                  setRoleIdFilter("");
-                  setStatusFilter("");
-                  setSelectedIds([]);
-                  setCurrentPage(0);
-                  filterFormMethods.reset({
-                    userType: "",
-                    roleId: "",
-                    active: "",
-                  });
-                }}
-              >
-                Reset
-              </Button>
-            )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setDebouncedSearch("");
+                    setUserTypeFilter("");
+                    setRoleIdFilter("");
+                    setStatusFilter("");
+                    setSelectedIds([]);
+                    setCurrentPage(0);
+                    filterFormMethods.reset({
+                      userType: "",
+                      roleId: "",
+                      active: "",
+                    });
+                  }}
+                >
+                  Reset
+                </Button>
+              )}
           </Stack>
         </FormProvider>
       </Box>
@@ -659,19 +678,19 @@ export const UserManagement = () => {
             pagination={
               totalPages > 1
                 ? {
-                    pageSize: pageSize,
-                    currentPage: currentPage + 1,
-                    pageCount: totalPages,
-                    setPageSize: (newSize: number) => {
-                      setPageSize(newSize);
-                      setCurrentPage(0);
-                    },
-                    onPaginationChange: (newPage: number) => {
-                      setCurrentPage(newPage - 1);
-                    },
-                    isFirstPage: isFirstPage,
-                    isLastPage: isLastPage,
-                  }
+                  pageSize: pageSize,
+                  currentPage: currentPage + 1,
+                  pageCount: totalPages,
+                  setPageSize: (newSize: number) => {
+                    setPageSize(newSize);
+                    setCurrentPage(0);
+                  },
+                  onPaginationChange: (newPage: number) => {
+                    setCurrentPage(newPage - 1);
+                  },
+                  isFirstPage: isFirstPage,
+                  isLastPage: isLastPage,
+                }
                 : undefined
             }
           />

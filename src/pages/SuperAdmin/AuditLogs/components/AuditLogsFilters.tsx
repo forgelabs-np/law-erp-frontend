@@ -46,15 +46,20 @@ export const AuditLogsFilters = ({
         borderRadius="lg"
         border="1px"
         borderColor="gray.200"
+
       >
-        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4}>
-          <ReactSelect
-            name="action"
-            label="Action"
-            placeholder="Select action"
-            options={ACTION_OPTIONS}
-            extraOnChange={(value) => onFilterChange("action", value as string)}
-          />
+        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4} >
+          <Box zIndex={10}
+          >
+
+            <ReactSelect
+              name="action"
+              label="Action"
+              placeholder="Select action"
+              options={ACTION_OPTIONS}
+              extraOnChange={(value) => onFilterChange("action", value as string)}
+            />
+          </Box>
           <TextFieldInput
             name="fromDate"
             type="date"
