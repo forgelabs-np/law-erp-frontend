@@ -3,16 +3,22 @@ import { AlertCircle } from "lucide-react";
 
 interface AuditLogsErrorStateProps {
   onRetry: () => void;
+  title?: string;
+  description?: string;
 }
 
-export const AuditLogsErrorState = ({ onRetry }: AuditLogsErrorStateProps) => {
+export const AuditLogsErrorState = ({
+  onRetry,
+  title = "Failed to Load Audit Logs",
+  description = "There was an error loading the audit logs. Please try again.",
+}: AuditLogsErrorStateProps) => {
   return (
     <Stack align="center" justify="center" py={12} gap={4}>
       <Box bg="red.50" borderRadius="full" p={6} mb={2}>
         <AlertCircle size={48} color="red.400" />
       </Box>
       <Text textStyle="heading_6" color="gray.700">
-        Failed to Load Audit Logs
+        {title}
       </Text>
       <Text
         textStyle="paragraph_regular"
@@ -20,7 +26,7 @@ export const AuditLogsErrorState = ({ onRetry }: AuditLogsErrorStateProps) => {
         textAlign="center"
         maxW="400px"
       >
-        There was an error loading the audit logs. Please try again.
+        {description}
       </Text>
       <Button colorScheme="blue" onClick={onRetry} mt={2}>
         Retry

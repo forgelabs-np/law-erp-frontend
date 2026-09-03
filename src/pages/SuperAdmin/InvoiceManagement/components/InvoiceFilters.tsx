@@ -39,11 +39,7 @@ export const InvoiceFilters = ({
       borderColor="gray.200"
       p={4}
     >
-      <HStack
-        flexWrap="wrap"
-        gap={3}
-        alignItems="flex-end"
-      >
+      <HStack flexWrap="wrap" gap={3} alignItems="flex-end">
         {/* Search */}
         <Stack gap={1} flex={1} minW="200px">
           <Input

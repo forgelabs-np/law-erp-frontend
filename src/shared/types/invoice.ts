@@ -103,10 +103,7 @@ export const computeTaxAmount = (subtotal: number, taxRate: number): number => {
   return subtotal * (taxRate / 100);
 };
 
-export const computeTotal = (
-  subtotal: number,
-  taxRate: number
-): number => {
+export const computeTotal = (subtotal: number, taxRate: number): number => {
   return subtotal + computeTaxAmount(subtotal, taxRate);
 };
 

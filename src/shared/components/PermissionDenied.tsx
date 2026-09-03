@@ -48,12 +48,30 @@ export function PermissionDenied({
         justifyContent="center"
       >
         {icon || (
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="40" cy="40" r="38" fill="#FEF2F2" stroke="#FECACA" strokeWidth="2"/>
-            <rect x="28" y="36" width="24" height="18" rx="2" fill="#EF4444"/>
-            <path d="M32 36V28C32 23.5817 35.5817 20 40 20C44.4183 20 48 23.5817 48 28V36" stroke="#EF4444" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx="40" cy="45" r="3" fill="white"/>
-            <rect x="39" y="45" width="2" height="5" fill="white"/>
+          <svg
+            width="80"
+            height="80"
+            viewBox="0 0 80 80"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="40"
+              cy="40"
+              r="38"
+              fill="#FEF2F2"
+              stroke="#FECACA"
+              strokeWidth="2"
+            />
+            <rect x="28" y="36" width="24" height="18" rx="2" fill="#EF4444" />
+            <path
+              d="M32 36V28C32 23.5817 35.5817 20 40 20C44.4183 20 48 23.5817 48 28V36"
+              stroke="#EF4444"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <circle cx="40" cy="45" r="3" fill="white" />
+            <rect x="39" y="45" width="2" height="5" fill="white" />
           </svg>
         )}
       </Box>

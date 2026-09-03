@@ -85,7 +85,9 @@ export const api = {
   },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit",
+    USER_AUDIT: "super-admin/audit/users/{userId}",
     FIRM_AUDIT: "super-admin/audit/firms/{firmId}",
+    ENTITY_AUDIT: "super-admin/audit/entities/{entityType}/{entityId}",
   },
   MATTER_MANAGEMENT: {
     GET_MATTERS: "firm/matters",

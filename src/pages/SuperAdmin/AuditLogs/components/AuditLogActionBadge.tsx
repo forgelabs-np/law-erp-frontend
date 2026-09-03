@@ -1,6 +1,6 @@
 import { Badge } from "@chakra-ui/react";
 import { AuditAction } from "../types";
-import { getAuditActionStyle } from "../utils";
+import { formatAuditAction, getAuditActionStyle } from "../utils";
 
 interface AuditLogActionBadgeProps {
   action: AuditAction;
@@ -19,7 +19,7 @@ export const AuditLogActionBadge = ({ action }: AuditLogActionBadgeProps) => {
       fontSize="xs"
       fontWeight="600"
     >
-      {action}
+      {formatAuditAction(action)}
     </Badge>
   );
 };

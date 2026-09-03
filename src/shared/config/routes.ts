@@ -51,6 +51,9 @@ export const ROUTES_CONFIG = {
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",
+    USER_AUDIT_LOGS: "/super-admin/audit-logs/users/:userId",
+    FIRM_AUDIT_LOGS: "/super-admin/audit-logs/firms/:firmId",
+    ENTITY_AUDIT_LOGS: "/super-admin/audit-logs/entities/:entityType/:entityId",
     FIRM_MODULES: "/firm-management/:firmId/modules",
     FIRM_ACCESS_MANAGEMENT: "/firm-management/:firmId/access-management",
     GLOBAL_CONFIG: "/super-admin/configuration/global",

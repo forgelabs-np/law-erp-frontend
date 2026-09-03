@@ -144,9 +144,7 @@ const InvoiceListPage = () => {
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
-          <InvoiceStatusBadge status={row.original.status} />
-        ),
+        cell: ({ row }) => <InvoiceStatusBadge status={row.original.status} />,
       },
       {
         accessorKey: "createdAt",
@@ -178,8 +176,12 @@ const InvoiceListPage = () => {
               </MenuTrigger>
               <Portal>
                 <MenuPositioner>
-
-                  <MenuContent minW="180px" borderRadius="lg" border="1px solid" borderColor="gray.100">
+                  <MenuContent
+                    minW="180px"
+                    borderRadius="lg"
+                    border="1px solid"
+                    borderColor="gray.100"
+                  >
                     <MenuItem
                       value="view"
                       onClick={() =>
@@ -268,12 +270,7 @@ const InvoiceListPage = () => {
 
       {/* Table */}
       {isLoading ? (
-        <Stack
-          gap={4}
-          p={8}
-          alignItems="center"
-          justifyContent="center"
-        >
+        <Stack gap={4} p={8} alignItems="center" justifyContent="center">
           <Text color="gray.500">Loading invoices...</Text>
         </Stack>
       ) : invoices.length === 0 ? (
@@ -288,9 +285,7 @@ const InvoiceListPage = () => {
           borderColor="gray.200"
         >
           <Text color="gray.500" textStyle="paragraph_large">
-            {hasFilters
-              ? "No invoices match your filters"
-              : "No invoices yet"}
+            {hasFilters ? "No invoices match your filters" : "No invoices yet"}
           </Text>
           {hasFilters ? (
             <Button size="sm" variant="outline" onClick={handleReset}>
@@ -308,11 +303,7 @@ const InvoiceListPage = () => {
         </Stack>
       ) : (
         <>
-          <Datatable
-            isLoading={false}
-            columns={columns}
-            data={invoices}
-          />
+          <Datatable isLoading={false} columns={columns} data={invoices} />
           {totalPages > 1 && (
             <Stack align="center">
               <Text fontSize="sm" color="gray.500">

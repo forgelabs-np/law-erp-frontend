@@ -29,7 +29,7 @@ export type ModuleSection = "General" | "Main" | "Administration" | "Support";
 export interface ModuleRegistryEntry {
   moduleCode: string;
   label: string;
-  path: string;
+  path: string | null;
   icon: IconComponent;
   section: ModuleSection;
   order: number;
@@ -180,7 +180,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   CONFIGURATION: {
     moduleCode: "CONFIGURATION",
     label: "Configuration",
-    path: "",
+    path: null,
     icon: Settings,
     section: "Administration",
     order: 26,
@@ -303,9 +303,11 @@ export const mapEnabledModulesToSidebarData = (
       return null;
     }
 
-    // Filter out modules that don't have ACCESS action
+    // Parent modules must have the ACCESS action; child modules are implicitly
+    // permitted when the parent does — they only need `enabled: true` (already
+    // checked by the caller).
     const actions = module.actions ?? [];
-    if (!actions.includes("ACCESS")) {
+    if (!parentModuleCode && !actions.includes("ACCESS")) {
       return null;
     }
 

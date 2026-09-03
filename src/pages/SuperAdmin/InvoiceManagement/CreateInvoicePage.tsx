@@ -4,10 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useCreateInvoiceMutation } from "@/api/invoiceManagement";
 import { CreateInvoicePayload } from "@/shared/types/invoice";
 
-import {
-  InvoiceForm,
-  InvoiceFormData,
-} from "./components/InvoiceForm";
+import { InvoiceForm, InvoiceFormData } from "./components/InvoiceForm";
 
 const CreateInvoicePage = () => {
   const navigate = useNavigate();

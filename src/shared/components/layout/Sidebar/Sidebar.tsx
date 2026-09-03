@@ -49,7 +49,7 @@ const buildSupportSidebarItems = () => {
     return {
       moduleCode,
       name: config.label,
-      href: config.path,
+      href: config.path || undefined,
       icon: <Icon size={16} />,
       section: config.section,
       order: config.order,
@@ -120,7 +120,7 @@ export const Sidebar = () => {
       return {
         moduleCode: item.moduleCode,
         name: item.label,
-        href: item.path,
+        href: item.path || undefined,
         icon: <Icon size={16} />,
         section: item.section,
         order: item.order,

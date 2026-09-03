@@ -1,13 +1,13 @@
 import { Center, Spinner, Stack, Text } from "@chakra-ui/react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useInvoiceQuery, useUpdateInvoiceMutation } from "@/api/invoiceManagement";
+import {
+  useInvoiceQuery,
+  useUpdateInvoiceMutation,
+} from "@/api/invoiceManagement";
 import { UpdateInvoicePayload } from "@/shared/types/invoice";
 
-import {
-  InvoiceForm,
-  InvoiceFormData,
-} from "./components/InvoiceForm";
+import { InvoiceForm, InvoiceFormData } from "./components/InvoiceForm";
 
 const EditInvoicePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,17 +48,18 @@ const EditInvoicePage = () => {
     );
   }
 
-  const initialData: InvoiceFormData & { invoiceNumber?: string; id?: string } = {
-    id: invoice.id,
-    invoiceNumber: invoice.invoiceNumber,
-    firmId: invoice.firmId,
-    issueDate: invoice.issueDate,
-    dueDate: invoice.dueDate,
-    taxRate: invoice.taxRate,
-    paymentTerms: invoice.paymentTerms,
-    notes: invoice.notes,
-    items: invoice.items || [],
-  };
+  const initialData: InvoiceFormData & { invoiceNumber?: string; id?: string } =
+    {
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      firmId: invoice.firmId,
+      issueDate: invoice.issueDate,
+      dueDate: invoice.dueDate,
+      taxRate: invoice.taxRate,
+      paymentTerms: invoice.paymentTerms,
+      notes: invoice.notes,
+      items: invoice.items || [],
+    };
 
   const handleSubmit = (data: InvoiceFormData) => {
     const payload: UpdateInvoicePayload = {
@@ -87,9 +88,7 @@ const EditInvoicePage = () => {
     <Stack gap={4} padding={2}>
       {/* Header */}
       <Stack gap={1}>
-        <Text textStyle="heading_4">
-          Edit Invoice {invoice.invoiceNumber}
-        </Text>
+        <Text textStyle="heading_4">Edit Invoice {invoice.invoiceNumber}</Text>
         <Text textStyle="paragraph_regular" color="gray.500">
           Update invoice details and line items
         </Text>

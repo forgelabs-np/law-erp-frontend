@@ -32,7 +32,7 @@ export const InvoicePreview = ({
   const subtotal = computeSubtotal(items);
   const taxAmount = computeTaxAmount(subtotal, taxRate);
   const total = computeTotal(subtotal, taxRate);
-  console.log(firmName, "nameeeee")
+  console.log(firmName, "nameeeee");
 
   return (
     <Box
@@ -81,10 +81,10 @@ export const InvoicePreview = ({
           <Text fontSize="sm" fontWeight="500">
             {issueDate
               ? new Date(issueDate).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
               : "—"}
           </Text>
         </Stack>
@@ -95,10 +95,10 @@ export const InvoicePreview = ({
           <Text fontSize="sm" fontWeight="500">
             {dueDate
               ? new Date(dueDate).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
               : "—"}
           </Text>
         </Stack>
@@ -106,12 +106,7 @@ export const InvoicePreview = ({
 
       {/* Line Items Table */}
       <Box mb={4} overflowX="auto">
-        <Box
-          as="table"
-          w="100%"
-          borderCollapse="collapse"
-          fontSize="sm"
-        >
+        <Box as="table" w="100%" borderCollapse="collapse" fontSize="sm">
           <Box as="thead">
             <Box as="tr" bg="gray.50">
               <Box
@@ -169,7 +164,12 @@ export const InvoicePreview = ({
               <Box as="tr">
                 <td
                   colSpan={4}
-                  style={{ padding: '16px', textAlign: 'center', color: '#A0AEC0', fontStyle: 'italic' }}
+                  style={{
+                    padding: "16px",
+                    textAlign: "center",
+                    color: "#A0AEC0",
+                    fontStyle: "italic",
+                  }}
                 >
                   No line items yet
                 </td>
@@ -263,7 +263,12 @@ export const InvoicePreview = ({
       {/* Payment Terms & Notes */}
       {paymentTerms && (
         <Stack gap={1} mb={3}>
-          <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="gray.500"
+            textTransform="uppercase"
+          >
             Payment Terms
           </Text>
           <Text fontSize="sm" color="gray.700">
@@ -273,7 +278,12 @@ export const InvoicePreview = ({
       )}
       {notes && (
         <Stack gap={1}>
-          <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="gray.500"
+            textTransform="uppercase"
+          >
             Notes
           </Text>
           <Text fontSize="sm" color="gray.700" whiteSpace="pre-wrap">

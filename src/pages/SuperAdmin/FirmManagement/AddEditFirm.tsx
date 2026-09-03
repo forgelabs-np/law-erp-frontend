@@ -93,7 +93,9 @@ export const AddEditFirm = ({
   const onSubmit = (data: FirmFormValues) => {
     const payload: FirmPayload = {
       ...(id ? { id } : {}),
-      ...(data.lawFirmCode?.toUpperCase() ? { lawFirmCode: data.lawFirmCode?.toUpperCase() } : {}),
+      ...(data.lawFirmCode?.toUpperCase()
+        ? { lawFirmCode: data.lawFirmCode?.toUpperCase() }
+        : {}),
       name: data.name,
       firmType: data.firmType as "SOLO" | "FIRM",
       email: data.email,

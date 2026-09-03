@@ -4,11 +4,19 @@ import { FileX } from "lucide-react";
 interface AuditLogsEmptyStateProps {
   hasFilters: boolean;
   onResetFilters: () => void;
+  title?: string;
+  /** Shown when no filters are active (default "no data yet" copy). */
+  emptyDescription?: string;
+  /** Shown when filters are active (default "no matching filters" copy). */
+  filteredDescription?: string;
 }
 
 export const AuditLogsEmptyState = ({
   hasFilters,
   onResetFilters,
+  title = "No Audit Logs Found",
+  emptyDescription = "There are no audit activities recorded yet.",
+  filteredDescription = "There are no audit activities matching the selected filters.",
 }: AuditLogsEmptyStateProps) => {
   return (
     <Stack align="center" justify="center" py={12} gap={4}>
@@ -16,7 +24,7 @@ export const AuditLogsEmptyState = ({
         <FileX size={48} color="gray.400" />
       </Box>
       <Text textStyle="heading_6" color="gray.700">
-        No Audit Logs Found
+        {title}
       </Text>
       <Text
         textStyle="paragraph_regular"
@@ -24,9 +32,7 @@ export const AuditLogsEmptyState = ({
         textAlign="center"
         maxW="400px"
       >
-        {hasFilters
-          ? "There are no audit activities matching the selected filters."
-          : "There are no audit activities recorded yet."}
+        {hasFilters ? filteredDescription : emptyDescription}
       </Text>
       {hasFilters && (
         <Button variant="outline" onClick={onResetFilters} mt={2}>

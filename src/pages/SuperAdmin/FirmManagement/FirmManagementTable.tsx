@@ -9,10 +9,10 @@ import {
   useToggleFirmMutation,
 } from "@/api/firmManagement";
 import { AddIcon } from "@/assets/svgs";
-import { Shield } from "lucide-react";
+import { History, ScrollText } from "lucide-react";
 import { Datatable, TableActions } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
-import { Switch } from "@/shared/components/ui";
+import { Switch, Tooltip } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
@@ -21,6 +21,7 @@ import { AddEditFirm } from "./AddEditFirm";
 const FirmManagement = () => {
   const navigate = useNavigate();
   const { canCreate, canEdit } = useModulePermissions("FIRM_MANAGEMENT");
+  const { canAccess: canAccessAudit } = useModulePermissions("AUDIT");
   const [selectedId, setSelectedId] = useState<string>();
   const [firmToToggle, setFirmToToggle] = useState<{
     id: string;
@@ -107,10 +108,29 @@ const FirmManagement = () => {
         header: "Actions",
         cell: ({ row }) => (
           <HStack gap={2}>
+            {canAccessAudit && (
+              <Tooltip content="View Audit Logs">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="View Audit Logs"
+                  onClick={() =>
+                    navigate(
+                      ROUTES_CONFIG.SUPER_ADMIN.FIRM_AUDIT_LOGS.replace(
+                        ":firmId",
+                        String(row.original.firmId)
+                      ),
+                      { state: { firm: row.original } }
+                    )
+                  }
+                >
+                  <ScrollText size={16} />
+                </Button>
+              </Tooltip>
+            )}
             <Button
               variant="outline"
               size="sm"
-              // leftIcon={<Shield size={14} />}
               onClick={() => {
                 navigate(
                   ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT.replace(
@@ -136,7 +156,7 @@ const FirmManagement = () => {
         ),
       },
     ],
-    [onToggleConfirmOpen, onAddEditOpen, navigate]
+    [onToggleConfirmOpen, onAddEditOpen, navigate, canAccessAudit]
   );
 
   return (

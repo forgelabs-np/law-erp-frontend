@@ -3,7 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RoleSetupPayload } from "@/pages/SuperAdmin/Role/types";
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
-import { ApiErrorResponse, ApiResponse, PaginatedResponse } from "@/shared/types/response";
+import {
+  ApiErrorResponse,
+  ApiResponse,
+  PaginatedResponse,
+} from "@/shared/types/response";
 import {
   errorNotification,
   successNotification,

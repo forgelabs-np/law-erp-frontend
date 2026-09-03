@@ -69,17 +69,13 @@ export const InvoiceForm = ({
   const [firmId, setFirmId] = useState(initialData?.firmId || "");
   const [issueDate, setIssueDate] = useState(initialData?.issueDate || "");
   const [dueDate, setDueDate] = useState(initialData?.dueDate || "");
-  const [taxRate, setTaxRate] = useState(
-    String(initialData?.taxRate ?? 0)
-  );
+  const [taxRate, setTaxRate] = useState(String(initialData?.taxRate ?? 0));
   const [paymentTerms, setPaymentTerms] = useState(
     initialData?.paymentTerms || "Net 30"
   );
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [items, setItems] = useState<InvoiceItem[]>(
-    initialData?.items?.length
-      ? initialData.items
-      : [{ ...emptyItem }]
+    initialData?.items?.length ? initialData.items : [{ ...emptyItem }]
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -102,7 +98,6 @@ export const InvoiceForm = ({
   const parsedTaxRate = parseFloat(taxRate) || 0;
   const subtotal = computeSubtotal(items);
   const total = computeTotal(subtotal, parsedTaxRate);
-
 
   // ─── Validation ──────────────────────────────────────────────────────────
   const validate = (): boolean => {
@@ -176,9 +171,7 @@ export const InvoiceForm = ({
     value: string | number
   ) => {
     setItems((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item
-      )
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     );
   };
 
@@ -190,7 +183,10 @@ export const InvoiceForm = ({
           {/* Firm Selection */}
           <Stack gap={1}>
             <Text fontSize="sm" fontWeight="500">
-              Firm <Text as="span" color="red.500">*</Text>
+              Firm{" "}
+              <Text as="span" color="red.500">
+                *
+              </Text>
             </Text>
             <NativeSelect.Root size="sm" disabled={mode === "edit"}>
               <NativeSelect.Field
@@ -223,7 +219,10 @@ export const InvoiceForm = ({
           <HStack gap={4} flexWrap="wrap">
             <Stack gap={1} flex={1} minW="180px">
               <Text fontSize="sm" fontWeight="500">
-                Issue Date <Text as="span" color="red.500">*</Text>
+                Issue Date{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <DatePicker
                 value={issueDate}
@@ -242,14 +241,16 @@ export const InvoiceForm = ({
             </Stack>
             <Stack gap={1} flex={1} minW="180px">
               <Text fontSize="sm" fontWeight="500">
-                Due Date <Text as="span" color="red.500">*</Text>
+                Due Date{" "}
+                <Text as="span" color="red.500">
+                  *
+                </Text>
               </Text>
               <DatePicker
                 value={dueDate}
                 onChange={(val) => {
                   setDueDate(val);
-                  if (errors.dueDate)
-                    setErrors((p) => ({ ...p, dueDate: "" }));
+                  if (errors.dueDate) setErrors((p) => ({ ...p, dueDate: "" }));
                 }}
                 placeholder="Select due date"
                 minDate={issueDate}
@@ -279,8 +280,7 @@ export const InvoiceForm = ({
                 value={taxRate}
                 onChange={(e) => {
                   setTaxRate(e.target.value);
-                  if (errors.taxRate)
-                    setErrors((p) => ({ ...p, taxRate: "" }));
+                  if (errors.taxRate) setErrors((p) => ({ ...p, taxRate: "" }));
                 }}
               />
               {errors.taxRate && (
@@ -335,11 +335,7 @@ export const InvoiceForm = ({
               <Text fontSize="sm" fontWeight="600">
                 Line Items
               </Text>
-              <Button
-                size="xs"
-                variant="outline"
-                onClick={addItem}
-              >
+              <Button size="xs" variant="outline" onClick={addItem}>
                 <Plus size={12} /> Add Item
               </Button>
             </HStack>
@@ -494,7 +490,13 @@ export const InvoiceForm = ({
         top={4}
         alignSelf="flex-start"
       >
-        <Text fontSize="xs" fontWeight="600" color="gray.500" textTransform="uppercase" mb={2}>
+        <Text
+          fontSize="xs"
+          fontWeight="600"
+          color="gray.500"
+          textTransform="uppercase"
+          mb={2}
+        >
           Live Preview
         </Text>
         <InvoicePreview

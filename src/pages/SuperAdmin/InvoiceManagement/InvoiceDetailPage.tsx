@@ -97,7 +97,11 @@ const InvoiceDetailPage = () => {
           <Text color="gray.500" textStyle="heading_5">
             Invoice Not Found
           </Text>
-          <Button variant="outline" size="sm" onClick={() => navigate("/super-admin/invoices")}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/super-admin/invoices")}
+          >
             Back to Invoices
           </Button>
         </Stack>
@@ -128,9 +132,7 @@ const InvoiceDetailPage = () => {
           </Button>
           <Stack gap={0}>
             <HStack gap={2}>
-              <Text textStyle="heading_4">
-                {invoice.invoiceNumber}
-              </Text>
+              <Text textStyle="heading_4">{invoice.invoiceNumber}</Text>
               <InvoiceStatusBadge status={invoice.status} />
             </HStack>
             <Text textStyle="paragraph_regular" color="gray.500">
@@ -169,7 +171,12 @@ const InvoiceDetailPage = () => {
             </MenuTrigger>
             <Portal>
               <MenuPositioner>
-                <MenuContent minW="200px" borderRadius="lg" border="1px solid" borderColor="gray.100">
+                <MenuContent
+                  minW="200px"
+                  borderRadius="lg"
+                  border="1px solid"
+                  borderColor="gray.100"
+                >
                   {isDraft && (
                     <MenuItem
                       value="edit"

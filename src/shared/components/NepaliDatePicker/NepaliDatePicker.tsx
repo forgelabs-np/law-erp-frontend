@@ -83,7 +83,11 @@ export const NepaliDatePicker = ({
   const cells = buildMonthCells(currentMonth.year, currentMonth.month);
 
   const handleTodayClick = () => {
-    setCurrentMonth({ year: todayNepali.year, month: todayNepali.month, day: 1 });
+    setCurrentMonth({
+      year: todayNepali.year,
+      month: todayNepali.month,
+      day: 1,
+    });
     onChange(todayNepali);
   };
 
@@ -202,14 +206,24 @@ export const NepaliDatePicker = ({
           </Box>
 
           {/* Calendar Grid */}
-          <Box display="grid" gridTemplateColumns="repeat(7, 1fr)" gridTemplateRows="repeat(6, 1fr)" gap={0}>
+          <Box
+            display="grid"
+            gridTemplateColumns="repeat(7, 1fr)"
+            gridTemplateRows="repeat(6, 1fr)"
+            gap={0}
+          >
             {cells.map((date, index) => {
               const isCurrentMonth = date.month === currentMonth.month;
               const isSelected = value && isSameNepaliDate(date, value);
               const isToday = isSameNepaliDate(date, todayNepali);
 
               return (
-                <Box key={nepaliDateKey(date)} position="relative" w="100%" minH="30px">
+                <Box
+                  key={nepaliDateKey(date)}
+                  position="relative"
+                  w="100%"
+                  minH="30px"
+                >
                   {/* Dotted circle indicator for today (behind the button) */}
                   {isToday && !isSelected && (
                     <Box

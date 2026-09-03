@@ -29,6 +29,8 @@ export interface FirmResponse {
   roleId?: string;
   roleName?: string;
   fullName?: string;
+  firmName?: string;
+  firmCode?: string;
 }
 
 // ─── GET ALL FIRMS ─────────────────────────────────────────────────────────────

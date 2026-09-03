@@ -26,8 +26,10 @@ export const Pagination = ({
   };
 
   // Use isFirstPage/isLastPage if provided, otherwise fall back to page calculation
-  const disablePrevious = isFirstPage !== undefined ? isFirstPage : currentPage === 1;
-  const disableNext = isLastPage !== undefined ? isLastPage : currentPage === pageCount;
+  const disablePrevious =
+    isFirstPage !== undefined ? isFirstPage : currentPage === 1;
+  const disableNext =
+    isLastPage !== undefined ? isLastPage : currentPage === pageCount;
 
   return (
     <HStack
@@ -53,10 +55,7 @@ export const Pagination = ({
         marginPagesDisplayed={marginPagesDisplayed}
         previousLabel={<TablePaginationIcon isDisabled={disablePrevious} />}
         nextLabel={
-          <TablePaginationIcon
-            isRight={true}
-            isDisabled={disableNext}
-          />
+          <TablePaginationIcon isRight={true} isDisabled={disableNext} />
         }
         onPageChange={(page) => handlePaginationChange(page.selected)}
         className="pagination"

@@ -1122,9 +1122,7 @@ const RenewalCard = ({
                 </Text>
                 <DatePicker
                   value={formData.endDate}
-                  onChange={(val) =>
-                    setFormData({ ...formData, endDate: val })
-                  }
+                  onChange={(val) => setFormData({ ...formData, endDate: val })}
                   placeholder="Select end date"
                   minDate={formData.startDate || undefined}
                 />
@@ -1384,9 +1382,7 @@ const RenewalsTab = ({ projectCode }: { projectCode: string }) => {
                 </Text>
                 <DatePicker
                   value={formData.endDate}
-                  onChange={(val) =>
-                    setFormData({ ...formData, endDate: val })
-                  }
+                  onChange={(val) => setFormData({ ...formData, endDate: val })}
                   placeholder="Select end date"
                   minDate={formData.startDate || undefined}
                 />

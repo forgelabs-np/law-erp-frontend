@@ -22,8 +22,7 @@ import {
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 
 export const INVOICE_QUERY_KEYS = {
-  LIST: (params: InvoiceListParams) =>
-    ["invoices", "list", params] as const,
+  LIST: (params: InvoiceListParams) => ["invoices", "list", params] as const,
   DETAIL: (id: string) => ["invoices", "detail", id] as const,
 };
 
@@ -53,7 +52,13 @@ const createInvoice = (payload: CreateInvoicePayload) => {
   );
 };
 
-const updateInvoice = ({ id, payload }: { id: string; payload: UpdateInvoicePayload }) => {
+const updateInvoice = ({
+  id,
+  payload,
+}: {
+  id: string;
+  payload: UpdateInvoicePayload;
+}) => {
   const url = api.INVOICE_MANAGEMENT.UPDATE.replace("{id}", id);
   return LawFirmCRMClient.put<ApiResponse<Invoice>>(url, { data: payload });
 };
@@ -116,8 +121,7 @@ export const useCreateInvoiceMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
     },
     onError: (error: ApiErrorResponse) => {
-      const msg =
-        error?.response?.data?.message ?? "Failed to create invoice";
+      const msg = error?.response?.data?.message ?? "Failed to create invoice";
       errorNotification(msg);
     },
   });
@@ -135,8 +139,7 @@ export const useUpdateInvoiceMutation = () => {
       });
     },
     onError: (error: ApiErrorResponse) => {
-      const msg =
-        error?.response?.data?.message ?? "Failed to update invoice";
+      const msg = error?.response?.data?.message ?? "Failed to update invoice";
       errorNotification(msg);
     },
   });
@@ -151,8 +154,7 @@ export const useDeleteInvoiceMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
     },
     onError: (error: ApiErrorResponse) => {
-      const msg =
-        error?.response?.data?.message ?? "Failed to delete invoice";
+      const msg = error?.response?.data?.message ?? "Failed to delete invoice";
       errorNotification(msg);
     },
   });
@@ -170,8 +172,7 @@ export const useSendInvoiceMutation = () => {
       });
     },
     onError: (error: ApiErrorResponse) => {
-      const msg =
-        error?.response?.data?.message ?? "Failed to send invoice";
+      const msg = error?.response?.data?.message ?? "Failed to send invoice";
       errorNotification(msg);
     },
   });
