@@ -28,12 +28,18 @@ function CheckboxGroup({
   const toggleAll = (details: { checked: boolean | "indeterminate" }) => {
     if (details.checked === true) {
       // Enable all non-disabled options
-      const enabledOptions = options.filter((o) => !o.disabled).map((o) => o.value);
+      const enabledOptions = options
+        .filter((o) => !o.disabled)
+        .map((o) => o.value);
       onChange(enabledOptions);
     } else {
       // Disable all non-disabled options (keep only disabled ones that were selected)
-      const disabledOptionValues = options.filter((o) => o.disabled).map((o) => o.value);
-      const currentlySelectedDisabled = value.filter((v) => disabledOptionValues.includes(v));
+      const disabledOptionValues = options
+        .filter((o) => o.disabled)
+        .map((o) => o.value);
+      const currentlySelectedDisabled = value.filter((v) =>
+        disabledOptionValues.includes(v)
+      );
       onChange(currentlySelectedDisabled);
     }
   };
@@ -124,7 +130,11 @@ function CheckboxGroup({
                 aria-checked={value.includes(opt.value)}
                 aria-disabled={isDisabled}
                 aria-label={`Permission: ${opt.label}${isDisabled ? " (inactive)" : ""}`}
-                title={isDisabled ? "This permission is currently inactive" : undefined}
+                title={
+                  isDisabled
+                    ? "This permission is currently inactive"
+                    : undefined
+                }
               >
                 <Checkbox
                   checked={value.includes(opt.value)}

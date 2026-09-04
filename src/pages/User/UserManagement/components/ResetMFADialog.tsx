@@ -1,10 +1,4 @@
-import {
-  Box,
-  Button,
-  Stack,
-  Text,
-  Textarea,
-} from "@chakra-ui/react";
+import { Box, Button, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -98,8 +92,8 @@ export const ResetMFADialog = ({
               textStyle="paragraph_regular"
               textAlign="center"
             >
-              This will remove the user's current authenticator configuration. They
-              will need to configure MFA again on their next login.
+              This will remove the user's current authenticator configuration.
+              They will need to configure MFA again on their next login.
             </Text>
             <Box>
               <FormProvider methods={formMethods}>

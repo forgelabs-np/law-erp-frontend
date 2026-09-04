@@ -10,7 +10,7 @@ import {
 import { ChevronRight, User } from "lucide-react";
 import { AuditLog } from "../types";
 import { AuditLogActionBadge } from "./AuditLogActionBadge";
-import { formatAuditDate } from "../utils";
+import { formatAuditDate, formatEntityTypeLabel } from "../utils";
 import { Avatar } from "@/shared/components/ui";
 
 interface AuditLogEventCardProps {
@@ -52,9 +52,9 @@ export const AuditLogEventCard = ({
           <HStack gap={4} flexWrap="wrap" fontSize="xs" color="gray.500">
             <Text>
               <Text as="span" fontWeight="600" color="gray.600">
-                Entity Type:
+                Entity:
               </Text>{" "}
-              {log.entityType}
+              {formatEntityTypeLabel(log.entityType)}
             </Text>
             <Text>
               <Text as="span" fontWeight="600" color="gray.600">
@@ -62,14 +62,14 @@ export const AuditLogEventCard = ({
               </Text>{" "}
               {log.userType}
             </Text>
-            {/* {log.ipAddress && (
+            {log.ipAddress && (
               <Text>
                 <Text as="span" fontWeight="600" color="gray.600">
                   IP Address:
                 </Text>{" "}
                 {log.ipAddress}
               </Text>
-            )} */}
+            )}
           </HStack>
         </VStack>
 

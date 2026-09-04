@@ -55,7 +55,12 @@ const LayoutSlider = () => {
     ),
   };
   return (
-    <GridItem padding={{ base: "24px", md: "40px" }} minW={0} display={"flex"} alignItems={"center"}>
+    <GridItem
+      padding={{ base: "24px", md: "40px" }}
+      minW={0}
+      display={"flex"}
+      alignItems={"center"}
+    >
       <Box
         className="slider-container"
         css={{

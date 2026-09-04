@@ -16,8 +16,15 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, Eye, Settings, UserCog, UserX } from "lucide-react";
-import { MdLockReset } from "react-icons/md";
+import {
+  ChevronDown,
+  Eye,
+  ScrollText,
+  Settings,
+  UserCog,
+  UserX,
+} from "lucide-react";
+import { MdAdminPanelSettings, MdLockReset } from "react-icons/md";
 
 import {
   UserResponseType,
@@ -180,7 +187,9 @@ export const UserManagement = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [userToReset, setUserToReset] = useState<string | null>(null);
-  const [userToResetMFA, setUserToResetMFA] = useState<UserResponseType | null>(null);
+  const [userToResetMFA, setUserToResetMFA] = useState<UserResponseType | null>(
+    null
+  );
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
 
@@ -223,7 +232,12 @@ export const UserManagement = () => {
     };
   }, [searchQuery]);
 
-  const { data: usersData, isLoading, isError, refetch } = useGetUsersQuery({
+  const {
+    data: usersData,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetUsersQuery({
     page: currentPage,
     size: pageSize,
     q: debouncedSearch || undefined,
@@ -240,6 +254,7 @@ export const UserManagement = () => {
     useBulkDeactivateMutation();
 
   const { canResetMFA } = useModulePermissions("USER_MANAGEMENT");
+  const { canAccess: canAccessAudit } = useModulePermissions("AUDIT");
 
   const handleResetMFA = (reason: string) => {
     if (!userToResetMFA) return;
@@ -457,19 +472,15 @@ export const UserManagement = () => {
             </Tooltip>
             <MenuRoot positioning={{ placement: "right-start" }}>
               <MenuTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  aria-label="Settings"
-                >
+                <Button size="sm" variant="ghost" aria-label="Settings">
                   <Settings size={18} />
                 </Button>
               </MenuTrigger>
               <Portal>
                 <MenuPositioner>
-                  <MenuContent >
+                  <MenuContent>
                     <MenuItem
-                    cursor={"pointer"}
+                      cursor={"pointer"}
                       value="reset-password"
                       onClick={() => {
                         setUserToReset(String(row.original.id));
@@ -482,20 +493,59 @@ export const UserManagement = () => {
                       </HStack>
                     </MenuItem>
                     {/* {canResetMFA && ( */}
+                    <MenuItem
+                      cursor={"pointer"}
+                      value="reset-mfa"
+                      onClick={() => {
+                        setUserToResetMFA(row.original);
+                        onResetMFAOpen();
+                      }}
+                    >
+                      <HStack gap={2}>
+                        <MdLockReset color="purple" size={16} />
+                        <Text color="purple">Reset MFA</Text>
+                      </HStack>
+                    </MenuItem>
+
+                    <MenuItem
+                      cursor="pointer"
+                      value="assignPermission"
+                      onClick={() =>
+                        navigate(
+                          ROUTES_CONFIG.USER.ROLE_MANAGEMENT_DETAILS.replace(
+                            ":userId",
+                            row.original.id
+                          ),
+                          { state: { user: row.original } }
+                        )
+                      }
+                    >
+                      <HStack gap={2}>
+                        <MdAdminPanelSettings color="#32ab07ff" size={16} />
+                        <Text color="#32ab07ff">Assign Permission</Text>
+                      </HStack>
+                    </MenuItem>
+                    {/* )} */}
+                    {canAccessAudit && (
                       <MenuItem
-                        cursor={"pointer"}
-                        value="reset-mfa"
-                        onClick={() => {
-                          setUserToResetMFA(row.original);
-                          onResetMFAOpen();
-                        }}
+                        cursor="pointer"
+                        value="view-audit-logs"
+                        onClick={() =>
+                          navigate(
+                            ROUTES_CONFIG.SUPER_ADMIN.USER_AUDIT_LOGS.replace(
+                              ":userId",
+                              row.original.id
+                            ),
+                            { state: { user: row.original } }
+                          )
+                        }
                       >
                         <HStack gap={2}>
-                          <MdLockReset color="purple" size={16} />
-                          <Text color="purple">Reset MFA</Text>
+                          <ScrollText size={16} />
+                          <Text>View Audit Logs</Text>
                         </HStack>
                       </MenuItem>
-                    {/* )} */}
+                    )}
                   </MenuContent>
                 </MenuPositioner>
               </Portal>
@@ -504,7 +554,16 @@ export const UserManagement = () => {
         ),
       },
     ],
-    [selectedIds, isAllSelected, isIndeterminate, navigate, onResetConfirmOpen, canResetMFA, onResetMFAOpen]
+    [
+      selectedIds,
+      isAllSelected,
+      isIndeterminate,
+      navigate,
+      onResetConfirmOpen,
+      canResetMFA,
+      canAccessAudit,
+      onResetMFAOpen,
+    ]
   );
 
   return (

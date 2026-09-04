@@ -3,36 +3,43 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RoleSetupPayload } from "@/pages/SuperAdmin/Role/types";
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
-import { ApiErrorResponse, ApiResponse, PaginatedResponse } from "@/shared/types/response";
+import {
+  ApiErrorResponse,
+  ApiResponse,
+  PaginatedResponse,
+} from "@/shared/types/response";
 import {
   errorNotification,
   successNotification,
 } from "@/shared/utils/notification";
 import { UserResponseType } from "@/api/userManagement";
 
-export interface Permission {
-  featureId: number;
-  featureName: string;
-  featureCode: string;
-  moduleName: string;
-  permissionType: string;
-  isAllowed: boolean;
+export interface RolePermissionResponse {
+  id: string;
+  action: string;
+  scope: string;
+  code: string;
+  description: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
-export interface RoleResposeType {
-  id: number;
+export interface RoleResponseType {
+  id: string;
   name: string;
   code: string;
   description: string;
   isSystem: boolean;
   isActive: boolean;
-  permissions: Permission[];
+  createdAt?: string;
+  updatedAt?: string;
+  permissions?: RolePermissionResponse[];
   userCount?: number;
   assignedUserNames?: string[];
 }
 
 const getRole = () => {
-  return LawFirmCRMClient.get<ApiResponse<RoleResposeType[]>>(
+  return LawFirmCRMClient.get<ApiResponse<RoleResponseType[]>>(
     api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLES
   );
 };
@@ -178,12 +185,11 @@ export const useDeleteRoleMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteRole(id),
-    onSuccess: (response, id) => {
+    onSuccess: (response) => {
       successNotification(response?.data?.message);
       queryClient.invalidateQueries({
         queryKey: [api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLES],
       });
-      // queryClient.invalidateQueries({ queryKey: [`role-${id}`] });
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =

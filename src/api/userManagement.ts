@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
-import { ApiErrorResponse, ApiResponse, PaginatedResponse } from "@/shared/types/response";
+import {
+  ApiErrorResponse,
+  ApiResponse,
+  PaginatedResponse,
+} from "@/shared/types/response";
 import {
   errorNotification,
   successNotification,
@@ -172,9 +176,7 @@ export const useResetMFAMutation = () => {
   return useMutation({
     mutationFn: resetMFA,
     onSuccess: (response) => {
-      successNotification(
-        response?.data?.message || "MFA reset successfully"
-      );
+      successNotification(response?.data?.message || "MFA reset successfully");
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =

@@ -13,10 +13,7 @@ const subMenuSchema = yup.object({
     .trim()
     .required("Sub-menu code is required")
     .min(2, "Sub-menu code must be at least 2 characters"),
-  privilege: yup
-    .array()
-    .of(yup.string().defined())
-    .min(1, "Select at least one privilege for each sub-menu"),
+  privilege: yup.array().of(yup.string().defined()).notRequired(),
 });
 
 export const menuSchema = yup.object({
@@ -32,10 +29,7 @@ export const menuSchema = yup.object({
       .trim()
       .required("Menu code is required")
       .min(2, "Menu code must be at least 2 characters"),
-    privilege: yup
-      .array()
-      .of(yup.string().defined())
-      .min(1, "Select at least one privilege"),
+    privilege: yup.array().of(yup.string().defined()).notRequired(),
     subMenus: yup.array().of(subMenuSchema).notRequired(),
     moduleType: yup.string().notRequired(),
   }),

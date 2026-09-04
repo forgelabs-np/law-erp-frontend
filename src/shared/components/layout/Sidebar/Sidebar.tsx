@@ -1,10 +1,10 @@
 import { Box, HStack, Button, Image, VStack, Text } from "@chakra-ui/react";
 import { useMemo, useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
-import TokenService from "@/shared/service/service-token";
 import { SidebarItem } from "./SidebarItem";
+import { SidebarProfile } from "./SidebarProfile";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
 import { useModules } from "@/shared/hooks/useAuth";
@@ -16,16 +16,10 @@ import {
   SIDEBAR_SECTION_ORDER,
 } from "@/shared/constants/moduleRegistry";
 
-const handleLogout = () => {
-  TokenService.clearToken();
-  window.location.href = "/auth/login";
-};
-
 const SUPPORT_MODULE_CODES = [
   // "TEMPLATES",
   // "HELP_DOCS",
   "SETTINGS",
-  "LOGOUT",
 ] as const;
 
 // Path prefixes that belong to the Case Management module. The sidebar item
@@ -49,11 +43,10 @@ const buildSupportSidebarItems = () => {
     return {
       moduleCode,
       name: config.label,
-      href: config.path,
+      href: config.path || undefined,
       icon: <Icon size={16} />,
       section: config.section,
       order: config.order,
-      ...(moduleCode === "LOGOUT" ? { onClick: handleLogout } : {}),
     };
   })
     .filter((item) => item !== null)
@@ -120,7 +113,7 @@ export const Sidebar = () => {
       return {
         moduleCode: item.moduleCode,
         name: item.label,
-        href: item.path,
+        href: item.path || undefined,
         icon: <Icon size={16} />,
         section: item.section,
         order: item.order,
@@ -194,7 +187,7 @@ export const Sidebar = () => {
             <HStack gap="2">
               <Image src={LogoImage} boxSize="8" />
               <Text fontWeight="bold" fontSize="md" color="gray.800">
-                Tarik
+                Tarikh
               </Text>
             </HStack>
             <Button
@@ -265,6 +258,9 @@ export const Sidebar = () => {
           </VStack>
         </Box>
       </AccordionRoot>
+
+      {/* Logged-in user profile — fixed at the very bottom */}
+      <SidebarProfile isCollapsed={isCollapsed} />
     </VStack>
   );
 };

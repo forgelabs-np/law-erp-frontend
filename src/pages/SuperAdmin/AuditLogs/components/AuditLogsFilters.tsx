@@ -12,6 +12,8 @@ interface AuditLogsFiltersProps {
   actionValue?: string;
   fromDateValue?: string;
   toDateValue?: string;
+  /** Hide the Action dropdown (used by views whose API has no action filter). */
+  showAction?: boolean;
 }
 
 export const AuditLogsFilters = ({
@@ -21,6 +23,7 @@ export const AuditLogsFilters = ({
   actionValue,
   fromDateValue,
   toDateValue,
+  showAction = true,
 }: AuditLogsFiltersProps) => {
   const methods = useForm({
     defaultValues: {
@@ -47,14 +50,26 @@ export const AuditLogsFilters = ({
         border="1px"
         borderColor="gray.200"
       >
-        <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4}>
-          <ReactSelect
-            name="action"
-            label="Action"
-            placeholder="Select action"
-            options={ACTION_OPTIONS}
-            extraOnChange={(value) => onFilterChange("action", value as string)}
-          />
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            md: showAction ? "repeat(3, 1fr)" : "repeat(2, 1fr)",
+          }}
+          gap={4}
+        >
+          {showAction && (
+            <Box zIndex={10}>
+              <ReactSelect
+                name="action"
+                label="Action"
+                placeholder="Select action"
+                options={ACTION_OPTIONS}
+                extraOnChange={(value) =>
+                  onFilterChange("action", value as string)
+                }
+              />
+            </Box>
+          )}
           <TextFieldInput
             name="fromDate"
             type="date"

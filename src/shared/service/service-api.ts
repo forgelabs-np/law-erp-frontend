@@ -85,7 +85,9 @@ export const api = {
   },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit",
+    USER_AUDIT: "super-admin/audit/users/{userId}",
     FIRM_AUDIT: "super-admin/audit/firms/{firmId}",
+    ENTITY_AUDIT: "super-admin/audit/entities/{entityType}/{entityId}",
   },
   MATTER_MANAGEMENT: {
     GET_MATTERS: "firm/matters",
@@ -157,5 +159,15 @@ export const api = {
     PROJECTS: "client/projects",
     PROJECT_BY_CODE: "client/projects/{projectCode}",
     PROJECT_RENEWALS: "client/projects/{projectCode}/renewals",
+  },
+  INVOICE_MANAGEMENT: {
+    LIST: "super-admin/invoices",
+    GET_BY_ID: "super-admin/invoices/{id}",
+    CREATE: "super-admin/invoices",
+    UPDATE: "super-admin/invoices/{id}",
+    DELETE: "super-admin/invoices/{id}",
+    SEND: "super-admin/invoices/{id}/send",
+    UPDATE_STATUS: "super-admin/invoices/{id}/status",
+    DOWNLOAD_PDF: "super-admin/invoices/{id}/pdf",
   },
 };

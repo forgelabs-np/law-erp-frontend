@@ -51,10 +51,17 @@ export const ROUTES_CONFIG = {
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",
+    USER_AUDIT_LOGS: "/super-admin/audit-logs/users/:userId",
+    FIRM_AUDIT_LOGS: "/super-admin/audit-logs/firms/:firmId",
+    ENTITY_AUDIT_LOGS: "/super-admin/audit-logs/entities/:entityType/:entityId",
     FIRM_MODULES: "/firm-management/:firmId/modules",
     FIRM_ACCESS_MANAGEMENT: "/firm-management/:firmId/access-management",
     GLOBAL_CONFIG: "/super-admin/configuration/global",
     FIRM_CONFIG: "/super-admin/configuration/firms",
+    INVOICES: "/super-admin/invoices",
+    INVOICES_CREATE: "/super-admin/invoices/create",
+    INVOICES_EDIT: "/super-admin/invoices/:id/edit",
+    INVOICES_DETAIL: "/super-admin/invoices/:id",
   },
 
   NO_MATCH: "*",
