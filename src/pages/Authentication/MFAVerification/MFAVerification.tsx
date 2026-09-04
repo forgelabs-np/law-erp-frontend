@@ -69,7 +69,8 @@ const MFAVerification = () => {
         else navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
       }
     } catch {
-      return;
+      // Return statement is intentionally omitted to allow error
+      // UI to show (e.g., form validation message)
     }
   };
 

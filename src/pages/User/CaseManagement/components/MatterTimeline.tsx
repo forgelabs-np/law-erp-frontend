@@ -288,7 +288,7 @@ export const MatterTimeline = ({
                   No upcoming hearing scheduled
                 </Text>
                 <Text fontSize="xs" color="gray.500">
-                  Schedule a Tarik/Peshi to see the next court date here.
+                  Schedule a Tarikh/Peshi to see the next court date here.
                 </Text>
               </Stack>
               {onSchedule && (
