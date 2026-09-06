@@ -33,6 +33,11 @@ export interface EmployeePayload {
 export interface EmployeeResponseType extends EmployeePayload {
   id: string;
   isActive: boolean;
+  employeeCode?: string;
+  userType?: string;
+  roleName?: string;
+  roleCode?: string;
+  createdAt?: string;
 }
 
 const getEmployees = () => {

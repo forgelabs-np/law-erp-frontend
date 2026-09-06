@@ -49,8 +49,8 @@ const DetailRow = ({
           fontSize="xs"
           color="gray.700"
           fontFamily="mono"
-          maxW="260px"
-          truncate={true}
+          maxW="200px"
+        // truncate={true}
         >
           {value || "—"}
         </Text>
@@ -166,9 +166,9 @@ export const AuditLogDetailsDrawer = ({
               </Text>
               <VStack align="start" gap={2}>
                 <DetailRow label="Firm ID:" value={log.firmId} mono />
-                {log.ipAddress && (
+                {/* {log.ipAddress && (
                   <DetailRow label="IP Address:" value={log.ipAddress} />
-                )}
+                )} */}
               </VStack>
             </Box>
 
