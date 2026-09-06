@@ -7,22 +7,21 @@ import {
   EmployeeResponseType,
   useGetEmployeesQuery,
   useToggleEmployeeMutation,
+  useEmployeeByIdQuery,
 } from "@/api/employeeManagement";
-import { AddIcon } from "@/assets/svgs";
+import { AddIcon, EyeIcon } from "@/assets/svgs";
 import { Datatable, TableActions } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch } from "@/shared/components/ui";
-
-import { AddEditEmployee } from "./AddEditEmployee";
-import {
-  useGetFirmModulesQuery,
-  useGetFirmRolesQuery,
-} from "@/api/firmManagement";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
+import { AddEditEmployee } from "./AddEditEmployee";
+import { EmployeeDetailsModal } from "./EmployeeDetailsModal";
+
 const EmployeeManagementTable = () => {
-  const { canCreate, canEdit } = useModulePermissions("EMPLOYEE");
+  const { canCreate, canEdit, canView } = useModulePermissions("EMPLOYEE");
   const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [viewEmployeeId, setViewEmployeeId] = useState<string | undefined>();
   const [employeeToToggle, setEmployeeToToggle] = useState<{
     id: string;
     active: boolean;
@@ -40,12 +39,15 @@ const EmployeeManagementTable = () => {
     onClose: onToggleConfirmClose,
   } = useDisclosure();
 
+  const {
+    open: viewModalOpen,
+    onOpen: onViewModalOpen,
+    onClose: onViewModalClose,
+  } = useDisclosure();
+
   const { data: employeesData, isLoading } = useGetEmployeesQuery();
   const { mutate: toggleEmployee, isPending: isTogglePending } =
     useToggleEmployeeMutation();
-
-  const { data } = useGetFirmModulesQuery();
-  console.log(data, "firmModules");
 
   const columns: Array<ColumnDef<EmployeeResponseType>> = useMemo(
     () => [
@@ -57,6 +59,11 @@ const EmployeeManagementTable = () => {
       {
         accessorKey: "fullName",
         header: "Full Name",
+        cell: ({ row }) => (
+          <Text fontSize="sm" fontWeight="500">
+            {row.original.fullName}
+          </Text>
+        ),
       },
       {
         accessorKey: "username",
@@ -102,10 +109,16 @@ const EmployeeManagementTable = () => {
             onEdit={
               canEdit
                 ? () => {
-                    setSelectedId(String(row.original.id));
-                    onAddEditOpen();
-                  }
+                  setSelectedId(String(row.original.id));
+                  onAddEditOpen();
+                }
                 : undefined
+            }
+            onView={
+              canView ? () => {
+                setViewEmployeeId(String(row.original.id));
+                onViewModalOpen();
+              } : undefined
             }
           />
         ),
@@ -156,6 +169,15 @@ const EmployeeManagementTable = () => {
         }}
         id={selectedId}
         setId={setSelectedId}
+      />
+
+      <EmployeeDetailsModal
+        open={viewModalOpen}
+        onClose={() => {
+          onViewModalClose();
+          setViewEmployeeId(undefined);
+        }}
+        id={viewEmployeeId}
       />
 
       <ConfirmationDialog

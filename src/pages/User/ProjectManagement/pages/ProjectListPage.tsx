@@ -21,6 +21,7 @@ import {
   Plus,
   Search,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useState } from "react";
@@ -375,12 +376,23 @@ const ProjectListPage = () => {
         flexWrap="wrap"
         gap={4}
       >
-        <Stack gap={2}>
-          <Text textStyle="heading_4">Projects</Text>
-          <Text textStyle="paragraph_regular" color="gray.500">
-            Manage your firm's projects ({totalElements} total)
-          </Text>
-        </Stack>
+        <HStack gap={3} alignItems="center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            aria-label="Back"
+            flexShrink={0}
+          >
+            <ArrowLeft size={16} />
+          </Button>
+          <Stack gap={2}>
+            <Text textStyle="heading_4">Projects</Text>
+            <Text textStyle="paragraph_regular" color="gray.500">
+              Manage your firm's projects ({totalElements} total)
+            </Text>
+          </Stack>
+        </HStack>
         {canCreate && (
           <Button variant="primary" onClick={handleCreateProject}>
             <Plus size={16} color="white" /> New Project
