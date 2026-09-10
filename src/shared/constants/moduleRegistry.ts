@@ -137,6 +137,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 21,
   },
+  ROLE_TEMPLATES: {
+    moduleCode: "ROLE_MANAGEMENT",
+    label: "Role Templates",
+    path: ROUTES_CONFIG.SUPER_ADMIN.ROLE_TEMPLATES,
+    icon: LayoutTemplate,
+    section: "Administration",
+    order: 27,
+  },
   PERMISSION_MANAGEMENT: {
     moduleCode: "PERMISSION_MANAGEMENT",
     label: "Permission Management",

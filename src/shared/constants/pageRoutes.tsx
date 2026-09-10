@@ -8,6 +8,7 @@ import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
 import MFAVerification from "@/pages/Authentication/MFAVerification/MFAVerification";
 import RoleSetup from "@/pages/SuperAdmin/Role/RoleManagement";
+import RoleTemplatesPage from "@/pages/SuperAdmin/RoleTemplates/RoleTemplatesPage";
 import UserRoleDetails from "@/pages/SuperAdmin/Role/UserRoleDetails/UserRoleDetails";
 import MenuManagement from "@/pages/SuperAdmin/MenuSetup/MenuManagement";
 import FirmManagement from "@/pages/SuperAdmin/FirmManagement/FirmManagementTable";
@@ -322,6 +323,12 @@ export const USER_ROUTES: Array<{
     moduleCode: "BILLING",
     requiredAction: "VIEW",
     roles: ["SUPER_ADMIN"],
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.ROLE_TEMPLATES,
+    element: <RoleTemplatesPage />,
+    moduleCode: "ROLE_MANAGEMENT",
+    requiredAction: "VIEW",
   },
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.AUDIT_LOGS,

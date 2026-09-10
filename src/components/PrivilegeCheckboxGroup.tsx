@@ -3,7 +3,6 @@ import {
   Flex,
   Grid,
   HStack,
-  Separator,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -18,20 +17,37 @@ function CheckboxGroup({
   onChange,
   label,
   options,
+  readOnly = false,
+  selectAllState,
+  onToggleAllScoped,
+  onToggleOptionScoped,
 }: CheckboxGroupProps) {
-  const allChecked =
-    options.length > 0 &&
-    options
-      .filter((opt) => !opt.disabled)
-      .every((opt) => value.includes(opt.value));
+  /** Scope-aware mode: the parent derives select-all state from the GLOBAL
+   * selection and handles module-scoped add/remove deltas itself. */
+  const isScoped = !!selectAllState;
+
+  const allChecked = selectAllState
+    ? selectAllState.checked
+    : options.length > 0 &&
+      options
+        .filter((opt) => !opt.disabled)
+        .every((opt) => value.includes(opt.value));
+
+  const indeterminate = selectAllState?.indeterminate ?? false;
 
   const toggleAll = (details: { checked: boolean | "indeterminate" }) => {
+    if (readOnly) return;
+    if (isScoped) {
+      // Indeterminate → activating selects the whole module.
+      onToggleAllScoped?.(!allChecked);
+      return;
+    }
     if (details.checked === true) {
       // Enable all non-disabled options
       const enabledOptions = options
         .filter((o) => !o.disabled)
         .map((o) => o.value);
-      onChange(enabledOptions);
+      onChange?.(enabledOptions);
     } else {
       // Disable all non-disabled options (keep only disabled ones that were selected)
       const disabledOptionValues = options
@@ -40,17 +56,22 @@ function CheckboxGroup({
       const currentlySelectedDisabled = value.filter((v) =>
         disabledOptionValues.includes(v)
       );
-      onChange(currentlySelectedDisabled);
+      onChange?.(currentlySelectedDisabled);
     }
   };
 
   const toggleOption = (option: string, checked: boolean | "indeterminate") => {
+    if (readOnly) return;
     // Guard: do not allow toggling disabled/inactive permissions
     const opt = options.find((o) => o.value === option);
     if (opt?.disabled) return;
+    if (isScoped) {
+      onToggleOptionScoped?.(option, checked === true);
+      return;
+    }
     const next =
       checked === true ? [...value, option] : value.filter((v) => v !== option);
-    onChange(next);
+    onChange?.(next);
   };
 
   return (
@@ -77,16 +98,32 @@ function CheckboxGroup({
         {options.length > 1 && (
           <HStack
             gap={2}
-            cursor="pointer"
+            cursor={readOnly ? "default" : "pointer"}
             px={3}
             py={1.5}
             borderRadius="md"
-            _hover={{ bg: "primary.50" }}
+            _hover={readOnly ? undefined : { bg: "primary.50" }}
             transition="backgrounds 150ms ease"
             role="group"
             aria-label="Toggle all permissions"
           >
-            <Switch checked={allChecked} onCheckedChange={toggleAll} />
+            {isScoped ? (
+              /* Scope-aware mode: checkbox supports the derived
+                 unchecked / indeterminate / checked states. */
+              <Checkbox
+                checked={indeterminate ? "indeterminate" : allChecked}
+                onCheckedChange={toggleAll}
+                disabled={readOnly}
+                size="sm"
+                aria-label="Toggle all permissions"
+              />
+            ) : (
+              <Switch
+                checked={allChecked}
+                onCheckedChange={toggleAll}
+                disabled={readOnly}
+              />
+            )}
             <Text
               fontSize="xs"
               fontWeight="600"
@@ -173,6 +210,7 @@ export function PrivilegeCheckboxGroup<T extends FieldValues>({
   name,
   label = "Action Permissions",
   options = [],
+  readOnly = false,
 }: PrivilegeCheckboxGroupProps<T>) {
   return (
     <Controller
@@ -191,6 +229,7 @@ export function PrivilegeCheckboxGroup<T extends FieldValues>({
               onChange={field.onChange}
               label={label}
               options={options}
+              readOnly={readOnly}
             />
             {error?.message && (
               <Text color="red.500" fontSize="sm" px={4}>
@@ -204,11 +243,50 @@ export function PrivilegeCheckboxGroup<T extends FieldValues>({
   );
 }
 
+/**
+ * Controlled variant of PrivilegeCheckboxGroup for flows that do not use a
+ * React Hook Form instance (selection state is owned by the parent).
+ * Renders exactly the same UI as PrivilegeCheckboxGroup.
+ */
+export function ControlledPrivilegeCheckboxGroup({
+  value,
+  onChange,
+  label = "Action Permissions",
+  options = [],
+  readOnly = false,
+  selectAllState,
+  onToggleAllScoped,
+  onToggleOptionScoped,
+}: ControlledCheckboxGroupProps) {
+  const safeValue = Array.isArray(value)
+    ? value.filter((v): v is string => typeof v === "string")
+    : [];
+  return (
+    <CheckboxGroup
+      value={safeValue}
+      onChange={onChange}
+      label={label}
+      options={options}
+      readOnly={readOnly}
+      selectAllState={selectAllState}
+      onToggleAllScoped={onToggleAllScoped}
+      onToggleOptionScoped={onToggleOptionScoped}
+    />
+  );
+}
+
 interface CheckboxGroupProps {
   value: string[];
-  onChange: (value: string[]) => void;
+  onChange?: (value: string[]) => void;
   label: string;
   options: SelectOptionType[];
+  readOnly?: boolean;
+  /** Parent-derived select-all state (scope-aware/global-selection mode). */
+  selectAllState?: { checked: boolean; indeterminate: boolean };
+  /** Module-scoped toggle: add/remove this module's ids from the global selection. */
+  onToggleAllScoped?: (checked: boolean) => void;
+  /** Global-selection toggle for one permission id. */
+  onToggleOptionScoped?: (option: string, checked: boolean) => void;
 }
 
 interface PrivilegeCheckboxGroupProps<T extends FieldValues> {
@@ -216,4 +294,16 @@ interface PrivilegeCheckboxGroupProps<T extends FieldValues> {
   name: FieldPath<T>;
   label?: string;
   options: SelectOptionType[];
+  readOnly?: boolean;
+}
+
+interface ControlledCheckboxGroupProps {
+  value: string[];
+  onChange?: (value: string[]) => void;
+  label?: string;
+  options: SelectOptionType[];
+  readOnly?: boolean;
+  selectAllState?: { checked: boolean; indeterminate: boolean };
+  onToggleAllScoped?: (checked: boolean) => void;
+  onToggleOptionScoped?: (option: string, checked: boolean) => void;
 }

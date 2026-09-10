@@ -50,6 +50,7 @@ export const ROUTES_CONFIG = {
     CLIENT_PROJECT_DETAIL: "/client-projects/:projectCode",
   },
   SUPER_ADMIN: {
+    ROLE_TEMPLATES: "/role-templates",
     AUDIT_LOGS: "/super-admin/audit-logs",
     USER_AUDIT_LOGS: "/super-admin/audit-logs/users/:userId",
     FIRM_AUDIT_LOGS: "/super-admin/audit-logs/firms/:firmId",

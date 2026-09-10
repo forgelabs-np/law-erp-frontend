@@ -82,6 +82,13 @@ export const api = {
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
     GET_FIRM_ROLES: "firm/roles",
+    SUPER_ADMIN_FIRM_ROLES: "super-admin/firms/{firmId}/roles",
+  },
+  ROLE_TEMPLATES: {
+    LIST: "admin/roles/templates",
+    PERMISSIONS: "admin/roles/templates/{templateId}/permissions",
+    PREVIEW: "admin/roles/templates/{templateId}/permissions/preview",
+    SYNC_JOB: "admin/roles/sync-jobs/{jobId}",
   },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit",

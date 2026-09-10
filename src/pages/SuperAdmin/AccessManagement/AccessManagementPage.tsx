@@ -31,6 +31,7 @@ import { ModuleStatusFilter } from "../FirmModules/types";
 import { formatDate } from "../FirmModules/utils";
 import { ConfigureModuleDrawer } from "../FirmModules/ConfigureModuleDrawer";
 import { RolePermissionsSection } from "../Role/UserRoleDetails/components/RolePermissionsSection";
+import { FirmRolesSection } from "../RoleTemplates/firmRoles/components/FirmRolesSection";
 
 // ─── MODULE TAB ──────────────────────────────────────────────────────────────
 
@@ -511,6 +512,12 @@ export default function AccessManagementPage() {
           >
             Permissions
           </Tabs.Trigger>
+          <Tabs.Trigger
+            value="roles"
+            _selected={{ borderColor: "primary.500", color: "primary.500" }}
+          >
+            Roles &amp; Permissions
+          </Tabs.Trigger>
           <Tabs.Indicator />
         </Tabs.List>
 
@@ -523,6 +530,10 @@ export default function AccessManagementPage() {
             {activeTab === "permissions" && (
               <FirmPermissionsTab roleId={firmRoleId} roleName={firmRoleName} />
             )}
+          </Tabs.Content>
+          <Tabs.Content value="roles">
+            {/* Lazy: only renders when roles tab is active */}
+            {activeTab === "roles" && firmId && <FirmRolesSection firmId={firmId} />}
           </Tabs.Content>
         </Box>
       </Tabs.Root>
