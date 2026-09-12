@@ -83,6 +83,29 @@ export const api = {
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
     GET_FIRM_ROLES: "firm/roles",
   },
+  /**
+   * Firm-scoped role management. Used by FIRM_ADMIN to distribute a subset of
+   * their own permissions (the ceiling) to employee roles. Permission updates
+   * are a full replace of the role's permission set.
+   */
+  FIRM_ROLE_MANAGEMENT: {
+    LIST: "firm/roles",
+    CREATE: "firm/roles",
+    DELETE: "firm/roles/{roleId}",
+    TOGGLE: "firm/roles/{roleId}/toggle",
+    PERMISSIONS: "firm/roles/{roleId}/permissions",
+    USERS: "firm/roles/{roleId}/users",
+  },
+  /**
+   * Super Admin overrides a specific firm's roles. Role permission updates here
+   * bypass the Firm Admin ceiling (except GLOBAL permissions) and are a full
+   * replace of the role's permission set.
+   */
+  SUPER_ADMIN_FIRM_ROLES: {
+    LIST: "super-admin/firms/{firmId}/roles",
+    CREATE: "super-admin/firms/{firmId}/roles",
+    PERMISSIONS: "super-admin/firms/{firmId}/roles/{roleId}/permissions",
+  },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit",
     USER_AUDIT: "super-admin/audit/users/{userId}",

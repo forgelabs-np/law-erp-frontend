@@ -1,11 +1,17 @@
 import { Box, Stack, Tabs, Text } from "@chakra-ui/react";
 import { useState } from "react";
 
+import { useRole } from "@/shared/hooks/useAuth";
 import RolesTab from "./component/RolesTab";
 import UserAssignmentsTab from "./component/UserAssignmentsTab";
 
 const RoleManagement = () => {
-  const [activeTab, setActiveTab] = useState("users");
+  const role = useRole();
+  const roleCode =
+    typeof role === "string" ? role : ((role as { code?: string })?.code ?? "");
+  const isFirmAdmin = roleCode.toUpperCase() === "FIRM_ADMIN";
+
+  const [activeTab, setActiveTab] = useState(isFirmAdmin ? "roles" : "users");
 
   return (
     <Stack gap={6} padding={2}>
@@ -23,12 +29,14 @@ const RoleManagement = () => {
         variant="enclosed"
       >
         <Tabs.List>
-          <Tabs.Trigger
-            value="users"
-            _selected={{ borderColor: "primary.500", color: "primary.500" }}
-          >
-            User Assignments
-          </Tabs.Trigger>
+          {!isFirmAdmin && (
+            <Tabs.Trigger
+              value="users"
+              _selected={{ borderColor: "primary.500", color: "primary.500" }}
+            >
+              User Assignments
+            </Tabs.Trigger>
+          )}
           <Tabs.Trigger
             value="roles"
             _selected={{ borderColor: "primary.500", color: "primary.500" }}
@@ -39,9 +47,11 @@ const RoleManagement = () => {
         </Tabs.List>
 
         <Box mt={4}>
-          <Tabs.Content value="users">
-            <UserAssignmentsTab />
-          </Tabs.Content>
+          {!isFirmAdmin && (
+            <Tabs.Content value="users">
+              <UserAssignmentsTab />
+            </Tabs.Content>
+          )}
           <Tabs.Content value="roles">
             <RolesTab />
           </Tabs.Content>

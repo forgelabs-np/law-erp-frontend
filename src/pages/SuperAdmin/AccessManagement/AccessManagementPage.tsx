@@ -11,7 +11,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { ArrowLeftIcon, Shield } from "lucide-react";
+import { ArrowLeftIcon } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,14 +23,13 @@ import {
   useGetAllModulesQuery,
   useGetFirmModulesQuery,
 } from "@/api/firmModules";
-import { useRoleByIdQuery } from "@/api/roleSetup.ts";
 import { Datatable } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
 
 import { ModuleStatusFilter } from "../FirmModules/types";
 import { formatDate } from "../FirmModules/utils";
 import { ConfigureModuleDrawer } from "../FirmModules/ConfigureModuleDrawer";
-import { RolePermissionsSection } from "../Role/UserRoleDetails/components/RolePermissionsSection";
+import { FirmRolesPanel } from "./FirmRolesPanel";
 
 // ─── MODULE TAB ──────────────────────────────────────────────────────────────
 
@@ -308,83 +307,9 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
 }
 
 // ─── PERMISSIONS TAB ─────────────────────────────────────────────────────────
-// Uses GET /admin/roles/:roleId to load permissions for the selected firm's admin role.
-// roleId comes from the Firm Management API response (FirmResponse.roleId).
-// All permission checkbox logic and save flow are handled by RolePermissionsSection.
-
-function FirmPermissionsTab({
-  roleId,
-  roleName,
-}: {
-  roleId?: string;
-  roleName?: string;
-}) {
-  // Validate roleId before fetching
-  const validRoleId = roleId?.trim() || "";
-
-  // Fetch role details using GET /admin/roles/:roleId (includes permissions)
-  const {
-    data: roleDetails,
-    isLoading: isLoadingRoleDetails,
-    isError,
-  } = useRoleByIdQuery(validRoleId);
-
-  if (!validRoleId) {
-    return (
-      <Box
-        p={8}
-        textAlign="center"
-        bg="white"
-        borderRadius="md"
-        borderWidth="1px"
-      >
-        <Shield size={32} color="gray" style={{ margin: "0 auto 12px" }} />
-        <Text color="gray.600" fontWeight="500" mb={1}>
-          No role assigned
-        </Text>
-        <Text color="gray.400" fontSize="sm">
-          This firm admin does not have an associated role. Please assign a role
-          via Role Management.
-        </Text>
-      </Box>
-    );
-  }
-
-  if (isLoadingRoleDetails) {
-    return (
-      <Stack gap={4} py={8} alignItems="center">
-        <Spinner size="md" color="primary.500" />
-        <Text color="gray.500" fontSize="sm">
-          Loading {roleName || "role"} permissions...
-        </Text>
-      </Stack>
-    );
-  }
-
-  if (isError || !roleDetails) {
-    return (
-      <Box
-        p={8}
-        textAlign="center"
-        bg="white"
-        borderRadius="md"
-        borderWidth="1px"
-      >
-        <Shield size={32} color="gray" style={{ margin: "0 auto 12px" }} />
-        <Text color="gray.600" fontWeight="500" mb={1}>
-          Failed to load role permissions
-        </Text>
-        <Text color="gray.400" fontSize="sm">
-          Could not fetch permissions for role "{roleName || validRoleId}".
-          Please try again or contact an administrator.
-        </Text>
-      </Box>
-    );
-  }
-
-  // Delegate all permission checkbox state + save logic to RolePermissionsSection
-  return <RolePermissionsSection roleId={validRoleId} />;
-}
+// Super Admin views the firm's roles and overrides their permissions through
+// the firm-scoped endpoints: GET /super-admin/firms/{firmId}/roles and
+// PUT /super-admin/firms/{firmId}/roles/{roleId}/permissions.
 
 // ─── MAIN PAGE ───────────────────────────────────────────────────────────────
 
@@ -399,8 +324,6 @@ export default function AccessManagementPage() {
 
   const firmName = firm?.name || "Firm";
   const firmCode = firm?.lawFirmCode || firmId || "";
-  const firmRoleId = firm?.roleId;
-  const firmRoleName = firm?.roleName;
 
   return (
     <Stack gap={6} padding={8}>
@@ -519,9 +442,10 @@ export default function AccessManagementPage() {
             <ModuleManagementTab firmId={firmId ?? ""} />
           </Tabs.Content>
           <Tabs.Content value="permissions">
-            {/* Lazy: only renders when permissions tab is active */}
+            {/* Lazy: only renders when the permissions tab is active, so no
+                firm-role request fires until the user opens the tab. */}
             {activeTab === "permissions" && (
-              <FirmPermissionsTab roleId={firmRoleId} roleName={firmRoleName} />
+              <FirmRolesPanel firmId={firmId ?? ""} />
             )}
           </Tabs.Content>
         </Box>

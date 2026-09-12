@@ -8,10 +8,6 @@ import { SidebarProfile } from "./SidebarProfile";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
 import { useCurrentUser, useModules } from "@/shared/hooks/useAuth";
-import {
-  moduleHasAction,
-  isModuleEnabled,
-} from "@/shared/hooks/usePermissions";
 import { useLocation } from "react-router-dom";
 import {
   getModuleConfig,
@@ -22,18 +18,9 @@ import {
 import { useUnreadCountQuery } from "@/api/notifications";
 
 const SUPPORT_MODULE_CODES = [
-  // "TEMPLATES",
-  // "HELP_DOCS",
   "NOTIFICATION_MANAGEMENT",
   "SETTINGS",
 ] as const;
-
-/**
- * Extra Administration entry rendered statically (not backend-module-driven)
- * for users who can access Role Management. Points at the System Role
- * Templates screen (Super Admin).
- */
-const EXTRA_ADMIN_ITEMS = ["ROLE_TEMPLATES"] as const;
 
 // Path prefixes that belong to the Case Management module. The sidebar item
 // stays highlighted while the user browses any of these pages.
@@ -79,15 +66,6 @@ export const Sidebar = () => {
   const { data: unreadCount = 0 } = useUnreadCountQuery({
     enabled: Boolean(user),
   });
-
-  console.log(unreadCount, "counttt");
-
-  // The Role Templates screen is governed by the ROLE_MANAGEMENT module
-  // (ACCESS + VIEW), same as the rest of role administration.
-  const canSeeRoleTemplates =
-    isModuleEnabled(modules, "ROLE_MANAGEMENT") &&
-    moduleHasAction(modules, "ROLE_MANAGEMENT", "ACCESS") &&
-    moduleHasAction(modules, "ROLE_MANAGEMENT", "VIEW");
 
   // Auto-expand parent when a child route is active (only on route change)
   useEffect(() => {

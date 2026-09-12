@@ -9,6 +9,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
+
+import { useRoleUsersQuery } from "@/api/roleSetup.ts";
+import { UserResponseType } from "@/api/userManagement";
 import {
   DrawerRoot,
   DrawerContent,
@@ -19,7 +22,6 @@ import {
   DrawerTitle,
 } from "@/shared/components/drawer";
 import { Avatar } from "@/shared/components/ui/Avatar";
-import { useRoleUsersQuery } from "@/api/roleSetup.ts";
 import NoDataAvailable from "@/shared/components/NoDataAvailable/NoDataAvailable";
 import { InputGroup } from "@/shared/components/ui";
 import { Input } from "@chakra-ui/react";
@@ -44,19 +46,23 @@ export const RoleUsersDrawer = ({
     isOpen && !!roleId
   );
 
-  const users = useMemo(() => {
-    const usersList = data?.content ?? [];
+  const users = useMemo<UserResponseType[]>(() => {
+    const usersList: UserResponseType[] = Array.isArray(data)
+      ? data
+      : (data?.content ?? []);
     if (!searchTerm) return usersList;
     const lower = searchTerm.toLowerCase();
     return usersList.filter(
-      (user: any) =>
+      (user) =>
         user.fullName?.toLowerCase().includes(lower) ||
         user.username?.toLowerCase().includes(lower) ||
         user.email?.toLowerCase().includes(lower)
     );
   }, [data, searchTerm]);
 
-  const totalUsers = data?.totalElements ?? 0;
+  const totalUsers = Array.isArray(data)
+    ? data.length
+    : (data?.totalElements ?? 0);
 
   return (
     <DrawerRoot
@@ -137,7 +143,7 @@ export const RoleUsersDrawer = ({
             <NoDataAvailable content="No matching users found." />
           ) : (
             <VStack align="stretch" gap={3}>
-              {users.map((user: any) => (
+              {users.map((user) => (
                 <Box
                   key={user.id}
                   p={4}
@@ -150,7 +156,6 @@ export const RoleUsersDrawer = ({
                 >
                   <HStack gap={4} align="flex-start">
                     <Avatar
-                      src={user.avatar}
                       name={user.fullName || user.username}
                       size="md"
                     />
@@ -178,16 +183,16 @@ export const RoleUsersDrawer = ({
                       <Text fontSize="sm" color="gray.500">
                         @{user.username}
                       </Text>
-                      {(user.email || user.mobileNumber) && (
+                      {(user.email || user.mobileNo) && (
                         <VStack align="start" gap={1} mt={2}>
                           {user.email && (
                             <Text fontSize="sm" color="gray.600">
                               {user.email}
                             </Text>
                           )}
-                          {user.mobileNumber && (
+                          {user.mobileNo && (
                             <Text fontSize="sm" color="gray.600">
-                              {user.mobileNumber}
+                              {user.mobileNo}
                             </Text>
                           )}
                         </VStack>

@@ -4,7 +4,6 @@ import {
   User,
   Building2,
   Shield,
-  LayoutTemplate,
   HelpCircle,
   Settings,
   LogOut,
@@ -138,14 +137,6 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 21,
   },
-  // ROLE_TEMPLATES: {
-  //   moduleCode: "ROLE_TEMPLATES",
-  //   label: "Role Templates",
-  //   path: ROUTES_CONFIG.SUPER_ADMIN.ROLE_TEMPLATES,
-  //   icon: LayoutTemplate,
-  //   section: "Administration",
-  //   order: 27,
-  // },
   PERMISSION_MANAGEMENT: {
     moduleCode: "PERMISSION_MANAGEMENT",
     label: "Permission Management",
@@ -225,14 +216,6 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     icon: Shield,
     section: "Administration",
     order: 25,
-  },
-  TEMPLATES: {
-    moduleCode: "TEMPLATES",
-    label: "Templates",
-    path: "#",
-    icon: LayoutTemplate,
-    section: "Support",
-    order: 90,
   },
   HELP_DOCS: {
     moduleCode: "HELP_DOCS",
