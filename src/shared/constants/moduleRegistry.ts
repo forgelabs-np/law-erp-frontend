@@ -13,6 +13,7 @@ import {
   Archive,
   Database,
   Briefcase,
+  Bell,
 } from "lucide-react";
 import { ComponentType } from "react";
 
@@ -137,6 +138,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 21,
   },
+  // ROLE_TEMPLATES: {
+  //   moduleCode: "ROLE_TEMPLATES",
+  //   label: "Role Templates",
+  //   path: ROUTES_CONFIG.SUPER_ADMIN.ROLE_TEMPLATES,
+  //   icon: LayoutTemplate,
+  //   section: "Administration",
+  //   order: 27,
+  // },
   PERMISSION_MANAGEMENT: {
     moduleCode: "PERMISSION_MANAGEMENT",
     label: "Permission Management",
@@ -176,6 +185,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     icon: Database,
     section: "Administration",
     order: 25,
+  },
+  NOTIFICATION_MANAGEMENT: {
+    moduleCode: "NOTIFICATION_MANAGEMENT",
+    label: "Notifications",
+    path: ROUTES_CONFIG.USER.NOTIFICATIONS,
+    icon: Bell,
+    section: "Support",
+    order: 27,
   },
   CONFIGURATION: {
     moduleCode: "CONFIGURATION",

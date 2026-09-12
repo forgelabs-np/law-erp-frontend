@@ -91,12 +91,7 @@ const RolesTab = () => {
     onClose: onUsersDrawerClose,
   } = useDisclosure();
 
-  const {
-    data: roleResponse,
-    isLoading,
-    isError,
-    refetch,
-  } = useGetRoleQuery();
+  const { data: roleResponse, isLoading, isError, refetch } = useGetRoleQuery();
   const { mutate: toggleRole, isPending: isTogglePending } =
     useToggleRoleMutation();
   const { mutate: deleteRole, isPending: isDeletePending } =
@@ -292,13 +287,21 @@ const RolesTab = () => {
         gap={4}
       >
         <SummaryCard title="Total Roles" value={totalRoles} />
-        <SummaryCard title="Active Roles" value={activeRoles} color="green.500" />
+        <SummaryCard
+          title="Active Roles"
+          value={activeRoles}
+          color="green.500"
+        />
         <SummaryCard
           title="Inactive Roles"
           value={inactiveRoles}
           color="red.500"
         />
-        <SummaryCard title="System Roles" value={systemRoles} color="blue.500" />
+        <SummaryCard
+          title="System Roles"
+          value={systemRoles}
+          color="blue.500"
+        />
       </Grid>
 
       {/* Roles list */}

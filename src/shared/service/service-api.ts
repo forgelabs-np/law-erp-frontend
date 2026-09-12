@@ -160,6 +160,14 @@ export const api = {
     PROJECT_BY_CODE: "client/projects/{projectCode}",
     PROJECT_RENEWALS: "client/projects/{projectCode}/renewals",
   },
+  NOTIFICATIONS: {
+    LIST: "notifications",
+    UNREAD_COUNT: "notifications/unread-count",
+    MARK_READ: "notifications/{notificationId}/read",
+    READ_ALL: "notifications/read-all",
+    PREFERENCES: "notifications/preferences",
+    BROADCAST: "notifications/broadcast",
+  },
   INVOICE_MANAGEMENT: {
     LIST: "super-admin/invoices",
     GET_BY_ID: "super-admin/invoices/{id}",

@@ -26,7 +26,9 @@ interface SidebarProfileProps {
   isCollapsed?: boolean;
 }
 
-export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => {
+export const SidebarProfile = ({
+  isCollapsed = false,
+}: SidebarProfileProps) => {
   const user = useCurrentUser();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,12 +59,7 @@ export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => 
   const showPhoto = Boolean(profilePhotoUrl) && !imageFailed;
 
   return (
-    <Box
-      flexShrink="0"
-      width="full"
-      borderTop="1px"
-      borderTopColor="gray.200"
-    >
+    <Box flexShrink="0" width="full" borderTop="1px" borderTopColor="gray.200">
       <MenuRoot
         open={isMenuOpen}
         onOpenChange={(details) => setIsMenuOpen(details.open)}
@@ -162,7 +159,12 @@ export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => 
                 borderBottom="1px"
                 borderBottomColor="gray.100"
               >
-                <Text fontSize="sm" fontWeight="600" color="gray.800" lineClamp={1}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="600"
+                  color="gray.800"
+                  lineClamp={1}
+                >
                   {username}
                 </Text>
                 {roleName && (

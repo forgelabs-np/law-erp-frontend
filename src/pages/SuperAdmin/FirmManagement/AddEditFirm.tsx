@@ -50,8 +50,6 @@ export const AddEditFirm = ({
 
   const firmById = firmByIdResponse?.[0];
 
-  console.log(firmById, "firmIddddddd");
-
   const methods = useForm<FirmFormValues>({
     defaultValues,
     resolver: yupResolver(firmSchema),

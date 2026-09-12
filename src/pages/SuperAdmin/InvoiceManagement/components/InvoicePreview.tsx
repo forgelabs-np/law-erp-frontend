@@ -32,8 +32,6 @@ export const InvoicePreview = ({
   const subtotal = computeSubtotal(items);
   const taxAmount = computeTaxAmount(subtotal, taxRate);
   const total = computeTotal(subtotal, taxRate);
-  console.log(firmName, "nameeeee");
-
   return (
     <Box
       bg="white"

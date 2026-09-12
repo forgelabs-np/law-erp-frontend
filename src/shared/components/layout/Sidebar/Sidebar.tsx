@@ -7,7 +7,11 @@ import { SidebarItem } from "./SidebarItem";
 import { SidebarProfile } from "./SidebarProfile";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
-import { useModules } from "@/shared/hooks/useAuth";
+import { useCurrentUser, useModules } from "@/shared/hooks/useAuth";
+import {
+  moduleHasAction,
+  isModuleEnabled,
+} from "@/shared/hooks/usePermissions";
 import { useLocation } from "react-router-dom";
 import {
   getModuleConfig,
@@ -15,12 +19,21 @@ import {
   mapEnabledModulesToSidebarData,
   SIDEBAR_SECTION_ORDER,
 } from "@/shared/constants/moduleRegistry";
+import { useUnreadCountQuery } from "@/api/notifications";
 
 const SUPPORT_MODULE_CODES = [
   // "TEMPLATES",
   // "HELP_DOCS",
+  "NOTIFICATION_MANAGEMENT",
   "SETTINGS",
 ] as const;
+
+/**
+ * Extra Administration entry rendered statically (not backend-module-driven)
+ * for users who can access Role Management. Points at the System Role
+ * Templates screen (Super Admin).
+ */
+const EXTRA_ADMIN_ITEMS = ["ROLE_TEMPLATES"] as const;
 
 // Path prefixes that belong to the Case Management module. The sidebar item
 // stays highlighted while the user browses any of these pages.
@@ -31,7 +44,7 @@ const CASE_MANAGEMENT_ACTIVE_PREFIXES = [
   "/stale-matters",
 ];
 
-const buildSupportSidebarItems = () => {
+const buildSupportSidebarItems = (unreadCount: number = 0) => {
   return SUPPORT_MODULE_CODES.map((moduleCode) => {
     const config = getModuleConfig(moduleCode);
     if (!config) {
@@ -47,6 +60,9 @@ const buildSupportSidebarItems = () => {
       icon: <Icon size={16} />,
       section: config.section,
       order: config.order,
+      ...(moduleCode === "NOTIFICATION_MANAGEMENT" && unreadCount > 0
+        ? { badge: unreadCount }
+        : {}),
     };
   })
     .filter((item) => item !== null)
@@ -59,6 +75,19 @@ export const Sidebar = () => {
   const location = useLocation();
 
   const modules = useModules();
+  const user = useCurrentUser();
+  const { data: unreadCount = 0 } = useUnreadCountQuery({
+    enabled: Boolean(user),
+  });
+
+  console.log(unreadCount, "counttt");
+
+  // The Role Templates screen is governed by the ROLE_MANAGEMENT module
+  // (ACCESS + VIEW), same as the rest of role administration.
+  const canSeeRoleTemplates =
+    isModuleEnabled(modules, "ROLE_MANAGEMENT") &&
+    moduleHasAction(modules, "ROLE_MANAGEMENT", "ACCESS") &&
+    moduleHasAction(modules, "ROLE_MANAGEMENT", "VIEW");
 
   // Auto-expand parent when a child route is active (only on route change)
   useEffect(() => {
@@ -120,20 +149,27 @@ export const Sidebar = () => {
         subItems: subItems?.length ? subItems : undefined,
         isChild,
         ...(isActive ? { isActive: true } : {}),
+        // Add unread count badge for notifications module
+        ...(item.moduleCode === "NOTIFICATION_MANAGEMENT" && unreadCount > 0
+          ? { badge: unreadCount }
+          : {}),
       };
     };
 
     return mapEnabledModulesToSidebarData(modules).map((item) =>
       mapModuleToSidebarItem(item)
     );
-  }, [modules, location.pathname]);
+  }, [modules, location.pathname, unreadCount]);
 
   const itemsBySection = useMemo(
     () => groupSidebarItemsBySection(moduleItems),
     [moduleItems]
   );
 
-  const bottomItems = useMemo(() => buildSupportSidebarItems(), []);
+  const bottomItems = useMemo(
+    () => buildSupportSidebarItems(unreadCount),
+    [unreadCount]
+  );
 
   return (
     <VStack

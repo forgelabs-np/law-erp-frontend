@@ -109,16 +109,18 @@ const EmployeeManagementTable = () => {
             onEdit={
               canEdit
                 ? () => {
-                  setSelectedId(String(row.original.id));
-                  onAddEditOpen();
-                }
+                    setSelectedId(String(row.original.id));
+                    onAddEditOpen();
+                  }
                 : undefined
             }
             onView={
-              canView ? () => {
-                setViewEmployeeId(String(row.original.id));
-                onViewModalOpen();
-              } : undefined
+              canView
+                ? () => {
+                    setViewEmployeeId(String(row.original.id));
+                    onViewModalOpen();
+                  }
+                : undefined
             }
           />
         ),

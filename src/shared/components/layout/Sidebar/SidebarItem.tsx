@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from "@chakra-ui/react";
+import { Badge, Box, HStack, Text } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
@@ -20,6 +20,7 @@ export const LinkItem = ({
   onClick,
   hasSubItems,
   isExpanded,
+  badge,
 }: SidebarItemProps & {
   isCollapsed?: boolean;
   hasSubItems?: boolean;
@@ -49,6 +50,7 @@ export const LinkItem = ({
           onClick={onClick}
           hasSubItems={hasSubItems}
           isExpanded={isExpanded}
+          badge={badge}
         />
       </Link>
     );
@@ -98,6 +100,26 @@ export const LinkItem = ({
         <Text fontSize="sm" fontWeight={isActive ? "600" : "400"} flex="1">
           {name}
         </Text>
+      )}
+
+      {!isCollapsed && badge != null && badge !== 0 && (
+        <Badge
+          bg="red.500"
+          color="white"
+          fontSize="10px"
+          borderRadius="full"
+          minW="18px"
+          h="18px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          fontWeight="600"
+          lineHeight="1"
+          px="1"
+          flexShrink={0}
+        >
+          {typeof badge === "number" ? (badge > 99 ? "99+" : badge) : badge}
+        </Badge>
       )}
 
       {!isCollapsed && hasSubItems && (

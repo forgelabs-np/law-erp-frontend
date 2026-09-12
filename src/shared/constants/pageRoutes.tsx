@@ -65,6 +65,7 @@ import InvoiceListPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceListPag
 import CreateInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/CreateInvoicePage";
 import EditInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/EditInvoicePage";
 import InvoiceDetailPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceDetailPage";
+import NotificationsPage from "@/pages/User/Notifications/NotificationsPage";
 
 /**
  * Route-level permission configuration.
@@ -347,6 +348,12 @@ export const USER_ROUTES: Array<{
     path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,
     element: <FirmModules />,
     moduleCode: "FIRM_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.NOTIFICATIONS,
+    element: <NotificationsPage />,
+    moduleCode: "NOTIFICATION_MANAGEMENT",
+    requiredAction: "VIEW",
   },
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT,

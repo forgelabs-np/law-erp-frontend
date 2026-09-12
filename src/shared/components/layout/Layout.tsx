@@ -45,8 +45,6 @@ export const Layout = ({ children }: PropsWithChildren) => {
       <Sidebar />
 
       <VStack alignItems="stretch" flex="1" gap="0">
-        {/* <Navbar /> */}
-
         <Box overflowY="auto" flex="1">
           <Box
             padding="4"
