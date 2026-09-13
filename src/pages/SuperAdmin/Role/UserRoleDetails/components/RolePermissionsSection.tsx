@@ -1,4 +1,4 @@
-import { Stack, Button, HStack, Text } from "@chakra-ui/react";
+import { Stack, Button, HStack, Text, Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -67,8 +67,12 @@ export const RolePermissionsSection = ({ roleId }: { roleId: string }) => {
   };
 
   return (
-    <Stack gap={6}>
-      <HStack justifyContent="space-between">
+    <Flex
+      flexDirection="column"
+      height="calc(100vh - 80px)"
+      gap={6}
+    >
+      <HStack justifyContent="space-between" flexShrink={0}>
         <Text textStyle="subtitle_large">Manage Permissions</Text>
         <Button
           onClick={handleSubmit(onSubmit)}
@@ -80,7 +84,14 @@ export const RolePermissionsSection = ({ roleId }: { roleId: string }) => {
           Save Permissions
         </Button>
       </HStack>
-      <RoleSetupForm isOpen={true} control={control} />
-    </Stack>
+      <Stack
+        flex={1}
+        minH={0}
+        overflowY="auto"
+        pb={6}
+      >
+        <RoleSetupForm isOpen={true} control={control} />
+      </Stack>
+    </Flex>
   );
 };

@@ -1,6 +1,7 @@
-import { Card, Grid, Stack, Text } from "@chakra-ui/react";
-import { useMemo } from "react";
+import { Card, Grid, Stack, Text, HStack, Button, IconButton } from "@chakra-ui/react";
+import { useMemo, useState } from "react";
 import { Control } from "react-hook-form";
+import { Edit, X } from "lucide-react";
 
 import { useGetModuleMenusQuery } from "@/api/menuSetup";
 import {
@@ -18,6 +19,8 @@ export const RoleSetupForm = ({
   isOpen: boolean;
   control: Control<RoleFormValues>;
 }) => {
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
+
   const { data: permissionsResponse } = useGetPermissionsQuery();
   const { data: modulesResponse } = useGetModuleMenusQuery();
 
@@ -89,9 +92,20 @@ export const RoleSetupForm = ({
           borderBottomWidth="1px"
           borderColor="gray.100"
         >
-          <Text fontSize="sm" fontWeight="600" color="gray.700">
-            Role Details
-          </Text>
+          <HStack justifyContent="space-between" alignItems="center">
+            <Text fontSize="sm" fontWeight="600" color="gray.700">
+              Role Details
+            </Text>
+            <IconButton
+              aria-label={isEditingDetails ? "Cancel editing" : "Edit role details"}
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditingDetails(!isEditingDetails)}
+              colorScheme={isEditingDetails ? "red" : "blue"}
+            >
+              {isEditingDetails ? <X size={16} /> : <Edit size={16} />}
+            </IconButton>
+          </HStack>
         </Card.Header>
         <Card.Body px={{ base: 4, md: 6 }} py={5}>
           <Grid
@@ -104,6 +118,7 @@ export const RoleSetupForm = ({
               label="Role Name"
               placeholder="e.g. Admin"
               required
+              disabled={!isEditingDetails}
             />
             <InputField
               control={control}
@@ -111,12 +126,14 @@ export const RoleSetupForm = ({
               label="Role Code"
               placeholder="Enter Role Code"
               required
+              disabled={!isEditingDetails}
             />
             <InputField
               control={control}
               name="description"
               label="Description"
               placeholder="Enter Description"
+              disabled={!isEditingDetails}
             />
           </Grid>
         </Card.Body>
