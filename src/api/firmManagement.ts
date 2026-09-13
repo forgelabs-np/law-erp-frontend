@@ -60,12 +60,20 @@ const getFirmById = async (id: string) => {
   );
 };
 
-export const useFirmByIdQuery = (id: string) => {
+export const useFirmByIdQuery = (
+  id: string,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: [`firm-${id}`],
-    enabled: !!id,
+    enabled: options?.enabled !== undefined ? options.enabled : !!id,
     queryFn: async () => getFirmById(id),
-    select: (data) => data?.data?.data,
+    select: (response) => {
+      // API returns { data: { data: [...] } } where data is an array of firm/admin records
+      const items = response?.data?.data;
+      // Return the first item for single firm lookup
+      return Array.isArray(items) ? items[0] : items;
+    },
   });
 };
 

@@ -19,31 +19,43 @@ import { Switch, Tooltip } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
-import { AddEditFirm } from "./AddEditFirm";
 import { ExtendTrialModal } from "./ExtendTrialModal";
 import { getFirmLifecycleActions } from "./lifecycleUtils";
+import { FirmOnboardingModal } from "./onboarding";
+import { AddEditFirm } from "./AddEditFirm";
 
 const FirmManagement = () => {
   const navigate = useNavigate();
   const { canCreate, canEdit } = useModulePermissions("FIRM_MANAGEMENT");
   const { canAccess: canAccessAudit } = useModulePermissions("AUDIT");
-  const [selectedId, setSelectedId] = useState<string>();
   const [firmToToggle, setFirmToToggle] = useState<{
     id: string;
     active: boolean;
   } | null>(null);
-  const [firmToSuspend, setFirmToSuspend] = useState<FirmResponse | null>(null);
+  const [firmToSuspend, setFirmToSuspend] = useState<FirmResponse | null>(
+    null
+  );
   const [firmToActivate, setFirmToActivate] = useState<FirmResponse | null>(
     null
   );
-  const [firmToConvert, setFirmToConvert] = useState<FirmResponse | null>(null);
+  const [firmToConvert, setFirmToConvert] = useState<FirmResponse | null>(
+    null
+  );
   const [firmToExtendTrial, setFirmToExtendTrial] =
     useState<FirmResponse | null>(null);
+  const [selectedId, setSelectedId] = useState<string>();
+
+  // Onboarding modal
+  const {
+    open: onboardingOpen,
+    onOpen: onOnboardingOpen,
+    onClose: onOnboardingClose,
+  } = useDisclosure();
 
   const {
-    open: addEditOpen,
-    onOpen: onAddEditOpen,
-    onClose: onAddEditClose,
+    open: editOpen,
+    onOpen: onEditOpen,
+    onClose: onEditClose,
   } = useDisclosure();
 
   const {
@@ -199,36 +211,37 @@ const FirmManagement = () => {
               {(lifecycle.canSuspend ||
                 lifecycle.canExtendTrial ||
                 lifecycle.canConvertToPermanent) && (
-                <Tooltip content="More actions">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      // Show available lifecycle actions
-                      if (lifecycle.canExtendTrial) {
-                        setFirmToExtendTrial(row.original);
-                        onExtendTrialOpen();
-                      } else if (lifecycle.canConvertToPermanent) {
-                        setFirmToConvert(row.original);
-                        onConvertConfirmOpen();
-                      } else if (lifecycle.canSuspend) {
-                        setFirmToSuspend(row.original);
-                        onSuspendConfirmOpen();
-                      }
-                    }}
-                  >
-                    <History size={16} />
-                  </Button>
-                </Tooltip>
-              )}
+                  <Tooltip content="More actions">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        // Show available lifecycle actions
+                        if (lifecycle.canExtendTrial) {
+                          setFirmToExtendTrial(row.original);
+                          onExtendTrialOpen();
+                        } else if (lifecycle.canConvertToPermanent) {
+                          setFirmToConvert(row.original);
+                          onConvertConfirmOpen();
+                        } else if (lifecycle.canSuspend) {
+                          setFirmToSuspend(row.original);
+                          onSuspendConfirmOpen();
+                        }
+                      }}
+                    >
+                      <History size={16} />
+                    </Button>
+                  </Tooltip>
+                )}
 
               <TableActions
                 onEdit={
                   canEdit
                     ? () => {
-                        setSelectedId(row.original.firmId.toString());
-                        onAddEditOpen();
-                      }
+                      setSelectedId(row.original.firmId.toString());
+                      onEditOpen();
+
+                    }
                     : undefined
                 }
               />
@@ -239,7 +252,6 @@ const FirmManagement = () => {
     ],
     [
       onToggleConfirmOpen,
-      onAddEditOpen,
       navigate,
       canAccessAudit,
       canEdit,
@@ -251,132 +263,132 @@ const FirmManagement = () => {
   );
 
   return (
-    <Stack gap={6} padding={2}>
-      <HStack justifyContent="space-between" alignItems="center">
-        <Stack gap={2}>
-          <Text textStyle="heading_4">Firm Management</Text>
-          <Text textStyle="paragraph_regular" color="gray.500">
-            Manage law firms and their admin accounts
-          </Text>
-        </Stack>
+    <>
+      <Stack gap={6} padding={2}>
+        <HStack justifyContent="space-between" alignItems="center">
+          <Stack gap={2}>
+            <Text textStyle="heading_4">Firm Management</Text>
+            <Text textStyle="paragraph_regular" color="gray.500">
+              Manage law firms and their admin accounts
+            </Text>
+          </Stack>
 
-        {canCreate && (
-          <Button
-            variant="primary"
-            onClick={() => {
-              setSelectedId("");
-              onAddEditOpen();
-            }}
-          >
-            <AddIcon color="white" />
-            Add Firm
-          </Button>
-        )}
-      </HStack>
+          {canCreate && (
+            <Button variant="primary" onClick={onOnboardingOpen}>
+              <AddIcon color="white" />
+              Add Firm
+            </Button>
+          )}
+        </HStack>
 
-      <Datatable
-        isLoading={isLoading}
-        columns={columns}
-        data={firmsData?.data ?? []}
-      />
+        <Datatable
+          isLoading={isLoading}
+          columns={columns}
+          data={firmsData?.data ?? []}
+        />
 
-      <AddEditFirm
-        open={addEditOpen}
-        onClose={() => {
-          onAddEditClose();
-          setSelectedId(undefined); // Clear the selected ID when closing
-        }}
-        id={selectedId}
-        setId={setSelectedId}
-      />
+        {/* Firm Onboarding Modal */}
 
-      <ConfirmationDialog
-        open={toggleConfirmOpen}
-        onClose={() => {
-          onToggleConfirmClose();
-          setFirmToToggle(null);
-        }}
-        title={firmToToggle?.active ? "Deactivate firm?" : "Activate firm?"}
-        action={
-          firmToToggle?.active ? "deactivate this firm" : "activate this firm"
-        }
-        handleSubmit={() => {
-          if (firmToToggle) {
-            toggleFirm(firmToToggle.id);
+        <ConfirmationDialog
+          open={toggleConfirmOpen}
+          onClose={() => {
             onToggleConfirmClose();
             setFirmToToggle(null);
+          }}
+          title={firmToToggle?.active ? "Deactivate firm?" : "Activate firm?"}
+          action={
+            firmToToggle?.active ? "deactivate this firm" : "activate this firm"
           }
-        }}
-        submitActionPending={isTogglePending}
-      />
+          handleSubmit={() => {
+            if (firmToToggle) {
+              toggleFirm(firmToToggle.id);
+              onToggleConfirmClose();
+              setFirmToToggle(null);
+            }
+          }}
+          submitActionPending={isTogglePending}
+        />
 
-      {/* Suspend Firm Confirmation */}
-      <ConfirmationDialog
-        open={suspendConfirmOpen}
-        onClose={() => {
-          onSuspendConfirmClose();
-          setFirmToSuspend(null);
-        }}
-        title="Suspend Firm?"
-        action="suspend this firm"
-        handleSubmit={() => {
-          if (firmToSuspend) {
-            suspendFirm(String(firmToSuspend.firmId));
+        <AddEditFirm
+          open={editOpen}
+          onClose={() => {
+            onEditClose();
+            setSelectedId(undefined);
+          }}
+          id={selectedId}
+          setId={setSelectedId}
+        />
+
+        {/* Suspend Firm Confirmation */}
+        <ConfirmationDialog
+          open={suspendConfirmOpen}
+          onClose={() => {
             onSuspendConfirmClose();
             setFirmToSuspend(null);
-          }
-        }}
-        submitActionPending={isSuspendPending}
-      />
+          }}
+          title="Suspend Firm?"
+          action="suspend this firm"
+          handleSubmit={() => {
+            if (firmToSuspend) {
+              suspendFirm(String(firmToSuspend.firmId));
+              onSuspendConfirmClose();
+              setFirmToSuspend(null);
+            }
+          }}
+          submitActionPending={isSuspendPending}
+        />
 
-      {/* Activate Firm Confirmation */}
-      <ConfirmationDialog
-        open={activateConfirmOpen}
-        onClose={() => {
-          onActivateConfirmClose();
-          setFirmToActivate(null);
-        }}
-        title="Activate Firm?"
-        action="activate this firm"
-        handleSubmit={() => {
-          if (firmToActivate) {
-            activateFirm(String(firmToActivate.firmId));
+        {/* Activate Firm Confirmation */}
+        <ConfirmationDialog
+          open={activateConfirmOpen}
+          onClose={() => {
             onActivateConfirmClose();
             setFirmToActivate(null);
-          }
-        }}
-        submitActionPending={isActivatePending}
-      />
+          }}
+          title="Activate Firm?"
+          action="activate this firm"
+          handleSubmit={() => {
+            if (firmToActivate) {
+              activateFirm(String(firmToActivate.firmId));
+              onActivateConfirmClose();
+              setFirmToActivate(null);
+            }
+          }}
+          submitActionPending={isActivatePending}
+        />
 
-      {/* Convert to Permanent Confirmation */}
-      <ConfirmationDialog
-        open={convertConfirmOpen}
-        onClose={() => {
-          onConvertConfirmClose();
-          setFirmToConvert(null);
-        }}
-        title="Convert to Permanent?"
-        action="convert this trial firm to permanent"
-        handleSubmit={() => {
-          if (firmToConvert) {
-            convertToPermanent(String(firmToConvert.firmId));
+        {/* Convert to Permanent Confirmation */}
+        <ConfirmationDialog
+          open={convertConfirmOpen}
+          onClose={() => {
             onConvertConfirmClose();
             setFirmToConvert(null);
-          }
-        }}
-        submitActionPending={isConvertPending}
-      />
+          }}
+          title="Convert to Permanent?"
+          action="convert this trial firm to permanent"
+          handleSubmit={() => {
+            if (firmToConvert) {
+              convertToPermanent(String(firmToConvert.firmId));
+              onConvertConfirmClose();
+              setFirmToConvert(null);
+            }
+          }}
+          submitActionPending={isConvertPending}
+        />
 
-      {/* Extend Trial Modal */}
-      <ExtendTrialModal
-        open={extendTrialOpen}
-        onClose={() => {
-          onExtendTrialClose();
-          setFirmToExtendTrial(null);
-        }}
-        firm={firmToExtendTrial}
-      />
-    </Stack>
+        {/* Extend Trial Modal */}
+        <ExtendTrialModal
+          open={extendTrialOpen}
+          onClose={() => {
+            onExtendTrialClose();
+            setFirmToExtendTrial(null);
+          }}
+          firm={firmToExtendTrial}
+        />
+      </Stack>
+      <FirmOnboardingModal open={onboardingOpen} onClose={onOnboardingClose} />
+
+    </>
   );
 };
 
