@@ -7,6 +7,9 @@ import {
   FirmResponse,
   useGetFirmsQuery,
   useToggleFirmMutation,
+  useSuspendFirmMutation,
+  useActivateFirmMutation,
+  useConvertToPermanentMutation,
 } from "@/api/firmManagement";
 import { AddIcon } from "@/assets/svgs";
 import { History, ScrollText } from "lucide-react";
@@ -17,6 +20,8 @@ import { ROUTES_CONFIG } from "@/shared/config";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 import { AddEditFirm } from "./AddEditFirm";
+import { ExtendTrialModal } from "./ExtendTrialModal";
+import { getFirmLifecycleActions } from "./lifecycleUtils";
 
 const FirmManagement = () => {
   const navigate = useNavigate();
@@ -27,6 +32,13 @@ const FirmManagement = () => {
     id: string;
     active: boolean;
   } | null>(null);
+  const [firmToSuspend, setFirmToSuspend] = useState<FirmResponse | null>(null);
+  const [firmToActivate, setFirmToActivate] = useState<FirmResponse | null>(
+    null
+  );
+  const [firmToConvert, setFirmToConvert] = useState<FirmResponse | null>(null);
+  const [firmToExtendTrial, setFirmToExtendTrial] =
+    useState<FirmResponse | null>(null);
 
   const {
     open: addEditOpen,
@@ -40,9 +52,39 @@ const FirmManagement = () => {
     onClose: onToggleConfirmClose,
   } = useDisclosure();
 
+  const {
+    open: suspendConfirmOpen,
+    onOpen: onSuspendConfirmOpen,
+    onClose: onSuspendConfirmClose,
+  } = useDisclosure();
+
+  const {
+    open: activateConfirmOpen,
+    onOpen: onActivateConfirmOpen,
+    onClose: onActivateConfirmClose,
+  } = useDisclosure();
+
+  const {
+    open: convertConfirmOpen,
+    onOpen: onConvertConfirmOpen,
+    onClose: onConvertConfirmClose,
+  } = useDisclosure();
+
+  const {
+    open: extendTrialOpen,
+    onOpen: onExtendTrialOpen,
+    onClose: onExtendTrialClose,
+  } = useDisclosure();
+
   const { data: firmsData, isLoading } = useGetFirmsQuery();
   const { mutate: toggleFirm, isPending: isTogglePending } =
     useToggleFirmMutation();
+  const { mutate: suspendFirm, isPending: isSuspendPending } =
+    useSuspendFirmMutation();
+  const { mutate: activateFirm, isPending: isActivatePending } =
+    useActivateFirmMutation();
+  const { mutate: convertToPermanent, isPending: isConvertPending } =
+    useConvertToPermanentMutation();
 
   const columns: Array<ColumnDef<FirmResponse>> = useMemo(
     () => [
@@ -59,22 +101,6 @@ const FirmManagement = () => {
         accessorKey: "firmCode",
         header: "Firm Code",
       },
-      // {
-      //   accessorKey: "firmType",
-      //   header: "Type",
-      //   cell: ({ row }) => (
-      //     <Badge
-      //       colorScheme={row.original.firmType === "SOLO" ? "blue" : "purple"}
-      //       borderRadius="md"
-      //       px={2}
-      //       py={0.5}
-      //       fontSize="xs"
-      //       textTransform="capitalize"
-      //     >
-      //       {row.original.firmType}
-      //     </Badge>
-      //   ),
-      // },
       {
         accessorKey: "email",
         header: "Email",
@@ -90,73 +116,138 @@ const FirmManagement = () => {
       {
         accessorKey: "isActive",
         header: "Status",
-        cell: ({ row }) => (
-          <Switch
-            checked={row.original.isActive ?? true}
-            onCheckedChange={() => {
-              setFirmToToggle({
-                id: String(row.original.id),
-                active: row.original.isActive ?? true,
-              });
-              onToggleConfirmOpen();
-            }}
-          />
-        ),
+        cell: ({ row }) => {
+          const isSuspended = row.original.isSuspended === true;
+
+          return (
+            <HStack gap={2}>
+              <Switch
+                checked={row.original.isActive ?? true}
+                disabled={isSuspended}
+                onCheckedChange={() => {
+                  if (isSuspended) {
+                    setFirmToActivate(row.original);
+                    onActivateConfirmOpen();
+                  } else {
+                    setFirmToToggle({
+                      id: String(row.original.id),
+                      active: row.original.isActive ?? true,
+                    });
+                    onToggleConfirmOpen();
+                  }
+                }}
+              />
+              {isSuspended && (
+                <Text fontSize="xs" color="orange.500" fontWeight="medium">
+                  Suspended
+                </Text>
+              )}
+              {row.original.isTrial === true && !isSuspended && (
+                <Text fontSize="xs" color="blue.500" fontWeight="medium">
+                  Trial
+                </Text>
+              )}
+            </HStack>
+          );
+        },
       },
       {
         accessorKey: "action",
         header: "Actions",
-        cell: ({ row }) => (
-          <HStack gap={2}>
-            {canAccessAudit && (
-              <Tooltip content="View Audit Logs">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label="View Audit Logs"
-                  onClick={() =>
-                    navigate(
-                      ROUTES_CONFIG.SUPER_ADMIN.FIRM_AUDIT_LOGS.replace(
-                        ":firmId",
-                        String(row.original.firmId)
-                      ),
-                      { state: { firm: row.original } }
-                    )
-                  }
-                >
-                  <ScrollText size={16} />
-                </Button>
-              </Tooltip>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                navigate(
-                  ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT.replace(
-                    ":firmId",
-                    String(row.original.firmId)
-                  )
-                );
-              }}
-            >
-              Manage Access
-            </Button>
-            <TableActions
-              onEdit={
-                canEdit
-                  ? () => {
-                      setSelectedId(row.original.firmId.toString());
-                      onAddEditOpen();
+        cell: ({ row }) => {
+          const lifecycle = getFirmLifecycleActions(row.original);
+          const firmId = String(row.original.firmId);
+
+          return (
+            <HStack gap={2}>
+              {canAccessAudit && (
+                <Tooltip content="View Audit Logs">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label="View Audit Logs"
+                    onClick={() =>
+                      navigate(
+                        ROUTES_CONFIG.SUPER_ADMIN.FIRM_AUDIT_LOGS.replace(
+                          ":firmId",
+                          firmId
+                        ),
+                        { state: { firm: row.original } }
+                      )
                     }
-                  : undefined
-              }
-            />
-          </HStack>
-        ),
+                  >
+                    <ScrollText size={16} />
+                  </Button>
+                </Tooltip>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigate(
+                    ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT.replace(
+                      ":firmId",
+                      firmId
+                    )
+                  );
+                }}
+              >
+                Manage Access
+              </Button>
+
+              {/* Lifecycle actions dropdown */}
+              {(lifecycle.canSuspend ||
+                lifecycle.canExtendTrial ||
+                lifecycle.canConvertToPermanent) && (
+                <Tooltip content="More actions">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      // Show available lifecycle actions
+                      if (lifecycle.canExtendTrial) {
+                        setFirmToExtendTrial(row.original);
+                        onExtendTrialOpen();
+                      } else if (lifecycle.canConvertToPermanent) {
+                        setFirmToConvert(row.original);
+                        onConvertConfirmOpen();
+                      } else if (lifecycle.canSuspend) {
+                        setFirmToSuspend(row.original);
+                        onSuspendConfirmOpen();
+                      }
+                    }}
+                  >
+                    <History size={16} />
+                  </Button>
+                </Tooltip>
+              )}
+
+              <TableActions
+                onEdit={
+                  canEdit
+                    ? () => {
+                        setSelectedId(row.original.firmId.toString());
+                        onAddEditOpen();
+                      }
+                    : undefined
+                }
+              />
+            </HStack>
+          );
+        },
       },
     ],
-    [onToggleConfirmOpen, onAddEditOpen, navigate, canAccessAudit]
+    [
+      onToggleConfirmOpen,
+      onAddEditOpen,
+      navigate,
+      canAccessAudit,
+      canEdit,
+      onSuspendConfirmOpen,
+      onActivateConfirmOpen,
+      onConvertConfirmOpen,
+      onExtendTrialOpen,
+    ]
   );
 
   return (
@@ -217,6 +308,73 @@ const FirmManagement = () => {
           }
         }}
         submitActionPending={isTogglePending}
+      />
+
+      {/* Suspend Firm Confirmation */}
+      <ConfirmationDialog
+        open={suspendConfirmOpen}
+        onClose={() => {
+          onSuspendConfirmClose();
+          setFirmToSuspend(null);
+        }}
+        title="Suspend Firm?"
+        action="suspend this firm"
+        handleSubmit={() => {
+          if (firmToSuspend) {
+            suspendFirm(String(firmToSuspend.firmId));
+            onSuspendConfirmClose();
+            setFirmToSuspend(null);
+          }
+        }}
+        submitActionPending={isSuspendPending}
+      />
+
+      {/* Activate Firm Confirmation */}
+      <ConfirmationDialog
+        open={activateConfirmOpen}
+        onClose={() => {
+          onActivateConfirmClose();
+          setFirmToActivate(null);
+        }}
+        title="Activate Firm?"
+        action="activate this firm"
+        handleSubmit={() => {
+          if (firmToActivate) {
+            activateFirm(String(firmToActivate.firmId));
+            onActivateConfirmClose();
+            setFirmToActivate(null);
+          }
+        }}
+        submitActionPending={isActivatePending}
+      />
+
+      {/* Convert to Permanent Confirmation */}
+      <ConfirmationDialog
+        open={convertConfirmOpen}
+        onClose={() => {
+          onConvertConfirmClose();
+          setFirmToConvert(null);
+        }}
+        title="Convert to Permanent?"
+        action="convert this trial firm to permanent"
+        handleSubmit={() => {
+          if (firmToConvert) {
+            convertToPermanent(String(firmToConvert.firmId));
+            onConvertConfirmClose();
+            setFirmToConvert(null);
+          }
+        }}
+        submitActionPending={isConvertPending}
+      />
+
+      {/* Extend Trial Modal */}
+      <ExtendTrialModal
+        open={extendTrialOpen}
+        onClose={() => {
+          onExtendTrialClose();
+          setFirmToExtendTrial(null);
+        }}
+        firm={firmToExtendTrial}
       />
     </Stack>
   );

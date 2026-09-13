@@ -2,7 +2,10 @@ import { Skeleton, Stack, Text } from "@chakra-ui/react";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
-import { FirmRole, useOverrideFirmRolePermissionsMutation } from "@/api/firmRoleSetup";
+import {
+  FirmRole,
+  useOverrideFirmRolePermissionsMutation,
+} from "@/api/firmRoleSetup";
 import { useGetGroupedPermissionsQuery } from "@/api/permissionSetup";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
@@ -51,8 +54,7 @@ export const SuperAdminRolePermissionsDrawer = ({
   const { data: groupedPermissions, isLoading } = useGetGroupedPermissionsQuery(
     { enabled: open && !!firmId }
   );
-  const { mutate, isPending } =
-    useOverrideFirmRolePermissionsMutation(firmId);
+  const { mutate, isPending } = useOverrideFirmRolePermissionsMutation(firmId);
 
   const { control, handleSubmit, reset } = useForm<RoleFormValues>({
     defaultValues,
@@ -99,7 +101,10 @@ export const SuperAdminRolePermissionsDrawer = ({
   const submitHandler = (values: RoleFormValues) => {
     if (!role) return;
     mutate(
-      { roleId: role.id, permissionIds: flattenPermissionIds(values.permissions) },
+      {
+        roleId: role.id,
+        permissionIds: flattenPermissionIds(values.permissions),
+      },
       { onSuccess: () => onClose() }
     );
   };

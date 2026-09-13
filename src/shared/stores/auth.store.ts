@@ -1,5 +1,14 @@
 import { create } from "zustand";
 
+export interface User {
+  username?: string;
+  email?: string;
+  userType?: string;
+  profilePhotoUrl?: string;
+  role?: string | { name?: string; code?: string; [key: string]: unknown };
+  [key: string]: unknown; // allow extra fields from API
+}
+
 export interface UserModule {
   moduleCode: string;
   moduleName: string;
@@ -10,17 +19,27 @@ export interface UserModule {
   subModules?: UserModule[];
 }
 
+export interface FirmInfo {
+  id: string;
+  name: string;
+  code: string;
+  trial: boolean;
+  daysRemaining: number | null;
+  trialExpiresAt: string | null;
+  status: string;
+}
+
 export interface AuthState {
-  user: any;
-  firm: any;
+  user: User | null;
+  firm: FirmInfo | null;
   role: string;
   permissions: string[];
   modules: UserModule[];
   isLoading: boolean;
   isInitialized: boolean;
 
-  setUser: (user: any) => void;
-  setFirm: (firm: any) => void;
+  setUser: (user: User | null) => void;
+  setFirm: (firm: FirmInfo | null) => void;
   setRole: (role: string) => void;
   setPermissions: (permissions: string[]) => void;
   setModules: (modules: UserModule[]) => void;
@@ -28,8 +47,8 @@ export interface AuthState {
   setInitialized: (initialized: boolean) => void;
   clearUser: () => void;
   initializeUser: (data: {
-    user: any;
-    firm: any;
+    user: User;
+    firm: FirmInfo;
     role: string;
     permissions: string[];
     modules: UserModule[];

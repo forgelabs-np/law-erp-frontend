@@ -53,7 +53,9 @@ export const RoleSetupForm = ({
     const knownModuleCodes = new Set(allModules.map((module) => module.code));
     const orphanPermissions = allPermissions.filter((permission) => {
       const permissionModuleCode = permission.code?.split(":")[0];
-      return !permissionModuleCode || !knownModuleCodes.has(permissionModuleCode);
+      return (
+        !permissionModuleCode || !knownModuleCodes.has(permissionModuleCode)
+      );
     });
 
     if (orphanPermissions.length > 0) {

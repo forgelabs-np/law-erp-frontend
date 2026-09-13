@@ -31,6 +31,9 @@ export interface FirmResponse {
   fullName?: string;
   firmName?: string;
   firmCode?: string;
+  // New lifecycle fields - currently not returned by backend
+  isTrial: boolean | null;
+  isSuspended: boolean | null;
 }
 
 // ─── GET ALL FIRMS ─────────────────────────────────────────────────────────────
@@ -69,7 +72,6 @@ export const useFirmByIdQuery = (id: string) => {
 // ─── CREATE / EDIT FIRM ────────────────────────────────────────────────────────
 
 const createEditFirm = (payload: FirmPayload) => {
-  console.log(api.FIRM_MANAGEMENT.POST, "hgjhfgd");
   return LawFirmCRMClient.post(api.FIRM_MANAGEMENT.POST, {
     data: payload,
   });
@@ -119,6 +121,8 @@ export const useToggleFirmMutation = () => {
   });
 };
 
+// ─── FIRM MODULES & ROLES ──────────────────────────────────────────────────────
+
 const getFirmModules = () => {
   return LawFirmCRMClient.get<ApiResponse<FirmResponse[]>>(
     api.FIRM_MANAGEMENT.GET_FIRMS_MODULES
@@ -144,5 +148,124 @@ export const useGetFirmRolesQuery = () => {
     queryKey: [api.FIRM_MANAGEMENT.GET_FIRM_ROLES],
     queryFn: getFirmRoles,
     select: (response) => response?.data,
+  });
+};
+
+// ─── FIRM LIFECYCLE APIs ───────────────────────────────────────────────────────
+
+// Suspend Firm
+const suspendFirm = (firmId: string) => {
+  const url = api.FIRM_LIFECYCLE.SUSPEND.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url);
+};
+
+export const useSuspendFirmMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: suspendFirm,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Firm suspended successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to suspend firm";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// Activate Firm
+const activateFirm = (firmId: string) => {
+  const url = api.FIRM_LIFECYCLE.ACTIVATE.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url);
+};
+
+export const useActivateFirmMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: activateFirm,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Firm activated successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to activate firm";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// Extend Trial
+interface ExtendTrialPayload {
+  additionalDays: number;
+}
+
+const extendTrial = (firmId: string, payload: ExtendTrialPayload) => {
+  const url = api.FIRM_LIFECYCLE.EXTEND_TRIAL.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url, { data: payload });
+};
+
+export const useExtendTrialMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      firmId,
+      additionalDays,
+    }: {
+      firmId: string;
+      additionalDays: number;
+    }) => extendTrial(firmId, { additionalDays }),
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Trial extended successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to extend trial";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// Convert to Permanent
+const convertToPermanent = (firmId: string) => {
+  const url = api.FIRM_LIFECYCLE.CONVERT_TO_PERMANENT.replace(
+    "{firmId}",
+    firmId
+  );
+  return LawFirmCRMClient.put(url);
+};
+
+export const useConvertToPermanentMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: convertToPermanent,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Firm converted to permanent successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to convert firm";
+      errorNotification(errorMessage);
+    },
   });
 };

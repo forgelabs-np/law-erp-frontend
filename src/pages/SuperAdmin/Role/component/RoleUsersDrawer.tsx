@@ -155,10 +155,7 @@ export const RoleUsersDrawer = ({
                   boxShadow="sm"
                 >
                   <HStack gap={4} align="flex-start">
-                    <Avatar
-                      name={user.fullName || user.username}
-                      size="md"
-                    />
+                    <Avatar name={user.fullName || user.username} size="md" />
                     <Box flex="1">
                       <HStack justify="space-between" mb={1}>
                         <Text

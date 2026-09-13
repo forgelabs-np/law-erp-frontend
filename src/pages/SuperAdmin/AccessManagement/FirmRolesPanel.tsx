@@ -44,8 +44,12 @@ export const FirmRolesPanel = ({ firmId }: { firmId: string }) => {
     onClose: onPermissionsClose,
   } = useDisclosure();
 
-  const { data: roles = [], isLoading, isError, refetch } =
-    useSuperAdminFirmRolesQuery(firmId, { enabled: !!firmId });
+  const {
+    data: roles = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useSuperAdminFirmRolesQuery(firmId, { enabled: !!firmId });
   const { mutate: createRole, isPending: isCreating } =
     useCreateSuperAdminFirmRoleMutation(firmId);
 

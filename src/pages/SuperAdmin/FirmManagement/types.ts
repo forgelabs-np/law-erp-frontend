@@ -14,6 +14,8 @@ export interface FirmPayload {
   adminMobileNo: string;
   adminPassword?: string;
   adminFullName: string;
+  isTrial?: boolean;
+  trialDays?: number;
 }
 
 export type FirmFormValues = FirmPayload;

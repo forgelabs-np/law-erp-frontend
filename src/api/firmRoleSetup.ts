@@ -86,9 +86,7 @@ const ROLE_USERS_FALLBACK = "Role saved, but users may need to re-login.";
 // ─── FIRM ADMIN: LIST ROLES ──────────────────────────────────────────────────
 
 const getFirmRoles = () =>
-  LawFirmCRMClient.get<ApiResponse<FirmRole[]>>(
-    api.FIRM_ROLE_MANAGEMENT.LIST
-  );
+  LawFirmCRMClient.get<ApiResponse<FirmRole[]>>(api.FIRM_ROLE_MANAGEMENT.LIST);
 
 export const useFirmRolesQuery = (options?: { enabled?: boolean }) => {
   return useQuery({
@@ -193,14 +191,9 @@ export const useFirmRolePermissionsQuery = (
   });
 };
 
-const updateFirmRolePermissions = (
-  payload: RolePermissionAssignmentPayload
-) =>
+const updateFirmRolePermissions = (payload: RolePermissionAssignmentPayload) =>
   LawFirmCRMClient.put(
-    api.FIRM_ROLE_MANAGEMENT.PERMISSIONS.replace(
-      "{roleId}",
-      payload.roleId
-    ),
+    api.FIRM_ROLE_MANAGEMENT.PERMISSIONS.replace("{roleId}", payload.roleId),
     {
       data: {
         roleId: payload.roleId,
@@ -214,9 +207,7 @@ export const useUpdateFirmRolePermissionsMutation = () => {
   return useMutation({
     mutationFn: updateFirmRolePermissions,
     onSuccess: (response, variables) => {
-      successNotification(
-        response?.data?.message || ROLE_USERS_FALLBACK
-      );
+      successNotification(response?.data?.message || ROLE_USERS_FALLBACK);
       queryClient.invalidateQueries({
         queryKey: [api.FIRM_ROLE_MANAGEMENT.PERMISSIONS, variables.roleId],
       });
@@ -303,9 +294,7 @@ export const useOverrideFirmRolePermissionsMutation = (firmId: string) => {
     mutationFn: (payload: RolePermissionAssignmentPayload) =>
       overrideFirmRolePermissions({ ...payload, firmId }),
     onSuccess: (response, variables) => {
-      successNotification(
-        response?.data?.message || ROLE_USERS_FALLBACK
-      );
+      successNotification(response?.data?.message || ROLE_USERS_FALLBACK);
       queryClient.invalidateQueries({
         queryKey: [api.SUPER_ADMIN_FIRM_ROLES.LIST, firmId],
       });

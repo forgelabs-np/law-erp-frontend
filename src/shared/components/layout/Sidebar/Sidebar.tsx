@@ -1,4 +1,12 @@
-import { Box, HStack, Button, Image, VStack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Button,
+  Image,
+  VStack,
+  Text,
+  Badge,
+} from "@chakra-ui/react";
 import { useMemo, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
@@ -7,7 +15,11 @@ import { SidebarItem } from "./SidebarItem";
 import { SidebarProfile } from "./SidebarProfile";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
-import { useCurrentUser, useModules } from "@/shared/hooks/useAuth";
+import { useCurrentUser, useFirm, useModules } from "@/shared/hooks/useAuth";
+import {
+  moduleHasAction,
+  isModuleEnabled,
+} from "@/shared/hooks/usePermissions";
 import { useLocation } from "react-router-dom";
 import {
   getModuleConfig,
@@ -18,9 +30,18 @@ import {
 import { useUnreadCountQuery } from "@/api/notifications";
 
 const SUPPORT_MODULE_CODES = [
+  // "TEMPLATES",
+  // "HELP_DOCS",
   "NOTIFICATION_MANAGEMENT",
   "SETTINGS",
 ] as const;
+
+/**
+ * Extra Administration entry rendered statically (not backend-module-driven)
+ * for users who can access Role Management. Points at the System Role
+ * Templates screen (Super Admin).
+ */
+const EXTRA_ADMIN_ITEMS = ["ROLE_TEMPLATES"] as const;
 
 // Path prefixes that belong to the Case Management module. The sidebar item
 // stays highlighted while the user browses any of these pages.
@@ -63,9 +84,18 @@ export const Sidebar = () => {
 
   const modules = useModules();
   const user = useCurrentUser();
+  const firm = useFirm();
+
   const { data: unreadCount = 0 } = useUnreadCountQuery({
     enabled: Boolean(user),
   });
+
+  // The Role Templates screen is governed by the ROLE_MANAGEMENT module
+  // (ACCESS + VIEW), same as the rest of role administration.
+  const canSeeRoleTemplates =
+    isModuleEnabled(modules, "ROLE_MANAGEMENT") &&
+    moduleHasAction(modules, "ROLE_MANAGEMENT", "ACCESS") &&
+    moduleHasAction(modules, "ROLE_MANAGEMENT", "VIEW");
 
   // Auto-expand parent when a child route is active (only on route change)
   useEffect(() => {
@@ -180,6 +210,20 @@ export const Sidebar = () => {
       {isCollapsed ? (
         <VStack align="center" gap="3" mb="4" px="2">
           <Image src={LogoImage} boxSize="6" />
+          {firm?.trial && (
+            <Badge
+              bg="orange.100"
+              color="orange.700"
+              px="1"
+              py="0.5"
+              borderRadius="md"
+              fontSize="2xs"
+              fontWeight="600"
+              title="Trial Account"
+            >
+              Trial
+            </Badge>
+          )}
           <Button
             aria-label="Expand sidebar"
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -215,6 +259,26 @@ export const Sidebar = () => {
               <ChevronLeft size={14} />
             </Button>
           </HStack>
+          {firm?.trial && (
+            <HStack gap={2} mt={1} ml="10">
+              <Badge
+                bg="orange.100"
+                color="orange.700"
+                px="2"
+                py="0.5"
+                borderRadius="md"
+                fontSize="2xs"
+                fontWeight="600"
+              >
+                Trial
+                {firm.daysRemaining !== null && (
+                  <Text as="span" ml="1">
+                    · {firm.daysRemaining} days left
+                  </Text>
+                )}
+              </Badge>
+            </HStack>
+          )}
         </Box>
       )}
 

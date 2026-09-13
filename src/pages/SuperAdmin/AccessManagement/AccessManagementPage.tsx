@@ -22,8 +22,11 @@ import {
   MergedModule,
   useGetAllModulesQuery,
   useGetFirmModulesQuery,
+  useConfigureFirmModuleMutation,
 } from "@/api/firmModules";
 import { Datatable } from "@/shared/components";
+import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
+import { Switch } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
 
 import { ModuleStatusFilter } from "../FirmModules/types";
@@ -48,11 +51,18 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
     null
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [moduleToToggle, setModuleToToggle] = useState<MergedModule | null>(
+    null
+  );
+  const [isToggleConfirmOpen, setIsToggleConfirmOpen] = useState(false);
 
   const { data: masterModulesData, isLoading: isLoadingMaster } =
     useGetAllModulesQuery();
   const { data: firmModulesData, isLoading: isLoadingFirm } =
     useGetFirmModulesQuery(firmId);
+
+  const { mutate: configureModule, isPending: isConfigurePending } =
+    useConfigureFirmModuleMutation(firmId);
 
   const isLoading = isLoadingMaster || isLoadingFirm;
 
@@ -71,9 +81,9 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
           moduleCode: assignedModule.moduleCode || masterModule.code,
           isAssigned: true,
           isEnabled: assignedModule.isEnabled,
+          isTrial: assignedModule.isTrial,
           enabledAt: assignedModule.enabledAt,
           expiresAt: assignedModule.expiresAt,
-          isTrial: assignedModule.isTrial,
           maxFileSizeMb: assignedModule.maxFileSizeMb,
           allowedExtensions: assignedModule.allowedExtensions,
           notes: assignedModule.notes,
@@ -85,9 +95,9 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
         moduleCode: masterModule.code,
         isAssigned: false,
         isEnabled: false,
+        isTrial: false,
         enabledAt: null,
         expiresAt: null,
-        isTrial: false,
         maxFileSizeMb: null,
         allowedExtensions: null,
         notes: null,
@@ -116,6 +126,26 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
   const unassignedCount = totalCount - assignedCount;
   const enabledCount = mergedModules.filter((m) => m.isEnabled).length;
   const disabledCount = totalCount - enabledCount;
+
+  const handleToggleConfirm = () => {
+    if (!moduleToToggle) return;
+
+    configureModule(
+      {
+        moduleId: moduleToToggle.moduleId,
+        isEnabled: !moduleToToggle.isEnabled,
+        maxFileSizeMb: moduleToToggle.maxFileSizeMb,
+        allowedExtensions: moduleToToggle.allowedExtensions,
+        notes: moduleToToggle.notes,
+      },
+      {
+        onSuccess: () => {
+          setIsToggleConfirmOpen(false);
+          setModuleToToggle(null);
+        },
+      }
+    );
+  };
 
   const columns: Array<ColumnDef<MergedModule>> = useMemo(
     () => [
@@ -153,20 +183,17 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
         ),
       },
       {
-        accessorKey: "isTrial",
-        header: "Trial",
+        accessorKey: "enable",
+        header: "Enable",
         cell: ({ row }) => (
-          <Badge
-            bg={row.original.isTrial ? "blue.100" : "gray.100"}
-            color={row.original.isTrial ? "blue.700" : "gray.700"}
-            px="2"
-            py="1"
-            borderRadius="md"
-            fontSize="xs"
-            fontWeight="600"
-          >
-            {row.original.isTrial ? "Yes" : "No"}
-          </Badge>
+          <Switch
+            checked={row.original.isEnabled}
+            disabled={!row.original.isAssigned}
+            onCheckedChange={() => {
+              setModuleToToggle(row.original);
+              setIsToggleConfirmOpen(true);
+            }}
+          />
         ),
       },
       {
@@ -301,6 +328,23 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
         }}
         module={selectedModule}
         firmId={firmId}
+      />
+
+      {/* Toggle Confirmation Dialog */}
+      <ConfirmationDialog
+        open={isToggleConfirmOpen}
+        onClose={() => {
+          setIsToggleConfirmOpen(false);
+          setModuleToToggle(null);
+        }}
+        title={moduleToToggle?.isEnabled ? "Disable Module?" : "Enable Module?"}
+        action={
+          moduleToToggle?.isEnabled
+            ? "disable this module"
+            : "enable this module"
+        }
+        handleSubmit={handleToggleConfirm}
+        submitActionPending={isConfigurePending}
       />
     </Stack>
   );

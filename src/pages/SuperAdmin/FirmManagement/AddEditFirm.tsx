@@ -1,6 +1,6 @@
-import { Grid, GridItem, Stack, Text } from "@chakra-ui/react";
+import { Grid, GridItem, HStack, Stack, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
@@ -8,7 +8,8 @@ import {
   useCreateEditFirmMutation,
 } from "@/api/firmManagement";
 import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
-import { firmSchema, FirmSchemaType } from "@/validations";
+import { Switch } from "@/shared/components/ui";
+import { firmSchema } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
 import { FirmFormValues, FirmPayload } from "./types";
@@ -31,6 +32,8 @@ const defaultValues: FirmFormValues = {
   adminMobileNo: "",
   adminPassword: "",
   adminFullName: "",
+  isTrial: false,
+  trialDays: 30,
 };
 
 export const AddEditFirm = ({
@@ -57,7 +60,8 @@ export const AddEditFirm = ({
     reValidateMode: "onChange",
     context: { isEdit: !!id },
   });
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, watch, control } = methods;
+  const isTrial = watch("isTrial");
 
   const { mutate, isPending } = useCreateEditFirmMutation();
 
@@ -105,6 +109,8 @@ export const AddEditFirm = ({
       adminMobileNo: data.adminMobileNo,
       adminFullName: data.adminFullName,
       ...(data.adminPassword ? { adminPassword: data.adminPassword } : {}),
+      isTrial: data.isTrial ?? false,
+      ...(data.isTrial && data.trialDays ? { trialDays: data.trialDays } : {}),
     };
 
     mutate(payload, {
@@ -263,6 +269,50 @@ export const AddEditFirm = ({
                     name="adminPassword"
                     label="Admin Password"
                     placeholder="Set initial password"
+                    required
+                  />
+                </GridItem>
+              )}
+            </Grid>
+
+            {/* ── Trial Settings ─────────────────────────────────────── */}
+            <Stack gap={1} mt={2}>
+              <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+                Trial Settings
+              </Text>
+            </Stack>
+
+            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+              <GridItem colSpan={2}>
+                <Controller
+                  name="isTrial"
+                  control={control}
+                  render={({ field }) => (
+                    <HStack justify="space-between">
+                      <Stack gap={0}>
+                        <Text fontSize="sm" fontWeight="medium">
+                          Trial Account
+                        </Text>
+                        <Text fontSize="xs" color="gray.500">
+                          Create this firm as a trial account
+                        </Text>
+                      </Stack>
+                      <Switch
+                        checked={field.value ?? false}
+                        onCheckedChange={(e) => field.onChange(e.checked)}
+                      />
+                    </HStack>
+                  )}
+                />
+              </GridItem>
+
+              {isTrial && (
+                <GridItem colSpan={2}>
+                  <TextFieldInput
+                    name="trialDays"
+                    label="Trial Duration (days)"
+                    placeholder="30"
+                    type="number"
                     required
                   />
                 </GridItem>

@@ -24,9 +24,14 @@ export interface CurrentUserResponse {
     id: string;
     name: string;
     code: string;
+    trial: boolean;
+    daysRemaining: number | null;
+    trialExpiresAt: string | null;
+    status: string;
   };
   permissions: string[];
   modules: UserModule[];
+  [key: string]: unknown; // required to be assignable to User in auth.store.ts
 }
 
 const getCurrentUser = () => {

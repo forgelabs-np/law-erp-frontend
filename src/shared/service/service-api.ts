@@ -201,4 +201,10 @@ export const api = {
     UPDATE_STATUS: "super-admin/invoices/{id}/status",
     DOWNLOAD_PDF: "super-admin/invoices/{id}/pdf",
   },
+  FIRM_LIFECYCLE: {
+    SUSPEND: "super-admin/firms/{firmId}/suspend",
+    ACTIVATE: "super-admin/firms/{firmId}/activate",
+    EXTEND_TRIAL: "super-admin/firms/{firmId}/extend-trial",
+    CONVERT_TO_PERMANENT: "super-admin/firms/{firmId}/convert-to-permanent",
+  },
 };

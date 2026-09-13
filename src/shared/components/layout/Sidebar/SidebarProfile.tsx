@@ -48,13 +48,23 @@ export const SidebarProfile = ({
     return null;
   }
 
-  const username = user.username ?? user.email ?? "User";
+  const username = (user.username ?? user.email ?? "User") as string;
   const profilePhotoUrl = user.profilePhotoUrl || null;
-  const roleValue = user.role;
+  const roleValue = user.role as
+    | string
+    | { name?: string; code?: string }
+    | null
+    | undefined;
+  const roleObj =
+    typeof roleValue !== "string"
+      ? (roleValue as { name?: string; code?: string } | null | undefined)
+      : null;
   const roleName =
     (typeof roleValue === "string" && roleValue
       ? roleValue
-      : roleValue?.name || roleValue?.code || user.userType) || "";
+      : roleObj?.name ||
+        roleObj?.code ||
+        (user.userType as string | undefined)) || "";
   const initial = (username || "U").charAt(0).toUpperCase();
   const showPhoto = Boolean(profilePhotoUrl) && !imageFailed;
 

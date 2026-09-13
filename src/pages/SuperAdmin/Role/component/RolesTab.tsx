@@ -65,9 +65,7 @@ interface RoleTableRow {
   permissionCount: number;
 }
 
-const toTableRow = (
-  role: RoleResponseType | FirmRole
-): RoleTableRow => ({
+const toTableRow = (role: RoleResponseType | FirmRole): RoleTableRow => ({
   id: role.id,
   name: role.name,
   code: role.code,
@@ -392,20 +390,20 @@ const RolesTab = () => {
                 onEdit={
                   canEdit
                     ? () => {
-                      setSelectedId(row.original.id);
-                      onAddEditOpen();
-                    }
+                        setSelectedId(row.original.id);
+                        onAddEditOpen();
+                      }
                     : undefined
                 }
                 onDelete={
                   canDelete && !row.original.isSystem
                     ? () => {
-                      setRoleToDelete({
-                        id: row.original.id,
-                        name: row.original.name,
-                      });
-                      onDeleteConfirmOpen();
-                    }
+                        setRoleToDelete({
+                          id: row.original.id,
+                          name: row.original.name,
+                        });
+                        onDeleteConfirmOpen();
+                      }
                     : undefined
                 }
               />
