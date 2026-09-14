@@ -188,7 +188,7 @@ function ModuleManagementTab({ firmId }: { firmId: string }) {
         cell: ({ row }) => (
           <Switch
             checked={row.original.isEnabled}
-            disabled={!row.original.isAssigned}
+            // disabled={!row.original.isAssigned}
             onCheckedChange={() => {
               setModuleToToggle(row.original);
               setIsToggleConfirmOpen(true);

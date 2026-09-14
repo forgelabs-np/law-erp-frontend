@@ -9,6 +9,8 @@ import {
   successNotification,
 } from "@/shared/utils/notification";
 
+export type FirmStatus = "ACTIVE" | "SUSPENDED" | "TRIAL" | "EXPIRED";
+
 export interface FirmResponse {
   id: string;
   lawFirmCode: string;
@@ -31,7 +33,9 @@ export interface FirmResponse {
   fullName?: string;
   firmName?: string;
   firmCode?: string;
-  // New lifecycle fields - currently not returned by backend
+  // Lifecycle fields
+  firmStatus: FirmStatus;
+  // Legacy fields (kept for backward compatibility)
   isTrial: boolean | null;
   isSuspended: boolean | null;
 }

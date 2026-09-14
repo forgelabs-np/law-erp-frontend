@@ -1,7 +1,26 @@
-import { Button, HStack, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  MenuContent,
+  MenuItem,
+  MenuPositioner,
+  MenuRoot,
+  MenuTrigger,
+  Portal,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Edit,
+  History,
+  ScrollText,
+  Settings,
+  Shield,
+} from "lucide-react";
 
 import {
   FirmResponse,
@@ -12,15 +31,14 @@ import {
   useConvertToPermanentMutation,
 } from "@/api/firmManagement";
 import { AddIcon } from "@/assets/svgs";
-import { History, ScrollText } from "lucide-react";
-import { Datatable, TableActions } from "@/shared/components";
+import { Datatable } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { Switch, Tooltip } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 import { ExtendTrialModal } from "./ExtendTrialModal";
-import { getFirmLifecycleActions } from "./lifecycleUtils";
+import { getFirmLifecycleActions, getFirmStatusBadge } from "./lifecycleUtils";
 import { FirmOnboardingModal } from "./onboarding";
 import { AddEditFirm } from "./AddEditFirm";
 
@@ -98,6 +116,36 @@ const FirmManagement = () => {
   const { mutate: convertToPermanent, isPending: isConvertPending } =
     useConvertToPermanentMutation();
 
+  const handleEditFirm = useCallback(
+    (firm: FirmResponse) => {
+      setSelectedId(String(firm.firmId));
+      onEditOpen();
+    },
+    [onEditOpen]
+  );
+
+  const handleAuditLog = useCallback(
+    (firmId: string) => {
+      navigate(
+        ROUTES_CONFIG.SUPER_ADMIN.FIRM_AUDIT_LOGS.replace(":firmId", firmId),
+        { state: { firm: firmsData?.data?.find((f) => f.firmId === firmId) } }
+      );
+    },
+    [navigate, firmsData]
+  );
+
+  const handleManageAccess = useCallback(
+    (firmId: string) => {
+      navigate(
+        ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT.replace(
+          ":firmId",
+          firmId
+        )
+      );
+    },
+    [navigate]
+  );
+
   const columns: Array<ColumnDef<FirmResponse>> = useMemo(
     () => [
       {
@@ -126,10 +174,11 @@ const FirmManagement = () => {
         header: "Admin",
       },
       {
-        accessorKey: "isActive",
+        accessorKey: "firmStatus",
         header: "Status",
         cell: ({ row }) => {
-          const isSuspended = row.original.isSuspended === true;
+          const statusBadge = getFirmStatusBadge(row.original.firmStatus);
+          const isSuspended = row.original.firmStatus === "SUSPENDED";
 
           return (
             <HStack gap={2}>
@@ -149,16 +198,13 @@ const FirmManagement = () => {
                   }
                 }}
               />
-              {isSuspended && (
-                <Text fontSize="xs" color="orange.500" fontWeight="medium">
-                  Suspended
-                </Text>
-              )}
-              {row.original.isTrial === true && !isSuspended && (
-                <Text fontSize="xs" color="blue.500" fontWeight="medium">
-                  Trial
-                </Text>
-              )}
+              <Text
+                fontSize="xs"
+                color={`${statusBadge.color}.500`}
+                fontWeight="medium"
+              >
+                {statusBadge.label}
+              </Text>
             </HStack>
           );
         },
@@ -169,96 +215,114 @@ const FirmManagement = () => {
         cell: ({ row }) => {
           const lifecycle = getFirmLifecycleActions(row.original);
           const firmId = String(row.original.firmId);
+          const hasLifecycleActions =
+            lifecycle.canSuspend ||
+            lifecycle.canActivate ||
+            lifecycle.canExtendTrial ||
+            lifecycle.canConvertToPermanent;
 
           return (
-            <HStack gap={2}>
-              {canAccessAudit && (
-                <Tooltip content="View Audit Logs">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    aria-label="View Audit Logs"
-                    onClick={() =>
-                      navigate(
-                        ROUTES_CONFIG.SUPER_ADMIN.FIRM_AUDIT_LOGS.replace(
-                          ":firmId",
-                          firmId
-                        ),
-                        { state: { firm: row.original } }
-                      )
-                    }
-                  >
-                    <ScrollText size={16} />
+            <HStack gap={1}>
+              <Tooltip content="Manage Access">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label="Manage Access"
+                  onClick={() => handleManageAccess(firmId)}
+                >
+                  Manage Access
+                </Button>
+              </Tooltip>
+
+              <MenuRoot positioning={{ placement: "right-start" }}>
+                <MenuTrigger asChild>
+                  <Button size="sm" variant="ghost" aria-label="Settings">
+                    <Settings size={18} />
                   </Button>
-                </Tooltip>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  navigate(
-                    ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT.replace(
-                      ":firmId",
-                      firmId
-                    )
-                  );
-                }}
-              >
-                Manage Access
-              </Button>
+                </MenuTrigger>
+                <Portal>
+                  <MenuPositioner>
+                    <MenuContent>
+                      {canEdit && (
+                        <MenuItem
+                          cursor="pointer"
+                          value="edit"
+                          onClick={() => handleEditFirm(row.original)}
+                        >
+                          <HStack gap={2}>
+                            <Edit size={16} />
+                            <Text>Edit</Text>
+                          </HStack>
+                        </MenuItem>
+                      )}
 
-              {/* Lifecycle actions dropdown */}
-              {(lifecycle.canSuspend ||
-                lifecycle.canExtendTrial ||
-                lifecycle.canConvertToPermanent) && (
-                  <Tooltip content="More actions">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        // Show available lifecycle actions
-                        if (lifecycle.canExtendTrial) {
-                          setFirmToExtendTrial(row.original);
-                          onExtendTrialOpen();
-                        } else if (lifecycle.canConvertToPermanent) {
-                          setFirmToConvert(row.original);
-                          onConvertConfirmOpen();
-                        } else if (lifecycle.canSuspend) {
-                          setFirmToSuspend(row.original);
-                          onSuspendConfirmOpen();
-                        }
-                      }}
-                    >
-                      <History size={16} />
-                    </Button>
-                  </Tooltip>
-                )}
+                      {canAccessAudit && (
+                        <MenuItem
+                          cursor="pointer"
+                          value="audit-log"
+                          onClick={() => handleAuditLog(firmId)}
+                        >
+                          <HStack gap={2}>
+                            <ScrollText size={16} />
+                            <Text>Audit Log</Text>
+                          </HStack>
+                        </MenuItem>
+                      )}
 
-              <TableActions
-                onEdit={
-                  canEdit
-                    ? () => {
-                      setSelectedId(row.original.firmId.toString());
-                      onEditOpen();
-
-                    }
-                    : undefined
-                }
-              />
+                      {hasLifecycleActions && (
+                        <MenuItem
+                          cursor="pointer"
+                          value="lifecycle"
+                          onClick={() => {
+                            if (lifecycle.canExtendTrial) {
+                              setFirmToExtendTrial(row.original);
+                              onExtendTrialOpen();
+                            } else if (lifecycle.canConvertToPermanent) {
+                              setFirmToConvert(row.original);
+                              onConvertConfirmOpen();
+                            } else if (lifecycle.canSuspend) {
+                              setFirmToSuspend(row.original);
+                              onSuspendConfirmOpen();
+                            } else if (lifecycle.canActivate) {
+                              setFirmToActivate(row.original);
+                              onActivateConfirmOpen();
+                            }
+                          }}
+                        >
+                          <HStack gap={2}>
+                            <History size={16} />
+                            <Text>
+                              {lifecycle.canExtendTrial
+                                ? "Extend Trial"
+                                : lifecycle.canConvertToPermanent
+                                  ? "Convert to Permanent"
+                                  : lifecycle.canSuspend
+                                    ? "Suspend"
+                                    : "Activate"}
+                            </Text>
+                          </HStack>
+                        </MenuItem>
+                      )}
+                    </MenuContent>
+                  </MenuPositioner>
+                </Portal>
+              </MenuRoot>
             </HStack>
           );
         },
       },
     ],
     [
-      onToggleConfirmOpen,
-      navigate,
       canAccessAudit,
       canEdit,
       onSuspendConfirmOpen,
       onActivateConfirmOpen,
       onConvertConfirmOpen,
       onExtendTrialOpen,
+      onToggleConfirmOpen,
+      handleAuditLog,
+      handleEditFirm,
+      handleManageAccess,
     ]
   );
 
@@ -387,7 +451,6 @@ const FirmManagement = () => {
         />
       </Stack>
       <FirmOnboardingModal open={onboardingOpen} onClose={onOnboardingClose} />
-
     </>
   );
 };

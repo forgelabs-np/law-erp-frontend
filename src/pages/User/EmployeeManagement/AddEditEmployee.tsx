@@ -30,7 +30,6 @@ const defaultValues: EmployeeFormValues = {
   fullName: "",
   roleId: "",
   designation: "",
-  departmentId: "",
   barCouncilNo: "",
   specialization: "",
   joiningDate: "",
@@ -95,7 +94,7 @@ export const AddEditEmployee = ({
         fullName: employeeById.fullName ?? "",
         roleId: employeeById.roleId ?? "",
         designation: employeeById.designation ?? "",
-        departmentId: employeeById.departmentId ?? "",
+        // departmentId: employeeById.departmentId ?? "",
         barCouncilNo: employeeById.barCouncilNo ?? "",
         specialization: employeeById.specialization ?? "",
         joiningDate: employeeById.joiningDate ?? "",
@@ -219,14 +218,14 @@ export const AddEditEmployee = ({
                 />
               </GridItem>
 
-              <GridItem>
+              {/* <GridItem>
                 <TextFieldInput
                   name="departmentId"
                   label="Department ID"
                   placeholder="Department identifier"
                   required
                 />
-              </GridItem>
+              </GridItem> */}
 
               <GridItem>
                 <FormWrapper

@@ -47,11 +47,9 @@ export const AddEditFirm = ({
   id?: string;
   setId: Dispatch<SetStateAction<string | undefined>>;
 }) => {
-  const { data: firmByIdResponse, isLoading: isLoadingFirm } = useFirmByIdQuery(
+  const { data: firmById, isLoading: isLoadingFirm } = useFirmByIdQuery(
     id ?? ""
   );
-
-  const firmById = firmByIdResponse?.[0];
 
   const methods = useForm<FirmFormValues>({
     defaultValues,
@@ -65,14 +63,21 @@ export const AddEditFirm = ({
 
   const { mutate, isPending } = useCreateEditFirmMutation();
 
+  // Reset form when drawer opens or id changes
   useEffect(() => {
-    if (open && !id) {
+    if (open) {
+      // First, reset to defaults to clear any stale data
       reset(defaultValues);
-      setId("");
+
+      // If no id, we're in create mode - keep defaults
+      if (!id) {
+        setId("");
+        return;
+      }
     }
   }, [open, id, reset, setId]);
 
-  // Pre-fill form in edit mode
+  // Pre-fill form in edit mode when firm data is loaded
   useEffect(() => {
     if (open && firmById && id) {
       reset({
@@ -131,7 +136,7 @@ export const AddEditFirm = ({
   return (
     <FormProvider methods={methods}>
       <CustomDrawer
-        key={id || "add"}
+        key={`firm-drawer-${id || "new"}-${open ? "open" : "closed"}`}
         open={open}
         onClose={closeHandler}
         title={id ? "Edit Firm" : "Add Firm"}

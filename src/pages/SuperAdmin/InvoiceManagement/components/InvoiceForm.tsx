@@ -202,7 +202,7 @@ export const InvoiceForm = ({
                 <option value="">Select a firm</option>
                 {firms.map((firm) => (
                   <option key={firm.firmId} value={firm.firmId}>
-                    {firm?.fullName}
+                    {firm?.firmName}
                   </option>
                 ))}
               </NativeSelect.Field>
@@ -500,7 +500,7 @@ export const InvoiceForm = ({
           Live Preview
         </Text>
         <InvoicePreview
-          firmName={selectedFirm?.fullName || ""}
+          firmName={selectedFirm?.firmName || ""}
           invoiceNumber={initialData?.invoiceNumber}
           issueDate={issueDate}
           dueDate={dueDate}

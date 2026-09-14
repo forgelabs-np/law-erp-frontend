@@ -21,7 +21,6 @@ export interface EmployeePayload {
   fullName: string;
   roleId: string;
   designation: string;
-  departmentId: string;
   barCouncilNo?: string;
   specialization?: string;
   joiningDate: string;

@@ -1,15 +1,14 @@
-import { FirmResponse } from "@/api/firmManagement";
+import { FirmResponse, FirmStatus } from "@/api/firmManagement";
 
 /**
  * Determines which lifecycle actions are available for a firm based on its
- * isTrial and isSuspended flags.
+ * firmStatus field from the backend.
  *
- * When the backend currently returns null for both flags (the case today),
- * the helper falls back to preserving the existing toggle-only behavior so
- * we do not accidentally expose destructive/lifecycle actions.
- *
- * Once the backend starts returning real values the UI will automatically
- * switch to the correct action set without any code changes here.
+ * firmStatus is the single source of truth:
+ * - "TRIAL"    → Extend Trial, Convert to Permanent, Suspend
+ * - "ACTIVE"   → Suspend
+ * - "SUSPENDED" → Activate
+ * - "EXPIRED"  → no lifecycle actions (unless explicitly supported by backend)
  */
 export interface FirmLifecycleActions {
   canSuspend: boolean;
@@ -21,43 +20,67 @@ export interface FirmLifecycleActions {
 export function getFirmLifecycleActions(
   firm: FirmResponse
 ): FirmLifecycleActions {
-  const { isTrial, isSuspended } = firm;
+  const { firmStatus } = firm;
 
-  // ── Backend has started returning real flags ──────────────────────────────
-  if (isSuspended === true) {
-    return {
-      canSuspend: false,
-      canActivate: true,
-      canExtendTrial: false,
-      canConvertToPermanent: false,
-    };
+  switch (firmStatus) {
+    case "TRIAL":
+      return {
+        canSuspend: true,
+        canActivate: false,
+        canExtendTrial: true,
+        canConvertToPermanent: true,
+      };
+
+    case "ACTIVE":
+      return {
+        canSuspend: true,
+        canActivate: false,
+        canExtendTrial: false,
+        canConvertToPermanent: false,
+      };
+
+    case "SUSPENDED":
+      return {
+        canSuspend: false,
+        canActivate: true,
+        canExtendTrial: false,
+        canConvertToPermanent: false,
+      };
+
+    case "EXPIRED":
+      // No lifecycle actions unless backend explicitly supports transitions
+      return {
+        canSuspend: false,
+        canActivate: false,
+        canExtendTrial: false,
+        canConvertToPermanent: false,
+      };
+
+    default:
+      // Unknown status — show no lifecycle actions
+      return {
+        canSuspend: false,
+        canActivate: false,
+        canExtendTrial: false,
+        canConvertToPermanent: false,
+      };
   }
+}
 
-  if (isSuspended === false && isTrial === true) {
-    return {
-      canSuspend: true,
-      canActivate: false,
-      canExtendTrial: true,
-      canConvertToPermanent: true,
-    };
+/**
+ * Returns the status badge configuration for display.
+ */
+export function getFirmStatusBadge(status: FirmStatus | undefined) {
+  switch (status) {
+    case "TRIAL":
+      return { label: "Trial", color: "blue" as const };
+    case "ACTIVE":
+      return { label: "Active", color: "green" as const };
+    case "SUSPENDED":
+      return { label: "Suspended", color: "orange" as const };
+    case "EXPIRED":
+      return { label: "Expired", color: "red" as const };
+    default:
+      return { label: "Unknown", color: "gray" as const };
   }
-
-  if (isSuspended === false && isTrial === false) {
-    return {
-      canSuspend: true,
-      canActivate: false,
-      canExtendTrial: false,
-      canConvertToPermanent: false,
-    };
-  }
-
-  // ── Fallback: flags are null (current backend behaviour) ──────────────────
-  // Preserve existing behavior – only show the standard active/inactive toggle.
-  // Do NOT guess trial or suspended state.
-  return {
-    canSuspend: false,
-    canActivate: false,
-    canExtendTrial: false,
-    canConvertToPermanent: false,
-  };
 }
