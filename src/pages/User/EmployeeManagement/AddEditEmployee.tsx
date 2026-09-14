@@ -64,7 +64,7 @@ export const AddEditEmployee = ({
   const methods = useForm<EmployeeFormValues>({
     defaultValues,
     resolver: yupResolver(employeeSchema),
-    mode: "onSubmit",
+    mode: "onChange",
     reValidateMode: "onChange",
     context: { isEdit: !!id },
   });

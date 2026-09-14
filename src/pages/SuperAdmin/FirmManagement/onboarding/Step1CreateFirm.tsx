@@ -54,7 +54,7 @@ export const Step1CreateFirm = ({
   const methods = useForm<FirmFormValues>({
     defaultValues,
     resolver: yupResolver(firmSchema),
-    mode: "onSubmit",
+    mode: "onChange",
     reValidateMode: "onChange",
   });
   const { handleSubmit, watch, control, reset } = methods;
@@ -86,8 +86,8 @@ export const Step1CreateFirm = ({
         ...(createdFirmId && !data.adminPassword
           ? {}
           : data.adminPassword
-          ? { adminPassword: data.adminPassword }
-          : {}),
+            ? { adminPassword: data.adminPassword }
+            : {}),
         isTrial: data.isTrial ?? false,
         ...(data.isTrial && data.trialDays ? { trialDays: data.trialDays } : {}),
       };
