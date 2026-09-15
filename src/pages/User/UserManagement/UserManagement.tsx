@@ -572,7 +572,7 @@ export const UserManagement = () => {
   );
 
   return (
-    <Stack gap={6} padding={2}>
+    <Stack gap={6} padding={2} w="100%" maxW="100%" minW={0}>
       <HStack
         justifyContent="space-between"
         alignItems="center"
@@ -714,7 +714,7 @@ export const UserManagement = () => {
           </Button>
         </Box>
       ) : (
-        <Box mt={6}>
+        <Box mt={6} w="100%" maxW="100%" minW={0}>
           <Datatable
             isLoading={isLoading}
             columns={columns}

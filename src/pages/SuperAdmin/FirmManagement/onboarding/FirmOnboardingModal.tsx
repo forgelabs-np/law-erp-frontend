@@ -81,25 +81,31 @@ export const FirmOnboardingModal = ({
     isFetching: isFirmDetailsFetching,
     isSuccess: isFirmDetailsSuccess,
   } = useFirmByIdQuery(onboardingState.createdFirmId ?? "", {
-    enabled: Boolean(onboardingState.createdFirmId) && currentStep === 0 && !isCompleted,
+    enabled:
+      Boolean(onboardingState.createdFirmId) &&
+      currentStep === 0 &&
+      !isCompleted,
   });
 
-  const handleStep1Success = useCallback((data: {
-    firmId: string;
-    adminId?: string;
-    adminRoleId?: string;
-    adminUsername?: string;
-    firmName?: string;
-  }) => {
-    setOnboardingState({
-      createdFirmId: data.firmId,
-      createdFirmAdminId: data.adminId ?? null,
-      createdFirmAdminRoleId: data.adminRoleId ?? null,
-      createdFirmAdminUsername: data.adminUsername ?? null,
-      createdFirmName: data.firmName ?? null,
-    });
-    setCurrentStep(1);
-  }, []);
+  const handleStep1Success = useCallback(
+    (data: {
+      firmId: string;
+      adminId?: string;
+      adminRoleId?: string;
+      adminUsername?: string;
+      firmName?: string;
+    }) => {
+      setOnboardingState({
+        createdFirmId: data.firmId,
+        createdFirmAdminId: data.adminId ?? null,
+        createdFirmAdminRoleId: data.adminRoleId ?? null,
+        createdFirmAdminUsername: data.adminUsername ?? null,
+        createdFirmName: data.firmName ?? null,
+      });
+      setCurrentStep(1);
+    },
+    []
+  );
 
   const handleStep2Complete = useCallback(() => {
     setCurrentStep(2);
@@ -152,13 +158,7 @@ export const FirmOnboardingModal = ({
   const renderStepContent = useCallback(() => {
     if (isCompleted) {
       return (
-        <Stack
-          gap={6}
-          py={8}
-          px={4}
-          alignItems="center"
-          textAlign="center"
-        >
+        <Stack gap={6} py={8} px={4} alignItems="center" textAlign="center">
           <Stack gap={2} alignItems="center">
             <Text textStyle="heading_4" fontWeight="600">
               Firm Setup Completed
@@ -207,7 +207,8 @@ export const FirmOnboardingModal = ({
 
     // Only pass initialData when we have successfully fetched firm details
     // This prevents resetting form with undefined on initial load
-    const shouldPassInitialData = Boolean(onboardingState.createdFirmId) && isFirmDetailsSuccess;
+    const shouldPassInitialData =
+      Boolean(onboardingState.createdFirmId) && isFirmDetailsSuccess;
 
     switch (currentStep) {
       case 0:
@@ -291,18 +292,16 @@ export const FirmOnboardingModal = ({
               )}
 
               {/* Step Content - Scrollable */}
-              <DialogBody
-                flex="1"
-                minH="0"
-                overflowY="auto"
-                px={6}
-                py={4}
-              >
+              <DialogBody flex="1" minH="0" overflowY="auto" px={6} py={4}>
                 {renderStepContent()}
               </DialogBody>
 
               {/* Footer - Fixed */}
-              <DialogFooter flexShrink={0} borderTop="1px solid" borderColor="gray.100">
+              <DialogFooter
+                flexShrink={0}
+                borderTop="1px solid"
+                borderColor="gray.100"
+              >
                 {isCompleted ? (
                   <Button variant="primary" onClick={handleFinish}>
                     Finish
@@ -319,17 +318,11 @@ export const FirmOnboardingModal = ({
                     <HStack gap={3}>
                       {currentStep === 0 && (
                         <HStack>
-                          <Button
-                            onClick={handleClose}
-                            variant="outline"
-                          >
+                          <Button onClick={handleClose} variant="outline">
                             Close
                           </Button>
 
-                          <Button
-                            variant="primary"
-                            onClick={handleStep1Submit}
-                          >
+                          <Button variant="primary" onClick={handleStep1Submit}>
                             Create Firm & Continue
                           </Button>
                         </HStack>
@@ -360,7 +353,6 @@ export const FirmOnboardingModal = ({
         title="Exit Firm Setup?"
         action="exit the firm setup"
         handleSubmit={handleConfirmExit}
-
       />
     </>
   );

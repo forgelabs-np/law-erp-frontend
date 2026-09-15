@@ -135,7 +135,7 @@ const MattersListPage = () => {
     !!filters.matterType || !!filters.status || !!filters.search;
 
   return (
-    <Stack gap={6} padding={8}>
+    <Stack gap={6} padding={8} w="100%" maxW="100%" minW={0}>
       <HStack
         justifyContent="space-between"
         alignItems="center"

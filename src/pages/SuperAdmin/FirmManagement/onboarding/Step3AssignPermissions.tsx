@@ -12,10 +12,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { KeyRound, RefreshCw, Shield } from "lucide-react";
 
-import {
-  FirmRole,
-  useSuperAdminFirmRolesQuery,
-} from "@/api/firmRoleSetup";
+import { FirmRole, useSuperAdminFirmRolesQuery } from "@/api/firmRoleSetup";
 import { Datatable } from "@/shared/components";
 import { Tooltip } from "@/shared/components/ui";
 
@@ -183,10 +180,7 @@ export const Step3AssignPermissions = ({
           Failed to load firm roles
         </Text>
         <HStack justifyContent="center">
-          <IconButton
-            aria-label="Retry"
-            onClick={() => refetch()}
-          >
+          <IconButton aria-label="Retry" onClick={() => refetch()}>
             <RefreshCw size={16} />
           </IconButton>
         </HStack>
@@ -198,8 +192,8 @@ export const Step3AssignPermissions = ({
     <Stack gap={5}>
       <Stack gap={1}>
         <Text fontWeight="semibold" fontSize="sm" color="gray.600">
-          Assign permissions for this firm&apos;s roles. You can override permissions
-          for each role individually.
+          Assign permissions for this firm&apos;s roles. You can override
+          permissions for each role individually.
         </Text>
       </Stack>
 

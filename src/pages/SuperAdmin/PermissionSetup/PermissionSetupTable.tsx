@@ -158,7 +158,7 @@ export const PermissionManagementTable = () => {
   };
 
   return (
-    <Stack gap={6} padding={2}>
+    <Stack gap={6} padding={2} w="100%" maxW="100%" minW={0}>
       <HStack justifyContent="space-between" alignItems="center">
         <Stack gap={2}>
           <Text textStyle="heading_4">Permission Management</Text>
@@ -292,90 +292,95 @@ export const PermissionManagementTable = () => {
                       No permissions configured for this module.
                     </Text>
                   ) : (
-                    <Stack gap={0} separator={<Box h="1px" bg="gray.100" />}>
-                      <Grid
-                        templateColumns="2fr 1fr 2fr 1fr 1fr"
-                        gap={4}
-                        py={2}
-                        px={4}
-                        bg="gray.50"
-                        fontSize="sm"
-                        fontWeight="600"
-                        color="gray.600"
-                        borderRadius="md"
-                        mt={2}
-                      >
-                        <Text>Permission</Text>
-                        <Text>Scope</Text>
-                        <Text>Code</Text>
-                        <Text>Status</Text>
-                        <Text>Action</Text>
-                      </Grid>
-                      {module.permissions.map((perm) => (
+                    <Box overflowX="auto" w="100%" minW={0}>
+                      <Stack gap={0} separator={<Box h="1px" bg="gray.100" />} minW="600px">
                         <Grid
-                          key={perm.id}
                           templateColumns="2fr 1fr 2fr 1fr 1fr"
                           gap={4}
-                          py={3}
+                          py={2}
                           px={4}
-                          alignItems="center"
-                          _hover={{ bg: "gray.50" }}
+                          bg="gray.50"
+                          fontSize="sm"
+                          fontWeight="600"
+                          color="gray.600"
+                          borderRadius="md"
+                          mt={2}
+                          position="sticky"
+                          top={0}
+                          zIndex={1}
                         >
-                          <Text fontWeight="500">{perm.action}</Text>
-                          <Text fontSize="sm">{perm.scope}</Text>
-                          <Text
-                            fontSize="sm"
-                            fontFamily="mono"
-                            color="gray.600"
+                          <Text>Permission</Text>
+                          <Text>Scope</Text>
+                          <Text>Code</Text>
+                          <Text>Status</Text>
+                          <Text>Action</Text>
+                        </Grid>
+                        {module.permissions.map((perm) => (
+                          <Grid
+                            key={perm.id}
+                            templateColumns="2fr 1fr 2fr 1fr 1fr"
+                            gap={4}
+                            py={3}
+                            px={4}
+                            alignItems="center"
+                            _hover={{ bg: "gray.50" }}
                           >
-                            {perm.code}
-                          </Text>
-                          <HStack>
-                            <Switch
-                              checked={perm.isActive}
-                              onCheckedChange={() => {
-                                setPermissionToToggle({
-                                  id: perm.id,
-                                  active: perm.isActive,
-                                });
-                                onToggleConfirmOpen();
-                              }}
-                            />
+                            <Text fontWeight="500">{perm.action}</Text>
+                            <Text fontSize="sm">{perm.scope}</Text>
                             <Text
                               fontSize="sm"
-                              color={perm.isActive ? "green.600" : "gray.500"}
+                              fontFamily="mono"
+                              color="gray.600"
                             >
-                              {perm.isActive ? "Active" : "Inactive"}
+                              {perm.code}
                             </Text>
-                          </HStack>
-                          <HStack gap={1}>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              aria-label="Edit permission"
-                              onClick={() => handleEditClick(perm.id)}
-                            >
-                              <EditIcon />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              colorPalette="red"
-                              aria-label="Delete permission"
-                              onClick={() => {
-                                setPermissionToDelete({
-                                  id: perm.id,
-                                  name: perm.action,
-                                });
-                                onDeleteConfirmOpen();
-                              }}
-                            >
-                              <Trash2 size={14} />
-                            </Button>
-                          </HStack>
-                        </Grid>
-                      ))}
-                    </Stack>
+                            <HStack>
+                              <Switch
+                                checked={perm.isActive}
+                                onCheckedChange={() => {
+                                  setPermissionToToggle({
+                                    id: perm.id,
+                                    active: perm.isActive,
+                                  });
+                                  onToggleConfirmOpen();
+                                }}
+                              />
+                              <Text
+                                fontSize="sm"
+                                color={perm.isActive ? "green.600" : "gray.500"}
+                              >
+                                {perm.isActive ? "Active" : "Inactive"}
+                              </Text>
+                            </HStack>
+                            <HStack gap={1}>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                aria-label="Edit permission"
+                                onClick={() => handleEditClick(perm.id)}
+                              >
+                                <EditIcon />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                colorPalette="red"
+                                aria-label="Delete permission"
+                                onClick={() => {
+                                  setPermissionToDelete({
+                                    id: perm.id,
+                                    name: perm.action,
+                                  });
+                                  onDeleteConfirmOpen();
+                                }}
+                              >
+                                <Trash2 size={14} />
+                              </Button>
+                            </HStack>
+                          </Grid>
+                        ))}
+                      </Stack>
+                    </Box>
                   )}
                 </AccordionItemContent>
               </AccordionItem>

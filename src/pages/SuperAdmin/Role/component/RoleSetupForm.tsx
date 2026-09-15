@@ -1,4 +1,12 @@
-import { Card, Grid, Stack, Text, HStack, Button, IconButton } from "@chakra-ui/react";
+import {
+  Card,
+  Grid,
+  Stack,
+  Text,
+  HStack,
+  Button,
+  IconButton,
+} from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 import { Control } from "react-hook-form";
 import { Edit, X } from "lucide-react";
@@ -97,7 +105,9 @@ export const RoleSetupForm = ({
               Role Details
             </Text>
             <IconButton
-              aria-label={isEditingDetails ? "Cancel editing" : "Edit role details"}
+              aria-label={
+                isEditingDetails ? "Cancel editing" : "Edit role details"
+              }
               variant="ghost"
               size="sm"
               onClick={() => setIsEditingDetails(!isEditingDetails)}

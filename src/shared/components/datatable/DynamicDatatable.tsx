@@ -32,7 +32,7 @@ export const DynamicDatatable = <T,>({
   const paginatedData = formattedData.slice(startIndex, startIndex + pageSize);
 
   return (
-    <VStack alignItems="stretch">
+    <VStack alignItems="stretch" w="100%" maxW="100%" minW={0}>
       {header?.title && (
         <TableHeader
           {...header}

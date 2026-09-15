@@ -508,7 +508,7 @@ const RolesTab = () => {
   };
 
   return (
-    <Stack gap={6}>
+    <Stack gap={6} w="100%" maxW="100%" minW={0}>
       {/* Toolbar */}
       <HStack justifyContent="flex-end" alignItems="center" gap={2}>
         <IconButton

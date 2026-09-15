@@ -730,7 +730,9 @@ const RenewalCard = ({
     null
   );
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
-  const [instanceToComplete, setInstanceToComplete] = useState<number | null>(null);
+  const [instanceToComplete, setInstanceToComplete] = useState<number | null>(
+    null
+  );
 
   const availableStatuses: RenewalStatus[] = [
     "ACTIVE",

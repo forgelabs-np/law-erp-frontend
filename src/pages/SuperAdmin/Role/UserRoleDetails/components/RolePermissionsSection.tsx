@@ -67,11 +67,7 @@ export const RolePermissionsSection = ({ roleId }: { roleId: string }) => {
   };
 
   return (
-    <Flex
-      flexDirection="column"
-      height="calc(100vh - 80px)"
-      gap={6}
-    >
+    <Flex flexDirection="column" height="calc(100vh - 80px)" gap={6}>
       <HStack justifyContent="space-between" flexShrink={0}>
         <Text textStyle="subtitle_large">Manage Permissions</Text>
         <Button
@@ -84,12 +80,7 @@ export const RolePermissionsSection = ({ roleId }: { roleId: string }) => {
           Save Permissions
         </Button>
       </HStack>
-      <Stack
-        flex={1}
-        minH={0}
-        overflowY="auto"
-        pb={6}
-      >
+      <Stack flex={1} minH={0} overflowY="auto" pb={6}>
         <RoleSetupForm isOpen={true} control={control} />
       </Stack>
     </Flex>

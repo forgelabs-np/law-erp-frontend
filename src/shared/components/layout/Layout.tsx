@@ -41,11 +41,11 @@ export const Layout = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <HStack alignItems="stretch" gap="3" height="100vh" bg="#F5F6F8" p="3">
+    <HStack alignItems="stretch" gap="3" height="100vh" bg="#F5F6F8" p="3" w="100%" maxW="100%" minW={0}>
       <Sidebar />
 
-      <VStack alignItems="stretch" flex="1" gap="0">
-        <Box overflowY="auto" flex="1">
+      <VStack alignItems="stretch" flex="1" gap="0" minW={0} w="100%" maxW="100%">
+        <Box overflowY="auto" flex="1" minW={0} w="100%" maxW="100%">
           <Box
             padding="4"
             borderRadius="12px"
@@ -54,6 +54,9 @@ export const Layout = ({ children }: PropsWithChildren) => {
             borderColor="gray.200"
             bg="white"
             minH={"100%"}
+            minW={0}
+            w="100%"
+            maxW="100%"
           >
             {children}
           </Box>

@@ -89,7 +89,9 @@ export const Step1CreateFirm = ({
             ? { adminPassword: data.adminPassword }
             : {}),
         isTrial: data.isTrial ?? false,
-        ...(data.isTrial && data.trialDays ? { trialDays: data.trialDays } : {}),
+        ...(data.isTrial && data.trialDays
+          ? { trialDays: data.trialDays }
+          : {}),
       };
 
       mutate(payload, {
@@ -119,7 +121,8 @@ export const Step1CreateFirm = ({
               adminId = responseData.adminId || responseData.admin?.id;
               adminRoleId =
                 responseData.adminRoleId || responseData.admin?.roleId;
-              firmName = responseData.firmName || responseData.name || data.name;
+              firmName =
+                responseData.firmName || responseData.name || data.name;
             }
 
             if (firmId) {
@@ -167,11 +170,14 @@ export const Step1CreateFirm = ({
         address: (d.firmAddress as string) || (d.address as string) || "",
         jurisdiction: (d.jurisdiction as string) || "",
         // Admin details
-        adminUsername: (d.username as string) || (d.adminUsername as string) || "",
+        adminUsername:
+          (d.username as string) || (d.adminUsername as string) || "",
         adminEmail: (d.adminEmail as string) || "",
-        adminMobileNo: (d.mobileNo as string) || (d.adminMobileNo as string) || "",
+        adminMobileNo:
+          (d.mobileNo as string) || (d.adminMobileNo as string) || "",
         adminPassword: "", // Don't reset password for security
-        adminFullName: (d.adminFullName as string) || (d.fullName as string) || "",
+        adminFullName:
+          (d.adminFullName as string) || (d.fullName as string) || "",
         isTrial: (d.isTrial as boolean) ?? false,
         trialDays: (d.trialDays as number) || 30,
       });
@@ -308,8 +314,16 @@ export const Step1CreateFirm = ({
           <GridItem colSpan={2}>
             <TextFieldInput
               name="adminPassword"
-              label={isEditMode ? "Admin Password (leave empty to keep current)" : "Admin Password"}
-              placeholder={isEditMode ? "Leave empty to keep current password" : "Set initial password"}
+              label={
+                isEditMode
+                  ? "Admin Password (leave empty to keep current)"
+                  : "Admin Password"
+              }
+              placeholder={
+                isEditMode
+                  ? "Leave empty to keep current password"
+                  : "Set initial password"
+              }
               required={!isEditMode}
             />
           </GridItem>

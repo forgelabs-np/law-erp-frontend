@@ -1,11 +1,4 @@
-import {
-  Badge,
-  HStack,
-  Spinner,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Badge, HStack, Spinner, Stack, Text, VStack } from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 

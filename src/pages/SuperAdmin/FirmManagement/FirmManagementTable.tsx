@@ -14,13 +14,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Edit,
-  History,
-  ScrollText,
-  Settings,
-  Shield,
-} from "lucide-react";
+import { Edit, History, ScrollText, Settings, Shield } from "lucide-react";
 
 import {
   FirmResponse,
@@ -50,15 +44,11 @@ const FirmManagement = () => {
     id: string;
     active: boolean;
   } | null>(null);
-  const [firmToSuspend, setFirmToSuspend] = useState<FirmResponse | null>(
-    null
-  );
+  const [firmToSuspend, setFirmToSuspend] = useState<FirmResponse | null>(null);
   const [firmToActivate, setFirmToActivate] = useState<FirmResponse | null>(
     null
   );
-  const [firmToConvert, setFirmToConvert] = useState<FirmResponse | null>(
-    null
-  );
+  const [firmToConvert, setFirmToConvert] = useState<FirmResponse | null>(null);
   const [firmToExtendTrial, setFirmToExtendTrial] =
     useState<FirmResponse | null>(null);
   const [selectedId, setSelectedId] = useState<string>();
@@ -328,7 +318,7 @@ const FirmManagement = () => {
 
   return (
     <>
-      <Stack gap={6} padding={2}>
+      <Stack gap={6} padding={2} w="100%" maxW="100%" minW={0}>
         <HStack justifyContent="space-between" alignItems="center">
           <Stack gap={2}>
             <Text textStyle="heading_4">Firm Management</Text>

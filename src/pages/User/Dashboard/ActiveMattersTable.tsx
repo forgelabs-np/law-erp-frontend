@@ -94,6 +94,9 @@ export const ActiveMattersTable = ({
       border="1px solid"
       borderColor="gray.200"
       p={5}
+      w="100%"
+      maxW="100%"
+      minW={0}
     >
       <Text fontWeight={700} fontSize="md" mb={4}>
         Active Matters
