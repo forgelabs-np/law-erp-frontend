@@ -36,7 +36,7 @@ export const ColumnToggle = ({
   );
 
   const hasAnyOptionalSelected = useMemo(
-    () => optionalColumns.some((col) => visibility[col.id] !== false),
+    () => optionalColumns.some((col) => visibility[col.id] === true),
     [optionalColumns, visibility]
   );
 
@@ -79,9 +79,13 @@ export const ColumnToggle = ({
   const handleReset = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
-      onVisibilityChange({});
+      const resetState: VisibilityState = {};
+      optionalColumns.forEach((col) => {
+        resetState[col.id] = false;
+      });
+      onVisibilityChange(resetState);
     },
-    [onVisibilityChange]
+    [optionalColumns, onVisibilityChange]
   );
 
   const handleTriggerClick = useCallback(() => {
@@ -222,7 +226,7 @@ export const ColumnToggle = ({
             {/* Optional columns */}
             <div style={{ padding: "4px 12px 8px" }}>
               {optionalColumns.map((col) => {
-                const isChecked = visibility[col.id] !== false;
+                const isChecked = visibility[col.id] === true;
                 return (
                   <div
                     key={col.id}
