@@ -20,7 +20,8 @@ import {
 import { Switch } from "@/shared/components/ui";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import * as yup from "yup";
 
 import { useGetClientsQuery } from "@/api/clientManagement";
 
@@ -97,6 +98,7 @@ export const AddPartyModal = ({
 
   const [matches, setMatches] = useState<PartyMatch[]>([]);
   const [matchLoading, setMatchLoading] = useState(false);
+  const requestSeqRef = useRef(0);
 
   const matchPartyMutation = useMatchMatterPartyMutation();
   const { data: clientsData, isLoading: clientsLoading } = useGetClientsQuery();
@@ -117,31 +119,49 @@ export const AddPartyModal = ({
         clientId: "",
       });
       setMatches([]);
+      setMatchLoading(false);
+      requestSeqRef.current++;
     }
   }, [isOpen, reset, defaultRepresentation]);
 
   // Debounced party matching to avoid duplicate party/client creation.
+  // Matching is triggered ONLY when email is filled and valid.
   useEffect(() => {
     if (!isOpen) return;
-    const name = fullName.trim();
-    const phone = mobileNo.trim();
-    const mail = email.trim();
-    if (!name && !phone && !mail) {
+    const mail = email ? email.trim() : "";
+    const isEmailValid =
+      mail.length > 0 && yup.string().email().isValidSync(mail);
+
+    if (!isEmailValid) {
       setMatches([]);
+      setMatchLoading(false);
+      requestSeqRef.current++;
       return;
     }
 
+    const name = fullName ? fullName.trim() : "";
+    const phone = mobileNo ? mobileNo.trim() : "";
+
     const timer = setTimeout(() => {
+      const currentSeq = ++requestSeqRef.current;
       setMatchLoading(true);
       matchPartyMutation.mutate(
         {
           fullName: name,
           mobileNo: phone || undefined,
-          email: mail || undefined,
+          email: mail,
         },
         {
-          onSuccess: (response) => setMatches(response?.data?.data ?? []),
-          onSettled: () => setMatchLoading(false),
+          onSuccess: (response) => {
+            if (currentSeq === requestSeqRef.current) {
+              setMatches(response?.data?.data ?? []);
+            }
+          },
+          onSettled: () => {
+            if (currentSeq === requestSeqRef.current) {
+              setMatchLoading(false);
+            }
+          },
         }
       );
     }, 500);

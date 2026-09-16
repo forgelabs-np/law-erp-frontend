@@ -83,26 +83,26 @@ const MattersListPage = () => {
           </Text>
         ),
       },
-      {
-        accessorKey: "currentCourt",
-        header: "Current Court",
-        cell: ({ row }) => (
-          <Text fontSize="sm" color="gray.700">
-            {row.original.currentCourt || "-"}
-          </Text>
-        ),
-      },
-      {
-        accessorKey: "currentStage",
-        header: "Stage",
-        cell: ({ row }) => (
-          <Text fontSize="sm" color="gray.700">
-            {row.original.currentStage
-              ? row.original.currentStage.replace(/_/g, " ")
-              : "-"}
-          </Text>
-        ),
-      },
+      // {
+      //   accessorKey: "currentCourt",
+      //   header: "Current Court",
+      //   cell: ({ row }) => (
+      //     <Text fontSize="sm" color="gray.700">
+      //       {row.original.currentCourt || "-"}
+      //     </Text>
+      //   ),
+      // },
+      // {
+      //   accessorKey: "currentStage",
+      //   header: "Stage",
+      //   cell: ({ row }) => (
+      //     <Text fontSize="sm" color="gray.700">
+      //       {row.original.currentStage
+      //         ? row.original.currentStage.replace(/_/g, " ")
+      //         : "-"}
+      //     </Text>
+      //   ),
+      // },
       {
         accessorKey: "updatedAt",
         header: "Updated",
@@ -230,9 +230,9 @@ const MattersListPage = () => {
       </HStack>
 
       {!isLoading &&
-      mattersData?.content &&
-      mattersData.content.length === 0 &&
-      hasActiveFilters ? (
+        mattersData?.content &&
+        mattersData.content.length === 0 &&
+        hasActiveFilters ? (
         <VStack py={12} gap={4}>
           <Text fontSize="lg" fontWeight="500" color="gray.600">
             No matters match your filters

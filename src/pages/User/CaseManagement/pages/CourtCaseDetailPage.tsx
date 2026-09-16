@@ -204,7 +204,7 @@ const CourtCaseDetailPage = () => {
               color="gray.900"
               fontFamily="monospace"
             >
-              {courtCase.ourCourtCaseRef}
+              {courtCase.courtCaseNumber}
             </Text>
             <HStack gap={2} flexWrap="wrap">
               <RelationTypeBadge relation={courtCase.relationType} />
@@ -465,57 +465,57 @@ const CourtCaseDetailPage = () => {
           {(courtCase.mediationDate ||
             courtCase.mediationOutcome ||
             courtCase.writtenStatementDeadline) && (
-            <SectionCard title="Civil Case Details" icon={FileText}>
-              <Grid
-                templateColumns={{
-                  base: "1fr",
-                  md: "repeat(2, 1fr)",
-                  lg: "repeat(3, 1fr)",
-                }}
-                gap={4}
-              >
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Mediation Date
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {formatDate(courtCase.mediationDate)}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Mediation Outcome
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {courtCase.mediationOutcome || "-"}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Written Statement Deadline
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {formatDate(courtCase.writtenStatementDeadline)}
-                  </Text>
-                </Box>
-              </Grid>
-            </SectionCard>
-          )}
+              <SectionCard title="Civil Case Details" icon={FileText}>
+                <Grid
+                  templateColumns={{
+                    base: "1fr",
+                    md: "repeat(2, 1fr)",
+                    lg: "repeat(3, 1fr)",
+                  }}
+                  gap={4}
+                >
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Mediation Date
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {formatDate(courtCase.mediationDate)}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Mediation Outcome
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {courtCase.mediationOutcome || "-"}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Written Statement Deadline
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {formatDate(courtCase.writtenStatementDeadline)}
+                    </Text>
+                  </Box>
+                </Grid>
+              </SectionCard>
+            )}
 
           {/* Criminal-specific */}
           {(courtCase.firNumber ||
@@ -525,109 +525,109 @@ const CourtCaseDetailPage = () => {
             courtCase.arrestDate ||
             courtCase.chargeSheetDate ||
             courtCase.bailStatus) && (
-            <SectionCard title="Criminal Case Details" icon={FileText}>
-              <Grid
-                templateColumns={{
-                  base: "1fr",
-                  md: "repeat(2, 1fr)",
-                  lg: "repeat(3, 1fr)",
-                }}
-                gap={4}
-              >
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    FIR Number
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {courtCase.firNumber || "-"}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    FIR Date
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {formatDate(courtCase.firDate)}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Police Station
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {courtCase.policeStation || "-"}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Investigation Authority
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {courtCase.investigationAuthority || "-"}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Arrest Date
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {formatDate(courtCase.arrestDate)}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Charge Sheet Date
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {formatDate(courtCase.chargeSheetDate)}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Bail Status
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {courtCase.bailStatus || "-"}
-                  </Text>
-                </Box>
-              </Grid>
-            </SectionCard>
-          )}
+              <SectionCard title="Criminal Case Details" icon={FileText}>
+                <Grid
+                  templateColumns={{
+                    base: "1fr",
+                    md: "repeat(2, 1fr)",
+                    lg: "repeat(3, 1fr)",
+                  }}
+                  gap={4}
+                >
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      FIR Number
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {courtCase.firNumber || "-"}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      FIR Date
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {formatDate(courtCase.firDate)}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Police Station
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {courtCase.policeStation || "-"}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Investigation Authority
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {courtCase.investigationAuthority || "-"}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Arrest Date
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {formatDate(courtCase.arrestDate)}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Charge Sheet Date
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {formatDate(courtCase.chargeSheetDate)}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="600"
+                      color="gray.500"
+                      textTransform="uppercase"
+                    >
+                      Bail Status
+                    </Text>
+                    <Text fontSize="sm" fontWeight="600">
+                      {courtCase.bailStatus || "-"}
+                    </Text>
+                  </Box>
+                </Grid>
+              </SectionCard>
+            )}
 
           {/* Judgment */}
           {(courtCase.judgmentDate || courtCase.judgmentSummary) && (

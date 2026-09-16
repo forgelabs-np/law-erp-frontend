@@ -272,7 +272,7 @@ const MatterDetailPage = () => {
                   Matter Number
                 </Text>
                 <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {matter.matterNumber}
+                  {matter.courtCaseNumber}
                 </Text>
               </Box>
               <Box>
@@ -463,33 +463,33 @@ const MatterDetailPage = () => {
               {/* Judgment info */}
               {(currentCourtCase.judgmentDate ||
                 currentCourtCase.judgmentSummary) && (
-                <Box
-                  mt={4}
-                  p={4}
-                  bg="green.50"
-                  border="1px solid"
-                  borderColor="green.200"
-                  borderRadius="lg"
-                >
-                  <HStack gap={2} mb={2}>
-                    <Gavel size={16} color="#15803d" />
-                    <Text fontSize="sm" fontWeight="700" color="green.800">
-                      Judgment
+                  <Box
+                    mt={4}
+                    p={4}
+                    bg="green.50"
+                    border="1px solid"
+                    borderColor="green.200"
+                    borderRadius="lg"
+                  >
+                    <HStack gap={2} mb={2}>
+                      <Gavel size={16} color="#15803d" />
+                      <Text fontSize="sm" fontWeight="700" color="green.800">
+                        Judgment
+                      </Text>
+                    </HStack>
+                    <Text fontSize="sm" color="gray.800">
+                      Delivered on {formatDate(currentCourtCase.judgmentDate)}
+                      {currentCourtCase.appealDeadline
+                        ? ` · Appeal deadline: ${formatDate(currentCourtCase.appealDeadline)}`
+                        : ""}
                     </Text>
-                  </HStack>
-                  <Text fontSize="sm" color="gray.800">
-                    Delivered on {formatDate(currentCourtCase.judgmentDate)}
-                    {currentCourtCase.appealDeadline
-                      ? ` · Appeal deadline: ${formatDate(currentCourtCase.appealDeadline)}`
-                      : ""}
-                  </Text>
-                  {currentCourtCase.judgmentSummary && (
-                    <Text fontSize="sm" color="gray.700" mt={1}>
-                      {currentCourtCase.judgmentSummary}
-                    </Text>
-                  )}
-                </Box>
-              )}
+                    {currentCourtCase.judgmentSummary && (
+                      <Text fontSize="sm" color="gray.700" mt={1}>
+                        {currentCourtCase.judgmentSummary}
+                      </Text>
+                    )}
+                  </Box>
+                )}
 
               {!currentCourtCase.judgmentSummary && (
                 <Button

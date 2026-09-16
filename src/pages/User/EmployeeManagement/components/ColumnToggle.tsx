@@ -100,6 +100,7 @@ export const ColumnToggle = ({
         size="sm"
         colorPalette="gray"
         onClick={handleTriggerClick}
+        py={4.5}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

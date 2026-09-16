@@ -11,6 +11,7 @@ import {
 import { FileText, Gavel, Scale, User, X } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import * as yup from "yup";
 
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
 
@@ -102,7 +103,14 @@ const CreateMatterPage = () => {
   }, [title, matterType, courtName, courtCaseNumber, parties]);
 
   const handlePartyMatch = (party: PartyDraft) => {
-    if (!party.fullName.trim() && !party.mobileNo?.trim()) {
+    const mail = party.email ? party.email.trim() : "";
+    const isEmailValid =
+      mail.length > 0 && yup.string().email().isValidSync(mail);
+
+    if (!isEmailValid) {
+      if (matchTimers.current[party.key]) {
+        clearTimeout(matchTimers.current[party.key]);
+      }
       setMatchesByParty((prev) => ({ ...prev, [party.key]: [] }));
       return;
     }
@@ -116,7 +124,7 @@ const CreateMatterPage = () => {
         {
           fullName: party.fullName.trim(),
           mobileNo: party.mobileNo?.trim() || undefined,
-          email: party.email?.trim() || undefined,
+          email: mail,
         },
         {
           onSuccess: (response) => {
@@ -449,9 +457,13 @@ const CreateMatterPage = () => {
                       <Input
                         size="sm"
                         value={party.email ?? ""}
-                        onChange={(e) =>
-                          updateParty(party.key, { email: e.target.value })
-                        }
+                        onChange={(e) => {
+                          updateParty(party.key, { email: e.target.value });
+                          handlePartyMatch({
+                            ...party,
+                            email: e.target.value,
+                          });
+                        }}
                         placeholder="name@mail.com"
                       />
                     </Box>
