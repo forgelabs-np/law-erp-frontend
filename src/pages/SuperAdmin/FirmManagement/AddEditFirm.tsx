@@ -8,6 +8,7 @@ import {
   useCreateEditFirmMutation,
 } from "@/api/firmManagement";
 import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
+import { useProvincesQuery } from "@/shared/hooks/useMasterData";
 import { Switch } from "@/shared/components/ui";
 import { firmSchema } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
@@ -62,6 +63,12 @@ export const AddEditFirm = ({
   const isTrial = watch("isTrial");
 
   const { mutate, isPending } = useCreateEditFirmMutation();
+  const { data: provinces = [], isLoading: provincesLoading } = useProvincesQuery();
+
+  const provinceOptions = provinces.map((p) => ({
+    label: `${p.nameEn} - ${p.nameNp}`,
+    value: p.nameEn,
+  }));
 
   // Reset form when drawer opens or id changes
   useEffect(() => {
@@ -215,10 +222,16 @@ export const AddEditFirm = ({
               </GridItem>
 
               <GridItem colSpan={2}>
-                <TextFieldInput
+                <ReactSelect
                   name="jurisdiction"
                   label="Jurisdiction"
-                  placeholder="e.g. Bagmati Province"
+                  placeholder={
+                    provincesLoading
+                      ? "Loading provinces..."
+                      : "Select a province"
+                  }
+                  options={provinceOptions}
+                  disabled={provincesLoading}
                   required
                 />
               </GridItem>

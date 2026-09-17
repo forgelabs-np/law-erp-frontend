@@ -15,6 +15,8 @@ import * as yup from "yup";
 
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
 
+import { useCourtsByTypeQuery } from "@/shared/hooks/useScraper";
+import { CourtType } from "@/shared/types/scraper.types";
 import { useCreateMatterMutation } from "../api/matter.api";
 import {
   CourtLevel,
@@ -80,9 +82,40 @@ const CreateMatterPage = () => {
 
   // Step 2 - original court case
   const [courtLevel, setCourtLevel] = useState<CourtLevel>("DISTRICT");
+  const [courtId, setCourtId] = useState<number | null>(null);
   const [courtName, setCourtName] = useState("");
   const [courtCaseNumber, setCourtCaseNumber] = useState("");
   const [filingDate, setFilingDate] = useState("");
+
+  // Map CourtLevel to API courtType
+  const courtTypeMap: Record<CourtLevel, CourtType> = {
+    DISTRICT: "DISTRICT",
+    HIGH: "HIGH_COURT",
+    SUPREME: "SUPREME_COURT",
+    SPECIALIZED: "DISTRICT",
+  };
+  const apiCourtType = courtTypeMap[courtLevel];
+
+  // Fetch courts for the selected court type
+  const { data: courts = [], isLoading: courtsLoading } =
+    useCourtsByTypeQuery(apiCourtType);
+
+  // Handle court level change - clear court selection
+  const handleCourtLevelChange = (value: string) => {
+    setCourtLevel(value as CourtLevel);
+    setCourtId(null);
+    setCourtName("");
+  };
+
+  // Handle court selection
+  const handleCourtSelect = (value: string) => {
+    const selectedCourtId = Number(value);
+    const selectedCourt = courts.find((c) => c.courtId === selectedCourtId);
+    if (selectedCourt) {
+      setCourtId(selectedCourt.courtId);
+      setCourtName(selectedCourt.courtNameEnglish);
+    }
+  };
 
   // Step 3 - parties
   const [parties, setParties] = useState<PartyDraft[]>([]);
@@ -290,7 +323,7 @@ const CreateMatterPage = () => {
                 </Text>
                 <FieldSelect
                   value={courtLevel}
-                  onChange={(value) => setCourtLevel(value as CourtLevel)}
+                  onChange={handleCourtLevelChange}
                 >
                   {COURT_LEVELS.map((level) => (
                     <option key={level} value={level}>
@@ -305,11 +338,24 @@ const CreateMatterPage = () => {
                 <Text mb={1} fontSize="sm" fontWeight="500">
                   Court Name *
                 </Text>
-                <Input
-                  value={courtName}
-                  onChange={(e) => setCourtName(e.target.value)}
-                  placeholder="e.g. Kathmandu District Court"
-                />
+                <FieldSelect
+                  value={courtId?.toString() ?? ""}
+                  onChange={handleCourtSelect}
+                  placeholder={
+                    courtsLoading
+                      ? "Loading courts..."
+                      : courts.length === 0
+                        ? "No courts available for this level"
+                        : "Select a court"
+                  }
+                  disabled={courtsLoading || courts.length === 0}
+                >
+                  {courts.map((court) => (
+                    <option key={court.courtId} value={court.courtId}>
+                      {court.courtNameEnglish}
+                    </option>
+                  ))}
+                </FieldSelect>
               </Box>
             </Grid>
 

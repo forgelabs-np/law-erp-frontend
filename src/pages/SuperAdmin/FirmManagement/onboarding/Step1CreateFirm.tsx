@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useCreateEditFirmMutation } from "@/api/firmManagement";
 import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
+import { useProvincesQuery } from "@/shared/hooks/useMasterData";
 import { Switch } from "@/shared/components/ui";
 import { firmSchema } from "@/validations";
 
@@ -61,6 +62,12 @@ export const Step1CreateFirm = ({
   const isTrial = watch("isTrial");
 
   const { mutate } = useCreateEditFirmMutation();
+  const { data: provinces = [], isLoading: provincesLoading } = useProvincesQuery();
+
+  const provinceOptions = provinces.map((p) => ({
+    label: `${p.nameEn} - ${p.nameNp}`,
+    value: p.nameEn,
+  }));
 
   const isEditMode = Boolean(createdFirmId);
 
@@ -258,10 +265,16 @@ export const Step1CreateFirm = ({
           </GridItem>
 
           <GridItem colSpan={2}>
-            <TextFieldInput
+            <ReactSelect
               name="jurisdiction"
               label="Jurisdiction"
-              placeholder="e.g. Bagmati Province"
+              placeholder={
+                provincesLoading
+                  ? "Loading provinces..."
+                  : "Select a province"
+              }
+              options={provinceOptions}
+              disabled={provincesLoading}
               required
             />
           </GridItem>

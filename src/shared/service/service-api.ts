@@ -147,6 +147,8 @@ export const api = {
     CASE_HEARING_STATUS: "cases/{caseNoInternal}/hearing-status",
     ADMIN_SCRAPE: "scraper/admin/scrape",
     ADMIN_EXPORT: "scraper/admin/export",
+    ALL_COURTS: "scraper/admin/courts",
+    COURTS_BY_TYPE: "scraper/admin/courts/type/{courtType}",
   },
   DASHBOARD: {
     FIRM_DASHBOARD: "firm/dashboard",
@@ -206,5 +208,12 @@ export const api = {
     ACTIVATE: "super-admin/firms/{firmId}/activate",
     EXTEND_TRIAL: "super-admin/firms/{firmId}/extend-trial",
     CONVERT_TO_PERMANENT: "super-admin/firms/{firmId}/convert-to-permanent",
+  },
+  MASTER_DATA: {
+    REFRESH_CACHE: "master-data/cache/refresh",
+    CACHE_STATS: "master-data/cache/stats",
+    PROVINCES: "master-data/provinces",
+    DISTRICTS: "master-data/districts",
+    DISTRICTS_BY_PROVINCE: "master-data/provinces/{provinceId}/districts",
   },
 };

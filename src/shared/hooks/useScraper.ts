@@ -4,20 +4,21 @@ import {
   getCaseHearingStatus,
   manualScrape,
   generateWeeklyExport,
+  getAllCourts,
+  getCourtsByType,
 } from "../service/scraper.service";
-import { ApiErrorResponse, ApiResponse } from "../types/response";
+import { ApiErrorResponse } from "../types/response";
 import { toastFail, toastSuccess } from "../toast";
-import {
-  CaseHearingStatus,
-  ScrapeResult,
-  HearingExportResult,
-} from "../types/scraper.types";
+import { CourtType } from "../types/scraper.types";
 
 // ============================================================
 // Query keys
 // ============================================================
 
 export const scraperKeys = {
+  allCourts: ["scraper", "courts"] as const,
+  courtsByType: (courtType: CourtType) =>
+    ["scraper", "courts", courtType] as const,
   caseHearingStatus: (caseNoInternal: string) =>
     ["case-hearing-status", caseNoInternal] as const,
 };
@@ -31,6 +32,27 @@ export const useCaseHearingStatus = (caseNoInternal: string) => {
     queryKey: scraperKeys.caseHearingStatus(caseNoInternal),
     enabled: !!caseNoInternal,
     queryFn: () => getCaseHearingStatus(caseNoInternal),
+    select: (response) => response?.data?.data,
+  });
+};
+
+// ============================================================
+// Courts
+// ============================================================
+
+export const useAllCourtsQuery = () => {
+  return useQuery({
+    queryKey: scraperKeys.allCourts,
+    queryFn: () => getAllCourts(),
+    select: (response) => response?.data?.data,
+  });
+};
+
+export const useCourtsByTypeQuery = (courtType: CourtType | null) => {
+  return useQuery({
+    queryKey: scraperKeys.courtsByType(courtType ?? "DISTRICT"),
+    queryFn: () => getCourtsByType(courtType as CourtType),
+    enabled: !!courtType,
     select: (response) => response?.data?.data,
   });
 };

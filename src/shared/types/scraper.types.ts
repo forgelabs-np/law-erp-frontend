@@ -59,10 +59,15 @@ export interface ScrapeResult {
 export type HearingExportResult = string;
 
 // ============================================================
-// Court (only if existing CRM has court data source)
+// Court
 // ============================================================
 
+export type CourtType = "DISTRICT" | "HIGH_COURT" | "SUPREME_COURT";
+
 export interface Court {
-  id: number;
-  name: string;
+  courtId: number;
+  courtNameNepali: string;
+  courtNameEnglish: string;
+  courtType: CourtType;
+  isActive: boolean;
 }
