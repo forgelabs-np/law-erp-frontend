@@ -6,7 +6,9 @@ export type TableProps<T> = {
   isLoading?: boolean;
   revisionKey?: number | string;
   columnVisibility?: VisibilityState;
-  onColumnVisibilityChange?: (updater: VisibilityState | ((old: VisibilityState) => VisibilityState)) => void;
+  onColumnVisibilityChange?: (
+    updater: VisibilityState | ((old: VisibilityState) => VisibilityState)
+  ) => void;
 };
 
 export interface MetaProps {

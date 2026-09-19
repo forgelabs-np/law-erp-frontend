@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Grid,
   HStack,
   Input,
@@ -32,6 +33,7 @@ import {
   representationLabel,
 } from "../utils/matterHelpers";
 import {
+  FormInput,
   FormSection,
   FormTextarea,
   PageHeader,
@@ -59,6 +61,59 @@ const COURT_LEVELS: CourtLevel[] = [
   "SUPREME",
   "SPECIALIZED",
 ];
+
+/** Compact field styling used inside the dense party cards. */
+const compactInputProps = {
+  size: "sm" as const,
+  borderRadius: "md",
+  height: "40px",
+  fontSize: "14px",
+  bg: "white",
+  borderColor: "gray.200",
+  _placeholder: { color: "gray.400" },
+  _hover: { borderColor: "gray.300" },
+  _focus: {
+    borderColor: "primary.500",
+    boxShadow: "0 0 0 3px #E3E7FC",
+  },
+  transition: "all 0.18s ease",
+};
+
+const FieldLabel = ({
+  children,
+  required,
+}: {
+  children: React.ReactNode;
+  required?: boolean;
+}) => (
+  <Text
+    mb={2}
+    fontSize="13px"
+    fontWeight="600"
+    color="gray.700"
+    letterSpacing="0.01em"
+  >
+    {children}
+    {required && (
+      <Text as="span" color="red.500" ml={1}>
+        *
+      </Text>
+    )}
+  </Text>
+);
+
+const CompactLabel = ({ children }: { children: React.ReactNode }) => (
+  <Text
+    mb={1.5}
+    fontSize="11px"
+    fontWeight="600"
+    color="gray.500"
+    letterSpacing="0.04em"
+    textTransform="uppercase"
+  >
+    {children}
+  </Text>
+);
 
 interface PartyDraft extends PartyEntryRequest {
   key: string;
@@ -227,10 +282,10 @@ const CreateMatterPage = () => {
   };
 
   return (
-    <Stack gap={0} padding={8} maxW="1000px" mx="auto">
+    <Stack gap={0} padding={{ base: 4, md: 8 }} maxW="980px" mx="auto" w="100%">
       <PageHeader
         title="Create Matter"
-        subtitle="Create a matter with its original court case and initial parties"
+        subtitle="Set up the essential information for this legal matter, its original court case, and the parties involved."
         breadcrumb={["Cases", "Create Matter"]}
       />
 
@@ -238,37 +293,45 @@ const CreateMatterPage = () => {
 
       {/* Step 1 - Basic Information */}
       {currentStep === 0 && (
-        <FormSection title="Basic Information" icon={FileText}>
-          <Text fontSize="sm" color="gray.600" mb={4}>
-            What kind of matter is this and who is handling it?
-          </Text>
-          <CaseTypeSelector
-            value={matterType}
-            onChange={(type) => {
-              setMatterType(type);
-              setParties((prev) =>
-                prev.map((p) => ({ ...p, roleType: defaultRoleForType(type) }))
-              );
-            }}
-          />
-          <VStack gap={4} align="stretch" mt={6}>
+        <FormSection
+          title="Matter Details"
+          description="The core information used to identify and organise this matter."
+          icon={FileText}
+        >
+          <VStack gap={6} align="stretch">
             <Box>
-              <Text mb={1} fontSize="sm" fontWeight="500">
-                Title *
-              </Text>
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Ram vs Shyam — land boundary dispute"
+              <FieldLabel required>Matter Type</FieldLabel>
+              <CaseTypeSelector
+                value={matterType}
+                onChange={(type) => {
+                  setMatterType(type);
+                  setParties((prev) =>
+                    prev.map((p) => ({
+                      ...p,
+                      roleType: defaultRoleForType(type),
+                    }))
+                  );
+                }}
               />
             </Box>
 
-            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4}>
+            <Box borderTop="1px solid" borderColor="gray.100" pt={6}>
+              <FormInput
+                label="Matter Title"
+                required
+                emphasis
+                value={title}
+                onChange={setTitle}
+                placeholder="e.g. ABC Industries vs XYZ Ltd."
+                helperText="Use a concise, descriptive name that clearly identifies the dispute or case."
+              />
+            </Box>
+
+            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={5}>
               <Box>
-                <Text mb={1} fontSize="sm" fontWeight="500">
-                  Assigned Partner
-                </Text>
+                <FieldLabel>Assigned Partner</FieldLabel>
                 <FieldSelect
+                  size="lg"
                   value={assignedPartnerId}
                   onChange={setAssignedPartnerId}
                   placeholder="No partner assigned"
@@ -281,10 +344,9 @@ const CreateMatterPage = () => {
                 </FieldSelect>
               </Box>
               <Box>
-                <Text mb={1} fontSize="sm" fontWeight="500">
-                  Assigned Advocate
-                </Text>
+                <FieldLabel>Assigned Advocate</FieldLabel>
                 <FieldSelect
+                  size="lg"
                   value={advocateId}
                   onChange={setAdvocateId}
                   placeholder="No advocate assigned"
@@ -298,30 +360,32 @@ const CreateMatterPage = () => {
               </Box>
             </Grid>
 
-            <FormTextarea
-              label="Description"
-              value={description}
-              onChange={setDescription}
-              placeholder="Brief description of the matter"
-              rows={3}
-            />
+            <Box borderTop="1px solid" borderColor="gray.100" pt={6}>
+              <FormTextarea
+                label="Description"
+                value={description}
+                onChange={setDescription}
+                placeholder="Add any background, key facts, or context that helps the team understand this matter."
+                rows={5}
+              />
+            </Box>
           </VStack>
         </FormSection>
       )}
 
       {/* Step 2 - Original Court Case */}
       {currentStep === 1 && (
-        <FormSection title="Original Court Case" icon={Scale}>
-          <Text fontSize="sm" color="gray.600" mb={4}>
-            The original court case is created together with the matter.
-          </Text>
-          <VStack gap={4} align="stretch">
-            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4}>
+        <FormSection
+          title="Original Court Case"
+          description="The original court case is created together with the matter."
+          icon={Scale}
+        >
+          <VStack gap={6} align="stretch">
+            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={5}>
               <Box>
-                <Text mb={1} fontSize="sm" fontWeight="500">
-                  Court Level *
-                </Text>
+                <FieldLabel required>Court Level</FieldLabel>
                 <FieldSelect
+                  size="lg"
                   value={courtLevel}
                   onChange={handleCourtLevelChange}
                 >
@@ -335,10 +399,9 @@ const CreateMatterPage = () => {
                 </FieldSelect>
               </Box>
               <Box>
-                <Text mb={1} fontSize="sm" fontWeight="500">
-                  Court Name *
-                </Text>
+                <FieldLabel required>Court Name</FieldLabel>
                 <FieldSelect
+                  size="lg"
                   value={courtId?.toString() ?? ""}
                   onChange={handleCourtSelect}
                   placeholder={
@@ -356,43 +419,52 @@ const CreateMatterPage = () => {
                     </option>
                   ))}
                 </FieldSelect>
+                <Text fontSize="12px" color="gray.500" mt={2} lineHeight="1.5">
+                  Courts are filtered by the selected court level.
+                </Text>
               </Box>
             </Grid>
 
-            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4}>
-              <Box>
-                <Text mb={1} fontSize="sm" fontWeight="500">
-                  Court Case Number *
-                </Text>
-                <Input
+            <Box borderTop="1px solid" borderColor="gray.100" pt={6}>
+              <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={5}>
+                <FormInput
+                  label="Court Case Number"
+                  required
                   value={courtCaseNumber}
-                  onChange={(e) => setCourtCaseNumber(e.target.value)}
+                  onChange={setCourtCaseNumber}
                   placeholder="e.g. C-123/082"
+                  helperText="The case number assigned by the court."
                 />
-              </Box>
-              <Box>
-                <Text mb={1} fontSize="sm" fontWeight="500">
-                  Filing Date
-                </Text>
-                <DatePicker
-                  value={filingDate}
-                  onChange={setFilingDate}
-                  placeholder="Select filing date"
-                />
-              </Box>
-            </Grid>
+                <Box>
+                  <FieldLabel>Filing Date</FieldLabel>
+                  <DatePicker
+                    value={filingDate}
+                    onChange={setFilingDate}
+                    placeholder="Select filing date"
+                  />
+                  <Text
+                    fontSize="12px"
+                    color="gray.500"
+                    mt={2}
+                    lineHeight="1.5"
+                  >
+                    The date the case was filed at the court.
+                  </Text>
+                </Box>
+              </Grid>
+            </Box>
           </VStack>
         </FormSection>
       )}
 
       {/* Step 3 - Parties */}
       {currentStep === 2 && (
-        <FormSection title="Parties" icon={User}>
-          <HStack justify="space-between" mb={4}>
-            <Text fontSize="sm" color="gray.600">
-              Add the parties of the original court case. Matching clients and
-              parties are suggested to avoid duplicates.
-            </Text>
+        <FormSection
+          title="Parties"
+          description="Add the parties of the original court case. Matching clients and parties are suggested to avoid duplicates."
+          icon={User}
+        >
+          <HStack justify="flex-end" mb={5}>
             <Button
               variant="outline"
               size="sm"
@@ -403,44 +475,80 @@ const CreateMatterPage = () => {
           </HStack>
 
           {parties.length === 0 ? (
-            <Box
-              py={10}
-              textAlign="center"
+            <Center
+              flexDirection="column"
+              gap={3}
+              py={12}
+              px={6}
               border="1px dashed"
               borderColor="gray.300"
-              borderRadius="lg"
+              borderRadius="xl"
+              bg="gray.50"
             >
-              <Text fontSize="sm" color="gray.500">
-                No parties added yet
-              </Text>
+              <Center
+                w="12"
+                h="12"
+                borderRadius="full"
+                bg="white"
+                border="1px solid"
+                borderColor="gray.200"
+                color="gray.400"
+              >
+                <User size={20} />
+              </Center>
+              <VStack gap={1}>
+                <Text fontSize="sm" fontWeight="600" color="gray.700">
+                  No parties added yet
+                </Text>
+                <Text fontSize="13px" color="gray.500" textAlign="center">
+                  Add at least one party to continue.
+                </Text>
+              </VStack>
               <Button
-                mt={4}
+                mt={1}
                 variant="outline"
                 size="sm"
                 onClick={() => setIsAddPartyOpen(true)}
               >
                 + Add First Party
               </Button>
-            </Box>
+            </Center>
           ) : (
-            <VStack gap={3} align="stretch">
+            <VStack gap={4} align="stretch">
               {parties.map((party) => (
                 <Box
                   key={party.key}
-                  p={4}
+                  p={{ base: 4, md: 5 }}
                   bg="white"
                   border="1px solid"
                   borderColor="gray.200"
-                  borderRadius="lg"
+                  borderRadius="xl"
+                  boxShadow="0 1px 2px rgba(16, 24, 40, 0.04)"
                 >
-                  <HStack justify="space-between" mb={3}>
-                    <HStack gap={2}>
-                      {matterType === "CIVIL" ? (
-                        <Scale size={16} color="#2563eb" />
-                      ) : (
-                        <Gavel size={16} color="#dc2626" />
-                      )}
-                      <Text fontSize="sm" fontWeight="600" color="gray.900">
+                  <HStack justify="space-between" mb={4} gap={3}>
+                    <HStack gap={2.5} minW={0}>
+                      <Center
+                        w="8"
+                        h="8"
+                        borderRadius="lg"
+                        bg={matterType === "CIVIL" ? "primary.50" : "red.50"}
+                        color={
+                          matterType === "CIVIL" ? "primary.500" : "red.500"
+                        }
+                        flexShrink={0}
+                      >
+                        {matterType === "CIVIL" ? (
+                          <Scale size={16} />
+                        ) : (
+                          <Gavel size={16} />
+                        )}
+                      </Center>
+                      <Text
+                        fontSize="14px"
+                        fontWeight="600"
+                        color="gray.900"
+                        truncate
+                      >
                         {party.fullName || "New party"}
                       </Text>
                     </HStack>
@@ -448,26 +556,25 @@ const CreateMatterPage = () => {
                       variant="ghost"
                       size="xs"
                       colorScheme="red"
+                      aria-label="Remove party"
                       onClick={() =>
                         setParties((prev) =>
                           prev.filter((p) => p.key !== party.key)
                         )
                       }
                     >
-                      <X size={14} />
+                      <X size={15} />
                     </Button>
                   </HStack>
 
                   <Grid
                     templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
-                    gap={3}
+                    gap={4}
                   >
                     <Box>
-                      <Text mb={1} fontSize="xs" color="gray.600">
-                        Full Name *
-                      </Text>
+                      <CompactLabel>Full Name *</CompactLabel>
                       <Input
-                        size="sm"
+                        {...compactInputProps}
                         value={party.fullName}
                         onChange={(e) => {
                           updateParty(party.key, { fullName: e.target.value });
@@ -480,11 +587,9 @@ const CreateMatterPage = () => {
                       />
                     </Box>
                     <Box>
-                      <Text mb={1} fontSize="xs" color="gray.600">
-                        Mobile
-                      </Text>
+                      <CompactLabel>Mobile</CompactLabel>
                       <Input
-                        size="sm"
+                        {...compactInputProps}
                         value={party.mobileNo ?? ""}
                         onChange={(e) => {
                           updateParty(party.key, { mobileNo: e.target.value });
@@ -497,11 +602,9 @@ const CreateMatterPage = () => {
                       />
                     </Box>
                     <Box>
-                      <Text mb={1} fontSize="xs" color="gray.600">
-                        Email
-                      </Text>
+                      <CompactLabel>Email</CompactLabel>
                       <Input
-                        size="sm"
+                        {...compactInputProps}
                         value={party.email ?? ""}
                         onChange={(e) => {
                           updateParty(party.key, { email: e.target.value });
@@ -514,9 +617,7 @@ const CreateMatterPage = () => {
                       />
                     </Box>
                     <Box>
-                      <Text mb={1} fontSize="xs" color="gray.600">
-                        Role *
-                      </Text>
+                      <CompactLabel>Role *</CompactLabel>
                       <FieldSelect
                         size="sm"
                         value={party.roleType}
@@ -543,9 +644,7 @@ const CreateMatterPage = () => {
                       </FieldSelect>
                     </Box>
                     <Box>
-                      <Text mb={1} fontSize="xs" color="gray.600">
-                        Representation *
-                      </Text>
+                      <CompactLabel>Representation *</CompactLabel>
                       <FieldSelect
                         size="sm"
                         value={party.representation}
@@ -569,9 +668,7 @@ const CreateMatterPage = () => {
                       </FieldSelect>
                     </Box>
                     <Box>
-                      <Text mb={1} fontSize="xs" color="gray.600">
-                        Our client
-                      </Text>
+                      <CompactLabel>Our client</CompactLabel>
                       <FieldSelect
                         size="sm"
                         value={party.isOurClient ? "yes" : "no"}
@@ -587,7 +684,7 @@ const CreateMatterPage = () => {
                     </Box>
                   </Grid>
 
-                  <Box mt={2}>
+                  <Box mt={3}>
                     <PartyMatchSuggestions
                       matches={matchesByParty[party.key] ?? []}
                       onSelectMatch={(match) => selectMatch(party.key, match)}
@@ -608,73 +705,142 @@ const CreateMatterPage = () => {
 
       {/* Step 4 - Review */}
       {currentStep === 3 && (
-        <FormSection title="Review & Save" icon={FileText}>
+        <FormSection
+          title="Review & Save"
+          description="Confirm the details below before creating this matter."
+          icon={FileText}
+        >
           <VStack gap={4} align="stretch">
             <Box
-              p={4}
+              p={{ base: 4, md: 5 }}
               bg="gray.50"
-              borderRadius="lg"
+              borderRadius="xl"
               border="1px solid"
               borderColor="gray.100"
             >
-              <Text fontSize="sm" fontWeight="600" color="gray.700" mb={2}>
-                Matter
-              </Text>
-              <Text fontSize="sm">
+              <HStack gap={2.5} mb={3}>
+                <Center
+                  w="7"
+                  h="7"
+                  borderRadius="lg"
+                  bg="primary.50"
+                  color="primary.500"
+                >
+                  <FileText size={15} />
+                </Center>
+                <Text fontSize="13px" fontWeight="700" color="gray.800">
+                  Matter
+                </Text>
+              </HStack>
+              <Text fontSize="14px" fontWeight="600" color="gray.900">
                 {matterTypeLabel(matterType)} · {title}
               </Text>
               {description && (
-                <Text fontSize="sm" color="gray.600" mt={1}>
+                <Text
+                  fontSize="13px"
+                  color="gray.600"
+                  mt={1.5}
+                  lineHeight="1.6"
+                >
                   {description}
                 </Text>
               )}
-              {assignedPartnerId && (
-                <Text fontSize="sm" color="gray.600" mt={1}>
-                  Partner assigned
-                </Text>
-              )}
-              {advocateId && (
-                <Text fontSize="sm" color="gray.600" mt={1}>
-                  Advocate assigned
-                </Text>
-              )}
-            </Box>
-
-            <Box
-              p={4}
-              bg="gray.50"
-              borderRadius="lg"
-              border="1px solid"
-              borderColor="gray.100"
-            >
-              <Text fontSize="sm" fontWeight="600" color="gray.700" mb={2}>
-                Original Court Case
-              </Text>
-              <Text fontSize="sm">
-                {courtName} · {courtCaseNumber} · Filed {filingDate || "-"}
-              </Text>
-            </Box>
-
-            <Box
-              p={4}
-              bg="gray.50"
-              borderRadius="lg"
-              border="1px solid"
-              borderColor="gray.100"
-            >
-              <Text fontSize="sm" fontWeight="600" color="gray.700" mb={2}>
-                Parties ({parties.length})
-              </Text>
-              {parties.map((party) => (
-                <HStack key={party.key} justify="space-between" py={1}>
-                  <Text fontSize="sm">{party.fullName}</Text>
-                  <Text fontSize="xs" color="gray.600">
-                    {partyTypeLabel(party.roleType)} ·{" "}
-                    {representationLabel(party.representation)}
-                    {party.isOurClient ? " · Our client" : ""}
-                  </Text>
+              {(assignedPartnerId || advocateId) && (
+                <HStack gap={4} mt={3} flexWrap="wrap">
+                  {assignedPartnerId && (
+                    <Text fontSize="12px" color="gray.500">
+                      Partner assigned
+                    </Text>
+                  )}
+                  {advocateId && (
+                    <Text fontSize="12px" color="gray.500">
+                      Advocate assigned
+                    </Text>
+                  )}
                 </HStack>
-              ))}
+              )}
+            </Box>
+
+            <Box
+              p={{ base: 4, md: 5 }}
+              bg="gray.50"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="gray.100"
+            >
+              <HStack gap={2.5} mb={3}>
+                <Center
+                  w="7"
+                  h="7"
+                  borderRadius="lg"
+                  bg="primary.50"
+                  color="primary.500"
+                >
+                  <Scale size={15} />
+                </Center>
+                <Text fontSize="13px" fontWeight="700" color="gray.800">
+                  Original Court Case
+                </Text>
+              </HStack>
+              <Text fontSize="14px" fontWeight="600" color="gray.900">
+                {courtName}
+              </Text>
+              <HStack gap={3} mt={1.5} flexWrap="wrap">
+                <Text fontSize="13px" color="gray.600">
+                  Case no. {courtCaseNumber}
+                </Text>
+                <Text fontSize="13px" color="gray.400">
+                  ·
+                </Text>
+                <Text fontSize="13px" color="gray.600">
+                  Filed {filingDate || "-"}
+                </Text>
+              </HStack>
+            </Box>
+
+            <Box
+              p={{ base: 4, md: 5 }}
+              bg="gray.50"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor="gray.100"
+            >
+              <HStack gap={2.5} mb={3}>
+                <Center
+                  w="7"
+                  h="7"
+                  borderRadius="lg"
+                  bg="primary.50"
+                  color="primary.500"
+                >
+                  <User size={15} />
+                </Center>
+                <Text fontSize="13px" fontWeight="700" color="gray.800">
+                  Parties ({parties.length})
+                </Text>
+              </HStack>
+              <VStack gap={0} align="stretch">
+                {parties.map((party) => (
+                  <HStack
+                    key={party.key}
+                    justify="space-between"
+                    py={2}
+                    gap={4}
+                    borderBottom="1px solid"
+                    borderColor="gray.200"
+                    _last={{ borderBottom: "none", pb: 0 }}
+                  >
+                    <Text fontSize="13px" fontWeight="600" color="gray.900">
+                      {party.fullName}
+                    </Text>
+                    <Text fontSize="12px" color="gray.500" textAlign="right">
+                      {partyTypeLabel(party.roleType)} ·{" "}
+                      {representationLabel(party.representation)}
+                      {party.isOurClient ? " · Our client" : ""}
+                    </Text>
+                  </HStack>
+                ))}
+              </VStack>
             </Box>
           </VStack>
         </FormSection>

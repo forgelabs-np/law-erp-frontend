@@ -1,15 +1,21 @@
-import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
-import { ArrowLeft } from "lucide-react";
+import { Box, Button, HStack, Text } from "@chakra-ui/react";
+import {
+  Activity,
+  ArrowLeft,
+  Building2,
+  CalendarDays,
+  Copy,
+  FileText,
+  Hash,
+  Landmark,
+} from "lucide-react";
 import { ReactNode } from "react";
 
 import { MatterResponse } from "../types/matter.types";
-import {
-  formatDate,
-  matterStatusLabel,
-  matterTypeLabel,
-} from "../utils/matterHelpers";
-import { MatterStatusBadge, MatterTypeBadge } from "./MatterBadges";
+import { formatDate, matterTypeLabel } from "../utils/matterHelpers";
+import { MatterStatusBadge } from "./MatterBadges";
 import { NextEventBanner } from "./NextEventBanner";
+import { MetaItem } from "./ui";
 
 interface MatterHeaderCardProps {
   matter: MatterResponse;
@@ -17,6 +23,15 @@ interface MatterHeaderCardProps {
   onBack?: () => void;
 }
 
+/** Matches the previous `value || "-"` fallback so empty values still read as "-". */
+const text = (value?: string | null): string => value || "-";
+
+/**
+ * Compact matter identity bar shown above the Matter Detail tabs.
+ *
+ * Presentation only: the back handler, action buttons, permission gating and
+ * all displayed values come from the caller / matter response unchanged.
+ */
 export const MatterHeaderCard = ({
   matter,
   actions,
@@ -26,28 +41,19 @@ export const MatterHeaderCard = ({
     navigator.clipboard?.writeText(matter.matterNumber);
   };
 
-  const quickInfo: Array<{ label: string; value?: string | null }> = [
-    { label: "Type", value: matterTypeLabel(matter.matterType) },
-    { label: "Status", value: matterStatusLabel(matter.status) },
-    {
-      label: "Current Court",
-      value: matter.currentCourtCase?.courtName ?? matter.courtName ?? null,
-    },
-    {
-      label: "Court Case No.",
-      value:
-        matter.currentCourtCase?.courtCaseNumber ??
-        matter.courtCaseNumber ??
-        null,
-    },
-    {
-      label: "Stage",
-      value: matter.currentCourtCase?.stage
-        ? matter.currentCourtCase.stage.replace(/_/g, " ")
-        : null,
-    },
-    { label: "Filed", value: formatDate(matter.filingDate) },
-  ];
+  console.log("matter", matter);
+
+  const currentCourt = text(
+    matter.currentCourtCase?.courtName ?? matter.originatingCourtLevel
+  );
+  const courtCaseNumber = text(
+    matter.currentCourtCase?.courtCaseNumber ?? matter.courtCaseNumber
+  );
+  const stage = text(
+    matter.currentCourtCase?.stage
+      ? matter.currentCourtCase.stage.replace(/_/g, " ")
+      : null
+  );
 
   return (
     <Box
@@ -56,87 +62,85 @@ export const MatterHeaderCard = ({
       border="1px solid"
       borderColor="gray.200"
       boxShadow="sm"
-      p={6}
+      px={{ base: 4, md: 5 }}
+      py={4}
     >
-      <HStack gap={2} mb={4}>
-        {onBack && (
-          <Button variant="ghost" size="xs" onClick={onBack}>
-            <ArrowLeft size={14} /> Matters
-          </Button>
-        )}
-        <Text fontSize="sm" color="gray.500">
-          /
-        </Text>
-        <Text fontSize="sm" color="gray.900" fontWeight="600">
-          {matter.matterNumber}
-        </Text>
-      </HStack>
-
-      <HStack gap={3} mb={4}>
-        <Text
-          fontSize="3xl"
-          fontWeight="700"
-          color="gray.900"
-          fontFamily="monospace"
-        >
-          {matter.matterNumber}
-        </Text>
+      {onBack && (
         <Button
           variant="ghost"
           size="xs"
-          onClick={copyMatterNumber}
+          onClick={onBack}
           color="gray.500"
+          fontSize="xs"
+          fontWeight="500"
+          h="auto"
+          py={0.5}
+          px={1.5}
+          mb={2}
+          _hover={{ color: "gray.800", bg: "gray.50" }}
         >
-          Copy
+          <ArrowLeft size={13} /> Matters
         </Button>
-      </HStack>
+      )}
 
       <HStack
         justify="space-between"
         align="flex-start"
-        mb={6}
-        flexWrap="wrap"
         gap={4}
+        flexWrap="wrap"
       >
-        <Stack gap={3} minW={0}>
-          <Text fontSize="2xl" fontWeight="700" color="gray.900">
+        <HStack gap={3} align="center" flexWrap="wrap" minW={0}>
+          <Text
+            fontSize={{ base: "xl", md: "2xl" }}
+            fontWeight="700"
+            color="gray.900"
+            lineHeight="1.25"
+            letterSpacing="-0.01em"
+            wordBreak="break-word"
+          >
             {matter.title}
           </Text>
-          <HStack gap={2} flexWrap="wrap">
-            <MatterTypeBadge type={matter.matterType} />
-            <MatterStatusBadge status={matter.status} />
-          </HStack>
-        </Stack>
+          <MatterStatusBadge status={matter.status} />
+        </HStack>
 
         {actions && (
-          <HStack gap={2} flexWrap="wrap">
+          <HStack gap={2} flexWrap="wrap" flexShrink={0}>
             {actions}
           </HStack>
         )}
       </HStack>
 
-      {quickInfo.length > 0 && (
-        <Box
-          bg="gray.50"
-          borderRadius="lg"
-          p={4}
-          border="1px solid"
-          borderColor="gray.100"
-        >
-          <HStack gap={6} flexWrap="wrap">
-            {quickInfo.map((info) => (
-              <HStack key={info.label} gap={2} align="center">
-                <Text fontSize="sm" color="gray.500">
-                  {info.label}:
-                </Text>
-                <Text fontSize="sm" fontWeight="600" color="gray.900">
-                  {info.value || "-"}
-                </Text>
-              </HStack>
-            ))}
-          </HStack>
-        </Box>
-      )}
+      <HStack
+        gap={{ base: 3, md: 6 }}
+        rowGap={2}
+        mt={3}
+        flexWrap="wrap"
+        align="center"
+      >
+        <HStack gap={1} align="center" minW={0}>
+          <MetaItem icon={Hash} value={matter.matterNumber} mono />
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={copyMatterNumber}
+            aria-label="Copy matter number"
+            title="Copy matter number"
+            color="gray.400"
+            h="auto"
+            py={0.5}
+            px={1.5}
+            _hover={{ color: "gray.700", bg: "gray.50" }}
+          >
+            <Copy size={12} />
+          </Button>
+        </HStack>
+
+        <MetaItem icon={Landmark} value={matterTypeLabel(matter.matterType)} />
+        <MetaItem icon={Building2} value={currentCourt} />
+        <MetaItem icon={FileText} value={courtCaseNumber} />
+        <MetaItem icon={Activity} value={stage} />
+        <MetaItem icon={CalendarDays} value={formatDate(matter.filingDate)} />
+      </HStack>
 
       {matter.nextEvent && <NextEventBanner event={matter.nextEvent} mt={4} />}
     </Box>

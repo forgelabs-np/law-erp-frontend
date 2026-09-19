@@ -6,6 +6,7 @@ import {
   CourtCaseStage,
   CourtCaseStatus,
   CourtEventStatus,
+  CourtLevel,
   CourtEventType,
   MatterStatus,
   MatterType,
@@ -93,6 +94,22 @@ export const matterStatusLabel = (status?: MatterStatus | null): string => {
 export const relationTypeLabel = (relation?: RelationType | null): string => {
   if (!relation) return "-";
   return toLabel(relation);
+};
+
+/** Display label for a court level (DISTRICT → "District"). */
+export const courtLevelLabel = (level?: CourtLevel | null): string => {
+  switch (level) {
+    case "DISTRICT":
+      return "District";
+    case "HIGH":
+      return "High Court";
+    case "SUPREME":
+      return "Supreme Court";
+    case "SPECIALIZED":
+      return "Specialized";
+    default:
+      return "-";
+  }
 };
 
 export const partyTypeLabel = (type?: PartyType | null): string => {

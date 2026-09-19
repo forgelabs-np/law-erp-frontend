@@ -108,9 +108,9 @@ export const TableUI = <T,>({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </Text>
                     </ChakraTable.ColumnHeader>
                   );
@@ -191,7 +191,7 @@ export const Table = React.memo(TableUI, (prevProps, nextProps) => {
     JSON.stringify(prevProps.columns) === JSON.stringify(nextProps.columns) &&
     JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data) &&
     JSON.stringify(prevProps.columnVisibility) ===
-    JSON.stringify(nextProps.columnVisibility) &&
+      JSON.stringify(nextProps.columnVisibility) &&
     prevProps.isLoading === nextProps.isLoading &&
     prevProps.revisionKey === nextProps.revisionKey
   );

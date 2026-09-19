@@ -29,7 +29,12 @@ const COLUMN_CONFIG = [
   { id: "employeeCode", label: "Employee Code", isDefault: false, order: 10 },
   { id: "designation", label: "Designation", isDefault: false, order: 11 },
   { id: "joiningDate", label: "Joining Date", isDefault: false, order: 12 },
-  { id: "specialization", label: "Specialization", isDefault: false, order: 13 },
+  {
+    id: "specialization",
+    label: "Specialization",
+    isDefault: false,
+    order: 13,
+  },
   // Always visible (end)
   { id: "isActive", label: "Status", isDefault: true, order: 90 },
   { id: "action", label: "Actions", isDefault: true, order: 100 },
@@ -51,10 +56,14 @@ const EmployeeManagementTable = () => {
     joiningDate: false,
     specialization: false,
   };
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(INITIAL_COLUMN_VISIBILITY);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    INITIAL_COLUMN_VISIBILITY
+  );
 
   const handleColumnVisibilityChange = useCallback(
-    (updater: VisibilityState | ((old: VisibilityState) => VisibilityState)) => {
+    (
+      updater: VisibilityState | ((old: VisibilityState) => VisibilityState)
+    ) => {
       setColumnVisibility(updater);
     },
     []
@@ -267,7 +276,14 @@ const EmployeeManagementTable = () => {
       </HStack>
 
       {/* Table scroll container — contains horizontal overflow */}
-      <Box width="100%" minWidth={0} maxWidth="100%" overflowX="auto" flex="1" minHeight={0}>
+      <Box
+        width="100%"
+        minWidth={0}
+        maxWidth="100%"
+        overflowX="auto"
+        flex="1"
+        minHeight={0}
+      >
         <Datatable
           isLoading={isLoading}
           columns={columns}

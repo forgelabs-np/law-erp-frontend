@@ -63,7 +63,8 @@ export const AddEditFirm = ({
   const isTrial = watch("isTrial");
 
   const { mutate, isPending } = useCreateEditFirmMutation();
-  const { data: provinces = [], isLoading: provincesLoading } = useProvincesQuery();
+  const { data: provinces = [], isLoading: provincesLoading } =
+    useProvincesQuery();
 
   const provinceOptions = provinces.map((p) => ({
     label: `${p.nameEn} - ${p.nameNp}`,

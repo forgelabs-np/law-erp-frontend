@@ -1,11 +1,7 @@
 import { LawFirmCRMClient } from "./service-axios";
 import { api } from "./service-api";
 import { ApiResponse } from "../types/response";
-import {
-  Province,
-  District,
-  CacheStats,
-} from "../types/masterData.types";
+import { Province, District, CacheStats } from "../types/masterData.types";
 
 // ============================================================
 // Refresh Master Data Cache

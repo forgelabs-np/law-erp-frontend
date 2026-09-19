@@ -62,7 +62,8 @@ export const Step1CreateFirm = ({
   const isTrial = watch("isTrial");
 
   const { mutate } = useCreateEditFirmMutation();
-  const { data: provinces = [], isLoading: provincesLoading } = useProvincesQuery();
+  const { data: provinces = [], isLoading: provincesLoading } =
+    useProvincesQuery();
 
   const provinceOptions = provinces.map((p) => ({
     label: `${p.nameEn} - ${p.nameNp}`,
@@ -269,9 +270,7 @@ export const Step1CreateFirm = ({
               name="jurisdiction"
               label="Jurisdiction"
               placeholder={
-                provincesLoading
-                  ? "Loading provinces..."
-                  : "Select a province"
+                provincesLoading ? "Loading provinces..." : "Select a province"
               }
               options={provinceOptions}
               disabled={provincesLoading}

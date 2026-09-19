@@ -293,7 +293,11 @@ export const PermissionManagementTable = () => {
                     </Text>
                   ) : (
                     <Box overflowX="auto" w="100%" minW={0}>
-                      <Stack gap={0} separator={<Box h="1px" bg="gray.100" />} minW="600px">
+                      <Stack
+                        gap={0}
+                        separator={<Box h="1px" bg="gray.100" />}
+                        minW="600px"
+                      >
                         <Grid
                           templateColumns="2fr 1fr 2fr 1fr 1fr"
                           gap={4}

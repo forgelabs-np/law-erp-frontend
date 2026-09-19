@@ -26,7 +26,7 @@ import {
 
 export const MatterTypeBadge = ({ type }: { type: MatterType }) => (
   <Badge
-    colorScheme={matterTypeColorScheme(type)}
+    colorPalette={matterTypeColorScheme(type)}
     px={2.5}
     py={0.5}
     borderRadius="full"
@@ -39,7 +39,7 @@ export const MatterTypeBadge = ({ type }: { type: MatterType }) => (
 
 export const MatterStatusBadge = ({ status }: { status: MatterStatus }) => (
   <Badge
-    colorScheme={matterStatusColorScheme(status)}
+    colorPalette={matterStatusColorScheme(status)}
     px={2.5}
     py={0.5}
     borderRadius="full"

@@ -3,14 +3,14 @@ import {
   Box,
   Button,
   HStack,
-  Spinner,
+  Skeleton,
   Stack,
   Tabs as ChakraTabs,
   Text,
   VStack,
   useDisclosure,
 } from "@chakra-ui/react";
-import { CheckCheck, Megaphone } from "lucide-react";
+import { Bell, CheckCheck, Megaphone, Settings } from "lucide-react";
 import { useState, useCallback } from "react";
 
 import {
@@ -22,6 +22,7 @@ import { NotificationItem } from "@/components/notifications/NotificationItem";
 import { NotificationPreferences } from "@/components/notifications/NotificationPreferences";
 import { BroadcastForm } from "@/components/notifications/BroadcastForm";
 import { useRole } from "@/shared/hooks/useAuth";
+import { Pagination } from "@/shared/components/datatable/pagination";
 import {
   DialogRoot,
   DialogContent,
@@ -32,6 +33,31 @@ import {
 } from "@/shared/components/ui/Dialog";
 
 const PAGE_SIZE = 20;
+const SKELETON_ROWS = 5;
+
+/** Tinted icon tile used for the page header and empty/error states. */
+const IconTile = ({
+  icon: Icon,
+  size = 20,
+  tone = "brand",
+}: {
+  icon: typeof Bell;
+  size?: number;
+  tone?: "brand" | "muted";
+}) => (
+  <Box
+    w="10"
+    h="10"
+    borderRadius="xl"
+    bg={tone === "brand" ? "primary.50" : "gray.50"}
+    color={tone === "brand" ? "primary.500" : "gray.400"}
+    display="grid"
+    placeItems="center"
+    flexShrink={0}
+  >
+    <Icon size={size} />
+  </Box>
+);
 
 export default function NotificationsPage() {
   const role = useRole();
@@ -42,6 +68,7 @@ export default function NotificationsPage() {
 
   const [activeTab, setActiveTab] = useState("all");
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
 
   const {
     open: broadcastOpen,
@@ -60,11 +87,11 @@ export default function NotificationsPage() {
   const {
     data: notificationPage,
     isLoading,
-    isFetching,
+    isError,
   } = useNotificationsQuery({
     unreadOnly,
     page,
-    size: PAGE_SIZE,
+    size: pageSize,
   });
 
   const { data: unreadCount = 0 } = useUnreadCountQuery();
@@ -81,62 +108,64 @@ export default function NotificationsPage() {
     setPage(0);
   }, []);
 
-  const handlePrevPage = useCallback(() => {
-    setPage((p) => Math.max(0, p - 1));
+  const handlePageSizeChange = useCallback((size: number) => {
+    setPageSize(size);
+    setPage(0);
   }, []);
-
-  const handleNextPage = useCallback(() => {
-    setPage((p) => Math.min(totalPages - 1, p + 1));
-  }, [totalPages]);
 
   const handleMarkAllRead = useCallback(() => {
     markAllMutation.mutate();
   }, [markAllMutation]);
 
   return (
-    <Stack gap={6} padding={2}>
-      {/* Header */}
+    <Stack gap={6} padding={2} w="100%" maxW="100%" minW={0}>
+      {/* ---------------- Page header ---------------- */}
       <HStack
         justifyContent="space-between"
         alignItems="flex-start"
         flexWrap="wrap"
         gap={4}
       >
-        <Stack gap={1}>
-          <HStack gap={3} alignItems="center">
-            <Text textStyle="heading_4">Notifications</Text>
-            {unreadCount > 0 && (
-              <Badge
-                bg="red.500"
-                color="white"
-                fontSize="xs"
-                borderRadius="full"
-                minW="22px"
-                h="22px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                fontWeight="600"
-                lineHeight="1"
-                px="1.5"
-              >
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </Badge>
-            )}
-          </HStack>
-          <Text textStyle="paragraph_regular" color="gray.500">
-            Stay up to date with your latest alerts and activity.
-          </Text>
-        </Stack>
+        <HStack gap={3} alignItems="center" minW={0}>
+          <IconTile icon={Bell} />
+          <Stack gap={0.5} minW={0}>
+            <HStack gap={2.5} alignItems="center">
+              <Text textStyle="heading_4">Notifications</Text>
+              {unreadCount > 0 && (
+                <Badge
+                  bg="red.500"
+                  color="white"
+                  fontSize="xs"
+                  borderRadius="full"
+                  minW="22px"
+                  h="22px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  fontWeight="600"
+                  lineHeight="1"
+                  px="1.5"
+                  aria-label={`${unreadCount} unread notifications`}
+                >
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </Badge>
+              )}
+            </HStack>
+            <Text textStyle="paragraph_regular" color="gray.500">
+              Stay up to date with your latest alerts and activity.
+            </Text>
+          </Stack>
+        </HStack>
 
-        <HStack gap={2} flexShrink={0}>
+        <HStack gap={2} flexWrap="wrap" flexShrink={0}>
           {unreadCount > 0 && (
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleMarkAllRead}
               loading={markAllMutation.isPending}
               disabled={markAllMutation.isPending}
+              color="gray.600"
             >
               <CheckCheck size={16} />
               <Text ml="1" display={{ base: "none", sm: "inline" }}>
@@ -152,29 +181,40 @@ export default function NotificationsPage() {
               </Text>
             </Button>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onPrefsOpen}
-            color="gray.600"
-          >
-            Preferences
+          <Button variant="outline" size="sm" onClick={onPrefsOpen}>
+            <Settings size={16} />
+            <Text ml="1" display={{ base: "none", sm: "inline" }}>
+              Preferences
+            </Text>
           </Button>
         </HStack>
       </HStack>
 
-      {/* Tabs + Content */}
-      <Box>
+      {/* ---------------- Notification centre card ---------------- */}
+      <Box
+        bg="white"
+        border="1px solid"
+        borderColor="gray.200"
+        borderRadius="xl"
+      >
         <ChakraTabs.Root
           value={activeTab}
           onValueChange={handleTabChange}
           variant="line"
           size="sm"
         >
-          <ChakraTabs.List gap={4}>
+          <ChakraTabs.List
+            px={{ base: 4, md: 5 }}
+            gap={6}
+            borderBottomWidth="1px"
+            borderColor="gray.100"
+          >
             <ChakraTabs.Trigger
               value="all"
-              _selected={{ color: "blue.600", borderBottomColor: "blue.600" }}
+              _selected={{
+                color: "primary.500",
+                borderBottomColor: "primary.500",
+              }}
               fontSize="sm"
               fontWeight="500"
             >
@@ -182,7 +222,10 @@ export default function NotificationsPage() {
             </ChakraTabs.Trigger>
             <ChakraTabs.Trigger
               value="unread"
-              _selected={{ color: "blue.600", borderBottomColor: "blue.600" }}
+              _selected={{
+                color: "primary.500",
+                borderBottomColor: "primary.500",
+              }}
               fontSize="sm"
               fontWeight="500"
             >
@@ -191,15 +234,15 @@ export default function NotificationsPage() {
                 <Text
                   as="span"
                   ml="1.5"
-                  bg="blue.100"
-                  color="blue.700"
+                  bg="primary.50"
+                  color="primary.600"
                   fontSize="10px"
                   fontWeight="600"
                   px="1.5"
                   borderRadius="full"
                   lineHeight="1.5"
                 >
-                  {unreadCount}
+                  {unreadCount > 99 ? "99+" : unreadCount}
                 </Text>
               )}
             </ChakraTabs.Trigger>
@@ -207,129 +250,86 @@ export default function NotificationsPage() {
         </ChakraTabs.Root>
 
         {/* Notification list */}
-        <Box mt="4">
-          {isLoading ? (
-            <VStack py="8" gap="3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <HStack
-                  key={i}
-                  width="full"
-                  py="3"
-                  px="4"
-                  gap="3"
-                  borderRadius="lg"
-                  borderWidth="1px"
-                  borderColor="gray.100"
-                  opacity={1 - i * 0.15}
-                >
-                  <Box
-                    width="36px"
-                    height="36px"
-                    borderRadius="lg"
-                    bg="gray.100"
-                  />
-                  <VStack alignItems="flex-start" gap="1.5" flex="1">
-                    <Box
-                      height="12px"
-                      width={`${55 + i * 5}%`}
-                      borderRadius="4px"
-                      bg="gray.100"
-                    />
-                    <Box
-                      height="10px"
-                      width={`${75 - i * 6}%`}
-                      borderRadius="4px"
-                      bg="gray.50"
-                    />
-                    <Box
-                      height="8px"
-                      width="60px"
-                      borderRadius="4px"
-                      bg="gray.50"
-                    />
-                  </VStack>
-                </HStack>
-              ))}
-            </VStack>
-          ) : notifications.length === 0 ? (
-            <VStack py="16" gap="4">
-              <Box
-                width="56px"
-                height="56px"
-                borderRadius="full"
-                bg="gray.50"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
+        {isLoading ? (
+          <Box>
+            {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+              <HStack
+                key={i}
+                alignItems="flex-start"
+                gap="3.5"
+                px={{ base: 4, md: 5 }}
+                py="4"
+                borderTopWidth={i === 0 ? "0" : "1px"}
+                borderColor="gray.100"
               >
-                <CheckCheck size={28} color="var(--chakra-colors-gray-400)" />
-              </Box>
-              <VStack gap="1">
-                <Text
-                  fontSize="sm"
-                  fontWeight="500"
-                  color="gray.600"
-                  textAlign="center"
-                >
-                  {unreadOnly
-                    ? "No unread notifications"
-                    : "You're all caught up"}
-                </Text>
-                <Text fontSize="xs" color="gray.400" textAlign="center">
-                  {unreadOnly
-                    ? "All notifications have been read"
-                    : "There are no notifications to display"}
-                </Text>
-              </VStack>
-            </VStack>
-          ) : (
-            <VStack alignItems="stretch" gap="1">
-              {notifications.map((notification) => (
-                <NotificationItem
-                  key={notification.id}
-                  notification={notification}
-                />
-              ))}
-            </VStack>
-          )}
-
-          {/* Pagination */}
-          {!isLoading && totalElements > PAGE_SIZE && (
-            <HStack
-              mt="4"
-              py="3"
-              px="2"
-              justify="space-between"
-              borderTop="1px"
-              borderColor="gray.100"
-            >
-              <Text fontSize="xs" color="gray.500">
-                Page {page + 1} of {totalPages}
-              </Text>
-              <HStack gap="1">
-                {isFetching && <Spinner size="xs" />}
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  onClick={handlePrevPage}
-                  disabled={isFirst || isFetching}
-                  fontSize="xs"
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="xs"
-                  onClick={handleNextPage}
-                  disabled={isLast || isFetching}
-                  fontSize="xs"
-                >
-                  Next
-                </Button>
+                <Skeleton boxSize="42px" borderRadius="lg" flexShrink={0} />
+                <VStack alignItems="flex-start" gap="2" flex="1" minW="0">
+                  <HStack width="full" justify="space-between" gap="3">
+                    <Skeleton height="12px" width={`${45 + i * 4}%`} />
+                    <Skeleton height="10px" width="56px" />
+                  </HStack>
+                  <Skeleton height="10px" width={`${70 - i * 5}%`} />
+                </VStack>
               </HStack>
-            </HStack>
-          )}
-        </Box>
+            ))}
+          </Box>
+        ) : isError ? (
+          <VStack py={{ base: 12, md: 16 }} px={6} gap={3} textAlign="center">
+            <IconTile icon={Bell} tone="muted" />
+            <VStack gap={1}>
+              <Text fontSize="sm" fontWeight="500" color="gray.600">
+                Unable to load notifications
+              </Text>
+              <Text fontSize="xs" color="gray.400">
+                Something went wrong while fetching your notifications. Please
+                try again later.
+              </Text>
+            </VStack>
+          </VStack>
+        ) : notifications.length === 0 ? (
+          <VStack py={{ base: 12, md: 16 }} px={6} gap={3} textAlign="center">
+            <IconTile icon={CheckCheck} size={22} tone="muted" />
+            <VStack gap={1}>
+              <Text fontSize="sm" fontWeight="500" color="gray.600">
+                {unreadOnly
+                  ? "No unread notifications"
+                  : "You're all caught up"}
+              </Text>
+              <Text fontSize="xs" color="gray.400">
+                {unreadOnly
+                  ? "All notifications have been read"
+                  : "There are no notifications to display"}
+              </Text>
+            </VStack>
+          </VStack>
+        ) : (
+          <Box>
+            {notifications.map((notification, index) => (
+              <Box
+                key={notification.id}
+                borderTopWidth={index === 0 ? "0" : "1px"}
+                borderColor="gray.100"
+              >
+                <NotificationItem notification={notification} variant="feed" />
+              </Box>
+            ))}
+          </Box>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && !isError && totalElements > 0 && (
+          <Box borderTopWidth="1px" borderColor="gray.100">
+            <Pagination
+              currentPage={page + 1}
+              pageCount={Math.max(1, totalPages)}
+              pageSize={pageSize}
+              onPaginationChange={(nextPage) => setPage(nextPage - 1)}
+              setPageSize={handlePageSizeChange}
+              isFirstPage={isFirst}
+              isLastPage={isLast}
+            />
+          </Box>
+        )}
       </Box>
 
       {/* Broadcast Dialog */}

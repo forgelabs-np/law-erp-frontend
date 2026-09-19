@@ -200,12 +200,7 @@ export const ColumnToggle = ({
                       flexShrink: 0,
                     }}
                   >
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                    >
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
                       <path
                         d="M10 3L4.5 8.5L2 6"
                         stroke="white"

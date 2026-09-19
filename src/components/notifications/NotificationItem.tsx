@@ -18,9 +18,18 @@ const REFERENCE_ROUTES: Record<string, (id: string) => string> = {
 
 interface NotificationItemProps {
   notification: Notification;
+  /**
+   * `panel` (default) keeps the compact look used inside the notification
+   * bell popover. `feed` is the roomier layout used on the full
+   * Notifications page.
+   */
+  variant?: "panel" | "feed";
 }
 
-export const NotificationItem = ({ notification }: NotificationItemProps) => {
+export const NotificationItem = ({
+  notification,
+  variant = "panel",
+}: NotificationItemProps) => {
   const navigate = useNavigate();
   const markAsRead = useMarkNotificationAsReadMutation();
 
@@ -40,6 +49,71 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
   };
 
   const isUnread = !notification.read;
+  const isInteractive = Boolean(
+    notification.referenceType && notification.referenceId
+  );
+
+  if (variant === "feed") {
+    return (
+      <HStack
+        as="button"
+        width="100%"
+        textAlign="left"
+        alignItems="flex-start"
+        gap="3.5"
+        px={{ base: 4, md: 5 }}
+        py="4"
+        cursor={isInteractive ? "pointer" : "default"}
+        bg={isUnread ? "primary.50" : "transparent"}
+        _hover={{ bg: isUnread ? "primary.100" : "gray.50" }}
+        transition="background 0.15s"
+        onClick={handleClick}
+        role="button"
+        aria-label={`${notification.read ? "" : "Unread "}notification: ${notification.title}`}
+      >
+        <NotificationCategoryIcon
+          type={notification.type}
+          category={notification.category}
+        />
+
+        <VStack alignItems="flex-start" gap="1" flex="1" minW="0">
+          <HStack width="full" justify="space-between" gap="3" minW="0">
+            <HStack gap="2" minW="0" flex="1">
+              {isUnread && (
+                <Box
+                  width="8px"
+                  height="8px"
+                  borderRadius="full"
+                  bg="primary.500"
+                  flexShrink={0}
+                />
+              )}
+              <Text
+                fontSize="sm"
+                fontWeight={isUnread ? "600" : "500"}
+                color="gray.800"
+                lineClamp={1}
+              >
+                {notification.title}
+              </Text>
+            </HStack>
+            <Text
+              fontSize="xs"
+              color="gray.400"
+              whiteSpace="nowrap"
+              flexShrink={0}
+            >
+              {formatNotificationTime(notification.createdAt)}
+            </Text>
+          </HStack>
+
+          <Text fontSize="sm" color="gray.500" lineClamp={2}>
+            {notification.body}
+          </Text>
+        </VStack>
+      </HStack>
+    );
+  }
 
   return (
     <HStack
@@ -51,11 +125,7 @@ export const NotificationItem = ({ notification }: NotificationItemProps) => {
       px="3"
       py="2.5"
       borderRadius="lg"
-      cursor={
-        notification.referenceType && notification.referenceId
-          ? "pointer"
-          : "default"
-      }
+      cursor={isInteractive ? "pointer" : "default"}
       bg={isUnread ? "blue.50" : "transparent"}
       _hover={{ bg: isUnread ? "blue.100" : "gray.50" }}
       transition="background 0.15s"

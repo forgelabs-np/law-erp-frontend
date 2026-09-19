@@ -41,7 +41,8 @@ const MFASetup = () => {
         const workspace = TokenService.getTokenDetails()?.workspace ?? "";
         localStorage.setItem("lastLoginRole", workspace);
 
-        if (workspace === "super-admin") navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
+        if (workspace === "super-admin")
+          navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
         else if (workspace === "client")
           navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
         else navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);

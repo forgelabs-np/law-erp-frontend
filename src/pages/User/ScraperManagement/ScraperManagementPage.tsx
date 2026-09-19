@@ -27,7 +27,8 @@ import { Court } from "@/shared/types/scraper.types";
 const ScraperManagementPage = () => {
   const { canCreate } = useModulePermissions("SCRAPER_MANAGEMENT");
 
-  const { data: courts = [], isLoading: courtsLoading } = useCourtsByTypeQuery("DISTRICT");
+  const { data: courts = [], isLoading: courtsLoading } =
+    useCourtsByTypeQuery("DISTRICT");
 
   const [selectedCourtId, setSelectedCourtId] = useState<number | null>(null);
   const [bsDate, setBsDate] = useState<NepaliDateParts | null>(null);
@@ -145,7 +146,9 @@ const ScraperManagementPage = () => {
               <select
                 value={selectedCourtId ?? ""}
                 onChange={(e) =>
-                  setSelectedCourtId(e.target.value ? Number(e.target.value) : null)
+                  setSelectedCourtId(
+                    e.target.value ? Number(e.target.value) : null
+                  )
                 }
                 disabled={courtsLoading || courts.length === 0}
                 style={{
@@ -156,7 +159,10 @@ const ScraperManagementPage = () => {
                   fontSize: "14px",
                   color: "#374151",
                   backgroundColor: "white",
-                  cursor: courtsLoading || courts.length === 0 ? "not-allowed" : "pointer",
+                  cursor:
+                    courtsLoading || courts.length === 0
+                      ? "not-allowed"
+                      : "pointer",
                   opacity: courtsLoading || courts.length === 0 ? 0.6 : 1,
                 }}
               >
@@ -223,8 +229,10 @@ const ScraperManagementPage = () => {
               border="1px solid"
               borderColor="#E5E7EB"
             >
-              <Text fontSize="sm" fontWeight="500" color="#6B7280">                  Syncing {selectedCourt?.courtNameEnglish} — Fetching cause-list data for{" "}
-                {bsDate ? formatForApi(bsDate) : "..."}...
+              <Text fontSize="sm" fontWeight="500" color="#6B7280">
+                {" "}
+                Syncing {selectedCourt?.courtNameEnglish} — Fetching cause-list
+                data for {bsDate ? formatForApi(bsDate) : "..."}...
               </Text>
             </Box>
           )}
