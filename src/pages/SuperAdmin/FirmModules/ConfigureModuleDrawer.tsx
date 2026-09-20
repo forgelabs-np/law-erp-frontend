@@ -29,7 +29,7 @@ export const ConfigureModuleDrawer = ({
 }) => {
   const methods = useForm<ConfigureModuleFormValues>({
     defaultValues,
-    resolver: yupResolver(configureModuleSchema),
+    resolver: yupResolver(configureModuleSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

@@ -54,7 +54,7 @@ export const Step1CreateFirm = ({
 }: Step1CreateFirmProps) => {
   const methods = useForm<FirmFormValues>({
     defaultValues,
-    resolver: yupResolver(firmSchema),
+    resolver: yupResolver(firmSchema) as any,
     mode: "onChange",
     reValidateMode: "onChange",
   });

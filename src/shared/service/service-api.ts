@@ -153,6 +153,11 @@ export const api = {
   DASHBOARD: {
     FIRM_DASHBOARD: "firm/dashboard",
     GLOBAL_DASHBOARD: "modules/dashboard",
+    /** Role-specific dashboards. The authenticated user's role selects one. */
+    SUPER_ADMIN: "dashboard/super-admin",
+    FIRM_ADMIN: "dashboard/firm",
+    EMPLOYEE: "dashboard/employee",
+    CLIENT: "dashboard/client",
   },
   MATTER_ASSIGNMENTS: {
     GET: "firm/matters/{matterNumber}/assignments",

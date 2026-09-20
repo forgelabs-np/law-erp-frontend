@@ -79,7 +79,7 @@ export const CourtEventFormModal = ({
       courtRoom: "",
       notes: "",
     },
-    resolver: yupResolver(courtEventSchema),
+    resolver: yupResolver(courtEventSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

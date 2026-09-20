@@ -98,7 +98,7 @@ export const CalendarEventFormModal = ({
       courtRoom: "",
       notes: "",
     },
-    resolver: yupResolver(calendarEventSchema),
+    resolver: yupResolver(calendarEventSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

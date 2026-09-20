@@ -46,10 +46,11 @@ export const formatDateTime = (value?: string | null): string => {
 
 export const formatTime = (value?: string | null): string => {
   if (!value) return "-";
-  // API time strings look like "10:30:00"
-  const [, hour = "", minute = ""] = value.split(":");
+  // API time strings look like "10:30:00"; full ISO timestamps are also accepted.
+  const timePart = value.includes("T") ? (value.split("T")[1] ?? "") : value;
+  const [hour = "", minute = ""] = timePart.split(":");
   if (!hour) return value;
-  return `${hour}:${minute}`;
+  return minute ? `${hour}:${minute}` : hour;
 };
 
 /** Human-friendly relative timestamp (e.g. "2m ago", "3h ago", "Yesterday"). */

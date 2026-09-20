@@ -37,7 +37,7 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
             fontWeight="600"
             color="gray.900"
             textAlign="right"
-          // noOfLines={1}
+            // noOfLines={1}
           >
             {activeStep?.title}
           </Text>

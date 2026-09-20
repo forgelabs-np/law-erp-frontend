@@ -93,7 +93,7 @@ export const EventHeldModal = ({
       nextEventTime: "",
       notes: "",
     },
-    resolver: yupResolver(eventHeldSchema),
+    resolver: yupResolver(eventHeldSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

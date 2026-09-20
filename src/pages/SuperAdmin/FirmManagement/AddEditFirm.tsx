@@ -54,7 +54,7 @@ export const AddEditFirm = ({
 
   const methods = useForm<FirmFormValues>({
     defaultValues,
-    resolver: yupResolver(firmSchema),
+    resolver: yupResolver(firmSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
     context: { isEdit: !!id },

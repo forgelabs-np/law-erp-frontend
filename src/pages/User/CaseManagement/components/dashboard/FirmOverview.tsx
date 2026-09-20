@@ -73,170 +73,175 @@ export const FirmOverview = ({ data }: FirmOverviewProps) => {
   const hasData = totalFirms > 0;
 
   return (
-    <Stack gap={5}>
-      {/* Firm KPIs */}
-      <HStack gap={4} flexWrap="wrap">
-        <FirmMiniCard
+    <Stack gap={4}>
+      {/* Compact metric row */}
+      <HStack gap={0} flexWrap="wrap">
+        <MetricCell
           label="Total Firms"
           value={totalFirms}
-          icon={<Building2 size={16} />}
-          color="blue"
+          icon={<Building2 size={11} />}
+          color="gray.500"
+          iconBg="gray.100"
+          isLast={false}
         />
-        <FirmMiniCard
+        <MetricCell
           label="Active"
           value={activeFirms}
-          icon={<Activity size={16} />}
-          color="green"
-          trend={
+          icon={<Activity size={11} />}
+          color="#10b981"
+          iconBg="green.50"
+          badge={
             totalFirms > 0
-              ? `${Math.round((activeFirms / totalFirms) * 100)}%`
+              ? `↑ ${Math.round((activeFirms / totalFirms) * 100)}%`
               : undefined
           }
+          badgeColor="green.600"
+          isLast={false}
         />
-        <FirmMiniCard
+        <MetricCell
           label="Suspended"
           value={suspendedFirms}
-          icon={<AlertTriangle size={16} />}
-          color="yellow"
+          icon={<AlertTriangle size={11} />}
+          color="#f59e0b"
+          iconBg="amber.50"
+          isLast
         />
       </HStack>
 
       {/* Donut chart + legend */}
-      <Box>
-        <Text fontSize="sm" fontWeight="600" color="gray.700" mb={3}>
-          Firm Status Distribution
-        </Text>
-
-        {hasData ? (
-          <HStack gap={6} align="center" flexWrap="wrap">
-            <Box position="relative" w="180px" h="180px">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={75}
-                    outerRadius={80}
-                    dataKey="value"
-                    strokeWidth={0}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={entry.color}
-                        cursor="pointer"
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<FirmStatusTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-              {/* Center label */}
-              <Box
-                position="absolute"
-                top="50%"
-                left="50%"
-                transform="translate(-50%, -50%)"
-                textAlign="center"
-                pointerEvents="none"
-              >
-                <Text
-                  fontSize="2xl"
-                  fontWeight="700"
-                  color="gray.900"
-                  lineHeight="1"
+      {hasData ? (
+        <HStack gap={5} align="center" flexWrap="wrap">
+          <Box position="relative" w="150px" h="150px">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={60}
+                  dataKey="value"
+                  strokeWidth={0}
                 >
-                  {totalFirms}
-                </Text>
-                <Text fontSize="xs" color="gray.500">
-                  Total Firms
-                </Text>
-              </Box>
+                  {chartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color}
+                      cursor="pointer"
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<FirmStatusTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+            <Box
+              position="absolute"
+              top="50%"
+              left="50%"
+              transform="translate(-50%, -50%)"
+              textAlign="center"
+              pointerEvents="none"
+            >
+              <Text
+                fontSize="xl"
+                fontWeight="700"
+                color="gray.900"
+                lineHeight="1"
+              >
+                {totalFirms}
+              </Text>
+              <Text fontSize="xs" color="gray.500">
+                Total
+              </Text>
             </Box>
-
-            {/* Legend */}
-            <Stack gap={2}>
-              {chartData.map((item) => (
-                <HStack key={item.name} gap={2}>
-                  <Box w="3" h="3" borderRadius="full" bg={item.color} />
-                  <Text fontSize="sm" color="gray.700" minW="80px">
-                    {item.name}
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600" color="gray.900">
-                    {item.value}
-                  </Text>
-                  <Text fontSize="sm" color="gray.400">
-                    ({Math.round(item.percent * 100)}%)
-                  </Text>
-                </HStack>
-              ))}
-            </Stack>
-          </HStack>
-        ) : (
-          <Box py={8} textAlign="center">
-            <Text fontSize="sm" color="gray.400">
-              No firms available
-            </Text>
           </Box>
-        )}
-      </Box>
+
+          <Stack gap={1.5}>
+            {chartData.map((item) => (
+              <HStack key={item.name} gap={2}>
+                <Box w="2.5" h="2.5" borderRadius="full" bg={item.color} />
+                <Text fontSize="xs" color="gray.600" minW="70px">
+                  {item.name}
+                </Text>
+                <Text fontSize="xs" fontWeight="600" color="gray.900">
+                  {item.value}
+                </Text>
+                <Text fontSize="xs" color="gray.400">
+                  ({Math.round(item.percent * 100)}%)
+                </Text>
+              </HStack>
+            ))}
+          </Stack>
+        </HStack>
+      ) : (
+        <Box py={6} textAlign="center">
+          <Text fontSize="xs" color="gray.400">
+            No firms available
+          </Text>
+        </Box>
+      )}
     </Stack>
   );
 };
 
 // ============================================================
-// Firm Mini Card
+// Metric Cell — compact inline metric with separator
 // ============================================================
 
-interface FirmMiniCardProps {
+interface MetricCellProps {
   label: string;
   value: number;
   icon: React.ReactNode;
   color: string;
-  trend?: string;
+  iconBg?: string;
+  badge?: string;
+  badgeColor?: string;
+  isLast: boolean;
 }
 
-const FirmMiniCard = ({
+const MetricCell = ({
   label,
   value,
   icon,
   color,
-  trend,
-}: FirmMiniCardProps) => (
-  <Box
+  iconBg,
+  badge,
+  badgeColor,
+  isLast,
+}: MetricCellProps) => (
+  <Stack
+    gap={0.5}
     flex={1}
-    minW="120px"
-    p={4}
-    bg="white"
-    border="1px solid"
+    minW="100px"
+    pr={isLast ? 0 : 5}
+    borderRight={isLast ? "none" : "1px solid"}
     borderColor="gray.100"
-    borderRadius="lg"
   >
-    <HStack justify="space-between" align="flex-start" mb={2}>
-      <Text fontSize="xs" fontWeight="500" color="gray.500">
-        {label}
-      </Text>
+    <HStack gap={1.5}>
       <Box
-        w="7"
-        h="7"
-        borderRadius="md"
-        bg={`${color}.50`}
-        color={`${color}.500`}
+        w="5"
+        h="5"
+        borderRadius="sm"
+        bg={iconBg ?? "gray.100"}
+        color={color}
         display="flex"
         alignItems="center"
         justifyContent="center"
+        flexShrink={0}
       >
         {icon}
       </Box>
+      <Text fontSize="xs" fontWeight="500" color="gray.500">
+        {label}
+      </Text>
     </HStack>
-    <Text fontSize="2xl" fontWeight="700" color="gray.900" lineHeight="1">
+    <Text fontSize="xl" fontWeight="700" color="gray.900" lineHeight="1.1">
       {value}
     </Text>
-    {trend && (
-      <Text fontSize="xs" color="green.500" mt={1} fontWeight="500">
-        ↑ {trend}
+    {badge && (
+      <Text fontSize="xs" fontWeight="500" color={badgeColor ?? "gray.500"}>
+        {badge}
       </Text>
     )}
-  </Box>
+  </Stack>
 );

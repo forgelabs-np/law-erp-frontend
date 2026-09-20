@@ -51,7 +51,7 @@ export const JudgmentModal = ({
       decisionInFavorOfPartyId: "",
       partyIsState: false,
     },
-    resolver: yupResolver(judgmentSchema),
+    resolver: yupResolver(judgmentSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

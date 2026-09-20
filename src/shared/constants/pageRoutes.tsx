@@ -44,7 +44,7 @@ import FirmActivityPage from "@/pages/User/CaseManagement/pages/FirmActivityPage
 import StaleMattersPage from "@/pages/User/CaseManagement/pages/StaleMattersPage";
 import CaseDashboardPage from "@/pages/User/CaseManagement/pages/CaseDashboardPage";
 import ScraperManagementPage from "@/pages/User/ScraperManagement/ScraperManagementPage";
-import GlobalDashboardPage from "@/pages/User/CaseManagement/pages/GlobalDashboardPage";
+import DashboardPage from "@/pages/User/Dashboard/DashboardPage";
 import {
   ProjectDashboardPage,
   ProjectListPage,
@@ -244,7 +244,7 @@ export const USER_ROUTES: Array<{
   },
   {
     path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
-    element: <GlobalDashboardPage />,
+    element: <DashboardPage />,
     moduleCode: "DASHBOARD_MANAGEMENT",
     requiredAction: "VIEW",
   },

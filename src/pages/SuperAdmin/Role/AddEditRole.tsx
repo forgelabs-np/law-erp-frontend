@@ -38,7 +38,7 @@ export const AddEditRole = ({
 
   const { control, handleSubmit, reset } = useForm<RoleFormValues>({
     defaultValues,
-    resolver: yupResolver(roleSchema),
+    resolver: yupResolver(roleSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

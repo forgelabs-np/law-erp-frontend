@@ -91,7 +91,7 @@ export const AddPartyModal = ({
       isOurClient: true,
       clientId: "",
     },
-    resolver: yupResolver(partySchema),
+    resolver: yupResolver(partySchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
