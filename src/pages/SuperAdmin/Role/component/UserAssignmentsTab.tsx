@@ -314,7 +314,7 @@ const UserAssignmentsTab = () => {
   };
 
   return (
-    <Stack gap={6}>
+    <Stack gap={6} w="100%" maxW="100%" minW={0}>
       {/* Statistics Cards */}
       <Grid
         templateColumns={{ base: "1fr", md: "2fr 2fr", lg: "1fr 1fr 1fr 1fr" }}

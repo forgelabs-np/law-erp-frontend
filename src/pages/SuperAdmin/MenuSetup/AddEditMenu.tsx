@@ -42,7 +42,7 @@ export const AddEditMenu = ({
 
   const methods = useForm<MenuSetupFormValues>({
     defaultValues,
-    resolver: yupResolver(menuSchema),
+    resolver: yupResolver(menuSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

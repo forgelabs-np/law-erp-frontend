@@ -31,7 +31,6 @@ export const employeeSchema = yup.object({
   }),
   roleId: yup.string().required("Role is required"),
   designation: yup.string().trim().required("Designation is required"),
-  departmentId: yup.string().trim().required("Department is required"),
   barCouncilNo: yup.string().trim().notRequired(),
   specialization: yup.string().trim().notRequired(),
   joiningDate: yup.string().required("Joining date is required"),

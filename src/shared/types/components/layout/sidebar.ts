@@ -8,6 +8,7 @@ export type SidebarItemProps = {
   section?: string;
   moduleCode?: string;
   onClick?: () => void;
+  badge?: number | string;
 };
 
 export type SidebarSectionProps = {

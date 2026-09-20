@@ -1,4 +1,4 @@
-import { Box, HStack, Button } from "@chakra-ui/react";
+import { Box, Button, HStack } from "@chakra-ui/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface StickyActionBarProps {
@@ -26,43 +26,56 @@ export const StickyActionBar = ({
       borderTop="1px solid"
       borderColor="gray.200"
       py={4}
-      px={6}
-      mt={8}
-      borderRadius="lg"
-      boxShadow="0 -4px 6px -1px rgba(0, 0, 0, 0.05)"
+      mt={6}
+      boxShadow="0 -6px 16px -12px rgba(16, 24, 40, 0.18)"
     >
-      <HStack justify="flex-end" gap={3}>
-        {onBack && (
-          <Button variant="outline" onClick={onBack}>
+      <HStack justify="space-between" align="center" gap={3} flexWrap="wrap">
+        <Box>
+          {showCancel && (
+            <Button
+              variant="ghost"
+              color="gray.600"
+              fontWeight="600"
+              onClick={onCancel}
+              _hover={{ bg: "gray.100", color: "gray.800" }}
+            >
+              Cancel
+            </Button>
+          )}
+        </Box>
+
+        <HStack gap={3}>
+          {onBack && (
+            <Button
+              variant="outline"
+              height="11"
+              px={5}
+              fontWeight="600"
+              onClick={onBack}
+            >
+              <HStack gap={2}>
+                <ArrowLeft size={16} />
+                <span>Back</span>
+              </HStack>
+            </Button>
+          )}
+
+          <Button
+            variant="primary"
+            height="11"
+            px={6}
+            fontWeight="600"
+            onClick={onNext}
+            disabled={isNextDisabled}
+            opacity={isNextDisabled ? 0.6 : 1}
+            boxShadow="0 1px 2px rgba(16, 24, 40, 0.08)"
+          >
             <HStack gap={2}>
-              <ArrowLeft size={16} />
-              <span>Back</span>
+              <span>{nextLabel}</span>
+              <ArrowRight size={16} />
             </HStack>
           </Button>
-        )}
-        {showCancel && (
-          <Button variant="outline" onClick={onCancel}>
-            <HStack gap={2}>
-              <ArrowLeft size={16} />
-              <span>Cancel</span>
-            </HStack>
-          </Button>
-        )}
-        <Button
-          variant="primary"
-          onClick={onNext}
-          disabled={isNextDisabled}
-          bg="black"
-          color="white"
-          _hover={{ bg: "gray.800" }}
-          _disabled={{ bg: "gray.300", cursor: "not-allowed" }}
-          opacity={isNextDisabled ? 0.6 : 1}
-        >
-          <HStack gap={2}>
-            <span>{nextLabel}</span>
-            <ArrowRight size={16} />
-          </HStack>
-        </Button>
+        </HStack>
       </HStack>
     </Box>
   );

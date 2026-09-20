@@ -118,8 +118,6 @@ const Login = () => {
       //   handleSuperAdminLogin(resData, navigate);
       //   return;
       // }
-      console.log(loginType, "typpe");
-
       switch (resData.status) {
         case "SUCCESS":
           // Clear any stale tokens before setting new ones

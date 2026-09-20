@@ -1,20 +1,16 @@
 import { Grid, GridItem, Stack, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { useConfigureFirmModuleMutation } from "@/api/firmModules";
 import { FormProvider, TextFieldInput } from "@/shared/components";
 import { configureModuleSchema } from "@/validations";
-import { Switch } from "@/shared/components/ui";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
 import { ConfigureModuleFormValues, MergedModule } from "./types";
 
 const defaultValues: ConfigureModuleFormValues = {
-  isEnabled: false,
-  isTrial: false,
-  trialDays: 0,
   maxFileSizeMb: 0,
   allowedExtensions: "",
   notes: "",
@@ -33,11 +29,11 @@ export const ConfigureModuleDrawer = ({
 }) => {
   const methods = useForm<ConfigureModuleFormValues>({
     defaultValues,
-    resolver: yupResolver(configureModuleSchema),
+    resolver: yupResolver(configureModuleSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
-  const { handleSubmit, reset, setValue, control } = methods;
+  const { handleSubmit, reset, setValue } = methods;
 
   const { mutate: configureModule, isPending: isConfigurePending } =
     useConfigureFirmModuleMutation(firmId);
@@ -46,17 +42,11 @@ export const ConfigureModuleDrawer = ({
     if (open && module) {
       if (module.isAssigned) {
         // Module is assigned - populate from assigned module data
-        setValue("isEnabled", module.isEnabled);
-        setValue("isTrial", module.isTrial);
-        setValue("trialDays", 0);
         setValue("maxFileSizeMb", module.maxFileSizeMb ?? 0);
         setValue("allowedExtensions", module.allowedExtensions ?? "");
         setValue("notes", module.notes ?? "");
       } else {
         // Module is not assigned - populate default values
-        setValue("isEnabled", false);
-        setValue("isTrial", false);
-        setValue("trialDays", 0);
         setValue("maxFileSizeMb", 0);
         setValue("allowedExtensions", "");
         setValue("notes", "");
@@ -69,8 +59,7 @@ export const ConfigureModuleDrawer = ({
       configureModule(
         {
           moduleId: module.moduleId,
-          isEnabled: data.isEnabled,
-          trialDays: data.isTrial ? data.trialDays : null,
+          isEnabled: module.isEnabled,
           maxFileSizeMb: data.maxFileSizeMb || null,
           allowedExtensions: data.allowedExtensions || null,
           notes: data.notes || null,
@@ -114,49 +103,6 @@ export const ConfigureModuleDrawer = ({
             </Stack>
 
             <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-              <GridItem colSpan={2}>
-                <Controller
-                  name="isEnabled"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={(details) =>
-                        field.onChange(details.checked)
-                      }
-                    >
-                      Enable Module
-                    </Switch>
-                  )}
-                />
-              </GridItem>
-
-              <GridItem colSpan={2}>
-                <Controller
-                  name="isTrial"
-                  control={control}
-                  render={({ field }) => (
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={(details) =>
-                        field.onChange(details.checked)
-                      }
-                    >
-                      Trial Mode
-                    </Switch>
-                  )}
-                />
-              </GridItem>
-
-              <GridItem>
-                <TextFieldInput
-                  name="trialDays"
-                  label="Trial Days"
-                  type="number"
-                  placeholder="Enter trial days"
-                />
-              </GridItem>
-
               <GridItem>
                 <TextFieldInput
                   name="maxFileSizeMb"

@@ -26,7 +26,9 @@ interface SidebarProfileProps {
   isCollapsed?: boolean;
 }
 
-export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => {
+export const SidebarProfile = ({
+  isCollapsed = false,
+}: SidebarProfileProps) => {
   const user = useCurrentUser();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,23 +48,28 @@ export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => 
     return null;
   }
 
-  const username = user.username ?? user.email ?? "User";
+  const username = (user.username ?? user.email ?? "User") as string;
   const profilePhotoUrl = user.profilePhotoUrl || null;
-  const roleValue = user.role;
+  const roleValue = user.role as
+    | string
+    | { name?: string; code?: string }
+    | null
+    | undefined;
+  const roleObj =
+    typeof roleValue !== "string"
+      ? (roleValue as { name?: string; code?: string } | null | undefined)
+      : null;
   const roleName =
     (typeof roleValue === "string" && roleValue
       ? roleValue
-      : roleValue?.name || roleValue?.code || user.userType) || "";
+      : roleObj?.name ||
+        roleObj?.code ||
+        (user.userType as string | undefined)) || "";
   const initial = (username || "U").charAt(0).toUpperCase();
   const showPhoto = Boolean(profilePhotoUrl) && !imageFailed;
 
   return (
-    <Box
-      flexShrink="0"
-      width="full"
-      borderTop="1px"
-      borderTopColor="gray.200"
-    >
+    <Box flexShrink="0" width="full" borderTop="1px" borderTopColor="gray.200">
       <MenuRoot
         open={isMenuOpen}
         onOpenChange={(details) => setIsMenuOpen(details.open)}
@@ -162,7 +169,12 @@ export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => 
                 borderBottom="1px"
                 borderBottomColor="gray.100"
               >
-                <Text fontSize="sm" fontWeight="600" color="gray.800" lineClamp={1}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="600"
+                  color="gray.800"
+                  lineClamp={1}
+                >
                   {username}
                 </Text>
                 {roleName && (

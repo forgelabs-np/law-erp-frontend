@@ -27,10 +27,7 @@ import { CaseOverview } from "../components/dashboard/CaseOverview";
 import { ScraperStatus } from "../components/dashboard/ScraperStatus";
 import { RecentActivity } from "../components/dashboard/RecentActivity";
 import { TodaysEvents } from "../components/dashboard/TodaysEvents";
-import { QuickInsights } from "../components/dashboard/QuickInsights";
-import { ReportCta } from "../components/dashboard/ReportCta";
 import { useGlobalDashboard } from "../components/dashboard/useGlobalDashboard";
-import { getDashboardInsights } from "../components/dashboard/dashboardInsights";
 
 // ============================================================
 // Skeleton Loaders
@@ -38,95 +35,40 @@ import { getDashboardInsights } from "../components/dashboard/dashboardInsights"
 
 const KpiCardSkeleton = () => (
   <Box
+    px={5}
+    py={4}
+    bg="white"
+    border="1px solid"
+    borderColor="gray.200"
+    borderRadius="lg"
+  >
+    <HStack justify="space-between" mb={2}>
+      <Stack gap={1.5} flex={1}>
+        <Box h="8px" w="70px" bg="gray.100" borderRadius="sm" />
+        <Box h="24px" w="40px" bg="gray.100" borderRadius="sm" />
+      </Stack>
+      <Box w="4" h="4" bg="gray.100" borderRadius="sm" />
+    </HStack>
+    <Box h="8px" w="80px" bg="gray.100" borderRadius="sm" mb={1} />
+    <Box h="32px" w="100%" bg="gray.50" borderRadius="sm" />
+  </Box>
+);
+
+const SectionSkeleton = () => (
+  <Box
     p={5}
     bg="white"
     border="1px solid"
     borderColor="gray.200"
-    borderRadius="xl"
-  >
-    <HStack justify="space-between" mb={3}>
-      <Stack gap={2} flex={1}>
-        <Box h="10px" w="80px" bg="gray.100" borderRadius="md" />
-        <Box h="32px" w="50px" bg="gray.100" borderRadius="md" />
-      </Stack>
-      <Box w="10" h="10" borderRadius="lg" bg="gray.100" />
-    </HStack>
-    <Box h="10px" w="100px" bg="gray.100" borderRadius="md" mb={2} />
-    <Box h="40px" w="100%" bg="gray.50" borderRadius="md" />
-  </Box>
-);
-
-const ChartSkeleton = () => (
-  <Box
-    p={6}
-    bg="white"
-    border="1px solid"
-    borderColor="gray.200"
-    borderRadius="xl"
-  >
-    <Stack gap={4}>
-      <HStack gap={3}>
-        <Box w="8" h="8" borderRadius="lg" bg="gray.100" />
-        <Box h="14px" w="120px" bg="gray.100" borderRadius="md" />
-      </HStack>
-      <HStack gap={3}>
-        {[1, 2, 3].map((i) => (
-          <Box key={i} flex={1} h="60px" bg="gray.50" borderRadius="md" />
-        ))}
-      </HStack>
-      <Box h="180px" w="100%" bg="gray.50" borderRadius="md" />
-    </Stack>
-  </Box>
-);
-
-const ScraperStatusSkeleton = () => (
-  <Box
-    p={6}
-    bg="white"
-    border="1px solid"
-    borderColor="gray.200"
-    borderRadius="xl"
-  >
-    <Stack gap={4}>
-      <HStack gap={3}>
-        <Box w="8" h="8" borderRadius="lg" bg="gray.100" />
-        <Box h="14px" w="100px" bg="gray.100" borderRadius="md" />
-      </HStack>
-      <Box h="32px" w="140px" bg="gray.100" borderRadius="lg" />
-      <HStack gap={2}>
-        {[1, 2, 3, 4].map((i) => (
-          <Box key={i} flex={1} h="72px" bg="gray.50" borderRadius="lg" />
-        ))}
-      </HStack>
-      <Box h="12px" w="160px" bg="gray.100" borderRadius="md" />
-      <Box h="28px" w="140px" bg="gray.100" borderRadius="lg" />
-    </Stack>
-  </Box>
-);
-
-const RecentActivitySkeleton = () => (
-  <Box
-    p={6}
-    bg="white"
-    border="1px solid"
-    borderColor="gray.200"
-    borderRadius="xl"
+    borderRadius="lg"
   >
     <Stack gap={3}>
+      <Box h="12px" w="100px" bg="gray.100" borderRadius="sm" />
       <HStack gap={3}>
-        <Box w="8" h="8" borderRadius="lg" bg="gray.100" />
-        <Box h="14px" w="120px" bg="gray.100" borderRadius="md" />
+        {[1, 2, 3, 4].map((i) => (
+          <Box key={i} flex={1} h="48px" bg="gray.50" borderRadius="sm" />
+        ))}
       </HStack>
-      {[1, 2, 3, 4].map((i) => (
-        <HStack key={i} gap={3} py={3}>
-          <Box w="8" h="8" borderRadius="lg" bg="gray.100" flexShrink={0} />
-          <Stack gap={1.5} flex={1}>
-            <Box h="12px" w="140px" bg="gray.100" borderRadius="md" />
-            <Box h="10px" w="220px" bg="gray.50" borderRadius="md" />
-          </Stack>
-          <Box h="10px" w="50px" bg="gray.100" borderRadius="md" />
-        </HStack>
-      ))}
     </Stack>
   </Box>
 );
@@ -142,50 +84,50 @@ const DashboardError = ({
   message: string;
   onRetry: () => void;
 }) => (
-  <Stack gap={4} align="center" py={16} textAlign="center">
+  <Stack gap={3} align="center" py={16} textAlign="center">
     <Box
-      w="16"
-      h="16"
+      w="10"
+      h="10"
       borderRadius="full"
       bg="red.50"
       display="flex"
       alignItems="center"
       justifyContent="center"
     >
-      <XOctagon size={28} color="#dc2626" />
+      <XOctagon size={20} color="#dc2626" />
     </Box>
-    <Stack gap={1}>
-      <Text fontSize="lg" fontWeight="600" color="gray.900">
+    <Stack gap={0.5}>
+      <Text fontSize="sm" fontWeight="600" color="gray.900">
         Unable to load dashboard
       </Text>
-      <Text fontSize="sm" color="gray.500" maxW="400px">
+      <Text fontSize="xs" color="gray.500" maxW="320px">
         {message || "Something went wrong while loading the platform overview."}
       </Text>
     </Stack>
-    <Button variant="outline" size="sm" onClick={onRetry}>
+    <Button variant="outline" size="xs" onClick={onRetry}>
       Try again
     </Button>
   </Stack>
 );
 
 const ForbiddenState = () => (
-  <Stack gap={4} align="center" py={16} textAlign="center">
+  <Stack gap={3} align="center" py={16} textAlign="center">
     <Box
-      w="16"
-      h="16"
+      w="10"
+      h="10"
       borderRadius="full"
       bg="amber.50"
       display="flex"
       alignItems="center"
       justifyContent="center"
     >
-      <XOctagon size={28} color="#d97706" />
+      <XOctagon size={20} color="#d97706" />
     </Box>
-    <Stack gap={1}>
-      <Text fontSize="lg" fontWeight="600" color="gray.900">
+    <Stack gap={0.5}>
+      <Text fontSize="sm" fontWeight="600" color="gray.900">
         Access restricted
       </Text>
-      <Text fontSize="sm" color="gray.500">
+      <Text fontSize="xs" color="gray.500">
         You don't have permission to view the platform overview.
       </Text>
     </Stack>
@@ -225,12 +167,7 @@ const GlobalDashboardPage = () => {
     );
   }, [isError, error]);
 
-  const insights = useMemo(
-    () => getDashboardInsights(computedData),
-    [computedData]
-  );
-
-  // Build sparkline data from real trend data (must be before early returns)
+  // Build sparkline data from real trend data
   const userTrendsData = useMemo(
     () => computedData?.userTrends ?? [],
     [computedData]
@@ -255,14 +192,14 @@ const GlobalDashboardPage = () => {
   // Loading state
   if (isLoading) {
     return (
-      <Stack gap={6} padding={2}>
+      <Stack gap={5}>
         {/* Header skeleton */}
-        <HStack justify="space-between" flexWrap="wrap" gap={4}>
-          <Stack gap={2}>
-            <Box h="28px" w="220px" bg="gray.100" borderRadius="md" />
-            <Box h="14px" w="360px" bg="gray.100" borderRadius="md" />
+        <HStack justify="space-between" flexWrap="wrap" gap={3}>
+          <Stack gap={1}>
+            <Box h="22px" w="180px" bg="gray.100" borderRadius="sm" />
+            <Box h="12px" w="300px" bg="gray.100" borderRadius="sm" />
           </Stack>
-          <Box h="32px" w="100px" bg="gray.100" borderRadius="md" />
+          <Box h="28px" w="90px" bg="gray.100" borderRadius="sm" />
         </HStack>
 
         {/* KPI skeletons */}
@@ -272,7 +209,7 @@ const GlobalDashboardPage = () => {
             sm: "repeat(2, 1fr)",
             lg: "repeat(4, 1fr)",
           }}
-          gap={4}
+          gap={3}
         >
           {[1, 2, 3, 4].map((i) => (
             <KpiCardSkeleton key={i} />
@@ -280,43 +217,21 @@ const GlobalDashboardPage = () => {
         </Grid>
 
         {/* Distribution + Events skeleton */}
-        <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={6}>
-          <Box
-            p={5}
-            bg="white"
-            border="1px solid"
-            borderColor="gray.200"
-            borderRadius="xl"
-          >
-            <Stack gap={3}>
-              <Box h="14px" w="120px" bg="gray.100" borderRadius="md" />
-              <Box h="8px" w="100%" bg="gray.100" borderRadius="full" />
-              <HStack gap={4}>
-                {[1, 2, 3, 4].map((i) => (
-                  <Box
-                    key={i}
-                    h="12px"
-                    w="80px"
-                    bg="gray.100"
-                    borderRadius="md"
-                  />
-                ))}
-              </HStack>
-            </Stack>
-          </Box>
-          <ChartSkeleton />
+        <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={4}>
+          <SectionSkeleton />
+          <SectionSkeleton />
         </Grid>
 
-        {/* Chart skeletons */}
-        <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={6}>
-          <ChartSkeleton />
-          <ChartSkeleton />
+        {/* Firm + Case skeleton */}
+        <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={4}>
+          <SectionSkeleton />
+          <SectionSkeleton />
         </Grid>
 
-        {/* Scraper + Recent Activity skeletons */}
-        <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={6}>
-          <ScraperStatusSkeleton />
-          <RecentActivitySkeleton />
+        {/* Scraper + Activity skeleton */}
+        <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={4}>
+          <SectionSkeleton />
+          <SectionSkeleton />
         </Grid>
       </Stack>
     );
@@ -324,7 +239,7 @@ const GlobalDashboardPage = () => {
 
   if (isForbidden) {
     return (
-      <Stack gap={6} padding={2}>
+      <Stack gap={5}>
         <ForbiddenState />
       </Stack>
     );
@@ -332,7 +247,7 @@ const GlobalDashboardPage = () => {
 
   if (isError) {
     return (
-      <Stack gap={6} padding={2}>
+      <Stack gap={5}>
         <DashboardError message={errorMessage} onRetry={handleRefresh} />
       </Stack>
     );
@@ -354,7 +269,7 @@ const GlobalDashboardPage = () => {
     {
       label: "Total Users",
       value: userStats.totalUsers,
-      icon: <Users size={20} />,
+      icon: <Users size={16} />,
       color: "gray",
       sparklineColor: "#6b7280",
       sparklineData:
@@ -366,7 +281,7 @@ const GlobalDashboardPage = () => {
     {
       label: "Active Users",
       value: userStats.activeUsers,
-      icon: <Activity size={20} />,
+      icon: <Activity size={16} />,
       color: "green",
       sparklineColor: "#10b981",
       sparklineData:
@@ -378,7 +293,7 @@ const GlobalDashboardPage = () => {
     {
       label: "Inactive Users",
       value: userStats.inactiveUsers,
-      icon: <Users size={20} />,
+      icon: <Users size={16} />,
       color: "red",
       sparklineColor: "#ef4444",
       sparklineData:
@@ -393,7 +308,7 @@ const GlobalDashboardPage = () => {
     {
       label: "Total Clients",
       value: userStats.totalClients,
-      icon: <Users size={20} />,
+      icon: <Users size={16} />,
       color: "purple",
       sparklineColor: "#8b5cf6",
       sparklineData:
@@ -405,15 +320,15 @@ const GlobalDashboardPage = () => {
   ];
 
   return (
-    <Stack gap={6} padding={2}>
+    <Stack gap={5}>
       {/* ==================== HEADER ==================== */}
       <HStack
         justifyContent="space-between"
         alignItems="center"
         flexWrap="wrap"
-        gap={4}
+        gap={3}
       >
-        <Stack gap={1}>
+        <Stack gap={0.5}>
           <Text fontSize="xl" fontWeight="700" color="gray.900">
             Global Dashboard
           </Text>
@@ -422,13 +337,13 @@ const GlobalDashboardPage = () => {
           </Text>
         </Stack>
         <HStack gap={2}>
-          <HStack gap={2}>
-            <Calendar size={14} color="gray.400" />
+          <HStack gap={1.5}>
+            <Calendar size={13} color="gray.400" />
             <FieldSelect
               size="sm"
               value={String(days)}
               onChange={(val) => setDays(Number(val))}
-              w="110px"
+              w="100px"
             >
               <option value="7">Last 7 Days</option>
               <option value="30">Last 30 Days</option>
@@ -437,16 +352,16 @@ const GlobalDashboardPage = () => {
           </HStack>
           <Button
             variant="ghost"
-            size="sm"
+            size="xs"
             onClick={handleRefresh}
             disabled={isFetching}
-            color="blue.600"
-            _hover={{ bg: "blue.50" }}
+            color="gray.600"
+            _hover={{ bg: "gray.100" }}
           >
             {isFetching ? (
-              <Spinner size="sm" color="blue.500" />
+              <Spinner size="xs" color="gray.400" />
             ) : (
-              <RefreshCw size={15} />
+              <RefreshCw size={13} />
             )}
             {isFetching ? "Refreshing..." : "Refresh"}
           </Button>
@@ -460,7 +375,7 @@ const GlobalDashboardPage = () => {
           sm: "repeat(2, 1fr)",
           lg: "repeat(4, 1fr)",
         }}
-        gap={4}
+        gap={3}
       >
         {kpiCards.map((card) => (
           <DashboardKpiCard key={card.label} {...card} />
@@ -470,18 +385,16 @@ const GlobalDashboardPage = () => {
       {/* ==================== USER DISTRIBUTION + TODAY'S EVENTS ==================== */}
       <Grid
         templateColumns={{ base: "1fr", lg: "2fr 1fr" }}
-        gap={6}
+        gap={4}
         alignItems="start"
       >
-        {/* User Distribution */}
         <UserRoleDistribution stats={userStats} />
-
-        {/* Today's Events */}
         <Box
           bg="white"
           border="1px solid"
           borderColor="gray.200"
-          borderRadius="xl"
+          borderRadius="lg"
+          boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)"
           p={5}
         >
           <TodaysEvents count={caseStats.todayEvents} />
@@ -491,59 +404,59 @@ const GlobalDashboardPage = () => {
       {/* ==================== FIRM + CASE OVERVIEW ==================== */}
       <Grid
         templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
-        gap={6}
+        gap={4}
         alignItems="start"
       >
-        {/* Firm Overview */}
         <Box
           bg="white"
           border="1px solid"
           borderColor="gray.200"
-          borderRadius="xl"
-          p={6}
+          borderRadius="lg"
+          boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)"
+          p={5}
         >
-          <HStack gap={3} mb={5}>
+          <HStack gap={2} mb={4}>
             <Box
-              w="8"
-              h="8"
-              borderRadius="lg"
+              w="6"
+              h="6"
+              borderRadius="md"
               bg="blue.50"
-              color="blue.600"
+              color="blue.500"
               display="flex"
               alignItems="center"
               justifyContent="center"
             >
-              <Building2 size={18} />
+              <Building2 size={13} />
             </Box>
-            <Text fontSize="lg" fontWeight="600" color="gray.900">
+            <Text fontSize="sm" fontWeight="600" color="gray.900">
               Firm Overview
             </Text>
           </HStack>
           <FirmOverview data={firmStats} />
         </Box>
 
-        {/* Case Overview */}
         <Box
           bg="white"
           border="1px solid"
           borderColor="gray.200"
-          borderRadius="xl"
-          p={6}
+          borderRadius="lg"
+          boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)"
+          p={5}
         >
-          <HStack gap={3} mb={5}>
+          <HStack gap={2} mb={4}>
             <Box
-              w="8"
-              h="8"
-              borderRadius="lg"
-              bg="green.50"
-              color="green.600"
+              w="6"
+              h="6"
+              borderRadius="md"
+              bg="teal.50"
+              color="teal.500"
               display="flex"
               alignItems="center"
               justifyContent="center"
             >
-              <FileText size={18} />
+              <FileText size={13} />
             </Box>
-            <Text fontSize="lg" fontWeight="600" color="gray.900">
+            <Text fontSize="sm" fontWeight="600" color="gray.900">
               Case Overview
             </Text>
           </HStack>
@@ -554,28 +467,28 @@ const GlobalDashboardPage = () => {
       {/* ==================== SCRAPER STATUS + RECENT ACTIVITY ==================== */}
       <Grid
         templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
-        gap={6}
+        gap={4}
         alignItems="start"
       >
-        {/* Scraper Status */}
         <Box
           bg="white"
           border="1px solid"
           borderColor="gray.200"
-          borderRadius="xl"
-          p={6}
+          borderRadius="lg"
+          boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)"
+          p={5}
         >
           <ScraperStatus stats={scraperStats} />
         </Box>
 
-        {/* Recent Activity — compact, scrollable */}
         <Box
           bg="white"
           border="1px solid"
           borderColor="gray.200"
-          borderRadius="xl"
-          p={6}
-          h="420px"
+          borderRadius="lg"
+          boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)"
+          p={5}
+          h="360px"
           display="flex"
           flexDirection="column"
           overflow="hidden"
@@ -583,8 +496,6 @@ const GlobalDashboardPage = () => {
           <RecentActivity activities={recentActivity} compact />
         </Box>
       </Grid>
-
-      {/* ==================== INSIGHTS + REPORT CTA ==================== */}
     </Stack>
   );
 };

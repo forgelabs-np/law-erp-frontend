@@ -26,4 +26,23 @@ export const roleSchema = yup.object({
     ),
 });
 
+/**
+ * Role metadata only. Used for the firm role create step, which is a separate
+ * call from permission assignment in the current RBAC contract.
+ */
+export const roleDetailsSchema = yup.object({
+  name: yup
+    .string()
+    .trim()
+    .required("Role name is required")
+    .min(2, "Role name must be at least 2 characters"),
+  code: yup
+    .string()
+    .trim()
+    .required("Role code is required")
+    .min(2, "Role code must be at least 2 characters"),
+  description: yup.string().trim().notRequired(),
+});
+
 export type RoleSchemaType = yup.InferType<typeof roleSchema>;
+export type RoleDetailsSchemaType = yup.InferType<typeof roleDetailsSchema>;

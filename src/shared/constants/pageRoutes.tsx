@@ -44,7 +44,7 @@ import FirmActivityPage from "@/pages/User/CaseManagement/pages/FirmActivityPage
 import StaleMattersPage from "@/pages/User/CaseManagement/pages/StaleMattersPage";
 import CaseDashboardPage from "@/pages/User/CaseManagement/pages/CaseDashboardPage";
 import ScraperManagementPage from "@/pages/User/ScraperManagement/ScraperManagementPage";
-import GlobalDashboardPage from "@/pages/User/CaseManagement/pages/GlobalDashboardPage";
+import DashboardPage from "@/pages/User/Dashboard/DashboardPage";
 import {
   ProjectDashboardPage,
   ProjectListPage,
@@ -65,6 +65,7 @@ import InvoiceListPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceListPag
 import CreateInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/CreateInvoicePage";
 import EditInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/EditInvoicePage";
 import InvoiceDetailPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceDetailPage";
+import NotificationsPage from "@/pages/User/Notifications/NotificationsPage";
 
 /**
  * Route-level permission configuration.
@@ -243,7 +244,7 @@ export const USER_ROUTES: Array<{
   },
   {
     path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
-    element: <GlobalDashboardPage />,
+    element: <DashboardPage />,
     moduleCode: "DASHBOARD_MANAGEMENT",
     requiredAction: "VIEW",
   },
@@ -347,6 +348,12 @@ export const USER_ROUTES: Array<{
     path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_MODULES,
     element: <FirmModules />,
     moduleCode: "FIRM_MANAGEMENT",
+  },
+  {
+    path: ROUTES_CONFIG.USER.NOTIFICATIONS,
+    element: <NotificationsPage />,
+    moduleCode: "NOTIFICATION_MANAGEMENT",
+    requiredAction: "VIEW",
   },
   {
     path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT,

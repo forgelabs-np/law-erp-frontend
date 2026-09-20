@@ -291,11 +291,11 @@ export const MatterTimeline = ({
                   Schedule a Tarikh/Peshi to see the next court date here.
                 </Text>
               </Stack>
-              {onSchedule && (
+              {/* {onSchedule && (
                 <Button variant="outline" size="sm" onClick={onSchedule}>
                   Schedule Event
                 </Button>
-              )}
+              )} */}
             </HStack>
           </Box>
         )}
@@ -320,7 +320,7 @@ export const MatterTimeline = ({
         <Stack mt={6} gap={4}>
           <TimelineEventList
             groups={visibleGroups}
-            maxH={{ base: "400px", md: "calc(100vh - 520px)" }}
+            maxH={{ base: "400px", md: "calc(100vh - 200px)" }}
           />
           {filtered.length > initialLimit && (
             <HStack justify="center">

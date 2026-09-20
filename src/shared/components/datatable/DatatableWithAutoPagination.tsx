@@ -24,7 +24,7 @@ export const DatatableWithAutoPagination = <T,>({
   const paginatedData = data.slice(startIndex, startIndex + pageSize);
 
   return (
-    <VStack alignItems="stretch">
+    <VStack alignItems="stretch" w="100%" maxW="100%" minW={0}>
       {header?.title && (
         <TableHeader
           {...header}

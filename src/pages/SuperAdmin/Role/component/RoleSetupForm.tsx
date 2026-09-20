@@ -1,25 +1,25 @@
 import {
-  Box,
   Card,
-  Flex,
   Grid,
-  SimpleGrid,
   Stack,
   Text,
+  HStack,
+  Button,
+  IconButton,
 } from "@chakra-ui/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Control } from "react-hook-form";
+import { Edit, X } from "lucide-react";
 
 import { useGetModuleMenusQuery } from "@/api/menuSetup";
 import {
   PermissionResponse,
   useGetPermissionsQuery,
 } from "@/api/permissionSetup";
-import { PrivilegeCheckboxGroup } from "@/components/PrivilegeCheckboxGroup";
 import InputField from "@/shared/components/inputField";
-import NoDataAvailable from "@/shared/components/NoDataAvailable/NoDataAvailable";
 
-import { RoleFormValues } from "../types";
+import { PermissionGroup, RoleFormValues } from "../types";
+import { PermissionSelectionSection } from "./PermissionSelectionSection";
 
 export const RoleSetupForm = ({
   control,
@@ -27,51 +27,62 @@ export const RoleSetupForm = ({
   isOpen: boolean;
   control: Control<RoleFormValues>;
 }) => {
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
+
   const { data: permissionsResponse } = useGetPermissionsQuery();
   const { data: modulesResponse } = useGetModuleMenusQuery();
 
   const allPermissions: PermissionResponse[] = useMemo(
-    () => (permissionsResponse as any)?.data ?? [],
+    () => permissionsResponse?.data ?? [],
     [permissionsResponse]
   );
 
-  const allModules: any[] = useMemo(
-    () => (modulesResponse as any)?.data ?? [],
+  const allModules = useMemo(
+    () => modulesResponse?.data ?? [],
     [modulesResponse]
   );
 
-  const groupedByModule = useMemo(() => {
-    return allModules
-      .map((mod: any) => {
-        const modCode = mod.code;
-        const permsForModule = allPermissions.filter((perm: any) => {
-          const permModuleCode = perm.code?.split(":")[0];
-          return permModuleCode === modCode;
+  const permissionGroups: PermissionGroup[] = useMemo(() => {
+    const groups = allModules
+      .map((module) => {
+        const permissions = allPermissions.filter((permission) => {
+          const permissionModuleCode = permission.code?.split(":")[0];
+          return permissionModuleCode === module.code;
         });
         return {
-          moduleCode: modCode,
-          moduleName: mod.name,
-          permissions: permsForModule,
+          moduleCode: module.code,
+          moduleName: module.name,
+          permissions: permissions.map((permission) => ({
+            id: permission.id,
+            action: permission.action,
+            disabled: permission.isActive === false,
+          })),
         };
       })
-      .filter((group: any) => group.permissions.length > 0);
+      .filter((group) => group.permissions.length > 0);
+
+    const knownModuleCodes = new Set(allModules.map((module) => module.code));
+    const orphanPermissions = allPermissions.filter((permission) => {
+      const permissionModuleCode = permission.code?.split(":")[0];
+      return (
+        !permissionModuleCode || !knownModuleCodes.has(permissionModuleCode)
+      );
+    });
+
+    if (orphanPermissions.length > 0) {
+      groups.push({
+        moduleCode: "OTHER",
+        moduleName: "Other",
+        permissions: orphanPermissions.map((permission) => ({
+          id: permission.id,
+          action: permission.action,
+          disabled: permission.isActive === false,
+        })),
+      });
+    }
+
+    return groups;
   }, [allModules, allPermissions]);
-
-  const knownModuleCodes = useMemo(
-    () => new Set(allModules.map((m: any) => m.code)),
-    [allModules]
-  );
-  const orphanPermissions = useMemo(
-    () =>
-      allPermissions.filter((perm: any) => {
-        const permModuleCode = perm.code?.split(":")[0];
-        return !permModuleCode || !knownModuleCodes.has(permModuleCode);
-      }),
-    [allPermissions, knownModuleCodes]
-  );
-
-  const totalModules =
-    groupedByModule.length + (orphanPermissions.length > 0 ? 1 : 0);
 
   return (
     <Stack gap={6}>
@@ -89,9 +100,22 @@ export const RoleSetupForm = ({
           borderBottomWidth="1px"
           borderColor="gray.100"
         >
-          <Text fontSize="sm" fontWeight="600" color="gray.700">
-            Role Details
-          </Text>
+          <HStack justifyContent="space-between" alignItems="center">
+            <Text fontSize="sm" fontWeight="600" color="gray.700">
+              Role Details
+            </Text>
+            <IconButton
+              aria-label={
+                isEditingDetails ? "Cancel editing" : "Edit role details"
+              }
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditingDetails(!isEditingDetails)}
+              colorScheme={isEditingDetails ? "red" : "blue"}
+            >
+              {isEditingDetails ? <X size={16} /> : <Edit size={16} />}
+            </IconButton>
+          </HStack>
         </Card.Header>
         <Card.Body px={{ base: 4, md: 6 }} py={5}>
           <Grid
@@ -104,6 +128,7 @@ export const RoleSetupForm = ({
               label="Role Name"
               placeholder="e.g. Admin"
               required
+              disabled={!isEditingDetails}
             />
             <InputField
               control={control}
@@ -111,196 +136,21 @@ export const RoleSetupForm = ({
               label="Role Code"
               placeholder="Enter Role Code"
               required
+              disabled={!isEditingDetails}
             />
             <InputField
               control={control}
               name="description"
               label="Description"
               placeholder="Enter Description"
+              disabled={!isEditingDetails}
             />
           </Grid>
         </Card.Body>
       </Card.Root>
 
       {/* ── Permissions Section ──────────────────────────────────── */}
-      <Card.Root
-        borderRadius="lg"
-        borderWidth="1px"
-        borderColor="gray.200"
-        overflow="hidden"
-      >
-        <Card.Header
-          flexDirection={{ base: "column", md: "row" }}
-          alignItems={{ base: "stretch", md: "center" }}
-          gap={{ base: 2, md: 4 }}
-          px={{ base: 4, md: 6 }}
-          py={4}
-          bg="gray.50"
-          borderBottomWidth="1px"
-          borderColor="gray.100"
-        >
-          <Stack flex={1} gap={0}>
-            <Text fontSize="sm" fontWeight="600" color="gray.700">
-              Menu & Action Permissions
-            </Text>
-            <Text fontSize="xs" color="gray.500" mt={0.5}>
-              Configure action permissions for each module.{" "}
-              {totalModules > 0 &&
-                `${totalModules} module${totalModules > 1 ? "s" : ""} available.`}
-            </Text>
-          </Stack>
-        </Card.Header>
-
-        <Card.Body px={{ base: 4, md: 6 }} py={5}>
-          {groupedByModule.length > 0 || orphanPermissions.length > 0 ? (
-            <SimpleGrid
-              columns={{ base: 1, md: 2 }}
-              gap={{ base: 4, md: 5 }}
-              alignItems="start"
-            >
-              {/* Grouped module permission cards */}
-              {groupedByModule.map(
-                ({ moduleCode, moduleName, permissions }: any) => (
-                  <Box
-                    key={moduleCode}
-                    border="1px solid"
-                    borderColor="gray.200"
-                    borderRadius="lg"
-                    bg="white"
-                    overflow="hidden"
-                    _hover={{ borderColor: "gray.300" }}
-                    transition="border-color 150ms ease"
-                  >
-                    {/* Module Card Header */}
-                    <Flex
-                      alignItems="center"
-                      justifyContent="space-between"
-                      px={{ base: 3, md: 4 }}
-                      py={3}
-                      borderBottomWidth="1px"
-                      borderColor="gray.100"
-                      bg="white"
-                    >
-                      <Stack gap={0}>
-                        <Text
-                          fontSize={{ base: "sm", md: "md" }}
-                          fontWeight="600"
-                          color="gray.900"
-                          lineHeight="short"
-                        >
-                          {moduleName}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color="gray.400"
-                          fontFamily="mono"
-                          mt={0.5}
-                        >
-                          {moduleCode}
-                        </Text>
-                      </Stack>
-                      <Box
-                        bg="primary.50"
-                        color="primary.600"
-                        px={2}
-                        py={0.5}
-                        borderRadius="full"
-                        fontSize="xs"
-                        fontWeight="600"
-                      >
-                        {permissions.length} permission
-                        {permissions.length !== 1 ? "s" : ""}
-                      </Box>
-                    </Flex>
-
-                    {/* Permission Controls */}
-                    <PrivilegeCheckboxGroup
-                      control={control}
-                      name={`permissions.${moduleCode}` as any}
-                      label="Action Permissions"
-                      options={permissions.map((p: any) => ({
-                        label: p.action,
-                        value: p.id,
-                        disabled: p.isActive === false,
-                      }))}
-                    />
-                  </Box>
-                )
-              )}
-
-              {/* Orphan permissions not matching any module */}
-              {orphanPermissions.length > 0 && (
-                <Box
-                  key="OTHER"
-                  border="1px solid"
-                  borderColor="gray.200"
-                  borderRadius="lg"
-                  bg="white"
-                  overflow="hidden"
-                  _hover={{ borderColor: "gray.300" }}
-                  transition="border-color 150ms ease"
-                >
-                  {/* Module Card Header */}
-                  <Flex
-                    alignItems="center"
-                    justifyContent="space-between"
-                    px={{ base: 3, md: 4 }}
-                    py={3}
-                    borderBottomWidth="1px"
-                    borderColor="gray.100"
-                    bg="white"
-                  >
-                    <Stack gap={0}>
-                      <Text
-                        fontSize={{ base: "sm", md: "md" }}
-                        fontWeight="600"
-                        color="gray.900"
-                        lineHeight="short"
-                      >
-                        Other
-                      </Text>
-                      <Text
-                        fontSize="xs"
-                        color="gray.400"
-                        fontFamily="mono"
-                        mt={0.5}
-                      >
-                        UNCLASSIFIED
-                      </Text>
-                    </Stack>
-                    <Box
-                      bg="primary.50"
-                      color="primary.600"
-                      px={2}
-                      py={0.5}
-                      borderRadius="full"
-                      fontSize="xs"
-                      fontWeight="600"
-                    >
-                      {orphanPermissions.length} permission
-                      {orphanPermissions.length !== 1 ? "s" : ""}
-                    </Box>
-                  </Flex>
-
-                  {/* Permission Controls */}
-                  <PrivilegeCheckboxGroup
-                    control={control}
-                    name={`permissions.OTHER` as any}
-                    label="Action Permissions"
-                    options={orphanPermissions.map((p: any) => ({
-                      label: p.action,
-                      value: p.id,
-                      disabled: p.isActive === false,
-                    }))}
-                  />
-                </Box>
-              )}
-            </SimpleGrid>
-          ) : (
-            <NoDataAvailable content="No menu permissions available" />
-          )}
-        </Card.Body>
-      </Card.Root>
+      <PermissionSelectionSection control={control} groups={permissionGroups} />
     </Stack>
   );
 };

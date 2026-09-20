@@ -93,12 +93,12 @@ export const CalendarEventFormModal = ({
       scheduledDate: prefilledDate || new Date().toISOString().slice(0, 10),
       scheduledTime: "",
       endTime: "",
-      attendingAdvocateId: "",
+      // attendingAdvocateId: "",
       judgeName: "",
       courtRoom: "",
       notes: "",
     },
-    resolver: yupResolver(calendarEventSchema),
+    resolver: yupResolver(calendarEventSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
@@ -114,7 +114,7 @@ export const CalendarEventFormModal = ({
             ? initialData.scheduledTime.slice(0, 5)
             : "",
           endTime: initialData.endTime ? initialData.endTime.slice(0, 5) : "",
-          attendingAdvocateId: initialData.attendingAdvocateId ?? "",
+          // attendingAdvocateId: initialData.attendingAdvocateId ?? "",
           judgeName: initialData.judgeName ?? "",
           courtRoom: initialData.courtRoom ?? "",
           notes: initialData.notes ?? "",
@@ -126,7 +126,7 @@ export const CalendarEventFormModal = ({
           scheduledDate: prefilledDate || new Date().toISOString().slice(0, 10),
           scheduledTime: "",
           endTime: "",
-          attendingAdvocateId: "",
+          // attendingAdvocateId: "",
           judgeName: "",
           courtRoom: "",
           notes: "",
@@ -152,7 +152,7 @@ export const CalendarEventFormModal = ({
         ? `${values.scheduledTime}:00`
         : undefined,
       endTime: values.endTime ? `${values.endTime}:00` : undefined,
-      attendingAdvocateId: values.attendingAdvocateId || undefined,
+      // attendingAdvocateId: values.attendingAdvocateId || undefined,
       judgeName: values.judgeName.trim() || undefined,
       courtRoom: values.courtRoom.trim() || undefined,
       notes: values.notes.trim() || undefined,
@@ -319,7 +319,7 @@ export const CalendarEventFormModal = ({
                 </Box>
               </Flex>
 
-              <Box>
+              {/* <Box>
                 <Text mb={1} fontSize="sm" fontWeight="500">
                   Attending Advocate
                 </Text>
@@ -354,7 +354,7 @@ export const CalendarEventFormModal = ({
                     </Box>
                   )}
                 />
-              </Box>
+              </Box> */}
 
               <Flex gap={4} flexDirection={{ base: "column", md: "row" }}>
                 <Box flex={1}>

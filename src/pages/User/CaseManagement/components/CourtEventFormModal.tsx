@@ -79,7 +79,7 @@ export const CourtEventFormModal = ({
       courtRoom: "",
       notes: "",
     },
-    resolver: yupResolver(courtEventSchema),
+    resolver: yupResolver(courtEventSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
@@ -94,7 +94,7 @@ export const CourtEventFormModal = ({
             ? initialData.scheduledTime.slice(0, 5)
             : "",
           endTime: initialData.endTime ? initialData.endTime.slice(0, 5) : "",
-          attendingAdvocateId: initialData.attendingAdvocateId ?? "",
+          // attendingAdvocateId: initialData.attendingAdvocateId ?? "",
           judgeName: initialData.judgeName ?? "",
           courtRoom: initialData.courtRoom ?? "",
           notes: initialData.notes ?? "",
@@ -105,7 +105,7 @@ export const CourtEventFormModal = ({
           scheduledDate: prefilledDate ?? "",
           scheduledTime: "",
           endTime: "",
-          attendingAdvocateId: "",
+          // attendingAdvocateId: "",
           judgeName: "",
           courtRoom: "",
           notes: "",
@@ -122,7 +122,7 @@ export const CourtEventFormModal = ({
         ? `${values.scheduledTime}:00`
         : undefined,
       endTime: values.endTime ? `${values.endTime}:00` : undefined,
-      attendingAdvocateId: values.attendingAdvocateId || undefined,
+      // attendingAdvocateId: values.attendingAdvocateId || undefined,
       judgeName: values.judgeName.trim() || undefined,
       courtRoom: values.courtRoom.trim() || undefined,
       notes: values.notes.trim() || undefined,
@@ -233,7 +233,7 @@ export const CourtEventFormModal = ({
                 </Box>
               </Flex>
 
-              <Box>
+              {/* <Box>
                 <Text mb={1} fontSize="sm" fontWeight="500">
                   Attending Advocate
                 </Text>
@@ -268,7 +268,7 @@ export const CourtEventFormModal = ({
                     </Box>
                   )}
                 />
-              </Box>
+              </Box> */}
 
               <Flex gap={4} flexDirection={{ base: "column", md: "row" }}>
                 <Box flex={1}>

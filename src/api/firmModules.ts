@@ -16,6 +16,7 @@ import {
 } from "@/pages/SuperAdmin/FirmModules/types";
 
 export type { FirmModule, MasterModule, MergedModule };
+export type { ConfigureModulePayload };
 
 const getAllModules = () => {
   return LawFirmCRMClient.get<ApiResponse<MasterModule[]>>(

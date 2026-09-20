@@ -3,6 +3,8 @@ import { api } from "./service-api";
 import {
   ApiResponse,
   CaseHearingStatus,
+  Court,
+  CourtType,
   ScrapeResult,
   HearingExportResult,
 } from "../types/scraper.types";
@@ -45,5 +47,19 @@ export const generateWeeklyExport = async () => {
     {
       responseType: "blob",
     }
+  );
+};
+
+// ============================================================
+// Courts
+// ============================================================
+
+export const getAllCourts = async () => {
+  return LawFirmCRMClient.get<ApiResponse<Court[]>>(api.SCRAPER.ALL_COURTS);
+};
+
+export const getCourtsByType = async (courtType: CourtType) => {
+  return LawFirmCRMClient.get<ApiResponse<Court[]>>(
+    api.SCRAPER.COURTS_BY_TYPE.replace("{courtType}", courtType)
   );
 };

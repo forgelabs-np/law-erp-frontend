@@ -15,6 +15,15 @@ interface KpiCardProps {
   };
 }
 
+const ICON_BG_MAP: Record<string, { bg: string; color: string }> = {
+  gray: { bg: "gray.100", color: "gray.600" },
+  green: { bg: "green.50", color: "green.600" },
+  red: { bg: "red.50", color: "red.500" },
+  purple: { bg: "purple.50", color: "purple.500" },
+  blue: { bg: "blue.50", color: "blue.500" },
+  amber: { bg: "amber.50", color: "amber.600" },
+};
+
 const CustomTooltip = ({
   active,
   payload,
@@ -54,54 +63,57 @@ export const DashboardKpiCard = ({
 
   const isPositiveTrend = trend ? trend.value >= 0 : undefined;
 
+  const iconStyle = ICON_BG_MAP[color] ?? ICON_BG_MAP.gray;
+
   return (
     <Box
-      p={5}
+      px={5}
+      py={4}
       bg="white"
       border="1px solid"
       borderColor="gray.200"
-      borderRadius="xl"
-      transition="all 0.2s ease"
+      borderRadius="lg"
+      boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)"
+      transition="all 0.15s ease"
       _hover={{
-        boxShadow: "md",
-        borderColor: `${color}.200`,
-        transform: "translateY(-1px)",
+        borderColor: "gray.300",
+        boxShadow:
+          "0 2px 6px -1px rgba(0, 0, 0, 0.06), 0 1px 3px -1px rgba(0, 0, 0, 0.04)",
       }}
       cursor="default"
-      position="relative"
       overflow="hidden"
     >
-      <HStack justify="space-between" align="flex-start" mb={3}>
-        <Stack gap={1}>
-          <Text
-            fontSize="xs"
-            fontWeight="500"
-            color="gray.500"
-            letterSpacing="wide"
-            textTransform="uppercase"
-          >
-            {label}
-          </Text>
-          <Text fontSize="3xl" fontWeight="700" color="gray.900" lineHeight="1">
-            {value}
-          </Text>
-        </Stack>
+      <HStack justify="space-between" align="flex-start" mb={1}>
+        <Text
+          fontSize="xs"
+          fontWeight="500"
+          color="gray.500"
+          textTransform="uppercase"
+          letterSpacing="wide"
+        >
+          {label}
+        </Text>
         <Box
-          w="10"
-          h="10"
-          borderRadius="lg"
-          bg={`${color}.50`}
-          color={`${color}.600`}
+          w="7"
+          h="7"
+          borderRadius="md"
+          bg={iconStyle.bg}
+          color={iconStyle.color}
           display="flex"
           alignItems="center"
           justifyContent="center"
+          flexShrink={0}
         >
           {icon}
         </Box>
       </HStack>
 
+      <Text fontSize="2xl" fontWeight="700" color="gray.900" lineHeight="1.1">
+        {value}
+      </Text>
+
       {trend && (
-        <HStack gap={1} mb={2}>
+        <HStack gap={1} mt={1.5}>
           <Text
             fontSize="xs"
             fontWeight="600"
@@ -115,7 +127,7 @@ export const DashboardKpiCard = ({
         </HStack>
       )}
 
-      <Box h="40px" mt={1}>
+      <Box h="36px" mt={1}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
             <defs>
@@ -129,12 +141,12 @@ export const DashboardKpiCard = ({
                 <stop
                   offset="0%"
                   stopColor={sparklineColor}
-                  stopOpacity={0.2}
+                  stopOpacity={0.12}
                 />
                 <stop
                   offset="100%"
                   stopColor={sparklineColor}
-                  stopOpacity={0.02}
+                  stopOpacity={0.01}
                 />
               </linearGradient>
             </defs>
@@ -143,7 +155,7 @@ export const DashboardKpiCard = ({
               type="monotone"
               dataKey="value"
               stroke={sparklineColor}
-              strokeWidth={1}
+              strokeWidth={1.5}
               fill={`url(#gradient-${sparklineColor})`}
               dot={false}
               activeDot={{

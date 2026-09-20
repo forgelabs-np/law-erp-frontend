@@ -55,6 +55,8 @@ import { Checkbox as UICheckbox, Tooltip } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { useForm } from "react-hook-form";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
+import { useRole } from "@/shared/hooks/useAuth";
+import { isSuperAdminRole } from "@/shared/utils/role";
 
 interface BulkRoleDialogProps {
   open: boolean;
@@ -253,8 +255,9 @@ export const UserManagement = () => {
   const { mutate: bulkDeactivate, isPending: isDeactivatePending } =
     useBulkDeactivateMutation();
 
-  const { canResetMFA } = useModulePermissions("USER_MANAGEMENT");
   const { canAccess: canAccessAudit } = useModulePermissions("AUDIT");
+  const currentRole = useRole();
+  const isSuperAdmin = isSuperAdminRole(currentRole);
 
   const handleResetMFA = (reason: string) => {
     if (!userToResetMFA) return;
@@ -492,20 +495,21 @@ export const UserManagement = () => {
                         <Text>Reset Password</Text>
                       </HStack>
                     </MenuItem>
-                    {/* {canResetMFA && ( */}
-                    <MenuItem
-                      cursor={"pointer"}
-                      value="reset-mfa"
-                      onClick={() => {
-                        setUserToResetMFA(row.original);
-                        onResetMFAOpen();
-                      }}
-                    >
-                      <HStack gap={2}>
-                        <MdLockReset color="purple" size={16} />
-                        <Text color="purple">Reset MFA</Text>
-                      </HStack>
-                    </MenuItem>
+                    {isSuperAdmin && (
+                      <MenuItem
+                        cursor="pointer"
+                        value="reset-mfa"
+                        onClick={() => {
+                          setUserToResetMFA(row.original);
+                          onResetMFAOpen();
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <MdLockReset color="purple" size={16} />
+                          <Text color="purple">Reset MFA</Text>
+                        </HStack>
+                      </MenuItem>
+                    )}
 
                     <MenuItem
                       cursor="pointer"
@@ -560,14 +564,15 @@ export const UserManagement = () => {
       isIndeterminate,
       navigate,
       onResetConfirmOpen,
-      canResetMFA,
       canAccessAudit,
       onResetMFAOpen,
+      isSuperAdmin,
+      handleSelectAll,
     ]
   );
 
   return (
-    <Stack gap={6} padding={2}>
+    <Stack gap={6} padding={2} w="100%" maxW="100%" minW={0}>
       <HStack
         justifyContent="space-between"
         alignItems="center"
@@ -709,7 +714,7 @@ export const UserManagement = () => {
           </Button>
         </Box>
       ) : (
-        <Box mt={6}>
+        <Box mt={6} w="100%" maxW="100%" minW={0}>
           <Datatable
             isLoading={isLoading}
             columns={columns}

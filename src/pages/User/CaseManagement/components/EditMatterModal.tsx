@@ -68,7 +68,7 @@ export const EditMatterModal = ({
       assignedPartnerId: "",
       status: "ACTIVE",
     },
-    resolver: yupResolver(editMatterSchema),
+    resolver: yupResolver(editMatterSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

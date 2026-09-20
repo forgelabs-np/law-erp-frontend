@@ -10,11 +10,9 @@ import {
 } from "@chakra-ui/react";
 import {
   Calendar,
-  FileText,
-  Gavel,
   History,
   LayoutDashboard,
-  Link2,
+  Plus,
   Scale,
   Trash2,
   User,
@@ -46,23 +44,15 @@ import {
   MatterParty,
   PartyEntryRequest,
 } from "../types/matter.types";
-import {
-  courtCaseStageLabel,
-  formatDate,
-  partyTypeLabel,
-  representationLabel,
-} from "../utils/matterHelpers";
+import { partyTypeLabel, representationLabel } from "../utils/matterHelpers";
 
 import { MatterHeaderCard } from "../components/MatterHeaderCard";
 import { SectionCard, SegmentedTabs } from "../components/ui";
+import { PartiesWorkspaceCard } from "../components/PartiesWorkspaceCard";
 import { CourtCaseChain } from "../components/CourtCaseChain";
+import { CaseSummaryCard } from "../components/CaseSummaryCard";
 import { MatterTimeline } from "../components/MatterTimeline";
 import { CourtCaseEvents } from "../components/CourtCaseEvents";
-import {
-  CourtCaseStatusBadge,
-  CourtCaseStageBadge,
-  MatterTypeBadge,
-} from "../components/MatterBadges";
 import { AddPartyModal } from "../components/AddPartyModal";
 import { AddCourtCaseModal } from "../components/AddCourtCaseModal";
 import { EditMatterModal } from "../components/EditMatterModal";
@@ -71,6 +61,10 @@ import { CourtEventDetailsModal } from "../components/CourtEventDetailsModal";
 import { EventHeldModal } from "../components/EventHeldModal";
 import { JudgmentModal } from "../components/JudgmentModal";
 import { MatterTeam } from "../components/MatterTeam";
+import {
+  MatterCurrentCourtCaseCard,
+  MatterDetailsCard,
+} from "../components/overview";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
 type Tab = "overview" | "courtCases" | "parties" | "events" | "timeline";
@@ -146,7 +140,7 @@ const MatterDetailPage = () => {
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "courtCases", label: "Court Cases", icon: Scale },
     { id: "parties", label: "Parties", icon: Users },
-    { id: "events", label: "Events / Case Diary", icon: Calendar },
+    // { id: "events", label: "Events / Case Diary", icon: Calendar },
     { id: "timeline", label: "Timeline", icon: History },
   ];
 
@@ -193,7 +187,7 @@ const MatterDetailPage = () => {
   };
 
   return (
-    <Stack gap={8} padding={8} bg="gray.50" minH="100vh">
+    <Stack gap={6} padding={4} bg="gray.50" minH="100vh">
       <MatterHeaderCard
         matter={matter}
         onBack={() => navigate("/cases")}
@@ -252,437 +246,127 @@ const MatterDetailPage = () => {
 
       {/* ==================== Overview ==================== */}
       {activeTab === "overview" && (
-        <VStack gap={6} align="stretch">
-          <SectionCard title="Matter Summary" icon={FileText}>
-            <Grid
-              templateColumns={{
-                base: "1fr",
-                md: "repeat(2, 1fr)",
-                lg: "repeat(3, 1fr)",
-              }}
-              gap={4}
-            >
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Matter Number
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {matter.matterNumber}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Type
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  <MatterTypeBadge type={matter.matterType} />
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Status
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {matter.status}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Current Court
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {currentCourtCase?.courtName ?? matter.courtName ?? "-"}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Court Case Number
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {currentCourtCase?.courtCaseNumber ??
-                    matter.courtCaseNumber ??
-                    "-"}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Filing Date
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {formatDate(matter.filingDate)}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Court Cases
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {courtCases.length}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Parties
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {parties.length}
-                </Text>
-              </Box>
-              <Box>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                >
-                  Events
-                </Text>
-                <Text fontSize="base" fontWeight="600" color="gray.900">
-                  {events.length}
-                </Text>
-              </Box>
-            </Grid>
-            {matter.description && (
-              <Box mt={4}>
-                <Text
-                  fontSize="xs"
-                  fontWeight="600"
-                  color="gray.500"
-                  textTransform="uppercase"
-                  mb={2}
-                >
-                  Description
-                </Text>
-                <Text fontSize="base" color="gray.700" lineHeight="1.7">
-                  {matter.description}
-                </Text>
-              </Box>
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            lg: "minmax(0, 2.05fr) minmax(0, 1fr)",
+          }}
+          gap={6}
+          alignItems="start"
+          w="100%"
+        >
+          {/* Primary column */}
+          <VStack gap={6} align="stretch" minW={0}>
+            <MatterDetailsCard
+              matter={matter}
+              courtCaseCount={courtCases.length}
+              partyCount={parties.length}
+              eventCount={events.length}
+            />
+
+            {currentCourtCase && (
+              <MatterCurrentCourtCaseCard
+                courtCase={currentCourtCase}
+                onRecordJudgment={handleRecordJudgment}
+              />
             )}
-          </SectionCard>
+          </VStack>
 
-          {currentCourtCase && (
-            <SectionCard title="Current Court Case" icon={Scale}>
-              <HStack gap={2} flexWrap="wrap" mb={4}>
-                <CourtCaseStatusBadge status={currentCourtCase.status} />
-                <CourtCaseStageBadge stage={currentCourtCase.stage} />
-                {currentCourtCase.judgeName && (
-                  <Text fontSize="sm" color="gray.600">
-                    Judge: {currentCourtCase.judgeName}
-                  </Text>
-                )}
-              </HStack>
-              <Grid
-                templateColumns={{
-                  base: "1fr",
-                  md: "repeat(2, 1fr)",
-                  lg: "repeat(3, 1fr)",
-                }}
-                gap={4}
-              >
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Reference
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600" fontFamily="monospace">
-                    {currentCourtCase.ourCourtCaseRef}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Court Level
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {currentCourtCase.courtLevel}
-                  </Text>
-                </Box>
-                <Box>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="600"
-                    color="gray.500"
-                    textTransform="uppercase"
-                  >
-                    Stage
-                  </Text>
-                  <Text fontSize="sm" fontWeight="600">
-                    {courtCaseStageLabel(currentCourtCase.stage)}
-                  </Text>
-                </Box>
-              </Grid>
-
-              {/* Judgment info */}
-              {(currentCourtCase.judgmentDate ||
-                currentCourtCase.judgmentSummary) && (
-                <Box
-                  mt={4}
-                  p={4}
-                  bg="green.50"
-                  border="1px solid"
-                  borderColor="green.200"
-                  borderRadius="lg"
-                >
-                  <HStack gap={2} mb={2}>
-                    <Gavel size={16} color="#15803d" />
-                    <Text fontSize="sm" fontWeight="700" color="green.800">
-                      Judgment
-                    </Text>
-                  </HStack>
-                  <Text fontSize="sm" color="gray.800">
-                    Delivered on {formatDate(currentCourtCase.judgmentDate)}
-                    {currentCourtCase.appealDeadline
-                      ? ` · Appeal deadline: ${formatDate(currentCourtCase.appealDeadline)}`
-                      : ""}
-                  </Text>
-                  {currentCourtCase.judgmentSummary && (
-                    <Text fontSize="sm" color="gray.700" mt={1}>
-                      {currentCourtCase.judgmentSummary}
-                    </Text>
-                  )}
-                </Box>
-              )}
-
-              {!currentCourtCase.judgmentSummary && (
-                <Button
-                  mt={4}
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRecordJudgment}
-                >
-                  <Gavel size={14} /> Record Judgment
-                </Button>
-              )}
-            </SectionCard>
-          )}
-
-          {/* Matter Team */}
-          <MatterTeam
-            matterNumber={matterNumber ?? ""}
-            matterTitle={matter.title}
-          />
-        </VStack>
+          {/* Supporting column */}
+          <VStack gap={6} align="stretch" minW={0}>
+            <MatterTeam
+              matterNumber={matterNumber ?? ""}
+              matterTitle={matter.title}
+            />
+          </VStack>
+        </Grid>
       )}
 
       {/* ==================== Court Cases ==================== */}
       {activeTab === "courtCases" && (
         <VStack gap={6} align="stretch">
-          <SectionCard title="Court Case Chain" icon={Link2}>
-            <CourtCaseChain
-              matterNumber={matter.matterNumber}
-              courtCases={courtCases}
-              currentCourtCaseRef={currentCourtCase?.ourCourtCaseRef}
-              onAddCourtCase={() => setIsAddCourtCaseOpen(true)}
-            />
-          </SectionCard>
+          <HStack
+            justify="space-between"
+            align="flex-start"
+            gap={4}
+            flexWrap="wrap"
+            w="100%"
+          >
+            <Box minW={0}>
+              <Text
+                fontSize={{ base: "20px", md: "22px" }}
+                fontWeight="700"
+                color="gray.900"
+                letterSpacing="-0.01em"
+              >
+                Court Cases
+              </Text>
+              <Text fontSize="13px" color="gray.500" mt={1}>
+                Track the court proceedings and related case history.
+              </Text>
+            </Box>
+            <Button
+              variant="primary"
+              onClick={() => setIsAddCourtCaseOpen(true)}
+            >
+              <Plus size={16} /> Add Court Case
+            </Button>
+          </HStack>
+
+          <Grid
+            templateColumns={{
+              base: "1fr",
+              lg: "minmax(0, 2.15fr) minmax(0, 1fr)",
+            }}
+            gap={6}
+            alignItems="start"
+            w="100%"
+          >
+            <Box minW={0}>
+              <CourtCaseChain
+                matterNumber={matter.matterNumber}
+                courtCases={courtCases}
+                currentCourtCaseRef={currentCourtCase?.ourCourtCaseRef}
+                onAddCourtCase={() => setIsAddCourtCaseOpen(true)}
+              />
+            </Box>
+            <Box minW={0}>
+              <CaseSummaryCard
+                courtCases={courtCases}
+                currentCourtCase={currentCourtCase}
+              />
+            </Box>
+          </Grid>
         </VStack>
       )}
 
       {/* ==================== Parties ==================== */}
       {activeTab === "parties" && (
-        <VStack gap={6} align="stretch">
-          <SectionCard title="Parties" icon={Users}>
-            <HStack justify="space-between" mb={4}>
-              <Text fontSize="sm" color="gray.500">
-                {parties.length} {parties.length === 1 ? "party" : "parties"} on
-                this matter
-              </Text>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAddPartyOpen(true)}
-              >
-                + Add Party
-              </Button>
-            </HStack>
-
-            {parties.length === 0 ? (
-              <Box py={8} textAlign="center">
-                <Text fontSize="sm" color="gray.500">
-                  No parties added to this matter
-                </Text>
-              </Box>
-            ) : (
-              <VStack gap={3} align="stretch">
-                {parties.map((party) => {
-                  const role = currentRoles.find(
-                    (r) => r.matterPartyId === party.id
-                  );
-                  return (
-                    <Box
-                      key={party.id}
-                      p={5}
-                      bg="gray.50"
-                      borderRadius="lg"
-                      border="1px solid"
-                      borderColor="gray.100"
-                    >
-                      <HStack
-                        justify="space-between"
-                        align="flex-start"
-                        flexWrap="wrap"
-                        gap={3}
-                      >
-                        <VStack align="stretch" gap={2}>
-                          <Text
-                            fontSize="base"
-                            fontWeight="600"
-                            color="gray.900"
-                          >
-                            {party.fullName}
-                          </Text>
-                          <HStack gap={2} flexWrap="wrap">
-                            {role && (
-                              <>
-                                <Badge
-                                  bg="blue.100"
-                                  color="blue.700"
-                                  px={3}
-                                  py={1}
-                                  borderRadius="full"
-                                  fontSize="xs"
-                                  fontWeight="600"
-                                >
-                                  {partyTypeLabel(role.roleType)}
-                                </Badge>
-                                <Badge
-                                  bg="purple.100"
-                                  color="purple.700"
-                                  px={3}
-                                  py={1}
-                                  borderRadius="full"
-                                  fontSize="xs"
-                                  fontWeight="600"
-                                >
-                                  {representationLabel(role.representation)}
-                                </Badge>
-                              </>
-                            )}
-                            {party.isOurClient && (
-                              <Badge
-                                bg="green.100"
-                                color="green.700"
-                                px={3}
-                                py={1}
-                                borderRadius="full"
-                                fontSize="xs"
-                                fontWeight="600"
-                              >
-                                Our Client
-                              </Badge>
-                            )}
-                            {party.clientId && (
-                              <Badge
-                                bg="orange.100"
-                                color="orange.700"
-                                px={3}
-                                py={1}
-                                borderRadius="full"
-                                fontSize="xs"
-                                fontWeight="600"
-                              >
-                                Linked
-                              </Badge>
-                            )}
-                          </HStack>
-                        </VStack>
-                        <Stack gap={1} align="flex-end" textAlign="right">
-                          {party.mobileNo && (
-                            <Text fontSize="sm" color="gray.600">
-                              {party.mobileNo}
-                            </Text>
-                          )}
-                          {party.email && (
-                            <Text fontSize="sm" color="gray.600">
-                              {party.email}
-                            </Text>
-                          )}
-                        </Stack>
-                      </HStack>
-                      {!role && (
-                        <Text fontSize="xs" color="gray.400" mt={2}>
-                          No role on the current court case
-                        </Text>
-                      )}
-                    </Box>
-                  );
-                })}
-              </VStack>
-            )}
-          </SectionCard>
-        </VStack>
+        <PartiesWorkspaceCard
+          title="Parties"
+          subtitle="Parties attached to this matter and their roles on the current court case."
+          parties={parties}
+          roles={currentRoles}
+          onAddParty={canCreate ? () => setIsAddPartyOpen(true) : undefined}
+          entityType="matter"
+        />
       )}
 
       {/* ==================== Events ==================== */}
       {activeTab === "events" && (
-        <VStack gap={6} align="stretch">
-          <SectionCard title="Case Diary" icon={Calendar}>
-            {!currentCourtCase ? (
-              <Box py={8} textAlign="center">
-                <Text fontSize="sm" color="gray.500">
-                  Add a court case before scheduling events
-                </Text>
-              </Box>
-            ) : (
-              <CourtCaseEvents
-                events={events}
-                onView={handleOpenEvent}
-                onSchedule={() => {
-                  setSelectedEvent(null);
-                  setIsEventFormOpen(true);
-                }}
-              />
-            )}
-          </SectionCard>
-        </VStack>
+        <CourtCaseEvents
+          events={events}
+          onView={handleOpenEvent}
+          onSchedule={() => {
+            setSelectedEvent(null);
+            setIsEventFormOpen(true);
+          }}
+          disabledReason={
+            currentCourtCase
+              ? undefined
+              : "Add a court case before scheduling events"
+          }
+        />
       )}
 
       {/* ==================== Timeline ==================== */}

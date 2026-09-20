@@ -39,6 +39,7 @@ export const ROUTES_CONFIG = {
     FIRM_ACTIVITY: "/firm-activity",
     STALE_MATTERS: "/stale-matters",
     SCRAPER_MANAGEMENT: "/scraper-management",
+    NOTIFICATIONS: "/notifications",
     GLOBAL_DASHBOARD: "/global-dashboard",
     PROJECT_MANAGEMENT: "/project-management",
     PROJECT_MANAGEMENT_PROJECTS: "/projects",

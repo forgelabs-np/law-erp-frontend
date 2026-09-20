@@ -83,6 +83,29 @@ export const api = {
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
     GET_FIRM_ROLES: "firm/roles",
   },
+  /**
+   * Firm-scoped role management. Used by FIRM_ADMIN to distribute a subset of
+   * their own permissions (the ceiling) to employee roles. Permission updates
+   * are a full replace of the role's permission set.
+   */
+  FIRM_ROLE_MANAGEMENT: {
+    LIST: "firm/roles",
+    CREATE: "firm/roles",
+    DELETE: "firm/roles/{roleId}",
+    TOGGLE: "firm/roles/{roleId}/toggle",
+    PERMISSIONS: "firm/roles/{roleId}/permissions",
+    USERS: "firm/roles/{roleId}/users",
+  },
+  /**
+   * Super Admin overrides a specific firm's roles. Role permission updates here
+   * bypass the Firm Admin ceiling (except GLOBAL permissions) and are a full
+   * replace of the role's permission set.
+   */
+  SUPER_ADMIN_FIRM_ROLES: {
+    LIST: "super-admin/firms/{firmId}/roles",
+    CREATE: "super-admin/firms/{firmId}/roles",
+    PERMISSIONS: "super-admin/firms/{firmId}/roles/{roleId}/permissions",
+  },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit",
     USER_AUDIT: "super-admin/audit/users/{userId}",
@@ -124,10 +147,17 @@ export const api = {
     CASE_HEARING_STATUS: "cases/{caseNoInternal}/hearing-status",
     ADMIN_SCRAPE: "scraper/admin/scrape",
     ADMIN_EXPORT: "scraper/admin/export",
+    ALL_COURTS: "scraper/admin/courts",
+    COURTS_BY_TYPE: "scraper/admin/courts/type/{courtType}",
   },
   DASHBOARD: {
     FIRM_DASHBOARD: "firm/dashboard",
     GLOBAL_DASHBOARD: "modules/dashboard",
+    /** Role-specific dashboards. The authenticated user's role selects one. */
+    SUPER_ADMIN: "dashboard/super-admin",
+    FIRM_ADMIN: "dashboard/firm",
+    EMPLOYEE: "dashboard/employee",
+    CLIENT: "dashboard/client",
   },
   MATTER_ASSIGNMENTS: {
     GET: "firm/matters/{matterNumber}/assignments",
@@ -160,6 +190,14 @@ export const api = {
     PROJECT_BY_CODE: "client/projects/{projectCode}",
     PROJECT_RENEWALS: "client/projects/{projectCode}/renewals",
   },
+  NOTIFICATIONS: {
+    LIST: "notifications",
+    UNREAD_COUNT: "notifications/unread-count",
+    MARK_READ: "notifications/{notificationId}/read",
+    READ_ALL: "notifications/read-all",
+    PREFERENCES: "notifications/preferences",
+    BROADCAST: "notifications/broadcast",
+  },
   INVOICE_MANAGEMENT: {
     LIST: "super-admin/invoices",
     GET_BY_ID: "super-admin/invoices/{id}",
@@ -169,5 +207,18 @@ export const api = {
     SEND: "super-admin/invoices/{id}/send",
     UPDATE_STATUS: "super-admin/invoices/{id}/status",
     DOWNLOAD_PDF: "super-admin/invoices/{id}/pdf",
+  },
+  FIRM_LIFECYCLE: {
+    SUSPEND: "super-admin/firms/{firmId}/suspend",
+    ACTIVATE: "super-admin/firms/{firmId}/activate",
+    EXTEND_TRIAL: "super-admin/firms/{firmId}/extend-trial",
+    CONVERT_TO_PERMANENT: "super-admin/firms/{firmId}/convert-to-permanent",
+  },
+  MASTER_DATA: {
+    REFRESH_CACHE: "master-data/cache/refresh",
+    CACHE_STATS: "master-data/cache/stats",
+    PROVINCES: "master-data/provinces",
+    DISTRICTS: "master-data/districts",
+    DISTRICTS_BY_PROVINCE: "master-data/provinces/{provinceId}/districts",
   },
 };

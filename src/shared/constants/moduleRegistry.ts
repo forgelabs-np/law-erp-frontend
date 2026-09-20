@@ -4,7 +4,6 @@ import {
   User,
   Building2,
   Shield,
-  LayoutTemplate,
   HelpCircle,
   Settings,
   LogOut,
@@ -13,6 +12,7 @@ import {
   Archive,
   Database,
   Briefcase,
+  Bell,
 } from "lucide-react";
 import { ComponentType } from "react";
 
@@ -177,6 +177,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     section: "Administration",
     order: 25,
   },
+  NOTIFICATION_MANAGEMENT: {
+    moduleCode: "NOTIFICATION_MANAGEMENT",
+    label: "Notifications",
+    path: ROUTES_CONFIG.USER.NOTIFICATIONS,
+    icon: Bell,
+    section: "Support",
+    order: 27,
+  },
   CONFIGURATION: {
     moduleCode: "CONFIGURATION",
     label: "Configuration",
@@ -208,14 +216,6 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     icon: Shield,
     section: "Administration",
     order: 25,
-  },
-  TEMPLATES: {
-    moduleCode: "TEMPLATES",
-    label: "Templates",
-    path: "#",
-    icon: LayoutTemplate,
-    section: "Support",
-    order: 90,
   },
   HELP_DOCS: {
     moduleCode: "HELP_DOCS",
