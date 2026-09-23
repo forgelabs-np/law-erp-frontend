@@ -87,6 +87,58 @@ export const useLoginMutation = (type: LoginType) => {
   });
 };
 
+export interface ForgotPasswordRequest {
+  lawFirmCode: string;
+  username: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export const useForgotPasswordMutation = () => {
+  return useMutation({
+    mutationFn: (data: ForgotPasswordRequest) =>
+      LawFirmCRMClient.post(api.forgotPassword, { data }),
+    onSuccess: (response) => {
+      successNotification(
+        response.data.message ||
+          "If the account details are valid, a password reset link/token has been sent to the registered email address."
+      );
+    },
+    onError: (error) => {
+      const err = error as AxiosError<{ message?: string; error?: string }>;
+      errorNotification(
+        err.response?.data?.message ??
+          err.response?.data?.error ??
+          "Failed to request password reset. Please try again."
+      );
+    },
+  });
+};
+
+export const useResetPasswordMutation = () => {
+  return useMutation({
+    mutationFn: (data: ResetPasswordRequest) =>
+      LawFirmCRMClient.post(api.resetPassword, { data }),
+    onSuccess: (response) => {
+      successNotification(
+        response.data.message || "Password reset successful!"
+      );
+    },
+    onError: (error) => {
+      const err = error as AxiosError<{ message?: string; error?: string }>;
+      errorNotification(
+        err.response?.data?.message ??
+          err.response?.data?.error ??
+          "Failed to reset password. Please check your token and try again."
+      );
+    },
+  });
+};
+
 export const useChangePasswordMutation = () => {
   return useMutation({
     mutationFn: (data: any) =>

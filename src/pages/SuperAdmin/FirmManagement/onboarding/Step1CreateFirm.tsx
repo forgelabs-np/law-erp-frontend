@@ -186,8 +186,12 @@ export const Step1CreateFirm = ({
         adminPassword: "", // Don't reset password for security
         adminFullName:
           (d.adminFullName as string) || (d.fullName as string) || "",
-        isTrial: (d.isTrial as boolean) ?? false,
-        trialDays: (d.trialDays as number) || 30,
+        isTrial:
+          (d.isTrial as boolean) ??
+          (d.is_trial as boolean) ??
+          // (d.firmStatus === "TRIAL") ??
+          false,
+        trialDays: (d.trialDays as number) || (d.trial_days as number) || 30,
       });
     }
   }, [initialData, reset]);

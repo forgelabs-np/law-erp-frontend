@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import { ChakraProvider, ToasterProvider } from "../components/ui";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // Do NOT retry 403 (Forbidden) — it's a permission issue, not transient.

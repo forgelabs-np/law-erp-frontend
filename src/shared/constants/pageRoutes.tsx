@@ -375,7 +375,13 @@ export const USER_ROUTES: Array<{
 export const AUTHENTICATION_ROUTES = [
   {
     path: ROUTES_CONFIG.AUTHENTICATION.FORGOT_PASSWORD,
-    element: <ForgotPassword />,
+    element: (
+      <PublicRoute
+        Component={ForgotPassword}
+        variant="split"
+        sideContent={<FirmHeroPanel />}
+      />
+    ),
   },
   {
     path: "/auth/login",
@@ -418,7 +424,13 @@ export const AUTHENTICATION_ROUTES = [
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
-    element: <ResetPassword />,
+    element: (
+      <PublicRoute
+        Component={ResetPassword}
+        variant="split"
+        sideContent={<FirmHeroPanel />}
+      />
+    ),
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD,

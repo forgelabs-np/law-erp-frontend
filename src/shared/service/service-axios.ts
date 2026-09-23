@@ -13,6 +13,8 @@ const PUBLIC_ENDPOINTS = [
   "super-admin/register",
   "auth/mfa/validate",
   "auth/mfa/setup/confirm",
+  "auth/forgot-password",
+  "auth/reset-password",
 ];
 
 const isPublicEndpoint = (url: string): boolean => {

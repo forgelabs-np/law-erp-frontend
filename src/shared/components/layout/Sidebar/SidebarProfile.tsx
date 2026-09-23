@@ -16,9 +16,11 @@ import { useLocation } from "react-router-dom";
 
 import { useCurrentUser } from "@/shared/hooks/useAuth";
 import TokenService from "@/shared/service/service-token";
+import { queryClient } from "@/shared/provider/Provider";
 
 const handleLogout = () => {
   TokenService.clearToken();
+  queryClient.clear();
   window.location.href = "/auth/login";
 };
 

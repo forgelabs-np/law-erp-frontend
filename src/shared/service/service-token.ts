@@ -89,6 +89,8 @@ function clearToken() {
   // localStorage.removeItem("auth");
   localStorage.removeItem("token");
   localStorage.removeItem("refresh_token");
+  localStorage.removeItem("lastLoginRole");
+  window.dispatchEvent(new CustomEvent("tokenChanged", { detail: null }));
 }
 
 export const getRole = () => {

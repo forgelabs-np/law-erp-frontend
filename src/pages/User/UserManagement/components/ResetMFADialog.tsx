@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Text, Textarea } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { FormProvider } from "@/shared/components";
@@ -32,6 +32,12 @@ export const ResetMFADialog = ({
     defaultValues: { reason: "" },
   });
 
+  useEffect(() => {
+    if (open) {
+      formMethods.reset({ reason: "" });
+    }
+  }, [open, formMethods]);
+
   const handleSubmit = () => {
     const reason = formMethods.getValues("reason");
     if (!reason || reason.trim() === "") {
@@ -41,6 +47,7 @@ export const ResetMFADialog = ({
       });
       return;
     }
+    formMethods.clearErrors("reason");
     onSubmit(reason.trim());
   };
 
@@ -98,7 +105,7 @@ export const ResetMFADialog = ({
             <Box>
               <FormProvider methods={formMethods}>
                 <Textarea
-                  name="reason"
+                  {...formMethods.register("reason")}
                   placeholder="Please provide a reason for resetting MFA..."
                   required
                   resize="vertical"
@@ -106,7 +113,7 @@ export const ResetMFADialog = ({
                   maxLength={500}
                 />
                 {formMethods.formState.errors.reason && (
-                  <Text color="error.500" fontSize="xs" mt={1}>
+                  <Text color="red.500" fontSize="xs" mt={1}>
                     {formMethods.formState.errors.reason.message as string}
                   </Text>
                 )}

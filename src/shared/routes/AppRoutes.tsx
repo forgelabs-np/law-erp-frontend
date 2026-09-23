@@ -1,4 +1,4 @@
-import { Navigate, useRoutes, type RouteObject } from "react-router-dom";
+import { Navigate, useLocation, useRoutes, type RouteObject } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { Layout } from "../components";
@@ -50,6 +50,7 @@ export const AppRoutes = () => {
   const [isInitializing, setIsInitializing] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const userRole = useRole();
+  const location = useLocation();
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -78,7 +79,7 @@ export const AppRoutes = () => {
     initializeAuth();
   }, []);
 
-  // Listen for token changes (e.g., when MFA sets new tokens)
+  // Listen for token changes, back/forward history navigation, and tab focus
   useEffect(() => {
     const handleTokenChange = () => {
       const tokenDetails = TokenService.getTokenDetails();
@@ -87,8 +88,28 @@ export const AppRoutes = () => {
     };
 
     window.addEventListener("tokenChanged", handleTokenChange);
-    return () => window.removeEventListener("tokenChanged", handleTokenChange);
+    window.addEventListener("popstate", handleTokenChange);
+    window.addEventListener("pageshow", handleTokenChange);
+    window.addEventListener("focus", handleTokenChange);
+
+    return () => {
+      window.removeEventListener("tokenChanged", handleTokenChange);
+      window.removeEventListener("popstate", handleTokenChange);
+      window.removeEventListener("pageshow", handleTokenChange);
+      window.removeEventListener("focus", handleTokenChange);
+    };
   }, []);
+
+  // Re-verify authentication on route change
+  useEffect(() => {
+    if (!isInitializing && authenticated) {
+      const tokenDetails = TokenService.getTokenDetails();
+      const isValid = tokenDetails && tokenDetails.exp * 1000 > Date.now();
+      if (!isValid) {
+        setAuthenticated(false);
+      }
+    }
+  }, [location.pathname, isInitializing, authenticated]);
 
   const authRoutes = [
     ...AUTHENTICATION_ROUTES,
