@@ -1,10 +1,10 @@
-import { Box, Button, Stack, Text, Textarea } from "@chakra-ui/react";
+import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { FormProvider } from "@/shared/components";
+import { FormProvider, PasswordInput } from "@/shared/components";
 import {
   DialogBackdrop,
   DialogBody,
@@ -15,55 +15,54 @@ import {
 } from "@/shared/components/ui/Dialog";
 import { UserResponseType } from "@/api/userManagement";
 
-const resetMfaSchema = yup.object({
-  reason: yup
+const resetPasswordSchema = yup.object({
+  newPassword: yup
     .string()
     .trim()
-    .required("Reason is required")
-    .min(1, "Reason is required"),
+    .min(8, "Password must be at least 8 characters")
+    .max(50, "Password must not exceed 50 characters")
+    .optional(),
 });
 
-interface ResetMFADialogProps {
+export type ResetPasswordSchemaType = yup.InferType<typeof resetPasswordSchema>;
+
+interface ResetPasswordDialogProps {
   open: boolean;
   onClose: () => void;
   user: UserResponseType | null;
-  onSubmit: (reason: string) => void;
+  onSubmit: (newPassword?: string) => void;
   isPending: boolean;
 }
 
-export const ResetMFADialog = ({
+export const ResetPasswordDialog = ({
   open,
   onClose,
   user,
   onSubmit,
   isPending,
-}: ResetMFADialogProps) => {
-  const formMethods = useForm({
-    defaultValues: { reason: "" },
-    resolver: yupResolver(resetMfaSchema),
+}: ResetPasswordDialogProps) => {
+  const formMethods = useForm<ResetPasswordSchemaType>({
+    defaultValues: { newPassword: "" },
+    resolver: yupResolver(resetPasswordSchema),
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
   useEffect(() => {
     if (open) {
-      formMethods.reset({ reason: "" });
+      formMethods.reset({ newPassword: "" });
     }
   }, [open, formMethods]);
 
   const handleSubmit = formMethods.handleSubmit((data) => {
-    onSubmit(data.reason.trim());
+    const trimmedPassword = data.newPassword?.trim();
+    onSubmit(trimmedPassword || undefined);
   });
-
-  const handleClose = () => {
-    formMethods.reset();
-    onClose();
-  };
 
   return (
     <DialogRoot
       open={open}
-      onOpenChange={(e) => !e.open && handleClose()}
+      onOpenChange={(e) => !e.open && onClose()}
       closeOnInteractOutside={false}
     >
       <DialogBackdrop />
@@ -83,12 +82,12 @@ export const ResetMFADialog = ({
               color="gray.700"
               textAlign="center"
             >
-              Reset MFA
+              Reset Password
             </Text>
             {user && (
               <Stack gap={2} textAlign="center">
                 <Text color="gray.600" fontSize="sm">
-                  You are about to reset MFA for:
+                  You are about to reset the password for:
                 </Text>
                 <Text fontWeight="600" color="gray.800" fontSize="md">
                   {user.fullName || user.username}
@@ -103,24 +102,22 @@ export const ResetMFADialog = ({
               textStyle="paragraph_regular"
               textAlign="center"
             >
-              This will remove the user's current authenticator configuration.
-              They will need to configure MFA again on their next login.
+              The user's current password will be invalidated. You can
+              optionally set a new password, or leave it empty to generate a
+              temporary password.
             </Text>
             <Box>
               <FormProvider methods={formMethods}>
-                <Textarea
-                  {...formMethods.register("reason")}
-                  placeholder="Please provide a reason for resetting MFA..."
-                  required
-                  resize="vertical"
-                  minHeight="80px"
-                  maxLength={500}
+                <PasswordInput
+                  name="newPassword"
+                  label="New Password (Optional)"
+                  placeholder="Leave empty to generate temporary password"
+                  inputHeight="48px"
+                  inputBorderRadius="lg"
                 />
-                {formMethods.formState.errors.reason && (
-                  <Text color="red.500" fontSize="xs" mt={1}>
-                    {formMethods.formState.errors.reason.message as string}
-                  </Text>
-                )}
+                <Text fontSize="xs" color="gray.500" mt={1}>
+                  Minimum 8 characters, maximum 50 characters
+                </Text>
               </FormProvider>
             </Box>
           </Stack>
@@ -141,18 +138,19 @@ export const ResetMFADialog = ({
             borderRadius="xl"
             loading={isPending}
             type="button"
-            backgroundColor="error.700"
-            _hover={{ backgroundColor: "error.800" }}
+            backgroundColor="blue.600"
+            color="white"
+            _hover={{ backgroundColor: "blue.700" }}
             disabled={isPending}
           >
-            Reset MFA
+            Reset Password
           </Button>
           <Button
             variant="surface"
             minW="112px"
             textStyle="subtitle_small"
             h="44px"
-            onClick={handleClose}
+            onClick={onClose}
             borderRadius="xl"
             disabled={isPending}
           >

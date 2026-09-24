@@ -17,10 +17,7 @@ import { useForgotPasswordMutation } from "@/api/auth";
 import { Logo } from "@/assets/images";
 import { FormProvider, TextFieldInput } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
-import {
-  forgotPasswordSchema,
-  ForgotPasswordSchemaType,
-} from "@/validations";
+import { forgotPasswordSchema, ForgotPasswordSchemaType } from "@/validations";
 import { LucideCheckCircle2 } from "lucide-react";
 
 const defaultValues: ForgotPasswordSchemaType = {
@@ -172,12 +169,15 @@ export const ForgotPassword = () => {
               <LucideCheckCircle2 size={20} />
             </Box>
             <Text fontSize="sm" color="green.800" lineHeight="1.5">
-              Please check your inbox. You can use the token provided in the email to reset your password.
+              Please check your inbox. You can use the token provided in the
+              email to reset your password.
             </Text>
           </Box>
 
           <Button
-            onClick={() => navigate(ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD)}
+            onClick={() =>
+              navigate(ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD)
+            }
             variant="solid"
             width="full"
             height="48px"

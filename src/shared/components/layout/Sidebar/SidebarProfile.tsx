@@ -14,14 +14,20 @@ import { ChevronDown, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-import { useCurrentUser } from "@/shared/hooks/useAuth";
+import { useCurrentUser, useClearUser } from "@/shared/hooks/useAuth";
+import { useAuthStore } from "@/shared/stores/auth.store";
 import TokenService from "@/shared/service/service-token";
 import { queryClient } from "@/shared/provider/Provider";
 
 const handleLogout = () => {
+  // Clear auth store
+  useAuthStore.getState().clearUser();
+  // Clear tokens
   TokenService.clearToken();
+  // Clear React Query cache
   queryClient.clear();
-  window.location.href = "/auth/login";
+  // Use replace to prevent back navigation
+  window.location.replace("/auth/login");
 };
 
 interface SidebarProfileProps {

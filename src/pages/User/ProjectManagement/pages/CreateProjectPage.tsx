@@ -37,7 +37,7 @@ const CreateProjectPage = () => {
   const navigate = useNavigate();
   const createMutation = useCreateProjectMutation();
   const { data: employees } = useGetEmployeesQuery();
-  const { data: clients } = useGetClientsQuery()
+  const { data: clients } = useGetClientsQuery();
   const employeeList = employees?.content ?? [];
   const clientList = clients?.content ?? [];
 

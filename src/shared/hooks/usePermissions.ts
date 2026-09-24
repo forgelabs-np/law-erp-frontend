@@ -86,6 +86,36 @@ const NO_PERMISSION: ModulePermissions = {
 // ─── PURE HELPERS (no hooks) ────────────────────────────────────────────────
 
 /**
+ * Generic resolver: find a module by moduleCode, searching both top-level
+ * modules and nested subModules recursively.
+ * Returns the matching module/submodule or undefined.
+ */
+export function findModule(
+  modules: UserModule[],
+  moduleCode: string
+): UserModule | undefined {
+  if (!moduleCode || !modules) return undefined;
+
+  // Search top-level modules first
+  const topLevelMatch = modules.find((m) => m.moduleCode === moduleCode);
+  if (topLevelMatch) {
+    return topLevelMatch;
+  }
+
+  // Recursively search subModules
+  for (const module of modules) {
+    if (module.subModules?.length) {
+      const subMatch = findModule(module.subModules, moduleCode);
+      if (subMatch) {
+        return subMatch;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
  * Pure helper: check if a module has a specific action.
  * Does NOT use hooks — safe to call from outside React components.
  */
@@ -95,7 +125,7 @@ export function moduleHasAction(
   action: string
 ): boolean {
   if (!moduleCode || !action) return false;
-  const mod = modules.find((m) => m.moduleCode === moduleCode);
+  const mod = findModule(modules, moduleCode);
   if (!mod || !mod.enabled) return false;
   return mod.actions.includes(action);
 }
@@ -108,7 +138,7 @@ export function isModuleEnabled(
   moduleCode: string
 ): boolean {
   if (!moduleCode) return false;
-  const mod = modules.find((m) => m.moduleCode === moduleCode);
+  const mod = findModule(modules, moduleCode);
   return !!mod && mod.enabled;
 }
 
@@ -132,7 +162,7 @@ export function useModulePermissions(moduleCode: string): ModulePermissions {
       return NO_PERMISSION;
     }
 
-    const mod = modules.find((m) => m.moduleCode === moduleCode);
+    const mod = findModule(modules, moduleCode);
     if (!mod || !mod.enabled) {
       return NO_PERMISSION;
     }

@@ -70,6 +70,7 @@ export const api = {
       GET_PERMISSIONS: "modules/users/{userId}/permissions",
       GET_ACTIVITY: "modules/users/{userId}/activity",
       RESET_PASSWORD: "modules/users/{userId}/reset-password",
+      SUPER_ADMIN_RESET_PASSWORD: "super-admin/users/{userId}/reset-password",
       BULK_ROLE_CHANGE: "modules/users/bulk-role-change",
       BULK_DEACTIVATE: "modules/users/bulk-deactivate",
       RESET_MFA: "super-admin/mfa/reset",

@@ -1,4 +1,9 @@
-import { Navigate, useLocation, useRoutes, type RouteObject } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useRoutes,
+  type RouteObject,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { Layout } from "../components";

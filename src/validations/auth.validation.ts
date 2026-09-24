@@ -128,7 +128,4 @@ export const resetPasswordSchema = yup.object({
     .oneOf([yup.ref("newPassword")], "Passwords do not match"),
 });
 
-export type ResetPasswordSchemaType = yup.InferType<
-  typeof resetPasswordSchema
->;
-
+export type ResetPasswordSchemaType = yup.InferType<typeof resetPasswordSchema>;

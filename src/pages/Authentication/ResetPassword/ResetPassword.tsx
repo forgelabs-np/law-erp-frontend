@@ -21,10 +21,7 @@ import {
   TextFieldInput,
 } from "@/shared/components";
 import { ROUTES_CONFIG } from "@/shared/config";
-import {
-  resetPasswordSchema,
-  ResetPasswordSchemaType,
-} from "@/validations";
+import { resetPasswordSchema, ResetPasswordSchemaType } from "@/validations";
 import { LucideCheckCircle2 } from "lucide-react";
 
 const defaultValues: ResetPasswordSchemaType = {
@@ -38,7 +35,8 @@ export const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const [isResetSuccess, setIsResetSuccess] = useState(false);
 
-  const initialToken = searchParams.get("token") || searchParams.get("otp") || "";
+  const initialToken =
+    searchParams.get("token") || searchParams.get("otp") || "";
 
   const methods = useForm<ResetPasswordSchemaType>({
     defaultValues: {
@@ -197,12 +195,15 @@ export const ResetPassword = () => {
               <LucideCheckCircle2 size={20} />
             </Box>
             <Text fontSize="sm" color="green.800" lineHeight="1.5">
-              Your password update is complete. All previous sessions have been invalidated.
+              Your password update is complete. All previous sessions have been
+              invalidated.
             </Text>
           </Box>
 
           <Button
-            onClick={() => navigate(ROUTES_CONFIG.AUTHENTICATION.LOGIN)}
+            onClick={() =>
+              navigate(ROUTES_CONFIG.AUTHENTICATION.LOGIN, { replace: true })
+            }
             variant="solid"
             width="full"
             height="48px"

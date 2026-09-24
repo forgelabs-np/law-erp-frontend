@@ -231,14 +231,14 @@ const CreateMatterPage = () => {
       prev.map((p) =>
         p.key === partyKey
           ? {
-            ...p,
-            fullName: match.fullName,
-            mobileNo: match.mobileNo ?? "",
-            email: match.email ?? "",
-            clientId:
-              match.sourceType === "CLIENT" ? match.sourceId : undefined,
-            isOurClient: match.sourceType === "CLIENT" ? true : p.isOurClient,
-          }
+              ...p,
+              fullName: match.fullName,
+              mobileNo: match.mobileNo ?? "",
+              email: match.email ?? "",
+              clientId:
+                match.sourceType === "CLIENT" ? match.sourceId : undefined,
+              isOurClient: match.sourceType === "CLIENT" ? true : p.isOurClient,
+            }
           : p
       )
     );

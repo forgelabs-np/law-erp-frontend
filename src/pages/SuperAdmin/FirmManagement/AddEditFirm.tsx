@@ -39,8 +39,7 @@ const defaultValues: FirmFormValues = {
 
 const mapFirmToFormValues = (firm?: any): FirmFormValues => {
   if (!firm) return defaultValues;
-  const isTrial =
-    firm.isTrial ?? firm.is_trial ?? firm.firmStatus === "TRIAL";
+  const isTrial = firm.isTrial ?? firm.is_trial ?? firm.firmStatus === "TRIAL";
   return {
     lawFirmCode: firm.firmCode ?? firm.lawFirmCode ?? "",
     name: firm.name ?? firm.firmName ?? "",
@@ -130,7 +129,9 @@ export const AddEditFirm = ({
       adminFullName: data.adminFullName,
       ...(data.adminPassword ? { adminPassword: data.adminPassword } : {}),
       isTrial: data.isTrial ?? false,
-      ...(data.isTrial && data.trialDays ? { trialDays: Number(data.trialDays) } : {}),
+      ...(data.isTrial && data.trialDays
+        ? { trialDays: Number(data.trialDays) }
+        : {}),
     };
 
     mutate(payload, {
