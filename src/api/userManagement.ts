@@ -134,19 +134,76 @@ export const useUserActivityQuery = (id: string) => {
   });
 };
 
-const resetPassword = (id: string) => {
+export interface ResetPasswordRequest {
+  newPassword?: string;
+}
+
+const resetPassword = (id: string, data?: ResetPasswordRequest) => {
   return LawFirmCRMClient.post<ApiResponse<any>>(
-    api.USER_MANAGEMENT.USERS.RESET_PASSWORD.replace("{userId}", id)
+    api.USER_MANAGEMENT.USERS.RESET_PASSWORD.replace("{userId}", id),
+    data?.newPassword ? { data } : undefined
   );
 };
 
 export const useResetPasswordMutation = () => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: resetPassword,
+    mutationFn: ({
+      userId,
+      newPassword,
+    }: {
+      userId: string;
+      newPassword?: string;
+    }) => resetPassword(userId, newPassword ? { newPassword } : undefined),
     onSuccess: (response) => {
       successNotification(
         response?.data?.message || "Password reset successfully"
       );
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.USERS.GET_USERS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ??
+        error?.response?.data?.error?.errorMessage ??
+        "Something went wrong!";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+const superAdminResetPassword = (id: string, data?: ResetPasswordRequest) => {
+  return LawFirmCRMClient.post<ApiResponse<any>>(
+    api.USER_MANAGEMENT.USERS.SUPER_ADMIN_RESET_PASSWORD.replace(
+      "{userId}",
+      id
+    ),
+    data?.newPassword ? { data } : undefined
+  );
+};
+
+export const useSuperAdminResetPasswordMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      userId,
+      newPassword,
+    }: {
+      userId: string;
+      newPassword?: string;
+    }) =>
+      superAdminResetPassword(
+        userId,
+        newPassword ? { newPassword } : undefined
+      ),
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Password reset successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.USERS.SUPER_ADMIN_GET_USERS],
+      });
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =

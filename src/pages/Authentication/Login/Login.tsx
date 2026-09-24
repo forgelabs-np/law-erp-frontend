@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 
 import { type LoginType, useLoginMutation } from "@/api/auth";
 import { useTemporaryAuthStore } from "@/store/temporaryAuthStore";
@@ -256,12 +256,10 @@ const Login = () => {
                 width="full"
               >
                 Forgot your password?{" "}
-                <Link
-                  href="/forgot-password"
-                  color="primary.500"
-                  fontWeight="600"
-                >
-                  Reset here
+                <Link color="primary.500" fontWeight="600" asChild>
+                  <RouterLink to={ROUTES_CONFIG.AUTHENTICATION.FORGOT_PASSWORD}>
+                    Reset here
+                  </RouterLink>
                 </Link>
               </Text>
             )}

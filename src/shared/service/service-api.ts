@@ -6,6 +6,8 @@ export const api = {
   registerClient: "auth/register/client",
   superAdminLogin: "super-admin/login",
   changePassword: "auth/change-password",
+  forgotPassword: "auth/forgot-password",
+  resetPassword: "auth/reset-password",
   mfaSetupConfirm: "auth/mfa/setup/confirm",
   mfaValidate: "auth/mfa/validate",
   EMPLOYEE_MANAGEMENT: {
@@ -68,6 +70,7 @@ export const api = {
       GET_PERMISSIONS: "modules/users/{userId}/permissions",
       GET_ACTIVITY: "modules/users/{userId}/activity",
       RESET_PASSWORD: "modules/users/{userId}/reset-password",
+      SUPER_ADMIN_RESET_PASSWORD: "super-admin/users/{userId}/reset-password",
       BULK_ROLE_CHANGE: "modules/users/bulk-role-change",
       BULK_DEACTIVATE: "modules/users/bulk-deactivate",
       RESET_MFA: "super-admin/mfa/reset",

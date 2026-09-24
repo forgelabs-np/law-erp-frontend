@@ -37,6 +37,27 @@ const defaultValues: FirmFormValues = {
   trialDays: 30,
 };
 
+const mapFirmToFormValues = (firm?: any): FirmFormValues => {
+  if (!firm) return defaultValues;
+  const isTrial = firm.isTrial ?? firm.is_trial ?? firm.firmStatus === "TRIAL";
+  return {
+    lawFirmCode: firm.firmCode ?? firm.lawFirmCode ?? "",
+    name: firm.name ?? firm.firmName ?? "",
+    firmType: firm.firmType ?? "",
+    email: firm.firmEmail ?? firm.email ?? "",
+    phone: firm.firmPhone ?? firm.phone ?? "",
+    address: firm.firmAddress ?? firm.address ?? "",
+    jurisdiction: firm.jurisdiction ?? "",
+    adminUsername: firm.username ?? firm.adminUsername ?? "",
+    adminEmail: firm.adminEmail ?? firm.email ?? "",
+    adminMobileNo: firm.mobileNo ?? firm.adminMobileNo ?? "",
+    adminPassword: "",
+    adminFullName: firm.adminFullName ?? firm.fullName ?? "",
+    isTrial: Boolean(isTrial),
+    trialDays: firm.trialDays ?? firm.trial_days ?? 30,
+  };
+};
+
 export const AddEditFirm = ({
   open,
   onClose,
@@ -74,34 +95,19 @@ export const AddEditFirm = ({
   // Reset form when drawer opens or id changes
   useEffect(() => {
     if (open) {
-      // First, reset to defaults to clear any stale data
-      reset(defaultValues);
-
-      // If no id, we're in create mode - keep defaults
       if (!id) {
+        reset(defaultValues);
         setId("");
-        return;
+      } else if (firmById) {
+        reset(mapFirmToFormValues(firmById));
       }
     }
-  }, [open, id, reset, setId]);
+  }, [open, id, firmById, reset, setId]);
 
   // Pre-fill form in edit mode when firm data is loaded
   useEffect(() => {
     if (open && firmById && id) {
-      reset({
-        lawFirmCode: firmById.firmCode ?? firmById.lawFirmCode ?? "",
-        name: firmById.name ?? firmById.firmName ?? "",
-        firmType: firmById.firmType ?? "",
-        email: firmById.firmEmail ?? "",
-        phone: firmById.firmPhone ?? "",
-        address: firmById.firmAddress ?? "",
-        jurisdiction: firmById.jurisdiction ?? "",
-        adminUsername: firmById.username ?? "",
-        adminEmail: firmById.email ?? "",
-        adminMobileNo: firmById.mobileNo ?? "",
-        adminPassword: "",
-        adminFullName: firmById.adminFullName ?? firmById.fullName ?? "",
-      });
+      reset(mapFirmToFormValues(firmById));
     }
   }, [open, firmById, id, reset]);
 
@@ -123,7 +129,9 @@ export const AddEditFirm = ({
       adminFullName: data.adminFullName,
       ...(data.adminPassword ? { adminPassword: data.adminPassword } : {}),
       isTrial: data.isTrial ?? false,
-      ...(data.isTrial && data.trialDays ? { trialDays: data.trialDays } : {}),
+      ...(data.isTrial && data.trialDays
+        ? { trialDays: Number(data.trialDays) }
+        : {}),
     };
 
     mutate(payload, {
@@ -132,13 +140,18 @@ export const AddEditFirm = ({
   };
 
   const closeHandler = () => {
-    resetHandler();
+    reset(defaultValues);
+    setId("");
     onClose();
   };
 
   const resetHandler = () => {
-    reset(defaultValues);
-    setId("");
+    if (id && firmById) {
+      reset(mapFirmToFormValues(firmById));
+    } else {
+      reset(defaultValues);
+      setId("");
+    }
   };
 
   return (

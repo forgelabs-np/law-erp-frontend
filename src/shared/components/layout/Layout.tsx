@@ -28,7 +28,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     if (query.error) {
       useAuthStore.getState().clearUser();
-      window.location.href = "/auth/login";
+      window.location.replace("/auth/login");
     }
   }, [query.error]);
 

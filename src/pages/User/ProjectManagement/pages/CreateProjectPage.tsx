@@ -21,6 +21,7 @@ import { useGetEmployeesQuery } from "@/api/employeeManagement";
 import { CreateProjectRequest } from "../types/project.types";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { projectSchema, ProjectSchemaType } from "@/validations";
+import { useGetClientsQuery } from "@/api/clientManagement";
 
 const defaultValues: ProjectSchemaType = {
   name: "",
@@ -36,7 +37,9 @@ const CreateProjectPage = () => {
   const navigate = useNavigate();
   const createMutation = useCreateProjectMutation();
   const { data: employees } = useGetEmployeesQuery();
+  const { data: clients } = useGetClientsQuery();
   const employeeList = employees?.content ?? [];
+  const clientList = clients?.content ?? [];
 
   const {
     control,
@@ -170,11 +173,11 @@ const CreateProjectPage = () => {
                     placeholder="Select client user (optional)"
                     value={field.value || ""}
                     onChange={field.onChange}
-                    size="sm"
+                    w="400px"
                   >
-                    {employeeList.map((emp: any) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.fullName}
+                    {clientList.map((client: any) => (
+                      <option key={client.id} value={client.id}>
+                        {client.fullName}
                       </option>
                     ))}
                   </FieldSelect>
@@ -197,7 +200,7 @@ const CreateProjectPage = () => {
                     placeholder="Select project owner"
                     value={field.value}
                     onChange={field.onChange}
-                    size="sm"
+                    w="400px"
                   >
                     {employeeList.map((emp: any) => (
                       <option key={emp.id} value={emp.id}>
