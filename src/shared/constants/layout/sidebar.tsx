@@ -16,14 +16,14 @@ import {
 } from "lucide-react";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { MdTask } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import TokenService from "@/shared/service/service-token";
+import { performLogout } from "@/api/auth";
 
 export type UserRole = "SUPER_ADMIN" | "FIRM_ADMIN";
 
 const handleLogout = () => {
-  TokenService.clearToken();
-  window.location.href = "/auth/login";
+  // Calls POST /auth/logout, clears local + persisted auth and the React
+  // Query cache, then replaces the history entry with /auth/login.
+  void performLogout();
 };
 
 export const SIDEBAR_ITEMS = [

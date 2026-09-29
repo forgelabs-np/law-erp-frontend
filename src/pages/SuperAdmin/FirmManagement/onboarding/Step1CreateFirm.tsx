@@ -3,13 +3,21 @@ import { useCallback, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { useCreateEditFirmMutation } from "@/api/firmManagement";
+import {
+  useCreateEditFirmMutation,
+  useUpdateFirmMutation,
+} from "@/api/firmManagement";
 import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
 import { useProvincesQuery } from "@/shared/hooks/useMasterData";
 import { Switch } from "@/shared/components/ui";
 import { firmSchema } from "@/validations";
 
-import { FirmFormValues, FirmPayload } from "../types";
+import {
+  FirmFormValues,
+  FirmPayload,
+  FirmType,
+  FirmUpdatePayload,
+} from "../types";
 
 const FIRM_TYPE_OPTIONS = [
   { label: "Firm", value: "FIRM" },
@@ -61,7 +69,8 @@ export const Step1CreateFirm = ({
   const { handleSubmit, watch, control, reset } = methods;
   const isTrial = watch("isTrial");
 
-  const { mutate } = useCreateEditFirmMutation();
+  const { mutate: createFirm } = useCreateEditFirmMutation();
+  const { mutate: updateFirm } = useUpdateFirmMutation();
   const { data: provinces = [], isLoading: provincesLoading } =
     useProvincesQuery();
 
@@ -74,9 +83,47 @@ export const Step1CreateFirm = ({
 
   const onSubmit = useCallback(
     (data: FirmFormValues) => {
+      // EDIT (navigating back after the firm was created) → dedicated
+      // PUT /super-admin/firms/{firmId} — never the create POST endpoint.
+      if (createdFirmId) {
+        const updatePayload: FirmUpdatePayload = {
+          name: data.name,
+          firmType: data.firmType as FirmType,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          jurisdiction: data.jurisdiction,
+          // Immutable fields are submitted exactly as loaded (inputs are
+          // disabled in edit mode) — the backend rejects changed values.
+          ...(data.lawFirmCode?.trim()
+            ? { lawFirmCode: data.lawFirmCode.trim() }
+            : {}),
+          adminUsername: data.adminUsername,
+          adminFullName: data.adminFullName,
+          adminEmail: data.adminEmail,
+          adminMobileNo: data.adminMobileNo,
+          // adminPassword / isTrial / trialDays are intentionally not sent —
+          // see FirmUpdatePayload.
+        };
+
+        updateFirm(
+          { firmId: createdFirmId, data: updatePayload },
+          {
+            onSuccess: () => {
+              // UPDATE mode - just move to next step, keep the same firmId
+              onSuccess({
+                firmId: createdFirmId,
+                adminUsername: data.adminUsername,
+                firmName: data.name,
+              });
+            },
+          }
+        );
+        return;
+      }
+
+      // CREATE → existing create POST endpoint.
       const payload: FirmPayload = {
-        // Include id for UPDATE - the same endpoint handles both create and edit
-        ...(createdFirmId ? { id: createdFirmId } : {}),
         ...(data.lawFirmCode?.toUpperCase()
           ? { lawFirmCode: data.lawFirmCode?.toUpperCase() }
           : {}),
@@ -90,63 +137,48 @@ export const Step1CreateFirm = ({
         adminEmail: data.adminEmail,
         adminMobileNo: data.adminMobileNo,
         adminFullName: data.adminFullName,
-        // Only include password on CREATE (not update) if it's empty
-        ...(createdFirmId && !data.adminPassword
-          ? {}
-          : data.adminPassword
-            ? { adminPassword: data.adminPassword }
-            : {}),
+        ...(data.adminPassword ? { adminPassword: data.adminPassword } : {}),
         isTrial: data.isTrial ?? false,
         ...(data.isTrial && data.trialDays
           ? { trialDays: data.trialDays }
           : {}),
       };
 
-      mutate(payload, {
+      createFirm(payload, {
         onSuccess: (response) => {
-          if (createdFirmId) {
-            // UPDATE mode - just move to next step, keep the same firmId
+          // CREATE mode - extract the new firm ID from response
+          const responseData = response?.data?.data;
+
+          let firmId = "";
+          let adminId: string | undefined;
+          let adminRoleId: string | undefined;
+          let firmName = data.name;
+
+          if (responseData) {
+            firmId =
+              responseData.firmId ||
+              responseData.id ||
+              responseData.firm?.id ||
+              "";
+            adminId = responseData.adminId || responseData.admin?.id;
+            adminRoleId =
+              responseData.adminRoleId || responseData.admin?.roleId;
+            firmName = responseData.firmName || responseData.name || data.name;
+          }
+
+          if (firmId) {
             onSuccess({
-              firmId: createdFirmId,
+              firmId,
+              adminId,
+              adminRoleId,
               adminUsername: data.adminUsername,
-              firmName: data.name,
+              firmName,
             });
-          } else {
-            // CREATE mode - extract the new firm ID from response
-            const responseData = response?.data?.data;
-
-            let firmId = "";
-            let adminId: string | undefined;
-            let adminRoleId: string | undefined;
-            let firmName = data.name;
-
-            if (responseData) {
-              firmId =
-                responseData.firmId ||
-                responseData.id ||
-                responseData.firm?.id ||
-                "";
-              adminId = responseData.adminId || responseData.admin?.id;
-              adminRoleId =
-                responseData.adminRoleId || responseData.admin?.roleId;
-              firmName =
-                responseData.firmName || responseData.name || data.name;
-            }
-
-            if (firmId) {
-              onSuccess({
-                firmId,
-                adminId,
-                adminRoleId,
-                adminUsername: data.adminUsername,
-                firmName,
-              });
-            }
           }
         },
       });
     },
-    [mutate, onSuccess, createdFirmId]
+    [createFirm, updateFirm, onSuccess, createdFirmId]
   );
 
   // Expose submit function to parent
@@ -239,6 +271,7 @@ export const Step1CreateFirm = ({
               name="lawFirmCode"
               label="Law Firm Code"
               placeholder="Auto-generated if empty"
+              disabled={isEditMode}
             />
           </GridItem>
 
@@ -256,6 +289,7 @@ export const Step1CreateFirm = ({
               name="phone"
               label="Phone"
               placeholder="98XXXXXXXX"
+              maxLength={10}
               required
             />
           </GridItem>
@@ -305,6 +339,7 @@ export const Step1CreateFirm = ({
               name="adminUsername"
               label="Admin Username"
               placeholder="username"
+              disabled={isEditMode}
               required
             />
           </GridItem>
@@ -314,6 +349,7 @@ export const Step1CreateFirm = ({
               name="adminMobileNo"
               label="Admin Mobile No."
               placeholder="98XXXXXXXX"
+              maxLength={10}
               required
             />
           </GridItem>
@@ -327,67 +363,66 @@ export const Step1CreateFirm = ({
             />
           </GridItem>
 
-          <GridItem colSpan={2}>
-            <TextFieldInput
-              name="adminPassword"
-              label={
-                isEditMode
-                  ? "Admin Password (leave empty to keep current)"
-                  : "Admin Password"
-              }
-              placeholder={
-                isEditMode
-                  ? "Leave empty to keep current password"
-                  : "Set initial password"
-              }
-              required={!isEditMode}
-            />
-          </GridItem>
-        </Grid>
-
-        {/* Trial Settings */}
-        <Stack gap={1} mt={2}>
-          <Text fontWeight="semibold" fontSize="sm" color="gray.600">
-            Trial Settings
-          </Text>
-        </Stack>
-
-        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-          <GridItem colSpan={2}>
-            <Controller
-              name="isTrial"
-              control={control}
-              render={({ field }) => (
-                <HStack justify="space-between">
-                  <Stack gap={0}>
-                    <Text fontSize="sm" fontWeight="medium">
-                      Trial Account
-                    </Text>
-                    <Text fontSize="xs" color="gray.500">
-                      Create this firm as a trial account
-                    </Text>
-                  </Stack>
-                  <Switch
-                    checked={field.value ?? false}
-                    onCheckedChange={(e) => field.onChange(e.checked)}
-                  />
-                </HStack>
-              )}
-            />
-          </GridItem>
-
-          {isTrial && (
+          {!isEditMode && (
             <GridItem colSpan={2}>
               <TextFieldInput
-                name="trialDays"
-                label="Trial Duration (days)"
-                placeholder="30"
-                type="number"
+                name="adminPassword"
+                label="Admin Password"
+                placeholder="Set initial password"
                 required
               />
             </GridItem>
           )}
         </Grid>
+
+        {/* Trial Settings (create only — trial changes on an existing firm
+            go through the lifecycle actions) */}
+        {!isEditMode && (
+          <>
+            <Stack gap={1} mt={2}>
+              <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+                Trial Settings
+              </Text>
+            </Stack>
+
+            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+              <GridItem colSpan={2}>
+                <Controller
+                  name="isTrial"
+                  control={control}
+                  render={({ field }) => (
+                    <HStack justify="space-between">
+                      <Stack gap={0}>
+                        <Text fontSize="sm" fontWeight="medium">
+                          Trial Account
+                        </Text>
+                        <Text fontSize="xs" color="gray.500">
+                          Create this firm as a trial account
+                        </Text>
+                      </Stack>
+                      <Switch
+                        checked={field.value ?? false}
+                        onCheckedChange={(e) => field.onChange(e.checked)}
+                      />
+                    </HStack>
+                  )}
+                />
+              </GridItem>
+
+              {isTrial && (
+                <GridItem colSpan={2}>
+                  <TextFieldInput
+                    name="trialDays"
+                    label="Trial Duration (days)"
+                    placeholder="30"
+                    type="number"
+                    required
+                  />
+                </GridItem>
+              )}
+            </Grid>
+          </>
+        )}
       </Stack>
     </FormProvider>
   );

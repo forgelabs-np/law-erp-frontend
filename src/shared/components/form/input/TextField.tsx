@@ -20,6 +20,7 @@ export const TextFieldInput = ({
   autoComplete,
   inputHeight,
   inputBorderRadius,
+  maxLength,
 }: TextFieldInputProps & {
   inputHeight?: string;
   inputBorderRadius?: string;
@@ -54,6 +55,7 @@ export const TextFieldInput = ({
         <Input
           ref={ref}
           type={type}
+          maxLength={maxLength}
           value={value ?? ""} // to prevent the error --> component is changing from uncontrolled to controlled
           onChange={handleChange}
           onBlur={onBlur}

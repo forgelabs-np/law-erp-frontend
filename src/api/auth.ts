@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import TokenService, { TokenDetails } from "@/shared/service/service-token";
+import { useAuthStore } from "@/shared/stores/auth.store";
+import { queryClient } from "@/shared/provider/Provider";
 import {
   errorNotification,
   successNotification,
@@ -85,6 +87,46 @@ export const useLoginMutation = (type: LoginType) => {
       );
     },
   });
+};
+
+// --- Logout ---
+
+// Short timeout so a hanging request can never leave the user stuck on an
+// authenticated page — local cleanup runs as soon as it settles.
+const LOGOUT_TIMEOUT_MS = 10000;
+
+// Module-level guard: rapid clicks must not fire duplicate logout requests.
+let isLoggingOut = false;
+
+/**
+ * Full logout flow used by every logout entry point:
+ *
+ * 1. POST auth/logout (no request body) — ends the session server-side.
+ * 2. Clear in-memory auth state (zustand store).
+ * 3. Clear persisted credentials (tokens).
+ * 4. Clear the React Query cache so no protected data stays cached.
+ * 5. Navigate to Login with `replace` so protected routes are unreachable.
+ *
+ * The API call is attempted first, but a network/server failure must never
+ * leave the user looking authenticated — local cleanup always runs.
+ */
+export const performLogout = async (): Promise<void> => {
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+
+  try {
+    await LawFirmCRMClient.post(api.logout, undefined, {
+      timeout: LOGOUT_TIMEOUT_MS,
+    });
+  } catch {
+    // Intentionally ignored: local state is still cleared below so the UI
+    // never stays authenticated when the logout request fails.
+  }
+
+  useAuthStore.getState().clearUser();
+  TokenService.clearToken();
+  queryClient.clear();
+  window.location.replace("/auth/login");
 };
 
 export interface ForgotPasswordRequest {

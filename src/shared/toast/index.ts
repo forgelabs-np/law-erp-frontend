@@ -1,10 +1,8 @@
-import { createToaster } from "@chakra-ui/react";
-
-export const toaster = createToaster({
-  placement: "bottom-end",
-  pauseOnPageIdle: true,
-  duration: 4000,
-});
+// Reuse the single shared Chakra toaster instance that is rendered by
+// <ToasterProvider/>. Creating a separate createToaster() instance here meant
+// every toastSuccess/toastFail call was queued on a toaster nothing renders,
+// so those notifications never appeared on screen.
+import { toaster } from "@/shared/config";
 
 const toastSuccess = (message: string) => {
   toaster.create({
@@ -64,4 +62,4 @@ const toastPromise = async <T>(
   }
 };
 
-export { toastSuccess, toastFail, toastInfo, toastPromise };
+export { toaster, toastSuccess, toastFail, toastInfo, toastPromise };

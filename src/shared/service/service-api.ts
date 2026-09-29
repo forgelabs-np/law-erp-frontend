@@ -1,5 +1,6 @@
 export const api = {
   login: "auth/login",
+  logout: "auth/logout",
   signup: "auth/register/solo",
   refreshToken: "auth/refresh",
   loginClient: "auth/client/login",
@@ -78,6 +79,7 @@ export const api = {
   },
   FIRM_MANAGEMENT: {
     POST: "super-admin/firms",
+    UPDATE: "super-admin/firms/{firmId}",
     GET_FIRMS: "super-admin/firms/admins",
     GET_FIRMS_MODULES: "firm/modules",
     GET_FIRM_MODULES: "super-admin/firms/{firmId}/modules",

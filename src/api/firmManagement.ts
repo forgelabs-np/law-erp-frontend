@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { FirmPayload } from "@/pages/SuperAdmin/FirmManagement/types";
+import {
+  FirmPayload,
+  FirmUpdatePayload,
+} from "@/pages/SuperAdmin/FirmManagement/types";
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import { ApiErrorResponse, ApiResponse } from "@/shared/types/response";
@@ -35,6 +38,14 @@ export interface FirmResponse {
   firmCode?: string;
   // Lifecycle fields
   firmStatus: FirmStatus;
+  /**
+   * Firm-state fields returned by the firm APIs. `status` and `isTrial` are
+   * two separate backend concepts — `status` is the firm's actual status,
+   * `isTrial` says whether it is a trial account.
+   */
+  status?: FirmStatus;
+  trialDays?: number;
+  trialExpiresAt?: string | null;
   // Legacy fields (kept for backward compatibility)
   isTrial: boolean | null;
   isSuspended: boolean | null;
@@ -81,7 +92,7 @@ export const useFirmByIdQuery = (
   });
 };
 
-// ─── CREATE / EDIT FIRM ────────────────────────────────────────────────────────
+// ─── CREATE FIRM ────────────────────────────────────────────────────────────────
 
 const createEditFirm = (payload: FirmPayload) => {
   return LawFirmCRMClient.post(api.FIRM_MANAGEMENT.POST, {
@@ -102,6 +113,49 @@ export const useCreateEditFirmMutation = () => {
     onError: (error: ApiErrorResponse) => {
       const errorMessage =
         error?.response?.data?.message ?? "Something went wrong!";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// ─── UPDATE FIRM (PUT) ─────────────────────────────────────────────────────────
+
+/**
+ * Updates an existing firm via `PUT /super-admin/firms/{firmId}` where
+ * `firmId` is the firm UUID (never the lawFirmCode or adminUsername).
+ * The create POST endpoint is not used for edits.
+ */
+const updateFirm = (firmId: string, payload: FirmUpdatePayload) => {
+  const url = api.FIRM_MANAGEMENT.UPDATE.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url, {
+    data: payload,
+  });
+};
+
+export const useUpdateFirmMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      firmId,
+      data,
+    }: {
+      firmId: string;
+      data: FirmUpdatePayload;
+    }) => updateFirm(firmId, data),
+    onSuccess: (response, variables) => {
+      successNotification(
+        response?.data?.message || "Firm updated successfully."
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [`firm-${variables.firmId}`],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to update firm";
       errorNotification(errorMessage);
     },
   });

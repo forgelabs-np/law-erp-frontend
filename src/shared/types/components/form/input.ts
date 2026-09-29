@@ -13,6 +13,13 @@ type BasicInputProps = {
 export type TextFieldInputProps = BasicInputProps & {
   type?: "text" | "password" | "date" | "number" | "email";
 
+  /**
+   * Native input maxLength — caps how many characters can be typed or
+   * pasted (e.g. 10 for phone numbers). Not enforced by the browser for
+   * `type="number"` inputs.
+   */
+  maxLength?: number;
+
   endElement?: React.ReactNode;
   startElement?: React.ReactNode;
 
