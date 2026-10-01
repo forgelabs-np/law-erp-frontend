@@ -195,6 +195,34 @@ export const api = {
     PROJECT_BY_CODE: "client/projects/{projectCode}",
     PROJECT_RENEWALS: "client/projects/{projectCode}/renewals",
   },
+  /**
+   * Client-portal document store. Read-only: the backend already scopes the
+   * list to the authenticated client's ACTIVE + SHARED documents, so the
+   * client service never sends status/visibility filters.
+   * NOTE: `DOWNLOAD_URL` takes the numeric document id (not the uuid).
+   */
+  CLIENT_DOCUMENTS: {
+    LIST: "client/documents",
+    DOWNLOAD_URL: "client/documents/{documentId}/download-url",
+  },
+  /**
+   * Firm-side document store (full library + per-matter / per-project
+   * scopes). Upload is a three-step flow: `UPLOAD_TICKET` → direct POST of
+   * the file to the returned presigned storage URL → `CONFIRM`.
+   * `ARCHIVE` is a soft delete; the stored file is retained for retention.
+   * NOTE: every `{documentId}` here is the numeric id (not the uuid).
+   */
+  FIRM_DOCUMENTS: {
+    LIBRARY: "firm/documents",
+    UPLOAD_TICKET: "firm/documents/upload-ticket",
+    CONFIRM: "firm/documents/{documentId}/confirm",
+    VISIBILITY: "firm/documents/{documentId}/visibility",
+    DOWNLOAD_URL: "firm/documents/{documentId}/download-url",
+    ARCHIVE: "firm/documents/{documentId}",
+    STORAGE_USAGE: "firm/documents/storage-usage",
+    MATTER_DOCUMENTS: "firm/matters/{matterNumber}/documents",
+    PROJECT_DOCUMENTS: "firm/projects/{projectCode}/documents",
+  },
   NOTIFICATIONS: {
     LIST: "notifications",
     UNREAD_COUNT: "notifications/unread-count",

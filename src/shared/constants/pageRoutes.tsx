@@ -23,7 +23,6 @@ import {
   Archive,
   CaseTypeSetup,
   ClientDashboard,
-  Folder,
   Home,
   MyFiles,
   OfficeSetup,
@@ -55,6 +54,12 @@ import {
   ClientProjectsPage,
   ClientProjectDetailPage,
 } from "@/pages/User/ProjectManagement";
+
+import { ClientDocumentsPage } from "@/pages/User/ClientDocuments";
+import {
+  FirmDocumentsPage,
+  FolderDetailPage,
+} from "@/pages/User/FirmDocuments";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -91,8 +96,23 @@ export const USER_ROUTES: Array<{
   },
   {
     path: ROUTES_CONFIG.USER.FOLDER,
-    element: <Folder />,
+    element: <FirmDocumentsPage />,
     moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
+  },
+  {
+    // A project folder of the document library.
+    path: ROUTES_CONFIG.USER.FOLDER_PROJECT_DOCUMENTS,
+    element: <FolderDetailPage kind="project" />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
+  },
+  {
+    // A matter folder of the document library.
+    path: ROUTES_CONFIG.USER.FOLDER_MATTER_DOCUMENTS,
+    element: <FolderDetailPage kind="matter" />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
   },
   {
     path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
@@ -294,6 +314,13 @@ export const USER_ROUTES: Array<{
     path: ROUTES_CONFIG.USER.CLIENT_PROJECT_DETAIL,
     element: <ClientProjectDetailPage />,
     moduleCode: "PROJECT_MANAGEMENT",
+    roles: ["CLIENT"],
+  },
+  {
+    path: ROUTES_CONFIG.USER.CLIENT_DOCUMENTS,
+    element: <ClientDocumentsPage />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
     roles: ["CLIENT"],
   },
   {

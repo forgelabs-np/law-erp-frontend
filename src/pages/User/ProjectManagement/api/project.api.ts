@@ -95,17 +95,20 @@ const getProjects = (params?: {
   );
 };
 
-export const useProjectsQuery = (params?: {
-  status?: string;
-  search?: string;
-  page?: number;
-  size?: number;
-}) => {
+export const useProjectsQuery = (
+  params?: {
+    status?: string;
+    search?: string;
+    page?: number;
+    size?: number;
+  },
+  options?: { enabled?: boolean }
+) => {
   const { canView } = useModulePermissions("PROJECT_MANAGEMENT");
   return useQuery({
     queryKey: projectKeys.projects(params),
     queryFn: () => getProjects(params),
-    enabled: canView,
+    enabled: canView && (options?.enabled ?? true),
     select: (response) => response?.data?.data,
   });
 };

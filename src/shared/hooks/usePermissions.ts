@@ -17,7 +17,9 @@ export type PermissionAction =
   | "EXPORT"
   | "CREDENTIAL_VIEW"
   | "CREDENTIAL_REVEAL"
-  | "RESET_MFA";
+  | "RESET_MFA"
+  | "UPLOAD"
+  | "SHARE";
 
 /**
  * The shape returned by `useModulePermissions(moduleCode)`.
@@ -51,6 +53,10 @@ export interface ModulePermissions {
   canCredentialReveal: boolean;
   /** RESET_MFA action (User Management) */
   canResetMFA: boolean;
+  /** UPLOAD action (Document Management — issue upload tickets) */
+  canUpload: boolean;
+  /** SHARE action (Document Management — PRIVATE ↔ SHARED) */
+  canShare: boolean;
   /**
    * Generic check: does the module have this action?
    * Always safe — returns false for unknown actions or missing data.
@@ -78,6 +84,8 @@ const NO_PERMISSION: ModulePermissions = {
   canCredentialView: false,
   canCredentialReveal: false,
   canResetMFA: false,
+  canUpload: false,
+  canShare: false,
   hasAction: () => false,
   actions: [],
   enabled: false,
@@ -190,6 +198,8 @@ export function useModulePermissions(moduleCode: string): ModulePermissions {
       canCredentialView: has("CREDENTIAL_VIEW"),
       canCredentialReveal: has("CREDENTIAL_REVEAL"),
       canResetMFA: has("RESET_MFA"),
+      canUpload: has("UPLOAD"),
+      canShare: has("SHARE"),
       hasAction: hasActionRef.current[moduleCode],
       actions,
       enabled: true,

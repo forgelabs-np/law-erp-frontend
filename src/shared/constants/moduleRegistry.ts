@@ -30,6 +30,12 @@ export interface ModuleRegistryEntry {
   moduleCode: string;
   label: string;
   path: string | null;
+  /**
+   * Optional client-portal route. When set, CLIENT users are sent here
+   * instead of `path`, so a module can have a different client experience
+   * without a second navigation entry or a second module code.
+   */
+  clientPath?: string;
   icon: IconComponent;
   section: ModuleSection;
   order: number;
@@ -45,7 +51,7 @@ export interface ModuleRegistryEntry {
 
 export type ModuleConfig = Pick<
   ModuleRegistryEntry,
-  "label" | "path" | "icon" | "section" | "order"
+  "label" | "path" | "clientPath" | "icon" | "section" | "order"
 >;
 
 export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
@@ -101,6 +107,8 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     moduleCode: "DOCUMENT_MANAGEMENT",
     label: "Documents",
     path: ROUTES_CONFIG.USER.FOLDER,
+    // Clients only ever see the read-only client portal documents page.
+    clientPath: ROUTES_CONFIG.USER.CLIENT_DOCUMENTS,
     icon: FolderOpen,
     section: "Main",
     order: 15,
@@ -264,6 +272,7 @@ export const getModuleConfig = (moduleCode: string): ModuleConfig | null => {
   return {
     label: entry.label,
     path: entry.path,
+    clientPath: entry.clientPath,
     icon: entry.icon,
     section: entry.section,
     order: entry.order,

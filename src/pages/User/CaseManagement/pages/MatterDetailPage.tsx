@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import {
   Calendar,
+  FileText,
   History,
   LayoutDashboard,
   Plus,
@@ -61,13 +62,20 @@ import { CourtEventDetailsModal } from "../components/CourtEventDetailsModal";
 import { EventHeldModal } from "../components/EventHeldModal";
 import { JudgmentModal } from "../components/JudgmentModal";
 import { MatterTeam } from "../components/MatterTeam";
+import { MatterDocumentsTab } from "@/pages/User/FirmDocuments";
 import {
   MatterCurrentCourtCaseCard,
   MatterDetailsCard,
 } from "../components/overview";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 
-type Tab = "overview" | "courtCases" | "parties" | "events" | "timeline";
+type Tab =
+  | "overview"
+  | "courtCases"
+  | "parties"
+  | "events"
+  | "timeline"
+  | "documents";
 
 const MatterDetailPage = () => {
   const { matterNumber } = useParams<{ matterNumber: string }>();
@@ -142,6 +150,7 @@ const MatterDetailPage = () => {
     { id: "parties", label: "Parties", icon: Users },
     // { id: "events", label: "Events / Case Diary", icon: Calendar },
     { id: "timeline", label: "Timeline", icon: History },
+    { id: "documents", label: "Documents", icon: FileText },
   ];
 
   const handleOpenEvent = (event: CourtEvent) => {
@@ -383,6 +392,14 @@ const MatterDetailPage = () => {
             setIsEventFormOpen(true);
           }}
           onViewEvent={handleOpenEvent}
+        />
+      )}
+
+      {/* ==================== Documents ==================== */}
+      {activeTab === "documents" && (
+        <MatterDocumentsTab
+          matterNumber={matter.matterNumber}
+          courtCases={courtCases}
         />
       )}
 
