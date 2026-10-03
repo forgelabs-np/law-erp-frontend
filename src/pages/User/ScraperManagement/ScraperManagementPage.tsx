@@ -12,7 +12,6 @@ import { useState } from "react";
 
 import { SectionCard } from "../CaseManagement/components/ui";
 import {
-  useManualScrape,
   useGenerateWeeklyExport,
   useCourtsByTypeQuery,
 } from "@/shared/hooks/useScraper";
@@ -24,6 +23,9 @@ import {
 import { NepaliDateParts } from "@/utils/nepaliDateUtils";
 import { Court } from "@/shared/types/scraper.types";
 
+import { CourtSyncProgressPanel } from "./components/CourtSyncProgressPanel";
+import { useCourtSync } from "./useCourtSync";
+
 const ScraperManagementPage = () => {
   const { canCreate } = useModulePermissions("SCRAPER_MANAGEMENT");
 
@@ -32,16 +34,24 @@ const ScraperManagementPage = () => {
 
   const [selectedCourtId, setSelectedCourtId] = useState<number | null>(null);
   const [bsDate, setBsDate] = useState<NepaliDateParts | null>(null);
-  const [scrapeResult, setScrapeResult] = useState<{
-    rows: number;
-    success: boolean;
-  } | null>(null);
   const [exportResult, setExportResult] = useState<{
     success: boolean;
     timestamp?: string;
   } | null>(null);
 
-  const manualScrapeMutation = useManualScrape();
+  // Every piece of Court Sync lifecycle state (estimated progress, the
+  // 2-minute wait, request cancellation, outcome) lives in one place.
+  const {
+    phase: syncPhase,
+    progress: syncProgress,
+    elapsedMs: syncElapsedMs,
+    result: scrapeResult,
+    runContext: syncRunContext,
+    isRunning: isSyncRunning,
+    startSync,
+    reset: resetSync,
+  } = useCourtSync();
+
   const generateWeeklyExportMutation = useGenerateWeeklyExport();
 
   const scrapeConfirmDisclosure = useDisclosure();
@@ -54,21 +64,15 @@ const ScraperManagementPage = () => {
     scrapeConfirmDisclosure.onOpen();
   };
 
+  /** Starts a sync run for the currently selected court and BS date. */
+  const runSync = () => {
+    if (!bsDate || selectedCourtId === null) return;
+    void startSync({ courtId: selectedCourtId, dateBs: formatForApi(bsDate) });
+  };
+
   const confirmScrape = () => {
     scrapeConfirmDisclosure.onClose();
-    setScrapeResult(null);
-    if (!bsDate || selectedCourtId === null) return;
-    manualScrapeMutation.mutate(
-      { courtId: selectedCourtId, dateBs: formatForApi(bsDate) },
-      {
-        onSuccess: (response) => {
-          const data = response?.data?.data;
-          if (data) {
-            setScrapeResult({ rows: data.rows, success: data.success });
-          }
-        },
-      }
-    );
+    runSync();
   };
 
   const handleGenerateExport = () => {
@@ -207,7 +211,7 @@ const ScraperManagementPage = () => {
               _hover={{ bg: "#0048D9" }}
               _active={{ bg: "#003AB3" }}
               onClick={handleRunScrape}
-              loading={manualScrapeMutation.isPending}
+              loading={isSyncRunning}
               maxW="fit-content"
               disabled={!bsDate || selectedCourtId === null}
               _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
@@ -220,24 +224,24 @@ const ScraperManagementPage = () => {
             </Button>
           )}
 
-          {/* Dynamic Sync Result */}
-          {manualScrapeMutation.isPending && (
-            <Box
-              p={4}
-              bg="#F3F4F6"
-              borderRadius="lg"
-              border="1px solid"
-              borderColor="#E5E7EB"
-            >
-              <Text fontSize="sm" fontWeight="500" color="#6B7280">
-                {" "}
-                Syncing {selectedCourt?.courtNameEnglish} — Fetching cause-list
-                data for {bsDate ? formatForApi(bsDate) : "..."}...
-              </Text>
-            </Box>
-          )}
+          {/* Sync progress / timeout experience */}
+          <CourtSyncProgressPanel
+            phase={syncPhase}
+            progress={syncProgress}
+            elapsedMs={syncElapsedMs}
+            courtName={
+              courts.find((court) => court.courtId === syncRunContext?.courtId)
+                ?.courtNameEnglish
+            }
+            dateBs={syncRunContext?.dateBs}
+            onRetry={() => {
+              resetSync();
+              runSync();
+            }}
+          />
 
-          {scrapeResult && !manualScrapeMutation.isPending && (
+          {/* Dynamic Sync Result */}
+          {scrapeResult && syncPhase === "idle" && (
             <Box
               p={4}
               bg={scrapeResult.success ? "#F0FDF4" : "#FFFBEB"}

@@ -7,6 +7,7 @@ export * from "./Dialog";
 export * from "./Drawer";
 export * from "./Field";
 export * from "./InputGroup";
+export * from "./LiquidProgress";
 export * from "./Popover";
 export * from "./Provider";
 export * from "./Radio";

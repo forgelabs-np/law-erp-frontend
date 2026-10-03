@@ -163,7 +163,7 @@ const Login = () => {
   };
 
   return (
-    <VStack gap={5} justifyContent="center" py={1} align="stretch">
+    <VStack gap={4} justifyContent="center" align="stretch">
       {/* Logo Area */}
       <HStack gap={2} align="flex-start">
         <Box>
@@ -180,7 +180,7 @@ const Login = () => {
       </HStack>
 
       {/* Header */}
-      <Stack gap={4}>
+      <Stack gap={3}>
         {/* Access type badge */}
         <Box
           display="inline-flex"
@@ -221,7 +221,7 @@ const Login = () => {
       {/* Form */}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
         <Stack gap={4}>
-          <Stack gap={4}>
+          <Stack gap={3}>
             {loginType !== "super-admin" && (
               <TextFieldInput
                 name="lawFirmCode"
@@ -284,7 +284,7 @@ const Login = () => {
       </FormProvider>
 
       {/* Security Footer */}
-      <HStack gap={2} justify="center" pt={2}>
+      <HStack gap={2} justify="center" pt={1}>
         <LuShieldCheck />
         <Text fontSize="xs" color="gray.400">
           Secured with enterprise-grade encryption

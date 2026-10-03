@@ -1,11 +1,9 @@
-import { TravelConnectSidePanel } from "@/pages/Authentication/Login/DotMap";
-
 import { UnAuthLayoutAdmin } from "../components/layout/UnAuthLayout";
 
 const PublicRoute = ({
   Component,
   variant = "center",
-  sideContent = <TravelConnectSidePanel />,
+  sideContent,
 }: {
   Component: React.ComponentType;
   hasSideContent?: boolean;

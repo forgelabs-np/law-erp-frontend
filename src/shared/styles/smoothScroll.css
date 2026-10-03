@@ -1,0 +1,22 @@
+/* ── Lenis smooth scrolling (authenticated application shell) ───────────────
+ *
+ * Lenis is mounted on the shell's own scroll container (Layout's content
+ * column) instead of on `window`/`<html>`, because this app uses a fixed-height
+ * shell with an independently scrolling main region.
+ *
+ * `ReactLenis` renders [wrapper] > [content] > page content. That inner
+ * `content` div is unstyled, which would break the percentage/flex based
+ * full-height page card inside the shell, so it is stretched to the wrapper
+ * height. `SmoothScroll.tsx` marks the wrapper with `data-smooth-scroll`.
+ *
+ * `lenis/dist/lenis.css` provides the required `.lenis*` helper styles
+ * (auto height, `overscroll-behavior` for nested scrollers, iframe
+ * pointer-events while smoothly scrolling).
+ */
+@import "lenis/dist/lenis.css";
+
+[data-smooth-scroll="true"] > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}

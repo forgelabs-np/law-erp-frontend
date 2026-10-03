@@ -1,8 +1,5 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
-import { FirmHeroPanel } from "@/pages/Authentication/Login/LoginHeroPanel";
-import { SuperAdminHeroPanel } from "@/pages/Authentication/Login/HeroPanels/SuperAdminHeroPanel";
-import { ClientHeroPanel } from "@/pages/Authentication/Login/HeroPanels/ClientHeroPanel";
 import Signup from "@/pages/Authentication/SignUp";
 import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
@@ -402,43 +399,19 @@ export const USER_ROUTES: Array<{
 export const AUTHENTICATION_ROUTES = [
   {
     path: ROUTES_CONFIG.AUTHENTICATION.FORGOT_PASSWORD,
-    element: (
-      <PublicRoute
-        Component={ForgotPassword}
-        variant="split"
-        sideContent={<FirmHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={ForgotPassword} variant="split" />,
   },
   {
     path: "/auth/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<FirmHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
   {
     path: "/auth/client/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<ClientHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
   {
     path: "/super-admin/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<SuperAdminHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
 
   {
@@ -451,13 +424,7 @@ export const AUTHENTICATION_ROUTES = [
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
-    element: (
-      <PublicRoute
-        Component={ResetPassword}
-        variant="split"
-        sideContent={<FirmHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={ResetPassword} variant="split" />,
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD,
