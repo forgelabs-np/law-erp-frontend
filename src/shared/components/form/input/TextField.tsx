@@ -6,6 +6,11 @@ import { TextFieldInputProps } from "@/shared/types";
 
 import { InputGroup } from "../../ui";
 import { FormWrapper } from "../wrapper";
+import {
+  AUTH_PILL_INPUT_PROPS,
+  AUTH_PILL_INPUT_STYLE,
+  AUTH_PILL_INVALID_STYLE,
+} from "./authPill";
 
 export const TextFieldInput = ({
   type = "text",
@@ -21,10 +26,24 @@ export const TextFieldInput = ({
   inputHeight,
   inputBorderRadius,
   maxLength,
+  variant = "default",
+  hideLabel = false,
 }: TextFieldInputProps & {
   inputHeight?: string;
   inputBorderRadius?: string;
+  /**
+   * `authPill` opts into the large pill styling used by the authentication
+   * screens (rounded, right-aligned icon, borderless label). Defaults to the
+   * standard form input so every existing usage stays untouched.
+   */
+  variant?: "default" | "authPill";
+  /**
+   * Visually hides the label while keeping it in the accessibility tree.
+   * Only used together with `variant="authPill"`.
+   */
+  hideLabel?: boolean;
 }) => {
+  const isAuthPill = variant === "authPill";
   const { control } = useFormContext();
 
   const {
@@ -46,12 +65,18 @@ export const TextFieldInput = ({
 
   return (
     <FormWrapper
-      label={label}
+      label={isAuthPill && hideLabel ? undefined : label}
       disabled={disabled}
       required={required}
       errorText={error?.message}
     >
-      <InputGroup endElement={endElement} startElement={startElement}>
+      <InputGroup
+        endElement={endElement}
+        startElement={startElement}
+        endElementProps={
+          isAuthPill ? AUTH_PILL_INPUT_PROPS.endElementProps : undefined
+        }
+      >
         <Input
           ref={ref}
           type={type}
@@ -60,12 +85,51 @@ export const TextFieldInput = ({
           onChange={handleChange}
           onBlur={onBlur}
           placeholder={placeholder}
-          paddingLeft={startElement ? "10 !important" : undefined}
-          paddingRight={endElement ? "10 !important" : undefined}
+          aria-label={isAuthPill && hideLabel ? label : undefined}
+          paddingLeft={
+            startElement && !isAuthPill ? "10 !important" : undefined
+          }
+          paddingRight={
+            endElement && !isAuthPill ? "10 !important" : undefined
+          }
           autoComplete={autoComplete}
-          height={inputHeight}
-          borderRadius={inputBorderRadius}
-          borderColor={error ? "red.500" : undefined}
+          height={isAuthPill ? AUTH_PILL_INPUT_PROPS.height : inputHeight}
+          fontSize={isAuthPill ? AUTH_PILL_INPUT_PROPS.fontSize : undefined}
+          px={isAuthPill ? AUTH_PILL_INPUT_PROPS.px : undefined}
+          borderRadius={
+            isAuthPill ? AUTH_PILL_INPUT_PROPS.borderRadius : inputBorderRadius
+          }
+          bg={isAuthPill ? AUTH_PILL_INPUT_PROPS.bg : undefined}
+          borderWidth={isAuthPill ? AUTH_PILL_INPUT_PROPS.borderWidth : undefined}
+          borderStyle={isAuthPill ? AUTH_PILL_INPUT_PROPS.borderStyle : undefined}
+          borderColor={
+            isAuthPill
+              ? AUTH_PILL_INPUT_PROPS.borderColor
+              : error
+                ? "red.500"
+                : undefined
+          }
+          _placeholder={
+            isAuthPill ? AUTH_PILL_INPUT_PROPS._placeholder : undefined
+          }
+          _hover={isAuthPill ? AUTH_PILL_INPUT_PROPS._hover : undefined}
+          _focusVisible={
+            isAuthPill
+              ? error
+                ? AUTH_PILL_INVALID_STYLE
+                : AUTH_PILL_INPUT_STYLE
+              : undefined
+          }
+          _focus={
+            isAuthPill
+              ? error
+                ? AUTH_PILL_INVALID_STYLE
+                : AUTH_PILL_INPUT_STYLE
+              : undefined
+          }
+          _disabled={
+            isAuthPill ? AUTH_PILL_INPUT_PROPS._disabled : undefined
+          }
         />
       </InputGroup>
     </FormWrapper>

@@ -12,17 +12,14 @@ import {
   DocumentDownloadUrl,
   DocumentListParams,
   DocumentVisibility,
+  UploadDocumentParams,
 } from "@/shared/types/documents";
 import { ApiResponse } from "@/shared/types/response";
+import { FirmDocument, FirmDocumentPage, StorageUsage } from "../types/firmDocument.types";
 import {
-  ConfirmUploadRequest,
-  FirmDocument,
-  FirmDocumentPage,
-  InitiateUploadRequest,
-  StorageUsage,
-  UploadTicket,
-} from "../types/firmDocument.types";
-import { getBackendErrorMessage } from "@/shared/utils/documents";
+  contentTypeFor,
+  getBackendErrorMessage,
+} from "@/shared/utils/documents";
 
 // ============================================================
 // Query keys — every key is prefixed with "firm-documents" so one targeted
@@ -181,23 +178,56 @@ export const requestFirmDocumentDownloadUrl = (documentId: number) => {
   );
 };
 
-/** Step 1 of the upload flow. */
-export const requestUploadTicket = (request: InitiateUploadRequest) => {
-  return LawFirmCRMClient.post<ApiResponse<UploadTicket>>(
-    api.FIRM_DOCUMENTS.UPLOAD_TICKET,
-    { data: request } satisfies ApiRequestEnvelope<InitiateUploadRequest>
-  );
-};
+/**
+ * The ONE upload request: `POST firm/documents` as multipart/form-data.
+ *
+ * Contract details that must not drift:
+ * - FormData, NOT a `{ data: … }` envelope — the field name must be `file`
+ * - exactly one of `matterNumber` / `projectCode`; `courtCaseRef` only with a
+ *   matter — absent fields are omitted entirely (never appended as "")
+ * - the File is re-wrapped with a type derived from its EXTENSION because
+ *   browsers often report `""` / `application/octet-stream` for office files
+ *   and the server validates the part's declared Content-Type
+ * - Content-Type is NOT set manually — axios lets the browser generate the
+ *   multipart boundary (verified: the browser env clears it for FormData)
+ * - the response document is `ACTIVE` immediately: no confirm, no PENDING row
+ */
+export const uploadFirmDocument = (
+  params: UploadDocumentParams
+): Promise<FirmDocument> => {
+  const { file, matterNumber, projectCode, courtCaseRef, onProgress } = params;
 
-/** Step 3 of the upload flow — only after the storage POST succeeds. */
-export const confirmDocumentUpload = (
-  documentId: number,
-  request: ConfirmUploadRequest = {}
-) => {
+  const form = new FormData();
+  const typed = new File([file], file.name, { type: contentTypeFor(file) });
+  form.append("file", typed);
+
+  if (matterNumber) form.append("matterNumber", matterNumber);
+  if (projectCode) form.append("projectCode", projectCode);
+  if (matterNumber && courtCaseRef) form.append("courtCaseRef", courtCaseRef);
+
   return LawFirmCRMClient.post<ApiResponse<FirmDocument>>(
-    api.FIRM_DOCUMENTS.CONFIRM.replace("{documentId}", documentId.toString()),
-    { data: request } satisfies ApiRequestEnvelope<ConfirmUploadRequest>
-  );
+    api.FIRM_DOCUMENTS.UPLOAD,
+    form,
+    {
+      // The shared client times out at 3 minutes; a 50 MiB upload on a slow
+      // uplink (plus server-side validation) can legitimately exceed that.
+      timeout: 10 * 60 * 1000,
+      onUploadProgress: (event) => {
+        if (!onProgress || !event.total) return;
+        const percent = Math.round((event.loaded / event.total) * 100);
+        onProgress(Math.min(100, Math.max(0, percent)));
+      },
+    }
+  ).then((response) => {
+    const payload = response?.data;
+
+    // On failure `data` is absent — surface the server's own message.
+    if (!payload?.success || !payload.data) {
+      throw new Error(payload?.message ?? "Failed to upload the document.");
+    }
+
+    return payload.data;
+  });
 };
 
 // ============================================================

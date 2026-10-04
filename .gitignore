@@ -27,3 +27,8 @@ dist-ssr
 
 ### Freebuff ###
 .freebuff/
+
+### Project memory, skills & templates ###
+memory/
+.agents/skills/
+HELP/_template.md

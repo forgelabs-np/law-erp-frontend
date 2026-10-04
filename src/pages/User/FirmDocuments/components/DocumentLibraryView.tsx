@@ -10,6 +10,7 @@ import { ROUTES_CONFIG } from "@/shared/config";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import {
   DEFAULT_DOCUMENT_PAGE,
+  DEFAULT_DOCUMENT_STATUS,
   DocumentListParams,
   DocumentRecord,
   DocumentStatus,
@@ -111,7 +112,9 @@ export const DocumentLibraryView = () => {
     () => ({
       page: DEFAULT_DOCUMENT_PAGE,
       size: windowSize,
-      status: status || undefined,
+      // Default to ACTIVE: an unfiltered request would also return ARCHIVED
+      // rows (the explicit Archived filter is how users opt into those).
+      status: status || DEFAULT_DOCUMENT_STATUS,
       visibility: visibility || undefined,
       search: search || undefined,
     }),

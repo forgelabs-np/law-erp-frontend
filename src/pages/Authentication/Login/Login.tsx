@@ -15,13 +15,17 @@ import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { type LoginType, useLoginMutation } from "@/api/auth";
 import { useTemporaryAuthStore } from "@/store/temporaryAuthStore";
 import { Logo } from "@/assets/images";
-import { KeyIcon } from "@/assets/svgs";
 import TokenService from "@/shared/service/service-token";
 import {
+  AuthInputIcon,
   FormProvider,
   PasswordInput,
   TextFieldInput,
 } from "@/shared/components";
+import {
+  AUTH_PILL_BUTTON_PROPS,
+  AUTH_PILL_BUTTON_STYLE,
+} from "@/shared/components/form/input/authPill";
 import { ROUTES_CONFIG } from "@/shared/config";
 import {
   loginSchema,
@@ -29,8 +33,9 @@ import {
   LoginSchemaType,
   SuperAdminLoginSchemaType,
 } from "@/validations";
-import { MdSafetyCheck, MdSecurityUpdate } from "react-icons/md";
+import { MdAccountBalance } from "react-icons/md";
 import { LuShieldCheck } from "react-icons/lu";
+import { FaUserCircle } from "react-icons/fa";
 
 const defaultValues: LoginSchemaType = {
   lawFirmCode: "",
@@ -226,27 +231,35 @@ const Login = () => {
               <TextFieldInput
                 name="lawFirmCode"
                 label="Firm Code"
-                placeholder="Enter your firm code"
+                placeholder="Firm code"
                 required
                 inputHeight="48px"
                 inputBorderRadius="lg"
+                variant="authPill"
+                endElement={<AuthInputIcon icon={<MdAccountBalance />} />}
+                hideLabel={true}
               />
             )}
             <TextFieldInput
               name="username"
               label="Username"
-              placeholder="Enter your username"
+              placeholder="Username"
               required
               inputHeight="48px"
               inputBorderRadius="lg"
+              variant="authPill"
+              endElement={<AuthInputIcon icon={<FaUserCircle />} />}
+              hideLabel={true}
             />
             <PasswordInput
               name="password"
               label="Password"
-              placeholder="Enter your password"
+              placeholder="Password"
               required
               inputHeight="48px"
               inputBorderRadius="lg"
+              variant="authPill"
+              hideLabel
             />
             {loginType !== "super-admin" && (
               <Text
@@ -269,14 +282,8 @@ const Login = () => {
             type="submit"
             variant="solid"
             loading={isPending}
-            width="full"
-            height="48px"
-            borderRadius="lg"
-            fontSize="md"
-            fontWeight="600"
-            bg="primary.500"
-            _hover={{ bg: "primary.600" }}
-            _active={{ bg: "primary.700" }}
+            {...AUTH_PILL_BUTTON_PROPS}
+            css={AUTH_PILL_BUTTON_STYLE as never}
           >
             Sign in
           </Button>

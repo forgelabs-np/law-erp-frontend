@@ -207,15 +207,14 @@ export const api = {
   },
   /**
    * Firm-side document store (full library + per-matter / per-project
-   * scopes). Upload is a three-step flow: `UPLOAD_TICKET` → direct POST of
-   * the file to the returned presigned storage URL → `CONFIRM`.
+   * scopes). Upload is a SINGLE multipart/form-data POST to `UPLOAD` — the
+   * bytes go to the API and the document comes back `ACTIVE` immediately.
    * `ARCHIVE` is a soft delete; the stored file is retained for retention.
    * NOTE: every `{documentId}` here is the numeric id (not the uuid).
    */
   FIRM_DOCUMENTS: {
     LIBRARY: "firm/documents",
-    UPLOAD_TICKET: "firm/documents/upload-ticket",
-    CONFIRM: "firm/documents/{documentId}/confirm",
+    UPLOAD: "firm/documents",
     VISIBILITY: "firm/documents/{documentId}/visibility",
     DOWNLOAD_URL: "firm/documents/{documentId}/download-url",
     ARCHIVE: "firm/documents/{documentId}",

@@ -17,38 +17,12 @@ export interface FirmDocumentPage {
 }
 
 // ============================================================
-// Upload
+// Upload (single multipart POST — see `uploadFirmDocument`)
+//
+// The client-side input shape lives in `@/shared/types/documents` as
+// `UploadDocumentParams`. There is no ticket, no storage POST and no
+// confirm step: the response IS a full `FirmDocument` (`ACTIVE` immediately).
 // ============================================================
-
-/**
- * `POST firm/documents/upload-ticket` body.
- * Exactly ONE of `matterNumber` / `projectCode` is required by the backend;
- * `courtCaseRef` is optional and only valid for a matter document.
- */
-export interface InitiateUploadRequest {
-  matterNumber?: string;
-  projectCode?: string;
-  courtCaseRef?: string;
-  filename: string;
-  contentType: string;
-  sizeBytes: number;
-}
-
-/** Presigned POST policy returned by the upload-ticket endpoint. */
-export interface UploadTicket {
-  documentId: number;
-  fileName: string;
-  /** Object-storage URL — POST the file here directly, never via the API. */
-  uploadUrl: string;
-  /** Every entry must be appended to the FormData exactly as returned. */
-  fields: Record<string, string>;
-  /** ISO instant; roughly 30 minutes after issue. */
-  expiresAt: string;
-}
-
-export interface ConfirmUploadRequest {
-  etag?: string;
-}
 
 // ============================================================
 // Storage usage
@@ -66,19 +40,22 @@ export interface StorageUsage {
 
 // ============================================================
 // Upload flow state (shared by the dialog + orchestration hook)
+//
+// idle → uploading (progress %) → success | error.
+// Once progress hits 100 the bytes are merely SENT — the server is still
+// validating/storing, so the UI shows "Finalizing…" until the response
+// arrives (the hook keeps stage="uploading" at 100 in that window).
 // ============================================================
 
 export type DocumentUploadStage =
   | "idle"
-  | "requesting-ticket"
   | "uploading"
-  | "confirming"
   | "success"
   | "error";
 
 export interface DocumentUploadState {
   stage: DocumentUploadStage;
-  /** Real browser→storage progress, 0-100. */
+  /** Real upload progress, 0-100. 100 + still uploading = finalizing. */
   progress: number;
   errorMessage?: string;
 }
@@ -90,12 +67,11 @@ export const uploadStageLabel = (
   state: DocumentUploadState
 ): string | undefined => {
   switch (state.stage) {
-    case "requesting-ticket":
-      return "Preparing upload...";
     case "uploading":
-      return "Uploading document...";
-    case "confirming":
-      return "Finalizing upload...";
+      // 100% only means the bytes were sent; the server is still working.
+      return state.progress >= 100
+        ? "Finalizing upload..."
+        : "Uploading document...";
     case "success":
       return "Document uploaded successfully.";
     default:

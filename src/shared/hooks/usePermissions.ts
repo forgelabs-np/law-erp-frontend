@@ -53,7 +53,7 @@ export interface ModulePermissions {
   canCredentialReveal: boolean;
   /** RESET_MFA action (User Management) */
   canResetMFA: boolean;
-  /** UPLOAD action (Document Management — issue upload tickets) */
+  /** UPLOAD action (Document Management — upload documents) */
   canUpload: boolean;
   /** SHARE action (Document Management — PRIVATE ↔ SHARED) */
   canShare: boolean;

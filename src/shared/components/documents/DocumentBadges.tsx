@@ -4,6 +4,7 @@ import { DocumentStatus, DocumentVisibility } from "@/shared/types/documents";
 import {
   documentStatusLabel,
   documentVisibilityLabel,
+  unknownDocumentStatusLabel,
 } from "@/shared/utils/documents";
 
 interface BadgeTone {
@@ -12,7 +13,6 @@ interface BadgeTone {
 }
 
 const STATUS_TONES: Record<DocumentStatus, BadgeTone> = {
-  PENDING_UPLOAD: { bg: "yellow.50", color: "yellow.700" },
   ACTIVE: { bg: "green.50", color: "green.700" },
   ARCHIVED: { bg: "gray.100", color: "gray.600" },
 };
@@ -39,7 +39,8 @@ const DocumentBadge = ({ label, tone }: { label: string; tone: BadgeTone }) => (
 
 export const DocumentStatusBadge = ({ status }: { status: DocumentStatus }) => (
   <DocumentBadge
-    label={documentStatusLabel[status]}
+    // Unknown future server values fall back to a neutral title-cased label.
+    label={documentStatusLabel[status] ?? unknownDocumentStatusLabel(status)}
     tone={STATUS_TONES[status] ?? STATUS_TONES.ACTIVE}
   />
 );

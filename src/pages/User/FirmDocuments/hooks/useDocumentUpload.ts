@@ -3,16 +3,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   invalidateFirmDocuments,
-  requestUploadTicket,
+  uploadFirmDocument,
 } from "../api/firmDocuments.api";
-import {
-  DocumentUploadState,
-  InitiateUploadRequest,
-} from "../types/firmDocument.types";
-import {
-  getBackendErrorMessage,
-  getDocumentContentType,
-} from "@/shared/utils/documents";
+import { DocumentUploadState } from "../types/firmDocument.types";
+import { getBackendErrorMessage } from "@/shared/utils/documents";
 
 export interface StartDocumentUploadInput {
   file: File;
@@ -25,12 +19,6 @@ export interface StartDocumentUploadInput {
 
 const IDLE_STATE: DocumentUploadState = { stage: "idle", progress: 0 };
 
-const UPLOADING_STAGES: DocumentUploadState["stage"][] = [
-  "requesting-ticket",
-  "uploading",
-  "confirming",
-];
-
 const resolveUploadError = (error: unknown): string =>
   getBackendErrorMessage(error) ??
   (error instanceof Error && error.message
@@ -41,13 +29,18 @@ const resolveUploadError = (error: unknown): string =>
  * The single upload orchestration used by `/folder`, the Matter Documents tab
  * and the Project Documents tab.
  *
- * Flow: request ticket → POST the file directly to storage → confirm.
- * A document is only uploaded once CONFIRM succeeds — the storage POST alone
- * leaves a PENDING_UPLOAD record, so the caller must not treat a mid-flow
- * result as success.
+ * Flow: ONE `multipart/form-data` POST to `POST firm/documents`. The bytes go
+ * to the API, which stores them and returns the document `ACTIVE` immediately
+ * — there is no ticket, no storage POST and no confirm step, and a failure
+ * leaves nothing behind (no cleanup, no pending row). "Retry" is therefore
+ * simply calling `start` again with the same file.
  *
- * The presigned `uploadUrl` / `fields` live only inside this function's local
- * scope: they are never put into state, the query cache or any log.
+ * State machine: idle → uploading (progress 0-100) → success | error.
+ * Progress 100 while still uploading means the bytes are sent and the server
+ * is still validating/storing — the UI renders that window as "Finalizing…".
+ *
+ * On failure the file stays wherever the caller staged it (component state),
+ * so a retry never requires re-picking the file — important for 502s.
  */
 export const useDocumentUpload = () => {
   const queryClient = useQueryClient();
@@ -73,80 +66,52 @@ export const useDocumentUpload = () => {
     setState(IDLE_STATE);
   }, []);
 
-  /** Resolves `true` when the document was confirmed in storage. */
+  /** Resolves `true` when the document was created (`ACTIVE`). */
   const start = useCallback(
     async (input: StartDocumentUploadInput): Promise<boolean> => {
       if (isRunningRef.current) return false;
 
+      // Client-side pre-checks so a bad request never leaves the browser.
+      // (The dialog already validates the file itself; these guard the contract.)
+      if (Boolean(input.matterNumber) === Boolean(input.projectCode)) {
+        setStateIfMounted({
+          stage: "error",
+          progress: 0,
+          errorMessage:
+            "Provide either a case (matterNumber) or a project (projectCode) — exactly one",
+        });
+        return false;
+      }
+
       isRunningRef.current = true;
-      setStateIfMounted({ stage: "requesting-ticket", progress: 0 });
+      setStateIfMounted({ stage: "uploading", progress: 0 });
 
       try {
-        const request: InitiateUploadRequest = {
-          filename: input.file.name,
-          // Some browsers leave `type` empty for known extensions, so fall
-          // back to the extension-based lookup instead of octet-stream.
-          contentType:
-            input.file.type || getDocumentContentType(input.file.name),
-          sizeBytes: input.file.size,
-        };
+        await uploadFirmDocument({
+          file: input.file,
+          matterNumber: input.matterNumber,
+          projectCode: input.projectCode,
+          courtCaseRef: input.courtCaseRef,
+          onProgress: (percent) =>
+            setStateIfMounted({ stage: "uploading", progress: percent }),
+        });
 
-        if (input.matterNumber) {
-          request.matterNumber = input.matterNumber;
-          if (input.courtCaseRef) request.courtCaseRef = input.courtCaseRef;
-        } else if (input.projectCode) {
-          request.projectCode = input.projectCode;
-        }
-
-        const ticketResponse = await requestUploadTicket(request);
-        const ticketPayload = ticketResponse?.data;
-
-        if (!ticketPayload?.success || !ticketPayload.data) {
-          throw new Error(
-            ticketPayload?.message ?? "Failed to start the upload."
-          );
-        }
-
-        // const ticket = ticketPayload.data;
-
-        // setStateIfMounted({ stage: "uploading", progress: 0 });
-
-        // // await uploadFileToStorage({
-        // //   uploadUrl: ticket.uploadUrl,
-        // //   fields: ticket.fields,
-        // //   file: input.file,
-        // //   onProgress: (percent) =>
-        // //     setStateIfMounted({ stage: "uploading", progress: percent }),
-        // // });
-
-        // // The object exists in storage but the document is NOT uploaded yet.
-        // setStateIfMounted({ stage: "confirming", progress: 100 });
-
-        // const confirmResponse = await confirmDocumentUpload(ticket.documentId);
-        // const confirmPayload = confirmResponse?.data;
-
-        // if (!confirmPayload?.success) {
-        //   throw new Error(
-        //     confirmPayload?.message ?? "Failed to confirm the upload."
-        //   );
-        // }
-
-
-        // Upload ticket successfully created the PENDING_UPLOAD document record.
+        // The response document could be inserted into the cache directly,
+        // but invalidating refreshes every scope (library / matter / project)
+        // AND storage usage — the upload consumed quota.
         invalidateFirmDocuments(queryClient);
         setStateIfMounted({ stage: "success", progress: 100 });
 
         return true;
       } catch (error) {
+        // Nothing was stored and no row was created, so there is nothing to
+        // reconcile — just surface the server's `message` verbatim and let
+        // the user retry with the same file.
         setStateIfMounted({
           stage: "error",
           progress: 0,
           errorMessage: resolveUploadError(error),
         });
-
-        // A failed flow can leave a PENDING_UPLOAD record behind (created by
-        // the ticket request), so refresh the lists to reflect reality.
-        invalidateFirmDocuments(queryClient);
 
         return false;
       } finally {
@@ -158,7 +123,9 @@ export const useDocumentUpload = () => {
 
   return {
     ...state,
-    isUploading: UPLOADING_STAGES.includes(state.stage),
+    // Progress 100 + still uploading = bytes sent, awaiting the response.
+    isFinalizing: state.stage === "uploading" && state.progress >= 100,
+    isUploading: state.stage === "uploading",
     isSuccess: state.stage === "success",
     start,
     reset,

@@ -29,7 +29,7 @@ interface SelectedFileCardProps {
   /** Client-side validation error — the file must be removed/replaced, no upload allowed. */
   validationError?: string;
   stage: DocumentUploadStage;
-  /** Real browser→storage progress, 0-100. */
+  /** Real upload progress, 0-100. */
   progress: number;
   /** Backend/storage error message when `stage === "error"`. */
   uploadError?: string;
@@ -42,8 +42,9 @@ interface SelectedFileCardProps {
  * The selected-file card: thumbnail/icon, name, size, live status and the
  * real upload progress bar (driven by `upload.onprogress`, never a timer).
  *
- * Success is only ever shown for the `success` stage — i.e. after CONFIRM —
- * so the storage POST alone can never look like a completed upload.
+ * Success is only ever shown for the `success` stage — i.e. after the server
+ * responds to the single multipart POST — so an in-flight request can never
+ * look like a completed upload.
  */
 export const SelectedFileCard = ({
   file,
@@ -61,9 +62,9 @@ export const SelectedFileCard = ({
   const isInvalid = Boolean(validationError);
   const isError = isInvalid || isUploadError;
 
-  // Progress reflects the real storage upload only; the ticket/confirm phases
-  // have no byte progress to report.
-  const showProgress = stage === "uploading" || stage === "confirming";
+  // Progress reflects the real byte upload only. At 100% the request is still
+  // open (server validating/storing) — the label reads "Finalizing…" then.
+  const showProgress = stage === "uploading";
   const showPercent = showProgress;
 
   const statusText = isInvalid

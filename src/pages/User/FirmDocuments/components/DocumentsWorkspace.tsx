@@ -7,6 +7,7 @@ import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import {
   DEFAULT_DOCUMENT_PAGE,
   DEFAULT_DOCUMENT_PAGE_SIZE,
+  DEFAULT_DOCUMENT_STATUS,
   DocumentListParams,
   DocumentStatus,
   DocumentVisibility,
@@ -112,7 +113,9 @@ export const DocumentsWorkspace = ({
     () => ({
       page,
       size,
-      status: status || undefined,
+      // Default to ACTIVE: an unfiltered request would also return ARCHIVED
+      // rows (the explicit Archived filter is how users opt into those).
+      status: status || DEFAULT_DOCUMENT_STATUS,
       visibility: visibility || undefined,
       search: search || undefined,
     }),

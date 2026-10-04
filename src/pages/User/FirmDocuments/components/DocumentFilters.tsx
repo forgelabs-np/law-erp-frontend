@@ -95,7 +95,6 @@ export const DocumentFilters = ({
             ariaLabel="Filter documents by status"
             placeholder="All statuses"
           >
-            <option value="PENDING_UPLOAD">Pending Upload</option>
             <option value="ACTIVE">Active</option>
             <option value="ARCHIVED">Archived</option>
           </FieldSelect>

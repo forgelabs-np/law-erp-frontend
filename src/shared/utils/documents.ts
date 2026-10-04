@@ -227,18 +227,27 @@ export const getDocumentRelatedTo = (
 };
 
 /**
- * A document can only be downloaded once its object is confirmed in
- * storage (`PENDING_UPLOAD` rows have no uploaded bytes yet).
+ * Only `ACTIVE` documents are downloadable — the backend refuses archived
+ * documents with `400 This document is not available for download`.
+ * Unknown statuses (future server values) are treated as not downloadable
+ * rather than crashing or offering an action that will fail.
  */
 export const isDocumentDownloadable = (
   document: Pick<DocumentRecord, "status">
-): boolean => document.status !== "PENDING_UPLOAD";
+): boolean => document.status === "ACTIVE";
 
+/**
+ * Known status labels. An unknown server value falls back to a neutral
+ * title-cased rendering in the badge — never a crash, never a blank.
+ */
 export const documentStatusLabel: Record<DocumentStatus, string> = {
-  PENDING_UPLOAD: "Pending Upload",
   ACTIVE: "Active",
   ARCHIVED: "Archived",
 };
+
+/** Neutral label for any status the frontend does not know about. */
+export const unknownDocumentStatusLabel = (status: string): string =>
+  status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
 export const documentVisibilityLabel: Record<DocumentVisibility, string> = {
   PRIVATE: "Private",
@@ -265,8 +274,9 @@ export const getBackendErrorMessage = (error: unknown): string | undefined => {
 // ============================================================
 // Client-side file validation
 //
-// The backend re-validates the real size and file signature on confirm, so
-// this is only fast feedback before an upload ticket is requested.
+// The single POST re-validates everything server-side (size policy, content
+// type, file signature), so this is only instant feedback before the request
+// — no round trip, no partial state.
 // ============================================================
 
 /** 50 MiB — binary, never decimal MB. */
@@ -317,6 +327,23 @@ export const getDocumentContentType = (fileName: string): string => {
   const extension = getDocumentExtension(fileName);
   return DOCUMENT_MIME_TYPES[extension]?.[0] ?? "application/octet-stream";
 };
+
+/**
+ * Best-effort MIME type for a picked `File`, keyed off the EXTENSION first.
+ *
+ * Browsers often report `""` or `application/octet-stream` for
+ * `.docx`/`.xlsx`/`.pptx`, and the server validates the uploaded part's own
+ * declared Content-Type against its whitelist — so the extension wins and
+ * `file.type` is only the fallback.
+ */
+export function contentTypeFor(file: File): string {
+  const extension = getDocumentExtension(file.name);
+  const byExtension = DOCUMENT_MIME_TYPES[extension]?.[0];
+
+  if (byExtension) return byExtension;
+
+  return file.type || "application/octet-stream";
+}
 
 export interface DocumentFileValidationResult {
   valid: boolean;
@@ -405,6 +432,13 @@ export const validateDocumentFile = (
     return {
       valid: false,
       error: `Unsupported file type. Allowed: ${SUPPORTED_DOCUMENT_EXTENSIONS.join(", ")}.`,
+    };
+  }
+
+  if (file.size <= 0) {
+    return {
+      valid: false,
+      error: `"${fileName}" is empty. Choose a file with content.`,
     };
   }
 

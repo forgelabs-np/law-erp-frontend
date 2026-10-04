@@ -56,7 +56,7 @@ const SUCCESS_CLOSE_DELAY_MS = 1200;
  * - project → the project is already known
  *
  * The matter number / project code is only ever one of the two, so the upload
- * ticket always carries exactly one destination.
+ * request always carries exactly one destination.
  */
 export const DocumentUploadDialog = ({
   open,
@@ -93,7 +93,7 @@ export const DocumentUploadDialog = ({
 
   // The active destination of the library context. Only the chosen kind is
   // ever used, so a stale selection from the other kind can never leak into
-  // the upload ticket.
+  // the upload request.
   const activeMatterNumber = isLibrary
     ? destinationKind === "matter"
       ? selectedMatter

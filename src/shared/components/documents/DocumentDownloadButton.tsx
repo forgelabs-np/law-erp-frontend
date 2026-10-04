@@ -21,7 +21,7 @@ export interface DocumentDownloadButtonProps {
   ) => Promise<AxiosResponse<ApiResponse<DocumentDownloadUrl>>>;
   /**
    * Scope-specific availability guard. Defaults to the shared rule
-   * (`PENDING_UPLOAD` documents are not downloadable). The client portal
+   * (`ARCHIVED` documents are not downloadable). The client portal
    * additionally requires ACTIVE + SHARED.
    */
   canDownload?: (document: DocumentRecord) => boolean;
