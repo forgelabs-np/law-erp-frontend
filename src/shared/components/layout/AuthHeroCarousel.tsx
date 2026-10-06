@@ -8,10 +8,17 @@ import {
 import { useCallback, useEffect, useState } from "react";
 
 import { Logo } from "@/assets/images";
-import { AUTH_HERO_BRAND, AUTH_HERO_SLIDES } from "@/shared/constants";
+import {
+  AUTH_HERO_BRAND,
+  AUTH_HERO_SLIDES,
+  LEGAL_FACTS,
+} from "@/shared/constants";
 
-/** How long each slide stays on screen before the next one fades in. */
+/** How long each illustration slide stays on screen before the next one fades in. */
 export const AUTH_HERO_SLIDE_INTERVAL_MS = 4500;
+
+/** How long each random legal fact stays on screen before rotating independently. */
+export const LEGAL_FACT_ROTATION_INTERVAL_MS = 6000;
 
 export type AuthHeroTone = "light" | "dark";
 
@@ -34,7 +41,7 @@ interface SlideCaptionProps {
   color?: string;
 }
 
-/** Heading + description unit for one slide. */
+/** Heading + description unit for one fact slide. */
 const SlideCaption = ({ title, description, color }: SlideCaptionProps) => (
   <Stack align="center" gap={2} textAlign="center" width="100%">
     <Text textStyle="heading_5" color={color}>
@@ -54,24 +61,15 @@ const SlideCaption = ({ title, description, color }: SlideCaptionProps) => (
 /**
  * AuthHeroCarousel — the shared right-side hero used by every auth page.
  *
- * Owns a single active-slide index; the illustration and its caption always
- * come from the same entry in `AUTH_HERO_SLIDES`, so they can never drift.
- *
- * - The illustration is a large, unframed SVG that sits directly on the panel
- *   background. Its box is sized as a square share of the panel width, so the
- *   artwork reads at roughly 65–75% of the panel width while
- *   `object-fit: contain` keeps every aspect ratio intact.
- * - The box size is fixed for a given viewport and the caption block is sized
- *   by invisible copies of every slide, so changing slides never shifts layout.
- * - Slides cross-fade with `mode="wait"`, so a previous caption is never shown
- *   together with the next illustration.
- * - When the user prefers reduced motion the auto-rotation is switched off
- *   entirely and slides swap instantly; the dots still let the user step
- *   through every slide.
+ * - Rotates top illustrations independently.
+ * - Displays legal facts from LEGAL_FACTS constant file, auto-rotating randomly
+ *   and independently of illustration changes.
  */
 export const AuthHeroCarousel = ({ tone = "light" }: AuthHeroCarouselProps) => {
   const slideCount = AUTH_HERO_SLIDES.length;
   const prefersReducedMotion = useReducedMotion();
+
+  // 1. Independent Illustration Slide State
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -85,13 +83,39 @@ export const AuthHeroCarousel = ({ tone = "light" }: AuthHeroCarouselProps) => {
   }, [prefersReducedMotion, slideCount]);
 
   const slide = AUTH_HERO_SLIDES[activeIndex];
-  const captionColor = tone === "dark" ? "white" : undefined;
-  const fadeIn = prefersReducedMotion ? INSTANT : FADE_IN;
-  const fadeOut = prefersReducedMotion ? INSTANT : FADE_OUT;
 
   const goToSlide = useCallback((index: number) => {
     setActiveIndex(index);
   }, []);
+
+  // 2. Independent Random Legal Fact State
+  const [factIndex, setFactIndex] = useState(() =>
+    Math.floor(Math.random() * LEGAL_FACTS.length)
+  );
+
+  const getRandomFactIndex = useCallback((currentIndex: number) => {
+    if (LEGAL_FACTS.length <= 1) return 0;
+    let nextIndex = Math.floor(Math.random() * LEGAL_FACTS.length);
+    while (nextIndex === currentIndex) {
+      nextIndex = Math.floor(Math.random() * LEGAL_FACTS.length);
+    }
+    return nextIndex;
+  }, []);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return undefined;
+
+    const factTimer = window.setInterval(() => {
+      setFactIndex((prev) => getRandomFactIndex(prev));
+    }, LEGAL_FACT_ROTATION_INTERVAL_MS);
+
+    return () => window.clearInterval(factTimer);
+  }, [prefersReducedMotion, getRandomFactIndex]);
+
+  const fact = LEGAL_FACTS[factIndex] || LEGAL_FACTS[0];
+  const captionColor = tone === "dark" ? "white" : undefined;
+  const fadeIn = prefersReducedMotion ? INSTANT : FADE_IN;
+  const fadeOut = prefersReducedMotion ? INSTANT : FADE_OUT;
 
   return (
     <MotionConfig reducedMotion="user">
@@ -127,12 +151,7 @@ export const AuthHeroCarousel = ({ tone = "light" }: AuthHeroCarouselProps) => {
           </Text>
         </Stack>
 
-        {/*
-          Illustration — unframed, directly on the panel background (no card,
-          no shadow, no border). The box is a fixed square share of the panel
-          width so slides can never resize it, and `object-fit: contain`
-          preserves each SVG's aspect ratio without cropping or distortion.
-        */}
+        {/* Illustration */}
         <Box
           position="relative"
           width={{ base: "86%", md: "74%", lg: "74%" }}
@@ -163,52 +182,43 @@ export const AuthHeroCarousel = ({ tone = "light" }: AuthHeroCarouselProps) => {
           </AnimatePresence>
         </Box>
 
-        {/* Caption — invisible copies size the block; the active one animates. */}
+        {/* Independent Random Legal Fact (Topic & Subtopic text) */}
         <Box
-          display="grid"
+          position="relative"
           width="100%"
           maxW="640px"
+          minH="90px"
           mx="auto"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
           data-probe="auth-hero-caption"
         >
-          {AUTH_HERO_SLIDES.map((item) => (
-            <Box key={item.id} gridArea="1 / 1" visibility="hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={fact.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8, transition: fadeOut }}
+              transition={fadeIn}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <SlideCaption
-                title={item.title}
-                description={item.description}
+                title={fact.title}
+                description={fact.description}
                 color={captionColor}
               />
-            </Box>
-          ))}
-
-          <Box gridArea="1 / 1" position="relative" width="100%">
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={slide.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8, transition: fadeOut }}
-                transition={fadeIn}
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <SlideCaption
-                  title={slide.title}
-                  description={slide.description}
-                  color={captionColor}
-                />
-              </motion.div>
-            </AnimatePresence>
-          </Box>
+            </motion.div>
+          </AnimatePresence>
         </Box>
 
-        {/* Indicator — one dot per slide, active dot is wider and opaque. */}
-        <HStack gap={2} justify="center">
+        {/* Indicator — one dot per illustration slide */}
+        {/* <HStack gap={2} justify="center">
           {AUTH_HERO_SLIDES.map((item, index) => {
             const isActive = index === activeIndex;
 
@@ -230,7 +240,7 @@ export const AuthHeroCarousel = ({ tone = "light" }: AuthHeroCarouselProps) => {
               />
             );
           })}
-        </HStack>
+        </HStack> */}
       </Stack>
     </MotionConfig>
   );
