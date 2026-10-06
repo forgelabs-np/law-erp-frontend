@@ -109,6 +109,9 @@ export const useProjectsQuery = (
     queryKey: projectKeys.projects(params),
     queryFn: () => getProjects(params),
     enabled: canView && (options?.enabled ?? true),
+    // Keep the previous page/search results on screen while a new key loads —
+    // otherwise every filter change shows the full-page loading state.
+    placeholderData: (previous) => previous,
     select: (response) => response?.data?.data,
   });
 };

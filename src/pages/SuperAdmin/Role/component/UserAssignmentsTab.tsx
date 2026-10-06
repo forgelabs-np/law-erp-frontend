@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
@@ -113,12 +113,18 @@ const StatCard = ({
   );
 };
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 // User-centric view: browse users, open a user's assigned role and manage its permissions.
 const UserAssignmentsTab = () => {
   const navigate = useNavigate();
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [searchQuery, setSearchQuery] = useState("");
+  // Debounced copy of the search box — `q` below uses this so typing does
+  // not fire a users-search request per keystroke (300 ms, same pattern as
+  // the documents pages).
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [userTypeFilter, setUserTypeFilter] = useState("");
   const [firmFilter, setFirmFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -128,6 +134,14 @@ const UserAssignmentsTab = () => {
     defaultValues: { userType: "", firm: "" },
   });
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setAppliedSearch(searchQuery.trim());
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
   const {
     data: usersData,
     isLoading,
@@ -135,7 +149,7 @@ const UserAssignmentsTab = () => {
   } = useSuperAdminUsersQuery({
     page: currentPage,
     size: pageSize,
-    q: searchQuery || undefined,
+    q: appliedSearch || undefined,
     userType: userTypeFilter || undefined,
     roleId: undefined,
     active: undefined,
@@ -304,6 +318,7 @@ const UserAssignmentsTab = () => {
 
   const resetFilters = () => {
     setSearchQuery("");
+    setAppliedSearch("");
     setUserTypeFilter("");
     setFirmFilter("");
     setCurrentPage(0);
