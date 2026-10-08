@@ -41,12 +41,12 @@ type LavenderScale = Record<"50" | "100" | "200", ColorToken>;
 // Anything else (null, "", "redish", rgb(...), 4-digit/alpha hex) is invalid
 // and falls back to the default theme color.
 // ------------------------------------------------------------
-const HEX_PATTERN = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+const HEX_PATTERN = /^#?(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
 export const isValidBrandColor = (value: unknown): value is string =>
   typeof value === "string" && HEX_PATTERN.test(value.trim());
 
-/** `#abc` → `#ABCABC`, keeps the token format uppercase like the defaults. */
+/** `#abc` or `abc` → `#ABCABC`, keeps the token format uppercase like the defaults. */
 const normalizeHex = (value: string): string => {
   const hex = value.trim().replace(/^#/, "");
   const full =

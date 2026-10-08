@@ -13,6 +13,22 @@ export interface UserModule {
   subModules?: UserModule[];
 }
 
+export interface FirmInfo {
+  id: string;
+  name: string;
+  code: string;
+  trial: boolean;
+  daysRemaining: number | null;
+  trialExpiresAt: string | null;
+  status: string;
+  brandPrimaryHex?: string | null;
+  brandSecondaryHex?: string | null;
+  isPersonalColor?: boolean;
+  logoUrl?: string | null;
+  logoAllowed?: boolean;
+  [key: string]: unknown;
+}
+
 export interface CurrentUserResponse {
   id: string;
   username: string;
@@ -29,15 +45,12 @@ export interface CurrentUserResponse {
    */
   brandColorPrimary?: string | null;
   brandColorSecondary?: string | null;
-  firm: {
-    id: string;
-    name: string;
-    code: string;
-    trial: boolean;
-    daysRemaining: number | null;
-    trialExpiresAt: string | null;
-    status: string;
-  };
+  brandPrimaryHex?: string | null;
+  brandSecondaryHex?: string | null;
+  isPersonalColor?: boolean;
+  logoUrl?: string | null;
+  logoAllowed?: boolean;
+  firm: FirmInfo;
   permissions: string[];
   modules: UserModule[];
   [key: string]: unknown; // required to be assignable to User in auth.store.ts

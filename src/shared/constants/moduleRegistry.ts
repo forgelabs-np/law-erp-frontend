@@ -236,7 +236,7 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
   SETTINGS: {
     moduleCode: "SETTINGS",
     label: "Settings",
-    path: "#",
+    path: "/settings",
     icon: Settings,
     section: "Support",
     order: 92,

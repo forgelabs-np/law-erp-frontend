@@ -29,6 +29,7 @@ import {
   UserProfilePage,
   UserPermissionsPage,
   UserActivityPage,
+  SettingsPage,
 } from "@/pages/User";
 import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
 import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
@@ -393,6 +394,11 @@ export const USER_ROUTES: Array<{
     path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_CONFIG,
     element: <FirmConfigurationPage />,
     moduleCode: "FIRM_CONFIG",
+  },
+  {
+    path: ROUTES_CONFIG.USER.SETTINGS,
+    element: <SettingsPage />,
+    moduleCode: "SETTINGS",
   },
 ];
 
