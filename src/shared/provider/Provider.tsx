@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { PropsWithChildren } from "react";
+import { useEffect, PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
 
+import { FontSwitcherWidget } from "../components/FontSwitcher";
 import { ChakraProvider, ToasterProvider } from "../components/ui";
 import { useFirmBrandSystem } from "../hooks/useFirmBrandSystem";
+import { initAppFont } from "../theme";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,10 +41,15 @@ export const queryClient = new QueryClient({
 const BrandTheme = ({ children }: PropsWithChildren) => {
   const system = useFirmBrandSystem();
 
+  useEffect(() => {
+    initAppFont();
+  }, []);
+
   return (
     <ChakraProvider value={system}>
       {children}
       <ToasterProvider />
+      <FontSwitcherWidget />
     </ChakraProvider>
   );
 };

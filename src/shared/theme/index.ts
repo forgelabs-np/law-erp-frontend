@@ -3,6 +3,8 @@ import { createSystem, defaultConfig } from "@chakra-ui/react";
 import { applyBrandColors, type BrandColorInput } from "./brand";
 
 export type { BrandColorInput } from "./brand";
+export * from "./fontManager";
+export * from "./tokens/fonts";
 import {
   buttonRecipe,
   checkmarkRecipe,
