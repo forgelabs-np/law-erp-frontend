@@ -4,10 +4,10 @@ import type { SystemStyleObject } from "@chakra-ui/react";
  * authentication screens.
  */
 export const AUTH_PILL_INPUT_PROPS = {
-  height: "60px",
+  height: "50px",
   fontSize: "18px",
   px: "28px",
-  borderRadius: "9999px",
+  borderRadius: "28px",
   bg: "white",
   borderWidth: "1px",
   borderStyle: "solid",
@@ -40,7 +40,8 @@ export const AUTH_PILL_BUTTON_STYLE: SystemStyleObject = {
   bg: "primary.500",
   color: "white",
   boxShadow: "none",
-  _hover: { bg: "primary.500", opacity: "0.92",
+  _hover: {
+    bg: "primary.500", opacity: "0.92",
     borderColor: "primary.500",
   },
   _active: { opacity: "0.88", bg: "primary.500" },

@@ -7,6 +7,7 @@ export const api = {
   registerClient: "auth/register/client",
   superAdminLogin: "super-admin/login",
   changePassword: "auth/change-password",
+  changePasswordMe: "me/change-password",
   forgotPassword: "auth/forgot-password",
   resetPassword: "auth/reset-password",
   mfaSetupConfirm: "auth/mfa/setup/confirm",
@@ -252,5 +253,12 @@ export const api = {
     PROVINCES: "master-data/provinces",
     DISTRICTS: "master-data/districts",
     DISTRICTS_BY_PROVINCE: "master-data/provinces/{provinceId}/districts",
+  },
+  FIRM_BRANDING: {
+    GET_THEME: "firm/brand/theme",
+    UPDATE_THEME: "firm/brand/theme",
+    GET_LOGO: "firm/brand/logo",
+    UPDATE_LOGO_ALLOWED: "firm/brand/logo/allowed",
+    UPLOAD_LOGO: "firm/brand/logo",
   },
 };

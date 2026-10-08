@@ -54,6 +54,7 @@ export const ROUTES_CONFIG = {
     // and opens their documents on their own route.
     FOLDER_PROJECT_DOCUMENTS: "/folder/projects/:projectCode",
     FOLDER_MATTER_DOCUMENTS: "/folder/matters/:matterNumber",
+    SETTINGS: "/settings",
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",

@@ -226,7 +226,7 @@ const Login = () => {
       {/* Form */}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
         <Stack gap={4}>
-          <Stack gap={3}>
+          <Stack gap={6}>
             {loginType !== "super-admin" && (
               <TextFieldInput
                 name="lawFirmCode"

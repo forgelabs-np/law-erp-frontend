@@ -156,7 +156,7 @@ const ROLE_SIDEBAR_ITEMS: Record<UserRole, typeof SIDEBAR_ITEMS> = {
     },
     {
       name: "Settings",
-      href: "#",
+      href: ROUTES_CONFIG.USER.SETTINGS,
       icon: <Settings size={16} />,
       section: "bottom",
     },
@@ -213,7 +213,7 @@ const ROLE_SIDEBAR_ITEMS: Record<UserRole, typeof SIDEBAR_ITEMS> = {
     },
     {
       name: "Settings",
-      href: "#",
+      href: ROUTES_CONFIG.USER.SETTINGS,
       icon: <Settings size={16} />,
       section: "bottom",
     },

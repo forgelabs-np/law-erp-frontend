@@ -21,30 +21,41 @@ import { isSuperAdminRole } from "@/shared/utils/role";
 
 const BRAND_CACHE_KEY = "nepalcrm.firm-brand.v1";
 
+interface CachedBrandData {
+  primary: string | null;
+  secondary: string | null;
+  isPersonalColor: boolean;
+}
+
 const isStoredColor = (value: unknown): value is string | null =>
   value === null || typeof value === "string";
 
-const readCachedBrand = (): BrandColorInput | null => {
+const readCachedBrand = (): CachedBrandData | null => {
   try {
     const raw = localStorage.getItem(BRAND_CACHE_KEY);
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
-    const { primary, secondary } = parsed as Record<string, unknown>;
+    const { primary, secondary, isPersonalColor } = parsed as Record<string, unknown>;
     if (!isStoredColor(primary) || !isStoredColor(secondary)) return null;
-    return { primary, secondary };
+    return {
+      primary,
+      secondary,
+      isPersonalColor: Boolean(isPersonalColor),
+    };
   } catch {
     return null;
   }
 };
 
-const writeCachedBrand = (brand: BrandColorInput): void => {
+const writeCachedBrand = (brand: CachedBrandData): void => {
   try {
     localStorage.setItem(
       BRAND_CACHE_KEY,
       JSON.stringify({
         primary: brand.primary ?? null,
         secondary: brand.secondary ?? null,
+        isPersonalColor: brand.isPersonalColor ?? false,
       })
     );
   } catch {
@@ -117,23 +128,44 @@ export const useFirmBrandSystem = () => {
   // Mirror the fresh values so the next refresh is flash-free.
   useEffect(() => {
     if (!me) return;
+    const isPersonal = Boolean(me.firm?.isPersonalColor ?? me.isPersonalColor);
+    const primary =
+      me.firm?.brandPrimaryHex ?? me.brandPrimaryHex ?? me.brandColorPrimary ?? null;
+    const secondary =
+      me.firm?.brandSecondaryHex ?? me.brandSecondaryHex ?? me.brandColorSecondary ?? null;
+
     writeCachedBrand({
-      primary: me.brandColorPrimary ?? null,
-      secondary: me.brandColorSecondary ?? null,
+      primary,
+      secondary,
+      isPersonalColor: isPersonal,
     });
   }, [me]);
 
   const brand = useMemo<BrandColorInput | null>(() => {
     if (!isAuthenticated) return null;
     if (isSuperAdminSession(location.pathname, me?.role)) return null;
+
     if (me) {
+      const isPersonal = Boolean(me.firm?.isPersonalColor ?? me.isPersonalColor);
+      if (!isPersonal) return null;
+
+      const primary =
+        me.firm?.brandPrimaryHex ?? me.brandPrimaryHex ?? me.brandColorPrimary ?? null;
+      const secondary =
+        me.firm?.brandSecondaryHex ?? me.brandSecondaryHex ?? me.brandColorSecondary ?? null;
+
+      return { primary, secondary };
+    }
+
+    // `/me` not here yet → last known brand (prevents default-theme flash)
+    if (cachedBrand && cachedBrand.isPersonalColor) {
       return {
-        primary: me.brandColorPrimary ?? null,
-        secondary: me.brandColorSecondary ?? null,
+        primary: cachedBrand.primary,
+        secondary: cachedBrand.secondary,
       };
     }
-    // `/me` not here yet → last known brand (prevents default-theme flash).
-    return cachedBrand;
+
+    return null;
   }, [isAuthenticated, location.pathname, me, cachedBrand]);
 
   return useMemo(() => createBrandSystem(brand), [brand]);
