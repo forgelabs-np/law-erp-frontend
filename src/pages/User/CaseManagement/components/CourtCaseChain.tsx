@@ -1,14 +1,22 @@
-import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react";
-import { CornerDownRight, Scale } from "lucide-react";
+import {
+  Box,
+  Button,
+  Center,
+  Grid,
+  HStack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { Eye, Plus, Scale } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { CourtCase } from "../types/matter.types";
-import { courtCaseStageLabel, formatDate } from "../utils/matterHelpers";
+import { CourtCase, RelationType } from "../types/matter.types";
 import {
-  CourtCaseStageBadge,
-  CourtCaseStatusBadge,
-  RelationTypeBadge,
-} from "./MatterBadges";
+  courtCaseStageLabel,
+  formatDate,
+  relationTypeLabel,
+} from "../utils/matterHelpers";
+import { CourtCaseStatusBadge } from "./MatterBadges";
 
 interface CourtCaseChainProps {
   matterNumber?: string;
@@ -16,6 +24,75 @@ interface CourtCaseChainProps {
   currentCourtCaseRef?: string;
   onAddCourtCase?: () => void;
 }
+
+/** Eyebrow label describing where the case sits in the proceeding chain. */
+const chainEyebrow = (relation?: RelationType): string => {
+  switch (relation) {
+    case "ORIGINAL":
+      return "Original Case";
+    case "APPEAL":
+      return "Appeal Case";
+    case "CROSS_APPEAL":
+      return "Cross Appeal";
+    case "REMAND":
+      return "Remand Case";
+    case "REVISION":
+      return "Revision Case";
+    case "WRIT":
+      return "Writ Petition";
+    case "REVIEW":
+      return "Review Case";
+    default:
+      return "Court Case";
+  }
+};
+
+const MetaItem = ({ label, value }: { label: string; value: string }) => (
+  <Box minW={0}>
+    <Text
+      fontSize="11px"
+      fontWeight="700"
+      letterSpacing="0.07em"
+      textTransform="uppercase"
+      color="gray.500"
+    >
+      {label}
+    </Text>
+    <Text
+      fontSize="14px"
+      fontWeight="600"
+      color="gray.900"
+      mt={1}
+      lineHeight="1.4"
+      wordBreak="break-word"
+    >
+      {value}
+    </Text>
+  </Box>
+);
+
+/**
+ * Vertical connector between case cards.
+ *
+ * Uses a fixed-height rail so it stays visually continuous no matter how
+ * tall the neighbouring cards grow (long court names, extra rows, ...).
+ */
+const ChainConnector = () => (
+  <Center w="100%" h="34px" aria-hidden="true">
+    <VStack gap={0} align="center">
+      <Box w="1px" h="9px" bg="#9e9a9aff" />
+      <Box
+        w="7px"
+        h="7px"
+        borderRadius="full"
+        border="1.5px solid"
+        borderColor="#9e9a9aff"
+        bg="white"
+      />
+      <Box w="1px" h="9px" bg="#9e9a9aff" />
+    </VStack>
+  </Center>
+);
 
 /**
  * Vertical chain showing Original Case → Appeal → Further Appeal / Remand ...
@@ -29,139 +106,274 @@ export const CourtCaseChain = ({
 }: CourtCaseChainProps) => {
   const navigate = useNavigate();
 
+  const openCourtCase = (courtCaseRef: string) => {
+    navigate(`/cases/${matterNumber ?? ""}/court-cases/${courtCaseRef}`);
+  };
+
   if (courtCases.length === 0) {
     return (
-      <Box py={8} textAlign="center">
-        <Text fontSize="sm" color="gray.500">
-          No court cases recorded yet
-        </Text>
-      </Box>
+      <Center
+        flexDirection="column"
+        gap={3}
+        py={12}
+        px={6}
+        border="1px dashed"
+        borderColor="gray.300"
+        borderRadius="xl"
+        bg="white"
+      >
+        <Center
+          w="12"
+          h="12"
+          borderRadius="full"
+          bg="gray.50"
+          border="1px solid"
+          borderColor="gray.200"
+          color="gray.400"
+        >
+          <Scale size={20} />
+        </Center>
+        <VStack gap={1}>
+          <Text fontSize="sm" fontWeight="600" color="gray.700">
+            No Court Cases
+          </Text>
+          <Text fontSize="13px" color="gray.500" textAlign="center">
+            No court proceedings have been added to this matter yet.
+          </Text>
+        </VStack>
+      </Center>
     );
   }
 
   return (
-    <Stack gap={0} position="relative">
+    <VStack gap={0} align="stretch" w="100%">
       {courtCases.map((courtCase, index) => {
         const isCurrent = courtCase.ourCourtCaseRef === currentCourtCaseRef;
         const isLast = index === courtCases.length - 1;
+        const accentBorder = isCurrent ? "primary.300" : "gray.200";
+        const innerDivider = isCurrent ? "primary.100" : "gray.100";
 
         return (
-          <HStack
+          <Box
             key={courtCase.id || courtCase.ourCourtCaseRef}
-            gap={4}
-            align="stretch"
+            w="100%"
+            minW={0}
           >
-            {/* Left rail */}
-            <Stack align="center" gap={0} w="6" flexShrink={0}>
-              <Box
-                w="6"
-                h="6"
-                borderRadius="full"
-                bg={isCurrent ? "blue.500" : "gray.200"}
-                color={isCurrent ? "white" : "gray.500"}
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                flexShrink={0}
-                zIndex={1}
-              >
-                <Scale size={12} />
-              </Box>
-              {!isLast && <Box flex={1} w="2px" bg="gray.200" minH="16" />}
-            </Stack>
-
-            {/* Case card */}
             <Box
-              flex={1}
-              mb={4}
-              bg={isCurrent ? "blue.50" : "white"}
-              border="1px solid"
-              borderColor={isCurrent ? "blue.200" : "gray.200"}
-              borderRadius="lg"
-              p={4}
+              bg={isCurrent ? "primary.50" : "white"}
+              border="1.5px solid"
+              borderColor={accentBorder}
+              borderRadius="xl"
+              boxShadow="0 1px 2px rgba(16, 24, 40, 0.04)"
+              overflow="hidden"
               cursor="pointer"
-              onClick={() =>
-                navigate(
-                  `/cases/${matterNumber ?? ""}/court-cases/${courtCase.ourCourtCaseRef}`
-                )
-              }
+              transition="all 0.18s ease"
+              onClick={() => openCourtCase(courtCase.ourCourtCaseRef)}
+              _hover={{
+                borderColor: isCurrent ? "primary.400" : "gray.300",
+                boxShadow: "0 4px 14px rgba(16, 24, 40, 0.07)",
+              }}
             >
+              {/* ── Card header ───────────────────────────────────────── */}
               <HStack
                 justify="space-between"
                 align="flex-start"
-                flexWrap="wrap"
-                gap={2}
+                gap={3}
+                px={{ base: 4, md: 5 }}
+                pt={{ base: 4, md: 5 }}
+                pb={4}
               >
-                <Stack gap={2}>
-                  <HStack gap={2} flexWrap="wrap">
-                    <RelationTypeBadge relation={courtCase.relationType} />
-                    <CourtCaseStatusBadge status={courtCase.status} />
-                    <CourtCaseStageBadge stage={courtCase.stage} />
-                    {isCurrent && (
-                      <Box
-                        bg="blue.500"
-                        color="white"
-                        px={2}
-                        py={0.5}
-                        borderRadius="full"
-                        fontSize="xs"
-                        fontWeight="600"
-                      >
-                        Current
-                      </Box>
-                    )}
-                  </HStack>
-                  <Text
-                    fontSize="md"
-                    fontWeight="600"
-                    color="gray.900"
-                    fontFamily="monospace"
+                <HStack gap={3} align="flex-start" minW={0}>
+                  <Center
+                    w="9"
+                    h="9"
+                    borderRadius="lg"
+                    bg={isCurrent ? "primary.100" : "gray.50"}
+                    border="1px solid"
+                    borderColor={isCurrent ? "primary.200" : "gray.200"}
+                    color={isCurrent ? "primary.600" : "gray.500"}
+                    flexShrink={0}
                   >
+                    <Scale size={17} />
+                  </Center>
+
+                  <Box minW={0}>
+                    <Text
+                      fontSize="11px"
+                      fontWeight="700"
+                      letterSpacing="0.08em"
+                      textTransform="uppercase"
+                      color={isCurrent ? "primary.600" : "gray.500"}
+                    >
+                      {chainEyebrow(courtCase.relationType)}
+                    </Text>
+                    <Text
+                      fontSize={{ base: "15px", md: "16px" }}
+                      fontWeight="700"
+                      color="gray.900"
+                      mt={1}
+                      lineHeight="1.35"
+                      wordBreak="break-word"
+                    >
+                      {courtCase.courtName}
+                    </Text>
+                  </Box>
+                </HStack>
+
+                <HStack gap={1.5} flexShrink={0}>
+                  {isCurrent && (
+                    <Box
+                      bg="primary.500"
+                      color="white"
+                      px={2}
+                      py={0.5}
+                      borderRadius="full"
+                      fontSize="11px"
+                      fontWeight="700"
+                      letterSpacing="0.04em"
+                    >
+                      Current
+                    </Box>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    color="gray.500"
+                    aria-label={`Open court case ${courtCase.ourCourtCaseRef}`}
+                    title="Open court case"
+                    px={2}
+                    minW="0"
+                    _hover={{ bg: "gray.100", color: "gray.800" }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      openCourtCase(courtCase.ourCourtCaseRef);
+                    }}
+                  >
+                    <Eye size={16} />
+                  </Button>
+                </HStack>
+              </HStack>
+
+              {/* ── Metadata ──────────────────────────────────────────── */}
+              <Box borderTop="1px solid" borderColor={innerDivider} />
+
+              <Grid
+                px={{ base: 4, md: 5 }}
+                py={4}
+                templateColumns={{
+                  base: "repeat(2, minmax(0, 1fr))",
+                  md: "repeat(4, minmax(0, 1fr))",
+                }}
+                gap={{ base: 4, md: 5 }}
+              >
+                <MetaItem
+                  label="Case Number"
+                  value={courtCase.courtCaseNumber || "-"}
+                />
+                <MetaItem
+                  label="Case Type"
+                  value={relationTypeLabel(courtCase.relationType)}
+                />
+                <MetaItem
+                  label="Filed Date"
+                  value={formatDate(courtCase.filingDate)}
+                />
+                <MetaItem
+                  label="Current Stage"
+                  value={courtCaseStageLabel(courtCase.stage)}
+                />
+              </Grid>
+
+              {/* ── Footer ────────────────────────────────────────────── */}
+              <HStack
+                px={{ base: 4, md: 5 }}
+                py={3}
+                borderTop="1px solid"
+                borderColor={innerDivider}
+                bg={isCurrent ? "primary.50" : "gray.50"}
+                justify="space-between"
+                gap={3}
+                flexWrap="wrap"
+                borderBottomRadius="xl"
+              >
+                <CourtCaseStatusBadge status={courtCase.status} />
+
+                <HStack gap={{ base: 2, md: 4 }} flexWrap="wrap">
+                  <Text fontSize="12px" color="gray.500" fontFamily="monospace">
                     {courtCase.ourCourtCaseRef}
                   </Text>
-                  <Text fontSize="sm" color="gray.600">
-                    {courtCase.courtName} · {courtCase.courtCaseNumber}
-                  </Text>
-                </Stack>
-
-                <Stack gap={1} align="flex-end" textAlign="right">
-                  <Text fontSize="xs" color="gray.500">
-                    Filed {formatDate(courtCase.filingDate)}
-                  </Text>
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="12px" color="gray.500">
                     {courtCase.judgeName
                       ? `Judge: ${courtCase.judgeName}`
                       : "No judge assigned"}
                   </Text>
                   {courtCase.eventCount !== undefined && (
-                    <Text fontSize="xs" color="gray.500">
+                    <Text fontSize="12px" color="gray.500">
                       {courtCase.eventCount}{" "}
                       {courtCase.eventCount === 1 ? "event" : "events"}
                     </Text>
                   )}
-                </Stack>
+                </HStack>
               </HStack>
-
-              {isCurrent && courtCase.stage && (
-                <Text fontSize="xs" color="blue.600" mt={2}>
-                  Stage: {courtCaseStageLabel(courtCase.stage)} — click to open
-                </Text>
-              )}
             </Box>
-          </HStack>
+
+            {!isLast && <ChainConnector />}
+          </Box>
         );
       })}
 
+      {/* ── Next proceeding ────────────────────────────────────────── */}
+      {onAddCourtCase && <ChainConnector />}
+
       {onAddCourtCase && (
-        <HStack gap={4} align="center">
-          <Box w="6" flexShrink={0} display="flex" justifyContent="center">
-            <CornerDownRight size={16} color="#9ca3af" />
-          </Box>
-          <Button variant="outline" size="sm" onClick={onAddCourtCase}>
-            Add Court Case / Proceeding
-          </Button>
-        </HStack>
+        <Box
+          as="button"
+          // type="button"
+          w="100%"
+          fontFamily="inherit"
+          px={5}
+          py={7}
+          border="1.5px dashed"
+          borderColor="gray.300"
+          borderRadius="xl"
+          bg="white"
+          cursor="pointer"
+          transition="all 0.18s ease"
+          _hover={{ borderColor: "primary.400", bg: "primary.50" }}
+          _focusVisible={{
+            outline: "2px solid",
+            outlineColor: "primary.500",
+            outlineOffset: "2px",
+          }}
+          onClick={onAddCourtCase}
+        >
+          <VStack gap={2} align="center">
+            <Center
+              w="9"
+              h="9"
+              borderRadius="full"
+              border="1px dashed"
+              borderColor="gray.300"
+              bg="white"
+              color="gray.400"
+            >
+              <Plus size={16} />
+            </Center>
+            <Text
+              fontSize="12px"
+              fontWeight="700"
+              letterSpacing="0.08em"
+              textTransform="uppercase"
+              color="gray.600"
+            >
+              Next Proceeding
+            </Text>
+            <Text fontSize="13px" color="gray.500" textAlign="center">
+              Add a related case or the next proceeding for this matter
+            </Text>
+          </VStack>
+        </Box>
       )}
-    </Stack>
+    </VStack>
   );
 };

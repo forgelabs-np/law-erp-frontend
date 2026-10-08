@@ -10,9 +10,9 @@ export interface FirmModule {
   moduleName: string;
   moduleCode: string;
   isEnabled: boolean;
+  isTrial: boolean;
   enabledAt: string | null;
   expiresAt: string | null;
-  isTrial: boolean;
   maxFileSizeMb: number | null;
   allowedExtensions: string | null;
   notes: string | null;
@@ -24,9 +24,9 @@ export interface MergedModule {
   moduleCode: string;
   isAssigned: boolean;
   isEnabled: boolean;
+  isTrial: boolean;
   enabledAt: string | null;
   expiresAt: string | null;
-  isTrial: boolean;
   maxFileSizeMb: number | null;
   allowedExtensions: string | null;
   notes: string | null;
@@ -35,16 +35,12 @@ export interface MergedModule {
 export interface ConfigureModulePayload {
   moduleId: string;
   isEnabled: boolean;
-  trialDays: number | null;
   maxFileSizeMb: number | null;
   allowedExtensions: string | null;
   notes: string | null;
 }
 
 export interface ConfigureModuleFormValues {
-  isEnabled: boolean;
-  isTrial: boolean;
-  trialDays: number;
   maxFileSizeMb: number;
   allowedExtensions: string;
   notes: string;

@@ -1,26 +1,21 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Input,
-  Separator,
-  SimpleGrid,
-  Stack,
-  Text,
-  Textarea,
-  VStack,
-} from "@chakra-ui/react";
-import { useForm, Controller } from "react-hook-form";
+import { Box, Button, Flex, Separator, Stack, Text } from "@chakra-ui/react";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { DatePicker } from "@/shared/components/ui";
+import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { useCreateProjectMutation } from "../api/project.api";
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
-import { CreateProjectRequest } from "../types/project.types";
-import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
-import { projectSchema, ProjectSchemaType } from "@/validations";
+import { ProjectClientType } from "../types/project.types";
+import {
+  buildCreateProjectPayload,
+  useProjectCreateFlow,
+} from "../hooks/useProjectCreateFlow";
+import { ClientTypeSelection } from "../components/ClientTypeSelection";
+import { ProjectCreateFields } from "../components/ProjectCreateFields";
+import { ProjectSchemaType, getProjectSchema } from "@/validations";
+import { useGetClientsQuery } from "@/api/clientManagement";
 
 const defaultValues: ProjectSchemaType = {
   name: "",
@@ -35,26 +30,50 @@ const defaultValues: ProjectSchemaType = {
 const CreateProjectPage = () => {
   const navigate = useNavigate();
   const createMutation = useCreateProjectMutation();
+
+  // Client type selection state (shared logic with the Create Project modal).
+  const [clientType, setClientType] = useState<ProjectClientType | null>(null);
+
   const { data: employees } = useGetEmployeesQuery();
+  // Existing-client options are only fetched once "Existing Client" is chosen.
+  const { data: clients } = useGetClientsQuery({
+    enabled: clientType === "existing",
+  });
   const employeeList = employees?.content ?? [];
+  const clientList = clients?.content ?? [];
 
   const {
     control,
     handleSubmit,
+    setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<ProjectSchemaType>({
     defaultValues,
-    resolver: yupResolver(projectSchema),
+    // Validation follows the selected client type: hidden fields never block
+    // submission.
+    resolver: yupResolver(getProjectSchema(clientType)),
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
-  const onSubmit = (data: ProjectSchemaType) => {
-    createMutation.mutate(data as CreateProjectRequest, {
-      onSuccess: () => {
-        navigate("/projects");
-      },
+  const { step, selectClientType, goToForm, goToSelection } =
+    useProjectCreateFlow({
+      clientType,
+      setClientType,
+      setValue,
+      clearErrors,
     });
+
+  const onSubmit = (data: ProjectSchemaType) => {
+    createMutation.mutate(
+      buildCreateProjectPayload(data, clientType, clientList),
+      {
+        onSuccess: () => {
+          navigate("/projects");
+        },
+      }
+    );
   };
 
   const isSubmitting = createMutation.isPending;
@@ -93,196 +112,30 @@ const CreateProjectPage = () => {
         borderRadius="lg"
         overflow="hidden"
       >
-        {/* Section heading */}
-        <Stack px={6} pt={6} pb={4}>
-          <Text fontSize="sm" fontWeight="600" color="gray.800">
-            Project Details
-          </Text>
-          <Text fontSize="xs" color="gray.500">
-            Enter the information needed to create this project.
-          </Text>
-        </Stack>
-
-        {/* Form fields */}
-        <Stack px={6} pb={6} gap={5}>
-          <SimpleGrid columns={{ base: 1, md: 2 }} gap={5}>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <VStack align="flex-start" gap={1.5}>
-                  <Text fontSize="sm" fontWeight="500" color="gray.700">
-                    Project Name{" "}
-                    <Text as="span" color="red.500">
-                      *
-                    </Text>
-                  </Text>
-                  <Input
-                    {...field}
-                    placeholder="Enter project name"
-                    size="sm"
-                    borderColor={errors.name ? "red.500" : undefined}
-                  />
-                  {errors.name && (
-                    <Text fontSize="xs" color="red.500">
-                      {errors.name.message}
-                    </Text>
-                  )}
-                </VStack>
-              )}
+        {step === "select" ? (
+          /* Step 1 — client type selection */
+          <Box px={6} py={6}>
+            <ClientTypeSelection
+              value={clientType}
+              onChange={selectClientType}
+              onContinue={goToForm}
+              disabled={isSubmitting}
             />
-
-            <Controller
-              name="clientName"
+          </Box>
+        ) : (
+          /* Step 2 — project details for the chosen client type */
+          <Box px={6} py={6}>
+            <ProjectCreateFields
               control={control}
-              render={({ field }) => (
-                <VStack align="flex-start" gap={1.5}>
-                  <Text fontSize="sm" fontWeight="500" color="gray.700">
-                    Client Name{" "}
-                    <Text as="span" color="red.500">
-                      *
-                    </Text>
-                  </Text>
-                  <Input
-                    {...field}
-                    placeholder="Enter client name"
-                    size="sm"
-                    borderColor={errors.clientName ? "red.500" : undefined}
-                  />
-                  {errors.clientName && (
-                    <Text fontSize="xs" color="red.500">
-                      {errors.clientName.message}
-                    </Text>
-                  )}
-                </VStack>
-              )}
+              errors={errors}
+              clientType={clientType}
+              clients={clientList}
+              employees={employeeList}
+              onBack={goToSelection}
+              disabled={isSubmitting}
             />
-
-            <Controller
-              name="clientUserId"
-              control={control}
-              render={({ field }) => (
-                <VStack align="flex-start" gap={1.5}>
-                  <Text fontSize="sm" fontWeight="500" color="gray.700">
-                    Client User
-                  </Text>
-                  <FieldSelect
-                    placeholder="Select client user (optional)"
-                    value={field.value || ""}
-                    onChange={field.onChange}
-                    size="sm"
-                  >
-                    {employeeList.map((emp: any) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.fullName}
-                      </option>
-                    ))}
-                  </FieldSelect>
-                </VStack>
-              )}
-            />
-
-            <Controller
-              name="ownerId"
-              control={control}
-              render={({ field }) => (
-                <VStack align="flex-start" gap={1.5}>
-                  <Text fontSize="sm" fontWeight="500" color="gray.700">
-                    Project Owner{" "}
-                    <Text as="span" color="red.500">
-                      *
-                    </Text>
-                  </Text>
-                  <FieldSelect
-                    placeholder="Select project owner"
-                    value={field.value}
-                    onChange={field.onChange}
-                    size="sm"
-                  >
-                    {employeeList.map((emp: any) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.fullName} - {emp.designation}
-                      </option>
-                    ))}
-                  </FieldSelect>
-                  {errors.ownerId && (
-                    <Text fontSize="xs" color="red.500">
-                      {errors.ownerId.message}
-                    </Text>
-                  )}
-                </VStack>
-              )}
-            />
-
-            <Controller
-              name="startDate"
-              control={control}
-              render={({ field }) => (
-                <VStack align="flex-start" gap={1.5}>
-                  <Text fontSize="sm" fontWeight="500" color="gray.700">
-                    Start Date{" "}
-                    <Text as="span" color="red.500">
-                      *
-                    </Text>
-                  </Text>
-                  <DatePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Select start date"
-                  />
-                  {errors.startDate && (
-                    <Text fontSize="xs" color="red.500">
-                      {errors.startDate.message}
-                    </Text>
-                  )}
-                </VStack>
-              )}
-            />
-
-            <Controller
-              name="targetEndDate"
-              control={control}
-              render={({ field }) => (
-                <VStack align="flex-start" gap={1.5}>
-                  <Text fontSize="sm" fontWeight="500" color="gray.700">
-                    Target End Date
-                  </Text>
-                  <DatePicker
-                    value={field.value || ""}
-                    onChange={field.onChange}
-                    placeholder="Select target end date"
-                  />
-                  {errors.targetEndDate && (
-                    <Text fontSize="xs" color="red.500">
-                      {errors.targetEndDate.message}
-                    </Text>
-                  )}
-                </VStack>
-              )}
-            />
-          </SimpleGrid>
-
-          {/* Description - full width */}
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <VStack align="flex-start" gap={1.5}>
-                <Text fontSize="sm" fontWeight="500" color="gray.700">
-                  Description
-                </Text>
-                <Textarea
-                  {...field}
-                  value={field.value ?? ""}
-                  placeholder="Enter project description"
-                  rows={3}
-                  size="sm"
-                  resize="vertical"
-                />
-              </VStack>
-            )}
-          />
-        </Stack>
+          </Box>
+        )}
 
         {/* Divider + Footer */}
         <Separator borderColor="gray.200" />
@@ -295,14 +148,16 @@ const CreateProjectPage = () => {
           >
             Cancel
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            type="submit"
-            loading={isSubmitting}
-          >
-            Create Project
-          </Button>
+          {step === "form" && (
+            <Button
+              variant="primary"
+              size="sm"
+              type="submit"
+              loading={isSubmitting}
+            >
+              Create Project
+            </Button>
+          )}
         </Flex>
       </Box>
     </Stack>

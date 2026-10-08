@@ -15,6 +15,30 @@ export const CONFIG_QUERY_KEYS = {
   FIRM: (firmId: string) => ["super-admin", "firm-config", firmId] as const,
 };
 
+export interface ConfigItem {
+  configKey: string;
+  configGroup?: string;
+  value: string | null;
+  inputType?: string;
+  allowedValues?: string[] | null;
+  description?: string;
+  active?: boolean;
+  allowEdit?: boolean;
+  sensitive?: boolean;
+}
+
+export function configArrayToRecord(
+  items: ConfigItem[] | ConfigValues | undefined
+): ConfigValues {
+  if (!items) return {};
+  // Already a Record (e.g. from global config if it ever returns flat)
+  if (!Array.isArray(items)) return items;
+  return items.reduce<ConfigValues>((acc, item) => {
+    acc[item.configKey] = item.value ?? "";
+    return acc;
+  }, {});
+}
+
 // ─── API SERVICES ─────────────────────────────────────────────────────────────
 
 export const getGlobalConfig = () => {
@@ -61,7 +85,7 @@ export const useGlobalConfigQuery = () => {
     queryKey: CONFIG_QUERY_KEYS.GLOBAL,
     queryFn: async () => {
       const res = await getGlobalConfig();
-      return res.data.data;
+      return configArrayToRecord(res.data.data);
     },
   });
 };
@@ -111,7 +135,7 @@ export const useFirmConfigQuery = (firmId: string) => {
     queryKey: CONFIG_QUERY_KEYS.FIRM(firmId),
     queryFn: async () => {
       const res = await getFirmConfig(firmId);
-      return res.data.data;
+      return configArrayToRecord(res.data.data);
     },
     enabled: Boolean(firmId),
   });

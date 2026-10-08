@@ -21,7 +21,7 @@ export const calendarEventSchema = yup.object({
   scheduledDate: yup.string().required("Date is required"),
   scheduledTime: yup.string().notRequired(),
   endTime: yup.string().notRequired(),
-  attendingAdvocateId: yup.string().notRequired(),
+  // attendingAdvocateId: yup.string().notRequired(),
   judgeName: yup.string().trim().notRequired(),
   courtRoom: yup.string().trim().notRequired(),
   notes: yup.string().trim().notRequired(),

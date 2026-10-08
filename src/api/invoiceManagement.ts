@@ -98,6 +98,8 @@ export const useInvoicesQuery = (params: InvoiceListParams) => {
       const res = await getInvoices(params);
       return res.data;
     },
+    // Keep the previous rows visible while a new search/page key loads.
+    placeholderData: (previous) => previous,
   });
 };
 

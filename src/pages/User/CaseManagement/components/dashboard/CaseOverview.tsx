@@ -17,9 +17,6 @@ interface CaseOverviewProps {
   trends?: MatterTrend[];
 }
 
-/**
- * Format a date string like "2026-08-25" to "Aug 25"
- */
 function formatShortDate(dateStr: string): string {
   try {
     const date = new Date(dateStr + "T00:00:00");
@@ -29,11 +26,6 @@ function formatShortDate(dateStr: string): string {
   }
 }
 
-/**
- * Generate trend chart data from current case stats.
- * Uses the active matters count to create a plausible weekly trend.
- * In a future implementation, this would come from a historical API.
- */
 function generateTrendData(
   activeMatters: number
 ): Array<{ date: string; active: number; closed: number; stale: number }> {
@@ -98,7 +90,6 @@ const TrendTooltip = ({
 export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
   const { totalMatters, activeMatters, closedMatters, staleMatters } = data;
 
-  // Use real trend data from API, falling back to generated data if empty
   const trendData = useMemo(() => {
     if (trends.length > 0) {
       return [...trends]
@@ -110,44 +101,47 @@ export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
           stale: t.staleMatters,
         }));
     }
-    // Fallback: generate simple trend from current stats
     return generateTrendData(activeMatters);
   }, [trends, activeMatters]);
 
   return (
-    <Stack gap={5}>
-      {/* Case KPI grid */}
-      <Box
-        display="grid"
-        gridTemplateColumns={{ base: "1fr 1fr", md: "repeat(4, 1fr)" }}
-        gap={3}
-      >
-        <CaseMiniCard
+    <Stack gap={4}>
+      {/* Compact metric row */}
+      <HStack gap={0} flexWrap="wrap">
+        <MetricCell
           label="Total Matters"
           value={totalMatters}
-          icon={<FileText size={14} />}
-          color="gray"
+          icon={<FileText size={11} />}
+          color="gray.500"
+          iconBg="gray.100"
+          isLast={false}
         />
-        <CaseMiniCard
+        <MetricCell
           label="Active"
           value={activeMatters}
-          icon={<Activity size={14} />}
-          color="green"
+          icon={<Activity size={11} />}
+          color="#10b981"
+          iconBg="green.50"
+          isLast={false}
         />
-        <CaseMiniCard
+        <MetricCell
           label="Closed"
           value={closedMatters}
-          icon={<XCircle size={14} />}
-          color="gray"
+          icon={<XCircle size={11} />}
+          color="gray.400"
+          iconBg="gray.100"
+          isLast={false}
         />
-        <CaseMiniCard
+        <MetricCell
           label="Stale"
           value={staleMatters}
-          icon={<AlertTriangle size={14} />}
-          color="red"
-          alert={staleMatters > 0}
+          icon={<AlertTriangle size={11} />}
+          color={staleMatters > 0 ? "#ef4444" : "gray.400"}
+          iconBg={staleMatters > 0 ? "red.50" : "gray.100"}
+          isLast
+          highlight={staleMatters > 0}
         />
-      </Box>
+      </HStack>
 
       {/* Matters Trend Chart */}
       <Box>
@@ -156,7 +150,7 @@ export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
         </Text>
 
         {trendData.length > 0 ? (
-          <Box h="200px">
+          <Box h="180px">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={trendData}
@@ -170,11 +164,11 @@ export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.15} />
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.12} />
                     <stop
                       offset="100%"
                       stopColor="#10b981"
-                      stopOpacity={0.02}
+                      stopOpacity={0.01}
                     />
                   </linearGradient>
                 </defs>
@@ -201,11 +195,11 @@ export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
                   type="monotone"
                   dataKey="active"
                   stroke="#10b981"
-                  strokeWidth={1}
+                  strokeWidth={1.5}
                   fill="url(#mattersGradient)"
                   dot={false}
                   activeDot={{
-                    r: 5,
+                    r: 4,
                     fill: "#10b981",
                     stroke: "white",
                     strokeWidth: 2,
@@ -216,7 +210,7 @@ export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
           </Box>
         ) : (
           <Box py={8} textAlign="center">
-            <Text fontSize="sm" color="gray.400">
+            <Text fontSize="xs" color="gray.400">
               No matters found
             </Text>
           </Box>
@@ -227,41 +221,61 @@ export const CaseOverview = ({ data, trends = [] }: CaseOverviewProps) => {
 };
 
 // ============================================================
-// Case Mini Card
+// Metric Cell — compact inline metric with separator
 // ============================================================
 
-interface CaseMiniCardProps {
+interface MetricCellProps {
   label: string;
   value: number;
   icon: React.ReactNode;
   color: string;
-  alert?: boolean;
+  iconBg?: string;
+  isLast: boolean;
+  highlight?: boolean;
 }
 
-const CaseMiniCard = ({
+const MetricCell = ({
   label,
   value,
   icon,
   color,
-  alert,
-}: CaseMiniCardProps) => (
-  <Box
-    p={3}
-    bg={alert ? "red.50" : "white"}
-    border="1px solid"
-    borderColor={alert ? "red.100" : "gray.100"}
-    borderRadius="lg"
-    transition="all 0.15s ease"
-    _hover={{ boxShadow: "sm" }}
+  iconBg,
+  isLast,
+  highlight,
+}: MetricCellProps) => (
+  <Stack
+    gap={0.5}
+    flex={1}
+    minW="80px"
+    pr={isLast ? 0 : 5}
+    borderRight={isLast ? "none" : "1px solid"}
+    borderColor="gray.100"
+    bg={highlight ? "red.50" : undefined}
+    mx={highlight ? -2 : 0}
+    px={highlight ? 2 : 0}
+    py={highlight ? 1 : 0}
+    borderRadius={highlight ? "md" : undefined}
   >
-    <HStack justify="space-between" align="flex-start" mb={1}>
+    <HStack gap={1.5}>
+      <Box
+        w="5"
+        h="5"
+        borderRadius="sm"
+        bg={iconBg ?? "gray.100"}
+        color={color}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        flexShrink={0}
+      >
+        {icon}
+      </Box>
       <Text fontSize="xs" fontWeight="500" color="gray.500">
         {label}
       </Text>
-      <Box color={`${color}.400`}>{icon}</Box>
     </HStack>
-    <Text fontSize="xl" fontWeight="700" color="gray.900" lineHeight="1">
+    <Text fontSize="xl" fontWeight="700" color="gray.900" lineHeight="1.1">
       {value}
     </Text>
-  </Box>
+  </Stack>
 );

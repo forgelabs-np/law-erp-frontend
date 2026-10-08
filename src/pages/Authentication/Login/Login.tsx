@@ -10,18 +10,22 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 
 import { type LoginType, useLoginMutation } from "@/api/auth";
 import { useTemporaryAuthStore } from "@/store/temporaryAuthStore";
 import { Logo } from "@/assets/images";
-import { KeyIcon } from "@/assets/svgs";
 import TokenService from "@/shared/service/service-token";
 import {
+  AuthInputIcon,
   FormProvider,
   PasswordInput,
   TextFieldInput,
 } from "@/shared/components";
+import {
+  AUTH_PILL_BUTTON_PROPS,
+  AUTH_PILL_BUTTON_STYLE,
+} from "@/shared/components/form/input/authPill";
 import { ROUTES_CONFIG } from "@/shared/config";
 import {
   loginSchema,
@@ -29,8 +33,9 @@ import {
   LoginSchemaType,
   SuperAdminLoginSchemaType,
 } from "@/validations";
-import { MdSafetyCheck, MdSecurityUpdate } from "react-icons/md";
+import { MdAccountBalance } from "react-icons/md";
 import { LuShieldCheck } from "react-icons/lu";
+import { FaUserCircle } from "react-icons/fa";
 
 const defaultValues: LoginSchemaType = {
   lawFirmCode: "",
@@ -118,8 +123,6 @@ const Login = () => {
       //   handleSuperAdminLogin(resData, navigate);
       //   return;
       // }
-      console.log(loginType, "typpe");
-
       switch (resData.status) {
         case "SUCCESS":
           // Clear any stale tokens before setting new ones
@@ -165,7 +168,7 @@ const Login = () => {
   };
 
   return (
-    <VStack gap={5} justifyContent="center" py={1} align="stretch">
+    <VStack gap={4} justifyContent="center" align="stretch">
       {/* Logo Area */}
       <HStack gap={2} align="flex-start">
         <Box>
@@ -182,7 +185,7 @@ const Login = () => {
       </HStack>
 
       {/* Header */}
-      <Stack gap={4}>
+      <Stack gap={3}>
         {/* Access type badge */}
         <Box
           display="inline-flex"
@@ -223,32 +226,40 @@ const Login = () => {
       {/* Form */}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
         <Stack gap={4}>
-          <Stack gap={4}>
+          <Stack gap={3}>
             {loginType !== "super-admin" && (
               <TextFieldInput
                 name="lawFirmCode"
                 label="Firm Code"
-                placeholder="Enter your firm code"
+                placeholder="Firm code"
                 required
                 inputHeight="48px"
                 inputBorderRadius="lg"
+                variant="authPill"
+                endElement={<AuthInputIcon icon={<MdAccountBalance />} />}
+                hideLabel={true}
               />
             )}
             <TextFieldInput
               name="username"
               label="Username"
-              placeholder="Enter your username"
+              placeholder="Username"
               required
               inputHeight="48px"
               inputBorderRadius="lg"
+              variant="authPill"
+              endElement={<AuthInputIcon icon={<FaUserCircle />} />}
+              hideLabel={true}
             />
             <PasswordInput
               name="password"
               label="Password"
-              placeholder="Enter your password"
+              placeholder="Password"
               required
               inputHeight="48px"
               inputBorderRadius="lg"
+              variant="authPill"
+              hideLabel
             />
             {loginType !== "super-admin" && (
               <Text
@@ -258,12 +269,10 @@ const Login = () => {
                 width="full"
               >
                 Forgot your password?{" "}
-                <Link
-                  href="/forgot-password"
-                  color="primary.500"
-                  fontWeight="600"
-                >
-                  Reset here
+                <Link color="primary.500" fontWeight="600" asChild>
+                  <RouterLink to={ROUTES_CONFIG.AUTHENTICATION.FORGOT_PASSWORD}>
+                    Reset here
+                  </RouterLink>
                 </Link>
               </Text>
             )}
@@ -273,14 +282,8 @@ const Login = () => {
             type="submit"
             variant="solid"
             loading={isPending}
-            width="full"
-            height="48px"
-            borderRadius="lg"
-            fontSize="md"
-            fontWeight="600"
-            bg="primary.500"
-            _hover={{ bg: "primary.600" }}
-            _active={{ bg: "primary.700" }}
+            {...AUTH_PILL_BUTTON_PROPS}
+            css={AUTH_PILL_BUTTON_STYLE as never}
           >
             Sign in
           </Button>
@@ -288,7 +291,7 @@ const Login = () => {
       </FormProvider>
 
       {/* Security Footer */}
-      <HStack gap={2} justify="center" pt={2}>
+      <HStack gap={2} justify="center" pt={1}>
         <LuShieldCheck />
         <Text fontSize="xs" color="gray.400">
           Secured with enterprise-grade encryption

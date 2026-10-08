@@ -13,6 +13,8 @@ const PUBLIC_ENDPOINTS = [
   "super-admin/register",
   "auth/mfa/validate",
   "auth/mfa/setup/confirm",
+  "auth/forgot-password",
+  "auth/reset-password",
 ];
 
 const isPublicEndpoint = (url: string): boolean => {
@@ -121,9 +123,9 @@ LawFirmCRMClient.interceptors.response.use(
         localStorage.removeItem("refresh_token");
         onRefreshCompleted(null);
 
-        // Redirect to login page
+        // Redirect to login page using replace to prevent back navigation
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.location.replace("/login");
         }
 
         return Promise.reject(refreshError);

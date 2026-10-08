@@ -23,12 +23,16 @@ const getClients = () => {
   );
 };
 
-export const useGetClientsQuery = () => {
+export const useGetClientsQuery = (options?: { enabled?: boolean }) => {
   const { canView } = useModulePermissions("CLIENT_MANAGEMENT");
   return useQuery({
     queryKey: [api.CLIENT_MANAGEMENT.GET_CLIENTS],
     queryFn: getClients,
-    enabled: canView,
+    // `enabled` lets callers defer the client fetch until the data is actually
+    // needed (e.g. the create-project flow only needs clients in
+    // "Existing Client" mode). Defaults to true, so existing callers and
+    // cache keys are unchanged.
+    enabled: canView && (options?.enabled ?? true),
     select: (response) => response?.data?.data,
   });
 };

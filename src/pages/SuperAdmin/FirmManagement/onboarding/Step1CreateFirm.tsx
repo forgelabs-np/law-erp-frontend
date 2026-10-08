@@ -1,0 +1,429 @@
+import { Grid, GridItem, HStack, Stack, Text } from "@chakra-ui/react";
+import { useCallback, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import {
+  useCreateEditFirmMutation,
+  useUpdateFirmMutation,
+} from "@/api/firmManagement";
+import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
+import { useProvincesQuery } from "@/shared/hooks/useMasterData";
+import { Switch } from "@/shared/components/ui";
+import { firmSchema } from "@/validations";
+
+import {
+  FirmFormValues,
+  FirmPayload,
+  FirmType,
+  FirmUpdatePayload,
+} from "../types";
+
+const FIRM_TYPE_OPTIONS = [
+  { label: "Firm", value: "FIRM" },
+  { label: "Solo", value: "SOLO" },
+];
+
+const defaultValues: FirmFormValues = {
+  lawFirmCode: "",
+  name: "",
+  firmType: "",
+  email: "",
+  phone: "",
+  address: "",
+  jurisdiction: "",
+  adminUsername: "",
+  adminEmail: "",
+  adminMobileNo: "",
+  adminPassword: "",
+  adminFullName: "",
+  isTrial: false,
+  trialDays: 30,
+};
+
+interface Step1CreateFirmProps {
+  onSuccess: (data: {
+    firmId: string;
+    adminId?: string;
+    adminRoleId?: string;
+    adminUsername?: string;
+    firmName?: string;
+  }) => void;
+  initialData?: Record<string, unknown> | null;
+  onSubmitRef?: React.MutableRefObject<(() => void) | null>;
+  createdFirmId?: string | null;
+}
+
+export const Step1CreateFirm = ({
+  onSuccess,
+  initialData,
+  onSubmitRef,
+  createdFirmId,
+}: Step1CreateFirmProps) => {
+  const methods = useForm<FirmFormValues>({
+    defaultValues,
+    resolver: yupResolver(firmSchema) as any,
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+  const { handleSubmit, watch, control, reset } = methods;
+  const isTrial = watch("isTrial");
+
+  const { mutate: createFirm } = useCreateEditFirmMutation();
+  const { mutate: updateFirm } = useUpdateFirmMutation();
+  const { data: provinces = [], isLoading: provincesLoading } =
+    useProvincesQuery();
+
+  const provinceOptions = provinces.map((p) => ({
+    label: `${p.nameEn} - ${p.nameNp}`,
+    value: p.nameEn,
+  }));
+
+  const isEditMode = Boolean(createdFirmId);
+
+  const onSubmit = useCallback(
+    (data: FirmFormValues) => {
+      // EDIT (navigating back after the firm was created) → dedicated
+      // PUT /super-admin/firms/{firmId} — never the create POST endpoint.
+      if (createdFirmId) {
+        const updatePayload: FirmUpdatePayload = {
+          name: data.name,
+          firmType: data.firmType as FirmType,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          jurisdiction: data.jurisdiction,
+          // Immutable fields are submitted exactly as loaded (inputs are
+          // disabled in edit mode) — the backend rejects changed values.
+          ...(data.lawFirmCode?.trim()
+            ? { lawFirmCode: data.lawFirmCode.trim() }
+            : {}),
+          adminUsername: data.adminUsername,
+          adminFullName: data.adminFullName,
+          adminEmail: data.adminEmail,
+          adminMobileNo: data.adminMobileNo,
+          // adminPassword / isTrial / trialDays are intentionally not sent —
+          // see FirmUpdatePayload.
+        };
+
+        updateFirm(
+          { firmId: createdFirmId, data: updatePayload },
+          {
+            onSuccess: () => {
+              // UPDATE mode - just move to next step, keep the same firmId
+              onSuccess({
+                firmId: createdFirmId,
+                adminUsername: data.adminUsername,
+                firmName: data.name,
+              });
+            },
+          }
+        );
+        return;
+      }
+
+      // CREATE → existing create POST endpoint.
+      const payload: FirmPayload = {
+        ...(data.lawFirmCode?.toUpperCase()
+          ? { lawFirmCode: data.lawFirmCode?.toUpperCase() }
+          : {}),
+        name: data.name,
+        firmType: data.firmType as "SOLO" | "FIRM",
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        jurisdiction: data.jurisdiction,
+        adminUsername: data.adminUsername,
+        adminEmail: data.adminEmail,
+        adminMobileNo: data.adminMobileNo,
+        adminFullName: data.adminFullName,
+        ...(data.adminPassword ? { adminPassword: data.adminPassword } : {}),
+        isTrial: data.isTrial ?? false,
+        ...(data.isTrial && data.trialDays
+          ? { trialDays: data.trialDays }
+          : {}),
+      };
+
+      createFirm(payload, {
+        onSuccess: (response) => {
+          // CREATE mode - extract the new firm ID from response
+          const responseData = response?.data?.data;
+
+          let firmId = "";
+          let adminId: string | undefined;
+          let adminRoleId: string | undefined;
+          let firmName = data.name;
+
+          if (responseData) {
+            firmId =
+              responseData.firmId ||
+              responseData.id ||
+              responseData.firm?.id ||
+              "";
+            adminId = responseData.adminId || responseData.admin?.id;
+            adminRoleId =
+              responseData.adminRoleId || responseData.admin?.roleId;
+            firmName = responseData.firmName || responseData.name || data.name;
+          }
+
+          if (firmId) {
+            onSuccess({
+              firmId,
+              adminId,
+              adminRoleId,
+              adminUsername: data.adminUsername,
+              firmName,
+            });
+          }
+        },
+      });
+    },
+    [createFirm, updateFirm, onSuccess, createdFirmId]
+  );
+
+  // Expose submit function to parent
+  useEffect(() => {
+    if (onSubmitRef) {
+      onSubmitRef.current = () => {
+        handleSubmit(onSubmit)();
+      };
+    }
+    return () => {
+      if (onSubmitRef) {
+        onSubmitRef.current = null;
+      }
+    };
+  }, [onSubmitRef, handleSubmit, onSubmit]);
+
+  // Reset form when initialData is provided (navigating back to Step 1)
+  useEffect(() => {
+    if (initialData) {
+      // Map API response to form fields - using the same field mapping as AddEditFirm
+      const d = initialData as Record<string, unknown>;
+      reset({
+        lawFirmCode: (d.firmCode as string) || (d.lawFirmCode as string) || "",
+        name: (d.name as string) || (d.firmName as string) || "",
+        firmType: (d.firmType as "SOLO" | "FIRM" | "") || "",
+        // Firm email/phone/address
+        email: (d.firmEmail as string) || (d.email as string) || "",
+        phone: (d.firmPhone as string) || (d.phone as string) || "",
+        address: (d.firmAddress as string) || (d.address as string) || "",
+        jurisdiction: (d.jurisdiction as string) || "",
+        // Admin details
+        adminUsername:
+          (d.username as string) || (d.adminUsername as string) || "",
+        adminEmail: (d.adminEmail as string) || "",
+        adminMobileNo:
+          (d.mobileNo as string) || (d.adminMobileNo as string) || "",
+        adminPassword: "", // Don't reset password for security
+        adminFullName:
+          (d.adminFullName as string) || (d.fullName as string) || "",
+        isTrial:
+          (d.isTrial as boolean) ??
+          (d.is_trial as boolean) ??
+          // (d.firmStatus === "TRIAL") ??
+          false,
+        trialDays: (d.trialDays as number) || (d.trial_days as number) || 30,
+      });
+    }
+  }, [initialData, reset]);
+
+  return (
+    <FormProvider methods={methods}>
+      <Stack gap={6}>
+        <Stack gap={1}>
+          <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+            {isEditMode
+              ? "Update the firm and its administrator account."
+              : "Create the firm and its administrator account."}
+          </Text>
+        </Stack>
+
+        {/* Firm Details */}
+        <Stack gap={1}>
+          <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+            Firm Details
+          </Text>
+        </Stack>
+
+        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+          <GridItem colSpan={2}>
+            <TextFieldInput
+              name="name"
+              label="Firm Name"
+              placeholder="e.g. Sharma & Associates"
+              required
+            />
+          </GridItem>
+
+          <GridItem>
+            <ReactSelect
+              name="firmType"
+              label="Firm Type"
+              placeholder="Select Firm Type"
+              options={FIRM_TYPE_OPTIONS}
+              required
+            />
+          </GridItem>
+
+          <GridItem>
+            <TextFieldInput
+              name="lawFirmCode"
+              label="Law Firm Code"
+              placeholder="Auto-generated if empty"
+              disabled={isEditMode}
+            />
+          </GridItem>
+
+          <GridItem>
+            <TextFieldInput
+              name="email"
+              label="Firm Email"
+              placeholder="firm@example.com"
+              required
+            />
+          </GridItem>
+
+          <GridItem>
+            <TextFieldInput
+              name="phone"
+              label="Phone"
+              placeholder="98XXXXXXXX"
+              maxLength={10}
+              required
+            />
+          </GridItem>
+
+          <GridItem colSpan={2}>
+            <TextFieldInput
+              name="address"
+              label="Address"
+              placeholder="Firm address"
+              required
+            />
+          </GridItem>
+
+          <GridItem colSpan={2}>
+            <ReactSelect
+              name="jurisdiction"
+              label="Jurisdiction"
+              placeholder={
+                provincesLoading ? "Loading provinces..." : "Select a province"
+              }
+              options={provinceOptions}
+              disabled={provincesLoading}
+              required
+            />
+          </GridItem>
+        </Grid>
+
+        {/* Admin Details */}
+        <Stack gap={1} mt={2}>
+          <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+            Firm Admin Details
+          </Text>
+        </Stack>
+
+        <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+          <GridItem colSpan={2}>
+            <TextFieldInput
+              name="adminFullName"
+              label="Admin Full Name"
+              placeholder="Full name of the admin"
+              required
+            />
+          </GridItem>
+
+          <GridItem>
+            <TextFieldInput
+              name="adminUsername"
+              label="Admin Username"
+              placeholder="username"
+              disabled={isEditMode}
+              required
+            />
+          </GridItem>
+
+          <GridItem>
+            <TextFieldInput
+              name="adminMobileNo"
+              label="Admin Mobile No."
+              placeholder="98XXXXXXXX"
+              maxLength={10}
+              required
+            />
+          </GridItem>
+
+          <GridItem colSpan={2}>
+            <TextFieldInput
+              name="adminEmail"
+              label="Admin Email"
+              placeholder="admin@example.com"
+              required
+            />
+          </GridItem>
+
+          {!isEditMode && (
+            <GridItem colSpan={2}>
+              <TextFieldInput
+                name="adminPassword"
+                label="Admin Password"
+                placeholder="Set initial password"
+                required
+              />
+            </GridItem>
+          )}
+        </Grid>
+
+        {/* Trial Settings (create only — trial changes on an existing firm
+            go through the lifecycle actions) */}
+        {!isEditMode && (
+          <>
+            <Stack gap={1} mt={2}>
+              <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+                Trial Settings
+              </Text>
+            </Stack>
+
+            <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+              <GridItem colSpan={2}>
+                <Controller
+                  name="isTrial"
+                  control={control}
+                  render={({ field }) => (
+                    <HStack justify="space-between">
+                      <Stack gap={0}>
+                        <Text fontSize="sm" fontWeight="medium">
+                          Trial Account
+                        </Text>
+                        <Text fontSize="xs" color="gray.500">
+                          Create this firm as a trial account
+                        </Text>
+                      </Stack>
+                      <Switch
+                        checked={field.value ?? false}
+                        onCheckedChange={(e) => field.onChange(e.checked)}
+                      />
+                    </HStack>
+                  )}
+                />
+              </GridItem>
+
+              {isTrial && (
+                <GridItem colSpan={2}>
+                  <TextFieldInput
+                    name="trialDays"
+                    label="Trial Duration (days)"
+                    placeholder="30"
+                    type="number"
+                    required
+                  />
+                </GridItem>
+              )}
+            </Grid>
+          </>
+        )}
+      </Stack>
+    </FormProvider>
+  );
+};

@@ -1,7 +1,8 @@
 import { VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
-import { DATA_PER_PAGE } from "@/shared/constants";
+// Deep import to avoid cycling back through the constants barrel.
+import { DATA_PER_PAGE } from "@/shared/constants/table";
 import { DatatableProps } from "@/shared/types";
 
 import { TableHeader } from "./header";
@@ -24,7 +25,7 @@ export const DatatableWithAutoPagination = <T,>({
   const paginatedData = data.slice(startIndex, startIndex + pageSize);
 
   return (
-    <VStack alignItems="stretch">
+    <VStack alignItems="stretch" w="100%" maxW="100%" minW={0}>
       {header?.title && (
         <TableHeader
           {...header}

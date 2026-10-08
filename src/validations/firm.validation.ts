@@ -78,6 +78,16 @@ export const firmSchema = yup.object({
     .trim()
     .required("Admin full name is required")
     .min(2, "Admin full name must be at least 2 characters"),
+  isTrial: yup.boolean().default(false),
+  trialDays: yup.number().when("isTrial", {
+    is: true,
+    then: (schema) =>
+      schema
+        .required("Trial duration is required")
+        .positive("Trial days must be a positive number")
+        .integer("Trial days must be a whole number"),
+    otherwise: (schema) => schema.notRequired().nullable(),
+  }),
 });
 
 export type FirmSchemaType = yup.InferType<typeof firmSchema>;

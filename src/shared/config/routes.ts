@@ -39,6 +39,7 @@ export const ROUTES_CONFIG = {
     FIRM_ACTIVITY: "/firm-activity",
     STALE_MATTERS: "/stale-matters",
     SCRAPER_MANAGEMENT: "/scraper-management",
+    NOTIFICATIONS: "/notifications",
     GLOBAL_DASHBOARD: "/global-dashboard",
     PROJECT_MANAGEMENT: "/project-management",
     PROJECT_MANAGEMENT_PROJECTS: "/projects",
@@ -48,6 +49,11 @@ export const ROUTES_CONFIG = {
     PROJECT_MANAGEMENT_RENEWAL_TYPES: "/projects/renewal-types",
     CLIENT_PROJECTS: "/client-projects",
     CLIENT_PROJECT_DETAIL: "/client-projects/:projectCode",
+    CLIENT_DOCUMENTS: "/client-documents",
+    // Document library folders — the library browses projects/matters first
+    // and opens their documents on their own route.
+    FOLDER_PROJECT_DOCUMENTS: "/folder/projects/:projectCode",
+    FOLDER_MATTER_DOCUMENTS: "/folder/matters/:matterNumber",
   },
   SUPER_ADMIN: {
     AUDIT_LOGS: "/super-admin/audit-logs",

@@ -13,9 +13,11 @@ export const DatatableWithManualPagination = <T,>({
   pagination,
   isLoading,
   revisionKey,
+  columnVisibility,
+  onColumnVisibilityChange,
 }: DatatableProps<T>) => {
   return (
-    <VStack alignItems="stretch">
+    <VStack alignItems="stretch" w="100%" maxW="100%" minW={0}>
       {header?.title && <TableHeader {...header} />}
 
       <Table
@@ -23,6 +25,8 @@ export const DatatableWithManualPagination = <T,>({
         columns={columns}
         isLoading={isLoading}
         revisionKey={revisionKey}
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={onColumnVisibilityChange}
       />
 
       {pagination && <Pagination {...pagination} />}

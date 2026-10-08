@@ -36,8 +36,13 @@ export const FormTextarea = ({
   return (
     <Box>
       <HStack gap={2} mb={2}>
-        {Icon && <Icon size={16} color="#6b7280" />}
-        <Text fontSize="14px" fontWeight="500" color="gray.700">
+        {Icon && <Icon size={15} color="#6B7280" />}
+        <Text
+          fontSize="13px"
+          fontWeight="600"
+          color="gray.700"
+          letterSpacing="0.01em"
+        >
           {label}
           {required && (
             <Text as="span" color="red.500" ml={1}>
@@ -46,24 +51,38 @@ export const FormTextarea = ({
           )}
         </Text>
       </HStack>
+
       <Box position="relative">
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
-          borderRadius="md"
+          borderRadius="lg"
           rows={rows}
+          py={3}
+          px={4}
           fontSize="15px"
+          lineHeight="1.6"
+          minH="112px"
+          bg={disabled ? "gray.50" : "white"}
           borderColor={error ? "red.300" : "gray.200"}
-          _focus={{
-            borderColor: error ? "red.400" : "blue.500",
-            boxShadow: error ? "0 0 0 1px red.400" : "0 0 0 1px blue.500",
-          }}
+          _placeholder={{ color: "gray.400" }}
           _hover={{
             borderColor: error ? "red.300" : "gray.300",
           }}
-          transition="all 0.2s ease"
+          _focus={{
+            borderColor: error ? "red.400" : "primary.500",
+            boxShadow: error
+              ? "0 0 0 3px rgba(229, 62, 62, 0.12)"
+              : "0 0 0 3px #E3E7FC",
+          }}
+          _disabled={{
+            bg: "gray.50",
+            color: "gray.400",
+            cursor: "not-allowed",
+          }}
+          transition="all 0.18s ease"
           resize="vertical"
         />
         {showCharCount && maxLength && (
@@ -82,13 +101,14 @@ export const FormTextarea = ({
           </Text>
         )}
       </Box>
+
       {helperText && !error && (
-        <Text fontSize="13px" color="gray.500" mt={2}>
+        <Text fontSize="12px" color="gray.500" mt={2} lineHeight="1.5">
           {helperText}
         </Text>
       )}
       {error && (
-        <Text fontSize="13px" color="red.500" mt={2}>
+        <Text fontSize="12px" color="red.500" mt={2} lineHeight="1.5">
           {error}
         </Text>
       )}

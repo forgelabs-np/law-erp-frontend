@@ -1,9 +1,11 @@
 import { Badge, HStack, Box, Stack, Text, VStack } from "@chakra-ui/react";
 
-import { useEmployeeByIdQuery, EmployeeResponseType } from "@/api/employeeManagement";
+import {
+  useEmployeeByIdQuery,
+  EmployeeResponseType,
+} from "@/api/employeeManagement";
 import { Dialog } from "@/shared/components/dialog";
 import { formatDate } from "@/pages/User/CaseManagement/utils/matterHelpers";
-
 
 interface EmployeeDetailsModalProps {
   open: boolean;
@@ -36,7 +38,7 @@ export const EmployeeDetailsModal = ({
       title="Employee Details"
       hasFooter={false}
       size={"md"}
-    // scrollBehavior="inside"
+      // scrollBehavior="inside"
     >
       {isLoading ? (
         <Stack p={4}>
@@ -59,7 +61,7 @@ export const EmployeeDetailsModal = ({
       )}
     </Dialog>
   );
-}
+};
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <Text
@@ -106,7 +108,11 @@ const DetailRow = ({
   </HStack>
 );
 
-function EmployeeDetailsSection({ employee }: { employee: EmployeeResponseType }) {
+function EmployeeDetailsSection({
+  employee,
+}: {
+  employee: EmployeeResponseType;
+}) {
   return (
     <>
       <Stack gap={2}>
@@ -116,7 +122,10 @@ function EmployeeDetailsSection({ employee }: { employee: EmployeeResponseType }
           <DetailRow label="Username" value={employee.username ?? "N/A"} />
           <DetailRow label="Email" value={employee.email ?? "N/A"} />
           <DetailRow label="Mobile Number" value={employee.mobileNo ?? "N/A"} />
-          <DetailRow label="Employee Code" value={employee.employeeCode ?? "N/A"} />
+          <DetailRow
+            label="Employee Code"
+            value={employee.employeeCode ?? "N/A"}
+          />
           <DetailRow
             label="User Type"
             value={
@@ -157,9 +166,18 @@ function EmployeeDetailsSection({ employee }: { employee: EmployeeResponseType }
         <VStack align="stretch" gap={0}>
           <DetailRow label="Role Name" value={employee.roleName ?? "N/A"} />
           <DetailRow label="Role Code" value={employee.roleCode ?? "N/A"} />
-          <DetailRow label="Designation" value={employee.designation ?? "N/A"} />
-          <DetailRow label="Bar Council Number" value={employee.barCouncilNo ?? "N/A"} />
-          <DetailRow label="Specialization" value={employee.specialization ?? "N/A"} />
+          <DetailRow
+            label="Designation"
+            value={employee.designation ?? "N/A"}
+          />
+          <DetailRow
+            label="Bar Council Number"
+            value={employee.barCouncilNo ?? "N/A"}
+          />
+          <DetailRow
+            label="Specialization"
+            value={employee.specialization ?? "N/A"}
+          />
           <DetailRow
             label="Joining Date"
             value={formatDateDisplay(employee.joiningDate)}

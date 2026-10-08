@@ -83,7 +83,11 @@ export const CreateTaskModal = ({
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Input {...field} placeholder="Enter task title" />
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="Enter task title"
+                    />
                   )}
                 />
               </Box>
@@ -105,7 +109,7 @@ export const CreateTaskModal = ({
                         p={2}
                       >
                         <select
-                          value={field.value}
+                          value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
                           style={{
                             width: "100%",
@@ -150,7 +154,7 @@ export const CreateTaskModal = ({
                         p={2}
                       >
                         <select
-                          value={field.value}
+                          value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
                           style={{
                             width: "100%",
@@ -182,7 +186,11 @@ export const CreateTaskModal = ({
                   name="assignedLawyer"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} placeholder="e.g., Harvey Specter" />
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="e.g., Harvey Specter"
+                    />
                   )}
                 />
               </Box>
@@ -195,7 +203,11 @@ export const CreateTaskModal = ({
                   name="client"
                   control={control}
                   render={({ field }) => (
-                    <Input {...field} placeholder="e.g., Wayne Enterprises" />
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="e.g., Wayne Enterprises"
+                    />
                   )}
                 />
               </Box>
@@ -251,6 +263,7 @@ export const CreateTaskModal = ({
                   render={({ field }) => (
                     <Textarea
                       {...field}
+                      value={field.value ?? ""}
                       placeholder="Additional details..."
                       rows={3}
                     />

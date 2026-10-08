@@ -5,7 +5,6 @@ import {
   HStack,
   Stack,
   Text,
-  VStack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { Database, Download, RefreshCw, FileDown } from "lucide-react";
@@ -13,53 +12,46 @@ import { useState } from "react";
 
 import { SectionCard } from "../CaseManagement/components/ui";
 import {
-  useManualScrape,
   useGenerateWeeklyExport,
+  useCourtsByTypeQuery,
 } from "@/shared/hooks/useScraper";
-import { useAuthStore } from "@/shared/stores/auth.store";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import {
   NepaliDatePicker,
   formatForApi,
 } from "@/shared/components/NepaliDatePicker/NepaliDatePicker";
 import { NepaliDateParts } from "@/utils/nepaliDateUtils";
+import { Court } from "@/shared/types/scraper.types";
 
-// Known courts from documentation (can be expanded if court API becomes available)
-const KNOWN_COURTS = [
-  { id: 39, name: "Kathmandu District Court" },
-  // { id: 63, name: "Gulmi District Court" },
-];
+import { CourtSyncProgressPanel } from "./components/CourtSyncProgressPanel";
+import { useCourtSync } from "./useCourtSync";
 
 const ScraperManagementPage = () => {
-  const role = useAuthStore((state) => state.role);
   const { canCreate } = useModulePermissions("SCRAPER_MANAGEMENT");
 
-  // Permission check - only FIRM_ADMIN can access
-  // if (role?.name !== "FIRM_ADMIN") {
-  //   return (
-  //     <VStack gap={4} padding={8} textAlign="center">
-  //       <Text fontSize="lg" fontWeight="500" color="gray.600">
-  //         Access Denied
-  //       </Text>
-  //       <Text fontSize="sm" color="gray.500">
-  //         You do not have permission to access court data .
-  //       </Text>
-  //     </VStack>
-  //   );
-  // }
+  const { data: courts = [], isLoading: courtsLoading } =
+    useCourtsByTypeQuery("DISTRICT");
 
-  const [selectedCourtId, setSelectedCourtId] = useState<number>(39);
+  const [selectedCourtId, setSelectedCourtId] = useState<number | null>(null);
   const [bsDate, setBsDate] = useState<NepaliDateParts | null>(null);
-  const [scrapeResult, setScrapeResult] = useState<{
-    rows: number;
-    success: boolean;
-  } | null>(null);
   const [exportResult, setExportResult] = useState<{
     success: boolean;
     timestamp?: string;
   } | null>(null);
 
-  const manualScrapeMutation = useManualScrape();
+  // Every piece of Court Sync lifecycle state (estimated progress, the
+  // 2-minute wait, request cancellation, outcome) lives in one place.
+  const {
+    phase: syncPhase,
+    progress: syncProgress,
+    elapsedMs: syncElapsedMs,
+    result: scrapeResult,
+    runContext: syncRunContext,
+    isRunning: isSyncRunning,
+    startSync,
+    reset: resetSync,
+  } = useCourtSync();
+
   const generateWeeklyExportMutation = useGenerateWeeklyExport();
 
   const scrapeConfirmDisclosure = useDisclosure();
@@ -72,21 +64,15 @@ const ScraperManagementPage = () => {
     scrapeConfirmDisclosure.onOpen();
   };
 
+  /** Starts a sync run for the currently selected court and BS date. */
+  const runSync = () => {
+    if (!bsDate || selectedCourtId === null) return;
+    void startSync({ courtId: selectedCourtId, dateBs: formatForApi(bsDate) });
+  };
+
   const confirmScrape = () => {
     scrapeConfirmDisclosure.onClose();
-    setScrapeResult(null);
-    if (!bsDate) return;
-    manualScrapeMutation.mutate(
-      { courtId: selectedCourtId, dateBs: formatForApi(bsDate) },
-      {
-        onSuccess: (response) => {
-          const data = response?.data?.data;
-          if (data) {
-            setScrapeResult({ rows: data.rows, success: data.success });
-          }
-        },
-      }
-    );
+    runSync();
   };
 
   const handleGenerateExport = () => {
@@ -103,7 +89,9 @@ const ScraperManagementPage = () => {
     });
   };
 
-  const selectedCourt = KNOWN_COURTS.find((c) => c.id === selectedCourtId);
+  const selectedCourt: Court | undefined = courts.find(
+    (c) => c.courtId === selectedCourtId
+  );
 
   return (
     <Stack gap={6} padding={4} bg="#F7F8F8" minH="100vh" rounded={12}>
@@ -159,27 +147,42 @@ const ScraperManagementPage = () => {
               >
                 Court
               </Text>
-              <HStack gap={2} flexWrap="wrap">
-                {KNOWN_COURTS.map((court) => (
-                  <Button
-                    key={court.id}
-                    size="sm"
-                    variant={selectedCourtId === court.id ? "solid" : "outline"}
-                    bg={selectedCourtId === court.id ? "#0056FF" : "white"}
-                    borderColor="#E5E7EB"
-                    color={selectedCourtId === court.id ? "white" : "#374151"}
-                    _hover={
-                      selectedCourtId === court.id
-                        ? { bg: "#0048D9" }
-                        : { bg: "#E3E7FC", borderColor: "#0056FF" }
-                    }
-                    onClick={() => setSelectedCourtId(court.id)}
-                    aria-label={`Select ${court.name}`}
-                  >
-                    {court.name}
-                  </Button>
+              <select
+                value={selectedCourtId ?? ""}
+                onChange={(e) =>
+                  setSelectedCourtId(
+                    e.target.value ? Number(e.target.value) : null
+                  )
+                }
+                disabled={courtsLoading || courts.length === 0}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  border: "1px solid #E5E7EB",
+                  fontSize: "14px",
+                  color: "#374151",
+                  backgroundColor: "white",
+                  cursor:
+                    courtsLoading || courts.length === 0
+                      ? "not-allowed"
+                      : "pointer",
+                  opacity: courtsLoading || courts.length === 0 ? 0.6 : 1,
+                }}
+              >
+                <option value="">
+                  {courtsLoading
+                    ? "Loading courts..."
+                    : courts.length === 0
+                      ? "No courts available"
+                      : "Select a court"}
+                </option>
+                {courts.map((court) => (
+                  <option key={court.courtId} value={court.courtId}>
+                    {court.courtNameEnglish}
+                  </option>
                 ))}
-              </HStack>
+              </select>
             </Box>
 
             <Box flex={1} minW={{ base: "100%", md: "200px" }}>
@@ -208,9 +211,9 @@ const ScraperManagementPage = () => {
               _hover={{ bg: "#0048D9" }}
               _active={{ bg: "#003AB3" }}
               onClick={handleRunScrape}
-              loading={manualScrapeMutation.isPending}
+              loading={isSyncRunning}
               maxW="fit-content"
-              disabled={!bsDate}
+              disabled={!bsDate || selectedCourtId === null}
               _disabled={{ opacity: 0.5, cursor: "not-allowed" }}
               aria-label="Run court data sync"
             >
@@ -221,23 +224,24 @@ const ScraperManagementPage = () => {
             </Button>
           )}
 
-          {/* Dynamic Sync Result */}
-          {manualScrapeMutation.isPending && (
-            <Box
-              p={4}
-              bg="#F3F4F6"
-              borderRadius="lg"
-              border="1px solid"
-              borderColor="#E5E7EB"
-            >
-              <Text fontSize="sm" fontWeight="500" color="#6B7280">
-                Syncing {selectedCourt?.name} — Fetching cause-list data for{" "}
-                {bsDate ? formatForApi(bsDate) : "..."}...
-              </Text>
-            </Box>
-          )}
+          {/* Sync progress / timeout experience */}
+          <CourtSyncProgressPanel
+            phase={syncPhase}
+            progress={syncProgress}
+            elapsedMs={syncElapsedMs}
+            courtName={
+              courts.find((court) => court.courtId === syncRunContext?.courtId)
+                ?.courtNameEnglish
+            }
+            dateBs={syncRunContext?.dateBs}
+            onRetry={() => {
+              resetSync();
+              runSync();
+            }}
+          />
 
-          {scrapeResult && !manualScrapeMutation.isPending && (
+          {/* Dynamic Sync Result */}
+          {scrapeResult && syncPhase === "idle" && (
             <Box
               p={4}
               bg={scrapeResult.success ? "#F0FDF4" : "#FFFBEB"}
@@ -358,7 +362,7 @@ const ScraperManagementPage = () => {
                   Court
                 </Text>
                 <Text fontSize="sm" color="gray.900">
-                  {selectedCourt?.name}
+                  {selectedCourt?.courtNameEnglish}
                 </Text>
               </Box>
               <Box>

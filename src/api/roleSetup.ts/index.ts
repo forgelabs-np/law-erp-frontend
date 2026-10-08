@@ -44,10 +44,11 @@ const getRole = () => {
   );
 };
 
-export const useGetRoleQuery = () => {
+export const useGetRoleQuery = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: [api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLES],
     queryFn: getRole,
+    enabled: options?.enabled ?? true,
     select: (response) => response?.data,
   });
 };
@@ -126,11 +127,14 @@ export interface RolePermissionPayload {
 }
 
 const assignRolePermissions = async (data: RolePermissionPayload) => {
+  // The RBAC contract wraps every request body in `{ data: ... }`.
   return LawFirmCRMClient.post(
     api.USER_MANAGEMENT.ROLE_SETUP.ROLE_PERMISSIONS,
     {
-      roleId: data.roleId,
-      permissionIds: data.permissionIds,
+      data: {
+        roleId: data.roleId,
+        permissionIds: data.permissionIds,
+      },
     }
   );
 };
@@ -146,6 +150,10 @@ export const useAssignRolePermissionsMutation = () => {
       queryClient.invalidateQueries({
         queryKey: [`role-permissions-${variables.roleId}`],
       });
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLES],
+      });
+      queryClient.invalidateQueries({ queryKey: [`role-${variables.roleId}`] });
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =
@@ -199,8 +207,16 @@ export const useDeleteRoleMutation = () => {
   });
 };
 
+/**
+ * The backend has returned both a paginated envelope and a plain array for
+ * role users across versions, so consumers must handle either shape.
+ */
+export type RoleUsersResponse =
+  | PaginatedResponse<UserResponseType>
+  | UserResponseType[];
+
 const getRoleUsers = async (roleId: string) => {
-  return LawFirmCRMClient.get<ApiResponse<PaginatedResponse<UserResponseType>>>(
+  return LawFirmCRMClient.get<ApiResponse<RoleUsersResponse>>(
     api.USER_MANAGEMENT.ROLE_SETUP.GET_ROLE_USERS.replace("{roleId}", roleId)
   );
 };

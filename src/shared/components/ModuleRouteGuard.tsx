@@ -1,7 +1,9 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { Box, Text } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
 import { useAuthStore } from "@/shared/stores/auth.store";
+import TokenService from "@/shared/service/service-token";
 import { PermissionDenied } from "./PermissionDenied";
 
 interface ModuleRouteGuardProps {
@@ -21,6 +23,7 @@ interface ModuleRouteGuardProps {
  * - While /me data is loading, shows a loading state.
  * - When /me is available, checks enabled + ACCESS + optional action.
  * - On failure, renders PermissionDenied (page is never mounted).
+ * - Handles bfcache restoration by re-checking authentication on pageshow.
  */
 export function ModuleRouteGuard({
   moduleCode,
@@ -30,7 +33,27 @@ export function ModuleRouteGuard({
   const location = useLocation();
   const isInitialized = useAuthStore((state) => state.isInitialized);
   const user = useAuthStore((state) => state.user);
+  const clearUser = useAuthStore((state) => state.clearUser);
   const perms = useModulePermissions(moduleCode);
+
+  // Handle bfcache restoration - re-check authentication when page is restored
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        // Page was restored from bfcache
+        const tokenDetails = TokenService.getTokenDetails();
+        const isValid = tokenDetails && tokenDetails.exp * 1000 > Date.now();
+
+        if (!isValid) {
+          // Token is expired or missing, clear auth state
+          clearUser();
+        }
+      }
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, [clearUser]);
 
   // ── Loading state: /me data not yet available ──
   // Do NOT show "Access Denied" — wait for permission data to load.

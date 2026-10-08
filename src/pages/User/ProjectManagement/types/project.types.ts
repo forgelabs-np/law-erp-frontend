@@ -25,6 +25,13 @@ export type ProjectMemberRole = "OWNER" | "MEMBER" | "VIEWER";
 // Project Types
 // ============================================================
 
+/**
+ * Which kind of client a new project is being created for.
+ * Drives the first step of the create-project flow (client type selection)
+ * as well as which client field is shown/validated/submitted.
+ */
+export type ProjectClientType = "existing" | "new";
+
 export interface Project {
   id: string;
   projectCode: string;

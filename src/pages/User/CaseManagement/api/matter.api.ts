@@ -49,12 +49,15 @@ const getMatters = (filters: MatterFilters) => {
   );
 };
 
-export const useGetMattersQuery = (filters: MatterFilters) => {
+export const useGetMattersQuery = (
+  filters: MatterFilters,
+  options?: { enabled?: boolean }
+) => {
   const { canView } = useModulePermissions("CASE_MANAGEMENT");
   return useQuery({
     queryKey: matterKeys.list(filters),
     queryFn: () => getMatters(filters),
-    enabled: canView,
+    enabled: canView && (options?.enabled ?? true),
     select: (response) => response?.data?.data,
   });
 };

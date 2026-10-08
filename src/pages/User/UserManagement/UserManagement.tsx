@@ -30,10 +30,13 @@ import {
   UserResponseType,
   useGetUsersQuery,
   useResetPasswordMutation,
+  useSuperAdminResetPasswordMutation,
   useBulkRoleChangeMutation,
   useBulkDeactivateMutation,
   useResetMFAMutation,
 } from "@/api/userManagement";
+import { useRole } from "@/shared/hooks/useAuth";
+import { isSuperAdminRole } from "@/shared/utils/role";
 import { useGetRoleQuery } from "@/api/roleSetup.ts";
 import {
   Datatable,
@@ -43,6 +46,7 @@ import {
 } from "@/shared/components";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { ResetMFADialog } from "./components/ResetMFADialog";
+import { ResetPasswordDialog } from "./components/ResetPasswordDialog";
 import {
   DialogBackdrop,
   DialogBody,
@@ -55,6 +59,8 @@ import { Checkbox as UICheckbox, Tooltip } from "@/shared/components/ui";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { useForm } from "react-hook-form";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
+// import { useRole } from "@/shared/hooks/useAuth";
+// import { isSuperAdminRole } from "@/shared/utils/role";
 
 interface BulkRoleDialogProps {
   open: boolean;
@@ -186,7 +192,8 @@ export const UserManagement = () => {
   const [roleIdFilter, setRoleIdFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [userToReset, setUserToReset] = useState<string | null>(null);
+  const [userToResetPassword, setUserToResetPassword] =
+    useState<UserResponseType | null>(null);
   const [userToResetMFA, setUserToResetMFA] = useState<UserResponseType | null>(
     null
   );
@@ -199,9 +206,9 @@ export const UserManagement = () => {
   });
 
   const {
-    open: resetConfirmOpen,
-    onOpen: onResetConfirmOpen,
-    onClose: onResetConfirmClose,
+    open: resetPasswordOpen,
+    onOpen: onResetPasswordOpen,
+    onClose: onResetPasswordClose,
   } = useDisclosure();
 
   const {
@@ -248,13 +255,36 @@ export const UserManagement = () => {
   const { data: rolesData } = useGetRoleQuery();
   const { mutate: resetPassword, isPending: isResetPending } =
     useResetPasswordMutation();
+  const {
+    mutate: superAdminResetPassword,
+    isPending: isSuperAdminResetPending,
+  } = useSuperAdminResetPasswordMutation();
   const { mutate: resetMFA, isPending: isResetMFAPending } =
     useResetMFAMutation();
   const { mutate: bulkDeactivate, isPending: isDeactivatePending } =
     useBulkDeactivateMutation();
 
-  const { canResetMFA } = useModulePermissions("USER_MANAGEMENT");
   const { canAccess: canAccessAudit } = useModulePermissions("AUDIT");
+  const currentRole = useRole();
+  const isSuperAdmin = isSuperAdminRole(currentRole);
+
+  const handleResetPassword = (newPassword?: string) => {
+    if (!userToResetPassword) return;
+    const mutation = isSuperAdmin ? superAdminResetPassword : resetPassword;
+    mutation(
+      { userId: userToResetPassword.id, newPassword },
+      {
+        onSuccess: () => {
+          onResetPasswordClose();
+          setUserToResetPassword(null);
+        },
+      }
+    );
+  };
+
+  // const { canAccess: canAccessAudit } = useModulePermissions("AUDIT");
+  // const currentRole = useRole();
+  // const isSuperAdmin = isSuperAdminRole(currentRole);
 
   const handleResetMFA = (reason: string) => {
     if (!userToResetMFA) return;
@@ -483,8 +513,8 @@ export const UserManagement = () => {
                       cursor={"pointer"}
                       value="reset-password"
                       onClick={() => {
-                        setUserToReset(String(row.original.id));
-                        onResetConfirmOpen();
+                        setUserToResetPassword(row.original);
+                        onResetPasswordOpen();
                       }}
                     >
                       <HStack gap={2}>
@@ -492,20 +522,21 @@ export const UserManagement = () => {
                         <Text>Reset Password</Text>
                       </HStack>
                     </MenuItem>
-                    {/* {canResetMFA && ( */}
-                    <MenuItem
-                      cursor={"pointer"}
-                      value="reset-mfa"
-                      onClick={() => {
-                        setUserToResetMFA(row.original);
-                        onResetMFAOpen();
-                      }}
-                    >
-                      <HStack gap={2}>
-                        <MdLockReset color="purple" size={16} />
-                        <Text color="purple">Reset MFA</Text>
-                      </HStack>
-                    </MenuItem>
+                    {isSuperAdmin && (
+                      <MenuItem
+                        cursor="pointer"
+                        value="reset-mfa"
+                        onClick={() => {
+                          setUserToResetMFA(row.original);
+                          onResetMFAOpen();
+                        }}
+                      >
+                        <HStack gap={2}>
+                          <MdLockReset color="purple" size={16} />
+                          <Text color="purple">Reset MFA</Text>
+                        </HStack>
+                      </MenuItem>
+                    )}
 
                     <MenuItem
                       cursor="pointer"
@@ -559,15 +590,16 @@ export const UserManagement = () => {
       isAllSelected,
       isIndeterminate,
       navigate,
-      onResetConfirmOpen,
-      canResetMFA,
+      // onResetConfirmOpen,
       canAccessAudit,
       onResetMFAOpen,
+      isSuperAdmin,
+      handleSelectAll,
     ]
   );
 
   return (
-    <Stack gap={6} padding={2}>
+    <Stack gap={6} padding={2} w="100%" maxW="100%" minW={0}>
       <HStack
         justifyContent="space-between"
         alignItems="center"
@@ -709,7 +741,7 @@ export const UserManagement = () => {
           </Button>
         </Box>
       ) : (
-        <Box mt={6}>
+        <Box mt={6} w="100%" maxW="100%" minW={0}>
           <Datatable
             isLoading={isLoading}
             columns={columns}
@@ -737,22 +769,15 @@ export const UserManagement = () => {
         </Box>
       )}
 
-      <ConfirmationDialog
-        open={resetConfirmOpen}
+      <ResetPasswordDialog
+        open={resetPasswordOpen}
         onClose={() => {
-          onResetConfirmClose();
-          setUserToReset(null);
+          onResetPasswordClose();
+          setUserToResetPassword(null);
         }}
-        title="Reset Password?"
-        action="reset this user's password"
-        handleSubmit={() => {
-          if (userToReset) {
-            resetPassword(userToReset);
-            onResetConfirmClose();
-            setUserToReset(null);
-          }
-        }}
-        submitActionPending={isResetPending}
+        user={userToResetPassword}
+        onSubmit={handleResetPassword}
+        isPending={isSuperAdmin ? isSuperAdminResetPending : isResetPending}
       />
 
       <BulkRoleChangeDialog

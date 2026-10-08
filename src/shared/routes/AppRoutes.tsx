@@ -1,4 +1,9 @@
-import { Navigate, useRoutes, type RouteObject } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useRoutes,
+  type RouteObject,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { Layout } from "../components";
@@ -6,6 +11,7 @@ import { ModuleRouteGuard } from "../components/ModuleRouteGuard";
 import { AUTHENTICATION_ROUTES, USER_ROUTES } from "../constants";
 import TokenService from "../service/service-token";
 import { useRole } from "../hooks/useAuth";
+import { resolveRoleCode } from "../utils/role";
 import { checkAuthentication } from "@/api/auth";
 
 /**
@@ -50,6 +56,7 @@ export const AppRoutes = () => {
   const [isInitializing, setIsInitializing] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const userRole = useRole();
+  const location = useLocation();
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -78,7 +85,7 @@ export const AppRoutes = () => {
     initializeAuth();
   }, []);
 
-  // Listen for token changes (e.g., when MFA sets new tokens)
+  // Listen for token changes, back/forward history navigation, and tab focus
   useEffect(() => {
     const handleTokenChange = () => {
       const tokenDetails = TokenService.getTokenDetails();
@@ -87,8 +94,28 @@ export const AppRoutes = () => {
     };
 
     window.addEventListener("tokenChanged", handleTokenChange);
-    return () => window.removeEventListener("tokenChanged", handleTokenChange);
+    window.addEventListener("popstate", handleTokenChange);
+    window.addEventListener("pageshow", handleTokenChange);
+    window.addEventListener("focus", handleTokenChange);
+
+    return () => {
+      window.removeEventListener("tokenChanged", handleTokenChange);
+      window.removeEventListener("popstate", handleTokenChange);
+      window.removeEventListener("pageshow", handleTokenChange);
+      window.removeEventListener("focus", handleTokenChange);
+    };
   }, []);
+
+  // Re-verify authentication on route change
+  useEffect(() => {
+    if (!isInitializing && authenticated) {
+      const tokenDetails = TokenService.getTokenDetails();
+      const isValid = tokenDetails && tokenDetails.exp * 1000 > Date.now();
+      if (!isValid) {
+        setAuthenticated(false);
+      }
+    }
+  }, [location.pathname, isInitializing, authenticated]);
 
   const authRoutes = [
     ...AUTHENTICATION_ROUTES,
@@ -99,12 +126,8 @@ export const AppRoutes = () => {
   // Filter routes based on role if roles are specified
   const filteredUserRoutes = USER_ROUTES.filter((route) => {
     if (!route.roles) return true; // No role restriction, allow access
-    // Handle both string role and object role with code property
-    const roleCode =
-      typeof userRole === "object" && (userRole as any)?.code
-        ? (userRole as any).code
-        : userRole;
-    return route.roles.includes(roleCode);
+    // The role may arrive as a code string or as the full role object.
+    return route.roles.includes(resolveRoleCode(userRole));
   });
 
   // Wrap each route with ModuleRouteGuard based on its moduleCode + requiredAction

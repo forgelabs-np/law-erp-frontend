@@ -1,6 +1,8 @@
 import { Box, Button, Stack, Text, Textarea } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 import { FormProvider } from "@/shared/components";
 import {
@@ -12,6 +14,14 @@ import {
   DialogRoot,
 } from "@/shared/components/ui/Dialog";
 import { UserResponseType } from "@/api/userManagement";
+
+const resetMfaSchema = yup.object({
+  reason: yup
+    .string()
+    .trim()
+    .required("Reason is required")
+    .min(1, "Reason is required"),
+});
 
 interface ResetMFADialogProps {
   open: boolean;
@@ -30,19 +40,20 @@ export const ResetMFADialog = ({
 }: ResetMFADialogProps) => {
   const formMethods = useForm({
     defaultValues: { reason: "" },
+    resolver: yupResolver(resetMfaSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
-  const handleSubmit = () => {
-    const reason = formMethods.getValues("reason");
-    if (!reason || reason.trim() === "") {
-      formMethods.setError("reason", {
-        type: "required",
-        message: "Reason is required",
-      });
-      return;
+  useEffect(() => {
+    if (open) {
+      formMethods.reset({ reason: "" });
     }
-    onSubmit(reason.trim());
-  };
+  }, [open, formMethods]);
+
+  const handleSubmit = formMethods.handleSubmit((data) => {
+    onSubmit(data.reason.trim());
+  });
 
   const handleClose = () => {
     formMethods.reset();
@@ -98,7 +109,7 @@ export const ResetMFADialog = ({
             <Box>
               <FormProvider methods={formMethods}>
                 <Textarea
-                  name="reason"
+                  {...formMethods.register("reason")}
                   placeholder="Please provide a reason for resetting MFA..."
                   required
                   resize="vertical"
@@ -106,7 +117,7 @@ export const ResetMFADialog = ({
                   maxLength={500}
                 />
                 {formMethods.formState.errors.reason && (
-                  <Text color="error.500" fontSize="xs" mt={1}>
+                  <Text color="red.500" fontSize="xs" mt={1}>
                     {formMethods.formState.errors.reason.message as string}
                   </Text>
                 )}

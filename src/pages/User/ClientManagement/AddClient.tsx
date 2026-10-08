@@ -30,7 +30,7 @@ export const AddClient = ({
   const methods = useForm<ClientFormValues>({
     defaultValues,
     resolver: yupResolver(clientSchema),
-    mode: "onSubmit",
+    mode: "onChange",
     reValidateMode: "onChange",
   });
   const { handleSubmit, reset } = methods;

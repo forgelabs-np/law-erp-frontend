@@ -13,10 +13,6 @@ import { useNavigate } from "react-router-dom";
 import type { RecentActivity as RecentActivityType } from "../../types/dashboard.types";
 import { relativeTime } from "../../utils/matterHelpers";
 
-// ============================================================
-// Types
-// ============================================================
-
 type ActivitySeverity = "INFO" | "SUCCESS" | "WARNING" | "ERROR";
 
 interface ActivityPresentation {
@@ -31,46 +27,44 @@ interface RecentActivityProps {
   activities: RecentActivityType[];
   maxItems?: number;
   compact?: boolean;
+  /** Fixed height for the scrollable container. Omit for auto height. */
+  maxHeight?: string;
 }
-
-// ============================================================
-// Activity mapping
-// ============================================================
 
 const activityPresentationMap: Record<
   string,
   (entityType: string) => ActivityPresentation
 > = {
   EMAIL_FAILED: () => ({
-    icon: <MailWarning size={14} />,
+    icon: <MailWarning size={13} />,
     color: "red.600",
     bgColor: "red.50",
     severity: "ERROR",
     label: "Email failed",
   }),
   CLIENT_CREATED: () => ({
-    icon: <UserPlus size={14} />,
+    icon: <UserPlus size={13} />,
     color: "green.600",
     bgColor: "green.50",
     severity: "SUCCESS",
     label: "Client created",
   }),
   USER_CREATED: () => ({
-    icon: <UserPlus size={14} />,
+    icon: <UserPlus size={13} />,
     color: "blue.600",
     bgColor: "blue.50",
     severity: "INFO",
     label: "User created",
   }),
   CLIENT_PORTAL_ENABLED: () => ({
-    icon: <ShieldCheck size={14} />,
+    icon: <ShieldCheck size={13} />,
     color: "green.600",
     bgColor: "green.50",
     severity: "SUCCESS",
     label: "Portal enabled",
   }),
   CLIENT_PORTAL_DISABLED: () => ({
-    icon: <ShieldOff size={14} />,
+    icon: <ShieldOff size={13} />,
     color: "amber.600",
     bgColor: "amber.50",
     severity: "WARNING",
@@ -85,9 +79,8 @@ function getPresentation(
   const factory = activityPresentationMap[action];
   if (factory) return factory(entityType);
 
-  // Fallback for unknown actions
   return {
-    icon: <FileText size={14} />,
+    icon: <FileText size={13} />,
     color: "gray.600",
     bgColor: "gray.50",
     severity: "INFO",
@@ -98,10 +91,6 @@ function getPresentation(
   };
 }
 
-// ============================================================
-// Activity row
-// ============================================================
-
 interface ActivityRowProps {
   activity: RecentActivityType;
 }
@@ -111,8 +100,8 @@ const ActivityRow = ({ activity }: ActivityRowProps) => {
 
   return (
     <HStack
-      gap={3}
-      py={3}
+      gap={2.5}
+      py={2.5}
       px={1}
       borderBottom="1px solid"
       borderColor="gray.100"
@@ -122,11 +111,10 @@ const ActivityRow = ({ activity }: ActivityRowProps) => {
       borderRadius="md"
       cursor="default"
     >
-      {/* Icon */}
       <Box
-        w="8"
-        h="8"
-        borderRadius="lg"
+        w="5"
+        h="5"
+        borderRadius="sm"
         bg={pres.bgColor}
         color={pres.color}
         display="flex"
@@ -138,15 +126,14 @@ const ActivityRow = ({ activity }: ActivityRowProps) => {
         {pres.icon}
       </Box>
 
-      {/* Content */}
-      <Stack gap={0.5} flex={1} minW={0}>
-        <Text fontSize="sm" fontWeight="600" color="gray.900" lineHeight="1.3">
+      <Stack gap={0} flex={1} minW={0}>
+        <Text fontSize="xs" fontWeight="600" color="gray.900" lineHeight="1.3">
           {pres.label}
         </Text>
         <Text
           fontSize="xs"
           color="gray.500"
-          lineHeight="1.4"
+          lineHeight="1.3"
           overflow="hidden"
           textOverflow="ellipsis"
           whiteSpace="nowrap"
@@ -154,88 +141,60 @@ const ActivityRow = ({ activity }: ActivityRowProps) => {
         >
           {activity.summary}
         </Text>
-        <HStack gap={1.5} mt={0.5}>
-          <Text fontSize="xs" color="gray.400">
+        <HStack gap={1} mt={0.5}>
+          <Text fontSize="2xs" color="gray.400">
             {activity.userName}
           </Text>
-          <Text fontSize="xs" color="gray.300">
+          <Text fontSize="2xs" color="gray.300">
             ·
           </Text>
-          <Text fontSize="xs" color="gray.400" textTransform="uppercase">
+          <Text fontSize="2xs" color="gray.400" textTransform="uppercase">
             {activity.entityType}
           </Text>
         </HStack>
       </Stack>
 
-      {/* Timestamp */}
-      <Text fontSize="xs" color="gray.400" whiteSpace="nowrap" flexShrink={0}>
+      <Text fontSize="2xs" color="gray.400" whiteSpace="nowrap" flexShrink={0}>
         {relativeTime(activity.createdAt)}
       </Text>
     </HStack>
   );
 };
 
-// ============================================================
-// Empty state
-// ============================================================
-
 const EmptyState = () => (
-  <Stack gap={3} align="center" py={10} textAlign="center">
-    <Box
-      w="12"
-      h="12"
-      borderRadius="full"
-      bg="gray.100"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <History size={22} color="#9ca3af" />
+  <Stack gap={2} align="center" py={8} textAlign="center">
+    {" "}
+    <Box color="gray.300">
+      <History size={16} />
     </Box>
-    <Stack gap={0.5}>
-      <Text fontSize="sm" fontWeight="600" color="gray.700">
+    <Stack gap={0}>
+      <Text fontSize="xs" fontWeight="600" color="gray.600">
         No recent activity
       </Text>
-      <Text fontSize="xs" color="gray.400" maxW="240px">
-        Activity from users, firms and matters will appear here.
+      <Text fontSize="xs" color="gray.400" maxW="200px">
+        Activity will appear here.
       </Text>
     </Stack>
   </Stack>
 );
 
-// ============================================================
-// Main Component
-// ============================================================
-
 export const RecentActivity = ({
   activities,
   maxItems = 10,
   compact = false,
+  maxHeight,
 }: RecentActivityProps) => {
   const navigate = useNavigate();
   const displayed = activities.slice(0, maxItems);
 
+  const scrollable = compact || Boolean(maxHeight);
+
   return (
-    <Stack gap={0} h="100%">
-      {/* Header */}
+    <Stack gap={0} h="100%" p={5}>
       <HStack justify="space-between" align="center" mb={3} flexShrink={0}>
-        <HStack gap={2}>
-          <Box
-            w="8"
-            h="8"
-            borderRadius="lg"
-            bg="purple.50"
-            color="purple.600"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <History size={16} />
-          </Box>
-          <Text fontSize="sm" fontWeight="600" color="gray.900">
-            Recent Activity
-          </Text>
-        </HStack>
+        <Text fontSize="sm" fontWeight="600" color="gray.900">
+          Recent Activity
+        </Text>
         <Box
           as="button"
           onClick={() => navigate("/super-admin/audit-logs")}
@@ -245,33 +204,34 @@ export const RecentActivity = ({
           px={2}
           py={1}
           bg="transparent"
-          border="none"
+          border="1px solid"
+          borderColor="gray.200"
           borderRadius="md"
           fontSize="xs"
           fontWeight="500"
           color="gray.500"
           cursor="pointer"
-          transition="color 0.15s ease"
-          _hover={{ color: "gray.700" }}
+          transition="all 0.15s ease"
+          _hover={{ bg: "gray.50", borderColor: "gray.300", color: "gray.700" }}
         >
           View All
-          <ArrowRight size={12} />
+          <ArrowRight size={11} />
         </Box>
       </HStack>
 
-      {/* Activity list */}
       {displayed.length === 0 ? (
         <EmptyState />
       ) : (
         <Box
           flex={1}
           minH={0}
-          overflowY={compact ? "auto" : undefined}
-          pr={compact ? 1 : 0}
+          maxH={maxHeight}
+          overflowY={scrollable ? "auto" : undefined}
+          pr={scrollable ? 1 : 0}
           css={
-            compact
+            scrollable
               ? {
-                  "&::-webkit-scrollbar": { width: "4px" },
+                  "&::-webkit-scrollbar": { width: "3px" },
                   "&::-webkit-scrollbar-track": { bg: "transparent" },
                   "&::-webkit-scrollbar-thumb": {
                     bg: "gray.200",

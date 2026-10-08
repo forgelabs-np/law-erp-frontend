@@ -92,3 +92,40 @@ export const mfaVerificationSchema = yup.object({
 export type MfaVerificationSchemaType = yup.InferType<
   typeof mfaVerificationSchema
 >;
+
+// Forgot Password
+export const forgotPasswordSchema = yup.object({
+  lawFirmCode: yup
+    .string()
+    .trim()
+    .required("Law Firm Code is required")
+    .min(1, "Law Firm Code is required"),
+  username: yup
+    .string()
+    .trim()
+    .required("Username is required")
+    .min(1, "Username is required"),
+});
+
+export type ForgotPasswordSchemaType = yup.InferType<
+  typeof forgotPasswordSchema
+>;
+
+// Reset Password
+export const resetPasswordSchema = yup.object({
+  token: yup
+    .string()
+    .trim()
+    .required("Reset token is required")
+    .min(1, "Reset token is required"),
+  newPassword: yup
+    .string()
+    .required("New password is required")
+    .min(6, "Password must be at least 6 characters"),
+  confirmPassword: yup
+    .string()
+    .required("Please confirm your password")
+    .oneOf([yup.ref("newPassword")], "Passwords do not match"),
+});
+
+export type ResetPasswordSchemaType = yup.InferType<typeof resetPasswordSchema>;

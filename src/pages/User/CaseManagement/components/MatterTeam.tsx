@@ -284,7 +284,7 @@ export const MatterTeam = ({ matterNumber, matterTitle }: MatterTeamProps) => {
       bg="white"
       border="1px solid"
       borderColor="gray.200"
-      borderRadius="lg"
+      borderRadius="xl"
     >
       <HStack justify="space-between" align="flex-start" mb={4}>
         <HStack gap={2}>

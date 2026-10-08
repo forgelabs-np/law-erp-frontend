@@ -17,7 +17,9 @@ export type PermissionAction =
   | "EXPORT"
   | "CREDENTIAL_VIEW"
   | "CREDENTIAL_REVEAL"
-  | "RESET_MFA";
+  | "RESET_MFA"
+  | "UPLOAD"
+  | "SHARE";
 
 /**
  * The shape returned by `useModulePermissions(moduleCode)`.
@@ -51,6 +53,10 @@ export interface ModulePermissions {
   canCredentialReveal: boolean;
   /** RESET_MFA action (User Management) */
   canResetMFA: boolean;
+  /** UPLOAD action (Document Management — upload documents) */
+  canUpload: boolean;
+  /** SHARE action (Document Management — PRIVATE ↔ SHARED) */
+  canShare: boolean;
   /**
    * Generic check: does the module have this action?
    * Always safe — returns false for unknown actions or missing data.
@@ -78,12 +84,44 @@ const NO_PERMISSION: ModulePermissions = {
   canCredentialView: false,
   canCredentialReveal: false,
   canResetMFA: false,
+  canUpload: false,
+  canShare: false,
   hasAction: () => false,
   actions: [],
   enabled: false,
 };
 
 // ─── PURE HELPERS (no hooks) ────────────────────────────────────────────────
+
+/**
+ * Generic resolver: find a module by moduleCode, searching both top-level
+ * modules and nested subModules recursively.
+ * Returns the matching module/submodule or undefined.
+ */
+export function findModule(
+  modules: UserModule[],
+  moduleCode: string
+): UserModule | undefined {
+  if (!moduleCode || !modules) return undefined;
+
+  // Search top-level modules first
+  const topLevelMatch = modules.find((m) => m.moduleCode === moduleCode);
+  if (topLevelMatch) {
+    return topLevelMatch;
+  }
+
+  // Recursively search subModules
+  for (const module of modules) {
+    if (module.subModules?.length) {
+      const subMatch = findModule(module.subModules, moduleCode);
+      if (subMatch) {
+        return subMatch;
+      }
+    }
+  }
+
+  return undefined;
+}
 
 /**
  * Pure helper: check if a module has a specific action.
@@ -95,7 +133,7 @@ export function moduleHasAction(
   action: string
 ): boolean {
   if (!moduleCode || !action) return false;
-  const mod = modules.find((m) => m.moduleCode === moduleCode);
+  const mod = findModule(modules, moduleCode);
   if (!mod || !mod.enabled) return false;
   return mod.actions.includes(action);
 }
@@ -108,7 +146,7 @@ export function isModuleEnabled(
   moduleCode: string
 ): boolean {
   if (!moduleCode) return false;
-  const mod = modules.find((m) => m.moduleCode === moduleCode);
+  const mod = findModule(modules, moduleCode);
   return !!mod && mod.enabled;
 }
 
@@ -132,7 +170,7 @@ export function useModulePermissions(moduleCode: string): ModulePermissions {
       return NO_PERMISSION;
     }
 
-    const mod = modules.find((m) => m.moduleCode === moduleCode);
+    const mod = findModule(modules, moduleCode);
     if (!mod || !mod.enabled) {
       return NO_PERMISSION;
     }
@@ -160,6 +198,8 @@ export function useModulePermissions(moduleCode: string): ModulePermissions {
       canCredentialView: has("CREDENTIAL_VIEW"),
       canCredentialReveal: has("CREDENTIAL_REVEAL"),
       canResetMFA: has("RESET_MFA"),
+      canUpload: has("UPLOAD"),
+      canShare: has("SHARE"),
       hasAction: hasActionRef.current[moduleCode],
       actions,
       enabled: true,

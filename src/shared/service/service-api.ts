@@ -1,11 +1,14 @@
 export const api = {
   login: "auth/login",
+  logout: "auth/logout",
   signup: "auth/register/solo",
   refreshToken: "auth/refresh",
   loginClient: "auth/client/login",
   registerClient: "auth/register/client",
   superAdminLogin: "super-admin/login",
   changePassword: "auth/change-password",
+  forgotPassword: "auth/forgot-password",
+  resetPassword: "auth/reset-password",
   mfaSetupConfirm: "auth/mfa/setup/confirm",
   mfaValidate: "auth/mfa/validate",
   EMPLOYEE_MANAGEMENT: {
@@ -68,6 +71,7 @@ export const api = {
       GET_PERMISSIONS: "modules/users/{userId}/permissions",
       GET_ACTIVITY: "modules/users/{userId}/activity",
       RESET_PASSWORD: "modules/users/{userId}/reset-password",
+      SUPER_ADMIN_RESET_PASSWORD: "super-admin/users/{userId}/reset-password",
       BULK_ROLE_CHANGE: "modules/users/bulk-role-change",
       BULK_DEACTIVATE: "modules/users/bulk-deactivate",
       RESET_MFA: "super-admin/mfa/reset",
@@ -75,6 +79,7 @@ export const api = {
   },
   FIRM_MANAGEMENT: {
     POST: "super-admin/firms",
+    UPDATE: "super-admin/firms/{firmId}",
     GET_FIRMS: "super-admin/firms/admins",
     GET_FIRMS_MODULES: "firm/modules",
     GET_FIRM_MODULES: "super-admin/firms/{firmId}/modules",
@@ -82,6 +87,29 @@ export const api = {
     GET_BY_ID: "super-admin/firms/{firmId}/admins",
     TOGGLE: "super-admin/firms/admins/{adminId}/toggle",
     GET_FIRM_ROLES: "firm/roles",
+  },
+  /**
+   * Firm-scoped role management. Used by FIRM_ADMIN to distribute a subset of
+   * their own permissions (the ceiling) to employee roles. Permission updates
+   * are a full replace of the role's permission set.
+   */
+  FIRM_ROLE_MANAGEMENT: {
+    LIST: "firm/roles",
+    CREATE: "firm/roles",
+    DELETE: "firm/roles/{roleId}",
+    TOGGLE: "firm/roles/{roleId}/toggle",
+    PERMISSIONS: "firm/roles/{roleId}/permissions",
+    USERS: "firm/roles/{roleId}/users",
+  },
+  /**
+   * Super Admin overrides a specific firm's roles. Role permission updates here
+   * bypass the Firm Admin ceiling (except GLOBAL permissions) and are a full
+   * replace of the role's permission set.
+   */
+  SUPER_ADMIN_FIRM_ROLES: {
+    LIST: "super-admin/firms/{firmId}/roles",
+    CREATE: "super-admin/firms/{firmId}/roles",
+    PERMISSIONS: "super-admin/firms/{firmId}/roles/{roleId}/permissions",
   },
   AUDIT_LOGS: {
     PLATFORM_AUDIT: "super-admin/audit",
@@ -124,10 +152,17 @@ export const api = {
     CASE_HEARING_STATUS: "cases/{caseNoInternal}/hearing-status",
     ADMIN_SCRAPE: "scraper/admin/scrape",
     ADMIN_EXPORT: "scraper/admin/export",
+    ALL_COURTS: "scraper/admin/courts",
+    COURTS_BY_TYPE: "scraper/admin/courts/type/{courtType}",
   },
   DASHBOARD: {
     FIRM_DASHBOARD: "firm/dashboard",
     GLOBAL_DASHBOARD: "modules/dashboard",
+    /** Role-specific dashboards. The authenticated user's role selects one. */
+    SUPER_ADMIN: "dashboard/super-admin",
+    FIRM_ADMIN: "dashboard/firm",
+    EMPLOYEE: "dashboard/employee",
+    CLIENT: "dashboard/client",
   },
   MATTER_ASSIGNMENTS: {
     GET: "firm/matters/{matterNumber}/assignments",
@@ -160,6 +195,41 @@ export const api = {
     PROJECT_BY_CODE: "client/projects/{projectCode}",
     PROJECT_RENEWALS: "client/projects/{projectCode}/renewals",
   },
+  /**
+   * Client-portal document store. Read-only: the backend already scopes the
+   * list to the authenticated client's ACTIVE + SHARED documents, so the
+   * client service never sends status/visibility filters.
+   * NOTE: `DOWNLOAD_URL` takes the numeric document id (not the uuid).
+   */
+  CLIENT_DOCUMENTS: {
+    LIST: "client/documents",
+    DOWNLOAD_URL: "client/documents/{documentId}/download-url",
+  },
+  /**
+   * Firm-side document store (full library + per-matter / per-project
+   * scopes). Upload is a SINGLE multipart/form-data POST to `UPLOAD` — the
+   * bytes go to the API and the document comes back `ACTIVE` immediately.
+   * `ARCHIVE` is a soft delete; the stored file is retained for retention.
+   * NOTE: every `{documentId}` here is the numeric id (not the uuid).
+   */
+  FIRM_DOCUMENTS: {
+    LIBRARY: "firm/documents",
+    UPLOAD: "firm/documents",
+    VISIBILITY: "firm/documents/{documentId}/visibility",
+    DOWNLOAD_URL: "firm/documents/{documentId}/download-url",
+    ARCHIVE: "firm/documents/{documentId}",
+    STORAGE_USAGE: "firm/documents/storage-usage",
+    MATTER_DOCUMENTS: "firm/matters/{matterNumber}/documents",
+    PROJECT_DOCUMENTS: "firm/projects/{projectCode}/documents",
+  },
+  NOTIFICATIONS: {
+    LIST: "notifications",
+    UNREAD_COUNT: "notifications/unread-count",
+    MARK_READ: "notifications/{notificationId}/read",
+    READ_ALL: "notifications/read-all",
+    PREFERENCES: "notifications/preferences",
+    BROADCAST: "notifications/broadcast",
+  },
   INVOICE_MANAGEMENT: {
     LIST: "super-admin/invoices",
     GET_BY_ID: "super-admin/invoices/{id}",
@@ -169,5 +239,18 @@ export const api = {
     SEND: "super-admin/invoices/{id}/send",
     UPDATE_STATUS: "super-admin/invoices/{id}/status",
     DOWNLOAD_PDF: "super-admin/invoices/{id}/pdf",
+  },
+  FIRM_LIFECYCLE: {
+    SUSPEND: "super-admin/firms/{firmId}/suspend",
+    ACTIVATE: "super-admin/firms/{firmId}/activate",
+    EXTEND_TRIAL: "super-admin/firms/{firmId}/extend-trial",
+    CONVERT_TO_PERMANENT: "super-admin/firms/{firmId}/convert-to-permanent",
+  },
+  MASTER_DATA: {
+    REFRESH_CACHE: "master-data/cache/refresh",
+    CACHE_STATS: "master-data/cache/stats",
+    PROVINCES: "master-data/provinces",
+    DISTRICTS: "master-data/districts",
+    DISTRICTS_BY_PROVINCE: "master-data/provinces/{provinceId}/districts",
   },
 };

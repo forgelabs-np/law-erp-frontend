@@ -493,7 +493,7 @@ export const UserProfilePage = () => {
         action="reset this user's password"
         handleSubmit={() => {
           if (userId) {
-            resetPassword(userId);
+            resetPassword({ userId });
             onResetClose();
           }
         }}

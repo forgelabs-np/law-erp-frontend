@@ -1,17 +1,25 @@
-import { Grid, GridItem, Stack, Text } from "@chakra-ui/react";
+import { Grid, GridItem, HStack, Stack, Text } from "@chakra-ui/react";
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import {
   useFirmByIdQuery,
   useCreateEditFirmMutation,
+  useUpdateFirmMutation,
 } from "@/api/firmManagement";
 import { FormProvider, ReactSelect, TextFieldInput } from "@/shared/components";
-import { firmSchema, FirmSchemaType } from "@/validations";
+import { useProvincesQuery } from "@/shared/hooks/useMasterData";
+import { Switch } from "@/shared/components/ui";
+import { firmSchema } from "@/validations";
 import CustomDrawer from "@/shared/components/drawer/CustomerDrawer";
 
-import { FirmFormValues, FirmPayload } from "./types";
+import {
+  FirmFormValues,
+  FirmPayload,
+  FirmType,
+  FirmUpdatePayload,
+} from "./types";
 
 const FIRM_TYPE_OPTIONS = [
   { label: "Firm", value: "FIRM" },
@@ -31,6 +39,29 @@ const defaultValues: FirmFormValues = {
   adminMobileNo: "",
   adminPassword: "",
   adminFullName: "",
+  isTrial: false,
+  trialDays: 30,
+};
+
+const mapFirmToFormValues = (firm?: any): FirmFormValues => {
+  if (!firm) return defaultValues;
+  const isTrial = firm.isTrial ?? firm.is_trial ?? firm.firmStatus === "TRIAL";
+  return {
+    lawFirmCode: firm.firmCode ?? firm.lawFirmCode ?? "",
+    name: firm.name ?? firm.firmName ?? "",
+    firmType: firm.firmType ?? "",
+    email: firm.firmEmail ?? firm.email ?? "",
+    phone: firm.firmPhone ?? firm.phone ?? "",
+    address: firm.firmAddress ?? firm.address ?? "",
+    jurisdiction: firm.jurisdiction ?? "",
+    adminUsername: firm.username ?? firm.adminUsername ?? "",
+    adminEmail: firm.adminEmail ?? firm.email ?? "",
+    adminMobileNo: firm.mobileNo ?? firm.adminMobileNo ?? "",
+    adminPassword: "",
+    adminFullName: firm.adminFullName ?? firm.fullName ?? "",
+    isTrial: Boolean(isTrial),
+    trialDays: firm.trialDays ?? firm.trial_days ?? 30,
+  };
 };
 
 export const AddEditFirm = ({
@@ -44,55 +75,83 @@ export const AddEditFirm = ({
   id?: string;
   setId: Dispatch<SetStateAction<string | undefined>>;
 }) => {
-  const { data: firmByIdResponse, isLoading: isLoadingFirm } = useFirmByIdQuery(
+  const { data: firmById, isLoading: isLoadingFirm } = useFirmByIdQuery(
     id ?? ""
   );
 
-  const firmById = firmByIdResponse?.[0];
-
-  console.log(firmById, "firmIddddddd");
-
   const methods = useForm<FirmFormValues>({
     defaultValues,
-    resolver: yupResolver(firmSchema),
+    resolver: yupResolver(firmSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
     context: { isEdit: !!id },
   });
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, watch, control } = methods;
+  const isTrial = watch("isTrial");
 
-  const { mutate, isPending } = useCreateEditFirmMutation();
+  const { mutate: createFirm, isPending: isCreatePending } =
+    useCreateEditFirmMutation();
+  const { mutate: updateFirm, isPending: isUpdatePending } =
+    useUpdateFirmMutation();
+  const { data: provinces = [], isLoading: provincesLoading } =
+    useProvincesQuery();
 
+  const provinceOptions = provinces.map((p) => ({
+    label: `${p.nameEn} - ${p.nameNp}`,
+    value: p.nameEn,
+  }));
+
+  // Reset form when drawer opens or id changes
   useEffect(() => {
-    if (open && !id) {
-      reset(defaultValues);
-      setId("");
+    if (open) {
+      if (!id) {
+        reset(defaultValues);
+        setId("");
+      } else if (firmById) {
+        reset(mapFirmToFormValues(firmById));
+      }
     }
-  }, [open, id, reset, setId]);
+  }, [open, id, firmById, reset, setId]);
 
-  // Pre-fill form in edit mode
+  // Pre-fill form in edit mode when firm data is loaded
   useEffect(() => {
     if (open && firmById && id) {
-      reset({
-        lawFirmCode: firmById.firmCode ?? firmById.lawFirmCode ?? "",
-        name: firmById.name ?? firmById.firmName ?? "",
-        firmType: firmById.firmType ?? "",
-        email: firmById.firmEmail ?? "",
-        phone: firmById.firmPhone ?? "",
-        address: firmById.firmAddress ?? "",
-        jurisdiction: firmById.jurisdiction ?? "",
-        adminUsername: firmById.username ?? "",
-        adminEmail: firmById.email ?? "",
-        adminMobileNo: firmById.mobileNo ?? "",
-        adminPassword: "",
-        adminFullName: firmById.adminFullName ?? firmById.fullName ?? "",
-      });
+      reset(mapFirmToFormValues(firmById));
     }
   }, [open, firmById, id, reset]);
 
   const onSubmit = (data: FirmFormValues) => {
+    // EDIT → dedicated PUT /super-admin/firms/{firmId} (firm UUID).
+    if (id) {
+      const updatePayload: FirmUpdatePayload = {
+        name: data.name,
+        firmType: data.firmType as FirmType,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        jurisdiction: data.jurisdiction,
+        // Immutable fields are submitted exactly as loaded (inputs are
+        // disabled in edit mode) — the backend rejects changed values.
+        ...(data.lawFirmCode?.trim()
+          ? { lawFirmCode: data.lawFirmCode.trim() }
+          : {}),
+        adminUsername: data.adminUsername,
+        adminFullName: data.adminFullName,
+        adminEmail: data.adminEmail,
+        adminMobileNo: data.adminMobileNo,
+        // adminPassword / isTrial / trialDays are intentionally not sent —
+        // see FirmUpdatePayload.
+      };
+
+      updateFirm(
+        { firmId: id, data: updatePayload },
+        { onSuccess: closeHandler }
+      );
+      return;
+    }
+
+    // CREATE → existing create POST endpoint.
     const payload: FirmPayload = {
-      ...(id ? { id } : {}),
       ...(data.lawFirmCode?.toUpperCase()
         ? { lawFirmCode: data.lawFirmCode?.toUpperCase() }
         : {}),
@@ -107,27 +166,36 @@ export const AddEditFirm = ({
       adminMobileNo: data.adminMobileNo,
       adminFullName: data.adminFullName,
       ...(data.adminPassword ? { adminPassword: data.adminPassword } : {}),
+      isTrial: data.isTrial ?? false,
+      ...(data.isTrial && data.trialDays
+        ? { trialDays: Number(data.trialDays) }
+        : {}),
     };
 
-    mutate(payload, {
+    createFirm(payload, {
       onSuccess: () => closeHandler(),
     });
   };
 
   const closeHandler = () => {
-    resetHandler();
+    reset(defaultValues);
+    setId("");
     onClose();
   };
 
   const resetHandler = () => {
-    reset(defaultValues);
-    setId("");
+    if (id && firmById) {
+      reset(mapFirmToFormValues(firmById));
+    } else {
+      reset(defaultValues);
+      setId("");
+    }
   };
 
   return (
     <FormProvider methods={methods}>
       <CustomDrawer
-        key={id || "add"}
+        key={`firm-drawer-${id || "new"}-${open ? "open" : "closed"}`}
         open={open}
         onClose={closeHandler}
         title={id ? "Edit Firm" : "Add Firm"}
@@ -139,7 +207,7 @@ export const AddEditFirm = ({
         handleReset={resetHandler}
         handleExit={closeHandler}
         handleSubmit={handleSubmit(onSubmit)}
-        isSubmitting={isPending}
+        isSubmitting={isCreatePending || isUpdatePending}
         disabled={!!id && isLoadingFirm}
         component={
           <Stack gap={6} p={4}>
@@ -175,6 +243,7 @@ export const AddEditFirm = ({
                   name="lawFirmCode"
                   label="Law Firm Code"
                   placeholder="Auto-generated if empty"
+                  disabled={!!id}
                 />
               </GridItem>
 
@@ -192,6 +261,7 @@ export const AddEditFirm = ({
                   name="phone"
                   label="Phone"
                   placeholder="98XXXXXXXX"
+                  maxLength={10}
                   required
                 />
               </GridItem>
@@ -206,10 +276,16 @@ export const AddEditFirm = ({
               </GridItem>
 
               <GridItem colSpan={2}>
-                <TextFieldInput
+                <ReactSelect
                   name="jurisdiction"
                   label="Jurisdiction"
-                  placeholder="e.g. Bagmati Province"
+                  placeholder={
+                    provincesLoading
+                      ? "Loading provinces..."
+                      : "Select a province"
+                  }
+                  options={provinceOptions}
+                  disabled={provincesLoading}
                   required
                 />
               </GridItem>
@@ -237,6 +313,7 @@ export const AddEditFirm = ({
                   name="adminUsername"
                   label="Admin Username"
                   placeholder="username"
+                  disabled={!!id}
                   required
                 />
               </GridItem>
@@ -246,6 +323,7 @@ export const AddEditFirm = ({
                   name="adminMobileNo"
                   label="Admin Mobile No."
                   placeholder="98XXXXXXXX"
+                  maxLength={10}
                   required
                 />
               </GridItem>
@@ -270,6 +348,55 @@ export const AddEditFirm = ({
                 </GridItem>
               )}
             </Grid>
+
+            {/* ── Trial Settings (create only — trial changes on an existing
+                firm go through the lifecycle actions) ─────────────── */}
+            {!id && (
+              <>
+                <Stack gap={1} mt={2}>
+                  <Text fontWeight="semibold" fontSize="sm" color="gray.600">
+                    Trial Settings
+                  </Text>
+                </Stack>
+
+                <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                  <GridItem colSpan={2}>
+                    <Controller
+                      name="isTrial"
+                      control={control}
+                      render={({ field }) => (
+                        <HStack justify="space-between">
+                          <Stack gap={0}>
+                            <Text fontSize="sm" fontWeight="medium">
+                              Trial Account
+                            </Text>
+                            <Text fontSize="xs" color="gray.500">
+                              Create this firm as a trial account
+                            </Text>
+                          </Stack>
+                          <Switch
+                            checked={field.value ?? false}
+                            onCheckedChange={(e) => field.onChange(e.checked)}
+                          />
+                        </HStack>
+                      )}
+                    />
+                  </GridItem>
+
+                  {isTrial && (
+                    <GridItem colSpan={2}>
+                      <TextFieldInput
+                        name="trialDays"
+                        label="Trial Duration (days)"
+                        placeholder="30"
+                        type="number"
+                        required
+                      />
+                    </GridItem>
+                  )}
+                </Grid>
+              </>
+            )}
           </Stack>
         }
         size="xl"

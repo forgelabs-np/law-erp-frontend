@@ -9,3 +9,4 @@ export * from "./employee.validation";
 export * from "./case.validation";
 export * from "./project.validation";
 export * from "./task.validation";
+export * from "./broadcast.validation";

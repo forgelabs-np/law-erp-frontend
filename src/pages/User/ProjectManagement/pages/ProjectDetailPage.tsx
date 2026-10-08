@@ -71,6 +71,7 @@ import {
   CreateCredentialRequest,
 } from "../types/project.types";
 import { Tabs } from "@/shared/components/ui/Tabs";
+import { ProjectDocumentsTab } from "@/pages/User/FirmDocuments";
 import { Tooltip } from "@/shared/components/ui";
 import {
   PopoverRoot,
@@ -93,6 +94,7 @@ import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import { ConfirmationDialog } from "@/shared/components/dialog/conformationDialog";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { ProjectFormModal } from "../components/ProjectFormModal";
+import { CompleteRenewalDialog } from "../components/CompleteRenewalDialog";
 import { DatePicker } from "@/shared/components/ui";
 
 // ============================================================
@@ -729,6 +731,9 @@ const RenewalCard = ({
     null
   );
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+  const [instanceToComplete, setInstanceToComplete] = useState<number | null>(
+    null
+  );
 
   const availableStatuses: RenewalStatus[] = [
     "ACTIVE",
@@ -913,16 +918,7 @@ const RenewalCard = ({
                             variant="ghost"
                             size="xs"
                             colorScheme="green"
-                            onClick={() => {
-                              const notes = prompt(
-                                "Enter completion notes (optional):"
-                              );
-                              handleUpdateInstance(
-                                instance.id,
-                                "COMPLETED",
-                                notes ?? undefined
-                              );
-                            }}
+                            onClick={() => setInstanceToComplete(instance.id)}
                             loading={updateInstanceMutation.isPending}
                           >
                             <CheckCircle size={12} />
@@ -1190,6 +1186,18 @@ const RenewalCard = ({
           }
         }}
         submitActionPending={changeStatusMutation.isPending}
+      />
+
+      <CompleteRenewalDialog
+        open={!!instanceToComplete}
+        onClose={() => setInstanceToComplete(null)}
+        onConfirm={(notes) => {
+          if (instanceToComplete) {
+            handleUpdateInstance(instanceToComplete, "COMPLETED", notes);
+            setInstanceToComplete(null);
+          }
+        }}
+        isPending={updateInstanceMutation.isPending}
       />
     </>
   );
@@ -1716,6 +1724,7 @@ const ProjectDetailPage = () => {
     { label: "Credentials", value: "credentials" },
     { label: "Renewals", value: "renewals" },
     { label: "Team", value: "team" },
+    { label: "Documents", value: "documents" },
   ];
 
   // Loading state
@@ -1924,6 +1933,10 @@ const ProjectDetailPage = () => {
                 return <RenewalsTab projectCode={project.projectCode} />;
               case "team":
                 return <TeamTab projectCode={project.projectCode} />;
+              case "documents":
+                return (
+                  <ProjectDocumentsTab projectCode={project.projectCode} />
+                );
               default:
                 return null;
             }

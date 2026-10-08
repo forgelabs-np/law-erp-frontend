@@ -28,9 +28,9 @@ export const DashboardLayout = ({
   // const [searchText, setSearchText] = useState("");
 
   return (
-    <VStack gap={8} alignItems="stretch">
+    <VStack gap={8} alignItems="stretch" w="100%" maxW="100%" minW={0}>
       {/* ── Header ── */}
-      <Stack gap={4}>
+      <Stack gap={4} w="100%" minW={0}>
         <HStack
           justifyContent="space-between"
           alignItems="center"
@@ -46,34 +46,10 @@ export const DashboardLayout = ({
             </Text> */}
           </Box>
         </HStack>
-        {/* <HStack flexWrap="wrap" gap={3} justify="space-between">
-          <InputGroup
-            startElement={<SearchIcon color="gray.400" />}
-            maxW={{ base: "100%", md: "320px" }}
-          >
-            <Input
-              bg="white"
-              borderRadius="16px"
-              placeholder="Search..."
-              value={searchText}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setSearchText(e.target.value)
-              }
-            />
-          </InputGroup>
-          <HStack gap={3} wrap="wrap">
-            <Button variant="outline" borderRadius="16px">
-              <SearchIcon /> Filters
-            </Button>
-            <Button bg="gray.900" color="white" borderRadius="16px">
-              <AddIcon /> Add customer
-            </Button>
-          </HStack>
-        </HStack> */}
       </Stack>
 
       {/* ── Stat Cards ── */}
-      <HStack gap={4} flexWrap="wrap" alignItems="stretch">
+      <HStack gap={4} flexWrap="wrap" alignItems="stretch" w="100%" minW={0}>
         {statCards.map((card) => (
           <StatCard key={card.id} data={card} />
         ))}
@@ -83,13 +59,18 @@ export const DashboardLayout = ({
         templateColumns={{ base: "1fr", lg: "380px 1fr" }}
         gap={6}
         alignItems="start"
+        w="100%"
+        maxW="100%"
+        minW={0}
       >
-        <VStack gap={5} alignItems="stretch">
+        <VStack gap={5} alignItems="stretch" minW={0}>
           <CalendarSection {...calendar} />
           <UrgentDeadlines {...urgentDeadlines} />
         </VStack>
 
-        <ActiveMattersTable {...activeMatters} />
+        <Box minW={0} w="100%" maxW="100%">
+          <ActiveMattersTable {...activeMatters} />
+        </Box>
       </Grid>
     </VStack>
   );

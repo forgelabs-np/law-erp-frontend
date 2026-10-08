@@ -69,7 +69,7 @@ export const AddorEditPermissions = ({
 
   const methods = useForm<PermissionFormValues>({
     defaultValues,
-    resolver: yupResolver(permissionSchema),
+    resolver: yupResolver(permissionSchema) as any,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });

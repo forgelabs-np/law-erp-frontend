@@ -6,6 +6,7 @@ import {
   CourtCaseStage,
   CourtCaseStatus,
   CourtEventStatus,
+  CourtLevel,
   CourtEventType,
   MatterStatus,
   MatterType,
@@ -45,10 +46,11 @@ export const formatDateTime = (value?: string | null): string => {
 
 export const formatTime = (value?: string | null): string => {
   if (!value) return "-";
-  // API time strings look like "10:30:00"
-  const [, hour = "", minute = ""] = value.split(":");
+  // API time strings look like "10:30:00"; full ISO timestamps are also accepted.
+  const timePart = value.includes("T") ? (value.split("T")[1] ?? "") : value;
+  const [hour = "", minute = ""] = timePart.split(":");
   if (!hour) return value;
-  return `${hour}:${minute}`;
+  return minute ? `${hour}:${minute}` : hour;
 };
 
 /** Human-friendly relative timestamp (e.g. "2m ago", "3h ago", "Yesterday"). */
@@ -93,6 +95,22 @@ export const matterStatusLabel = (status?: MatterStatus | null): string => {
 export const relationTypeLabel = (relation?: RelationType | null): string => {
   if (!relation) return "-";
   return toLabel(relation);
+};
+
+/** Display label for a court level (DISTRICT → "District"). */
+export const courtLevelLabel = (level?: CourtLevel | null): string => {
+  switch (level) {
+    case "DISTRICT":
+      return "District";
+    case "HIGH":
+      return "High Court";
+    case "SUPREME":
+      return "Supreme Court";
+    case "SPECIALIZED":
+      return "Specialized";
+    default:
+      return "-";
+  }
 };
 
 export const partyTypeLabel = (type?: PartyType | null): string => {

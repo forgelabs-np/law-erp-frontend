@@ -1,8 +1,8 @@
 import { Box, HStack, VStack, Spinner, Center } from "@chakra-ui/react";
 import { PropsWithChildren, useEffect, useState } from "react";
 
-import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
+import { SmoothScroll } from "./SmoothScroll";
 import { useCurrentUserQuery } from "@/api/me";
 import { useAuthStore } from "@/shared/stores/auth.store";
 import TokenService from "@/shared/service/service-token";
@@ -28,7 +28,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     if (query.error) {
       useAuthStore.getState().clearUser();
-      window.location.href = "/auth/login";
+      window.location.replace("/auth/login");
     }
   }, [query.error]);
 
@@ -41,13 +41,28 @@ export const Layout = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <HStack alignItems="stretch" gap="3" height="100vh" bg="#F5F6F8" p="3">
+    <HStack
+      alignItems="stretch"
+      gap="3"
+      height="100vh"
+      bg="#F5F6F8"
+      p="3"
+      w="100%"
+      maxW="100%"
+      minW={0}
+    >
       <Sidebar />
 
-      <VStack alignItems="stretch" flex="1" gap="0">
-        {/* <Navbar /> */}
-
-        <Box overflowY="auto" flex="1">
+      <VStack
+        alignItems="stretch"
+        flex="1"
+        gap="0"
+        minW={0}
+        w="100%"
+        maxW="100%"
+      >
+        {/* Owns the shell's single scroll container (Lenis when motion is allowed). */}
+        <SmoothScroll>
           <Box
             padding="4"
             borderRadius="12px"
@@ -55,11 +70,14 @@ export const Layout = ({ children }: PropsWithChildren) => {
             borderWidth="1px"
             borderColor="gray.200"
             bg="white"
-            minH={"100%"}
+            flex="1"
+            minW={0}
+            w="100%"
+            maxW="100%"
           >
             {children}
           </Box>
-        </Box>
+        </SmoothScroll>
       </VStack>
     </HStack>
   );

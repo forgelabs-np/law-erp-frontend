@@ -197,10 +197,13 @@ const getGroupedPermissions = () => {
   );
 };
 
-export const useGetGroupedPermissionsQuery = () => {
+export const useGetGroupedPermissionsQuery = (options?: {
+  enabled?: boolean;
+}) => {
   return useQuery({
     queryKey: [api.USER_MANAGEMENT.PERMISSION_SETUP.GET_GROUPED_PERMISSIONS],
     queryFn: getGroupedPermissions,
+    enabled: options?.enabled ?? true,
     select: (response) => response?.data?.data,
   });
 };

@@ -95,17 +95,23 @@ const getProjects = (params?: {
   );
 };
 
-export const useProjectsQuery = (params?: {
-  status?: string;
-  search?: string;
-  page?: number;
-  size?: number;
-}) => {
+export const useProjectsQuery = (
+  params?: {
+    status?: string;
+    search?: string;
+    page?: number;
+    size?: number;
+  },
+  options?: { enabled?: boolean }
+) => {
   const { canView } = useModulePermissions("PROJECT_MANAGEMENT");
   return useQuery({
     queryKey: projectKeys.projects(params),
     queryFn: () => getProjects(params),
-    enabled: canView,
+    enabled: canView && (options?.enabled ?? true),
+    // Keep the previous page/search results on screen while a new key loads —
+    // otherwise every filter change shows the full-page loading state.
+    placeholderData: (previous) => previous,
     select: (response) => response?.data?.data,
   });
 };

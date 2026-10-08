@@ -3,144 +3,15 @@ import {
   Flex,
   Grid,
   GridItem,
-  Image,
   Stack,
-  Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import {
-  ComponentType,
-  PropsWithChildren,
-  ReactElement,
-  ReactNode,
-} from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick-theme.css";
-import "slick-carousel/slick/slick.css";
+import { PropsWithChildren, ReactNode } from "react";
 
-import UnauthLayoutDocs from "@/assets/images/UnauthLayoutDocs.jpg";
-const SlickSlider = Slider as unknown as ComponentType<{
-  children?: React.ReactNode;
-  [key: string]: unknown;
-}>;
-const LayoutSlider = () => {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
-    appendDots: (dots: ReactElement) => (
-      <Box
-        bottom={"-40px"}
-        css={{
-          "& li": {
-            margin: 0,
-          },
-          "& .slick-active button::before": {
-            fontSize: "10px !important",
-            color: "primary.500 !important",
-            opacity: "100% !important",
-          },
-          "&  button::before": {
-            fontSize: "10px !important",
-            color: "primary.500 !important",
-            opacity: "20% !important",
-          },
-        }}
-      >
-        <ul style={{ margin: "0px" }}> {dots} </ul>
-      </Box>
-    ),
-  };
-  return (
-    <GridItem
-      padding={{ base: "24px", md: "40px" }}
-      minW={0}
-      display={"flex"}
-      alignItems={"center"}
-    >
-      <Box
-        className="slider-container"
-        css={{
-          "& .slick-list": {
-            padding: "0px !important",
-            width: "full !important",
-          },
-          "& .slick-slide": {},
-        }}
-        minW={0}
-      >
-        <SlickSlider {...settings}>
-          <Stack display={"flex !important"} gap={6} alignItems={"center"}>
-            <Image
-              src={UnauthLayoutDocs}
-              height={"160px"}
-              width={"160px"}
-              alignSelf={"center"}
-            />
-            <Stack alignItems={"center"}>
-              <Text textStyle={"heading_5"}>
-                Simplifying your Financial Solution
-              </Text>
-              <Text
-                textStyle={"paragraph_regular"}
-                textAlign={"center"}
-                opacity={0.64}
-              >
-                We make managing your finances easy & stress-free. Our solutions
-                help you save, invest, and plan with confidence.
-              </Text>
-            </Stack>
-          </Stack>
-          <Stack display={"flex !important"} gap={6} alignItems={"center"}>
-            <Image
-              src={UnauthLayoutDocs}
-              height={"160px"}
-              width={"160px"}
-              alignSelf={"center"}
-            />
-            <Stack alignItems={"center"}>
-              <Text textStyle={"heading_5"}>
-                Simplifying your Financial Solution
-              </Text>
-              <Text
-                textStyle={"paragraph_regular"}
-                textAlign={"center"}
-                opacity={0.64}
-              >
-                We make managing your finances easy & stress-free. Our solutions
-                help you save, invest, and plan with confidence.
-              </Text>
-            </Stack>
-          </Stack>
-          <Stack display={"flex !important"} gap={6} alignItems={"center"}>
-            <Image
-              src={UnauthLayoutDocs}
-              height={"160px"}
-              width={"160px"}
-              alignSelf={"center"}
-            />
-            <Stack alignItems={"center"}>
-              <Text textStyle={"heading_5"}>
-                Simplifying your Financial Solution
-              </Text>
-              <Text
-                textStyle={"paragraph_regular"}
-                textAlign={"center"}
-                opacity={0.64}
-              >
-                We make managing your finances easy & stress-free. Our solutions
-                help you save, invest, and plan with confidence.
-              </Text>
-            </Stack>
-          </Stack>
-        </SlickSlider>
-      </Box>
-    </GridItem>
-  );
-};
+import { AuthHeroCarousel } from "./AuthHeroCarousel";
+
+/** Right-panel surface used by both auth layout variants. */
+export const AUTH_HERO_SURFACE = "#F3F4F6";
 
 // UnAuthLayoutAdmin.tsx - accept custom sideContent instead of only boolean
 export const UnAuthLayoutAdmin = ({
@@ -151,77 +22,67 @@ export const UnAuthLayoutAdmin = ({
   sideContent?: ReactNode;
   variant?: "center" | "split";
 }) => {
-  const hasSideContent = !!sideContent;
+  // The right-side hero is shared by every auth page. A caller may still pass
+  // its own `sideContent` to override it (kept for API compatibility).
+  const hero = sideContent ?? <AuthHeroCarousel />;
 
   const responsiveSide = useBreakpointValue({
     base: null,
-    md: sideContent ?? <LayoutSlider />, // falls back to original slider if no custom content
+    md: hero,
   });
 
   // Split layout variant for modern full-viewport design
   if (variant === "split") {
     return (
-      <Flex minH="100vh" width="100%" bg="white">
+      <Flex
+        minH="100vh"
+        h={{ base: "auto", lg: "100dvh" }}
+        width="100%"
+        bg="white"
+        p={{ base: 0, lg: 3 }}
+        boxSizing="border-box"
+        overflow={{ base: "auto", lg: "hidden" }}
+      >
         {/* Left Panel - Form */}
         <Flex
-          flex={{ base: "1", lg: "0.45" }}
+          flex={{ base: "1", lg: "0.46" }}
+          minW={0}
           flexDirection="column"
-          justifyContent="center"
-          px={{ base: 4, md: 8, lg: 12 }}
-          py={{ base: 6, md: 8 }}
+          px={{ base: 6, sm: 8, md: 12, lg: 14 }}
+          py={{ base: 8, md: 10 }}
           bg="white"
+          overflowY={{ lg: "auto" }}
         >
-          <Box maxW="480px" width="100%" mx="auto">
+          <Box maxW="480px" width="100%" mx="auto" my="auto">
             {children}
           </Box>
         </Flex>
 
-        {/* Right Panel - Hero */}
-        <Flex
-          display={{ base: "none", lg: "flex" }}
-          flex="0.55"
-          flexDirection="column"
-          justifyContent="center"
-          px={{ base: 8, lg: 12 }}
-          py={{ base: 6, md: 8 }}
-          position="relative"
-          overflow="hidden"
-          bg="gray.900"
-        >
-          {/* Background gradient overlay */}
+        {/* Right Panel - inset, rounded hero panel */}
+        <Flex display={{ base: "none", lg: "flex" }} flex="0.54" minW={0} p={3}>
           <Box
-            position="absolute"
-            inset={0}
-            bgGradient="linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%)"
-          />
-
-          {/* Decorative blurred circles */}
-          <Box
-            position="absolute"
-            top="-20%"
-            right="-10%"
-            width="400px"
-            height="400px"
-            bg="primary.500"
-            opacity="0.1"
-            filter="blur(100px)"
-            borderRadius="full"
-          />
-          <Box
-            position="absolute"
-            bottom="-20%"
-            left="-10%"
-            width="350px"
-            height="350px"
-            bg="purple.500"
-            opacity="0.1"
-            filter="blur(80px)"
-            borderRadius="full"
-          />
-
-          {/* Hero Content */}
-          <Box position="relative" zIndex={1} width="100%">
-            {sideContent}
+            flex="1"
+            minW={0}
+            position="relative"
+            overflow="hidden"
+            borderRadius="3xl"
+            bg={AUTH_HERO_SURFACE}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            p={{ base: 8, lg: 8 }}
+          >
+            {/* Hero Content */}
+            <Box
+              position="relative"
+              zIndex={1}
+              width="100%"
+              maxW="900px"
+              mx="auto"
+            >
+              {hero}
+            </Box>
           </Box>
         </Flex>
       </Flex>
@@ -232,38 +93,65 @@ export const UnAuthLayoutAdmin = ({
   return (
     <Flex
       minH="100vh"
+      h={{ base: "auto", lg: "100dvh" }}
       position="relative"
       width="100%"
       backgroundSize="cover"
       justifyContent="center"
       alignItems="center"
-      padding={{ base: 4, md: 8, lg: 12 }}
-      py={{ base: 4, md: 8 }}
-      bg={"#0A1628"}
+      padding={{ base: 4, md: 8, lg: 10 }}
+      boxSizing="border-box"
+      overflow={{ base: "auto", lg: "hidden" }}
+      // bg={"#0A1628"}
     >
       <Grid
         templateColumns={{
           base: "1fr",
-          md: hasSideContent ? "repeat(2, 1fr)" : "1fr",
+          md: "repeat(2, 1fr)",
         }}
-        borderRadius="2xl"
+        borderRadius="3xl"
         background="white"
         overflow="hidden"
         width={{ base: "100%", md: "740px", xl: "1020px" }}
-        boxShadow="0px 8px 80px 0px rgba(43, 103, 177, 0.11)"
+        maxW="100%"
+        h={{ base: "auto", lg: "100%" }}
+        maxH="100%"
+        p={{ base: 0, md: 2, lg: 3 }}
+        gap={{ base: 0, md: 2, lg: 3 }}
+        // boxShadow="0px 8px 80px 0px rgba(43, 103, 177, 0.11)"
         flexShrink={0}
+        boxShadow={"xl"}
+        border={"1px solid #E2E8F0"}
       >
         <GridItem
-          paddingX={8}
-          borderRight={hasSideContent ? "1px solid" : "none"}
+          paddingX={{ base: 6, md: 8, lg: 10 }}
+          borderRight={"1px solid"}
           borderColor="gray.200"
           as={Stack}
           gap={0}
-          paddingY={6}
+          paddingY={8}
+          minH={0}
+          overflowY={{ lg: "auto" }}
         >
-          {children}
+          <Box width="100%" my="auto">
+            {children}
+          </Box>
         </GridItem>
-        {responsiveSide}
+        {responsiveSide ? (
+          <GridItem
+            bg={AUTH_HERO_SURFACE}
+            minW={0}
+            minH={0}
+            overflow="hidden"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            padding={{ base: 6, md: 7, lg: 8 }}
+          >
+            {responsiveSide}
+          </GridItem>
+        ) : null}
       </Grid>
     </Flex>
   );

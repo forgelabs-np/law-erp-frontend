@@ -14,23 +14,30 @@ import { ChevronDown, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-import { useCurrentUser } from "@/shared/hooks/useAuth";
-import TokenService from "@/shared/service/service-token";
-
-const handleLogout = () => {
-  TokenService.clearToken();
-  window.location.href = "/auth/login";
-};
+import { performLogout } from "@/api/auth";
+import { useCurrentUser, useClearUser } from "@/shared/hooks/useAuth";
 
 interface SidebarProfileProps {
   isCollapsed?: boolean;
 }
 
-export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => {
+export const SidebarProfile = ({
+  isCollapsed = false,
+}: SidebarProfileProps) => {
   const user = useCurrentUser();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  // Guards against duplicate logout requests while one is in flight.
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    // Calls POST /auth/logout first, then clears local + persisted auth and
+    // the React Query cache, and replaces the history entry with /auth/login.
+    void performLogout();
+  };
 
   // Reset the image fallback whenever the profile photo changes, and close
   // the dropdown on navigation so it never lingers after a route change.
@@ -46,23 +53,28 @@ export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => 
     return null;
   }
 
-  const username = user.username ?? user.email ?? "User";
+  const username = (user.username ?? user.email ?? "User") as string;
   const profilePhotoUrl = user.profilePhotoUrl || null;
-  const roleValue = user.role;
+  const roleValue = user.role as
+    | string
+    | { name?: string; code?: string }
+    | null
+    | undefined;
+  const roleObj =
+    typeof roleValue !== "string"
+      ? (roleValue as { name?: string; code?: string } | null | undefined)
+      : null;
   const roleName =
     (typeof roleValue === "string" && roleValue
       ? roleValue
-      : roleValue?.name || roleValue?.code || user.userType) || "";
+      : roleObj?.name ||
+        roleObj?.code ||
+        (user.userType as string | undefined)) || "";
   const initial = (username || "U").charAt(0).toUpperCase();
   const showPhoto = Boolean(profilePhotoUrl) && !imageFailed;
 
   return (
-    <Box
-      flexShrink="0"
-      width="full"
-      borderTop="1px"
-      borderTopColor="gray.200"
-    >
+    <Box flexShrink="0" width="full" borderTop="1px" borderTopColor="gray.200">
       <MenuRoot
         open={isMenuOpen}
         onOpenChange={(details) => setIsMenuOpen(details.open)}
@@ -162,7 +174,12 @@ export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => 
                 borderBottom="1px"
                 borderBottomColor="gray.100"
               >
-                <Text fontSize="sm" fontWeight="600" color="gray.800" lineClamp={1}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="600"
+                  color="gray.800"
+                  lineClamp={1}
+                >
                   {username}
                 </Text>
                 {roleName && (
@@ -176,6 +193,7 @@ export const SidebarProfile = ({ isCollapsed = false }: SidebarProfileProps) => 
                 cursor="pointer"
                 borderRadius="8px"
                 mx="1"
+                disabled={isLoggingOut}
                 onClick={handleLogout}
               >
                 <HStack gap="2.5" width="full">

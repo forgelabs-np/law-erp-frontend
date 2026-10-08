@@ -13,7 +13,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { DatePicker } from "@/shared/components/ui";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
   useProjectByCodeQuery,
@@ -21,10 +21,15 @@ import {
   useUpdateProjectMutation,
 } from "../api/project.api";
 import { useGetEmployeesQuery } from "@/api/employeeManagement";
+import { useGetClientsQuery } from "@/api/clientManagement";
 import {
-  CreateProjectRequest,
+  ProjectClientType,
   UpdateProjectRequest,
 } from "../types/project.types";
+import {
+  buildCreateProjectPayload,
+  useProjectCreateFlow,
+} from "../hooks/useProjectCreateFlow";
 import { FieldSelect } from "@/pages/User/CaseManagement/components/ui";
 import {
   DialogRoot,
@@ -35,7 +40,10 @@ import {
   DialogFooter,
   DialogCloseTrigger,
 } from "@/shared/components/ui/Dialog";
-import { projectSchema, ProjectSchemaType } from "@/validations";
+import { ProjectSchemaType, getProjectSchema } from "@/validations";
+
+import { ClientTypeSelection } from "./ClientTypeSelection";
+import { ProjectCreateFields } from "./ProjectCreateFields";
 
 interface ProjectFormModalProps {
   open: boolean;
@@ -65,6 +73,15 @@ export const ProjectFormModal = ({
   const { data: employees } = useGetEmployeesQuery();
   const employeeList = employees?.content ?? [];
 
+  // Client type selection (create flow only). `null` → show the client type
+  // step first; edit mode never sets it.
+  const [clientType, setClientType] = useState<ProjectClientType | null>(null);
+  // Existing-client options are only fetched once "Existing Client" is chosen.
+  const { data: clients } = useGetClientsQuery({
+    enabled: open && mode === "create" && clientType === "existing",
+  });
+  const clientList = clients?.content ?? [];
+
   const {
     data: project,
     isLoading: isProjectLoading,
@@ -76,20 +93,41 @@ export const ProjectFormModal = ({
     control,
     handleSubmit,
     reset,
+    setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<ProjectSchemaType>({
     defaultValues,
-    resolver: yupResolver(projectSchema),
+    // Validation follows the selected client type; edit mode keeps the legacy
+    // schema (Client Name required, Client User optional).
+    resolver: yupResolver(
+      getProjectSchema(mode === "edit" ? null : clientType)
+    ),
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
-  // Reset form when modal opens/closes or mode changes
+  const {
+    step,
+    selectClientType,
+    goToForm,
+    goToSelection,
+    reset: resetFlow,
+  } = useProjectCreateFlow({
+    clientType,
+    setClientType,
+    setValue,
+    clearErrors,
+  });
+
+  // Reset form + client type flow when the modal closes so no stale state is
+  // reused the next time Create Project is opened.
   useEffect(() => {
     if (!open) {
       reset(defaultValues);
+      resetFlow();
     }
-  }, [open, reset]);
+  }, [open, reset, resetFlow]);
 
   // Populate form when modal opens with project data (edit mode)
   useEffect(() => {
@@ -108,11 +146,14 @@ export const ProjectFormModal = ({
 
   const onSubmit = (data: ProjectSchemaType) => {
     if (mode === "create") {
-      createMutation.mutate(data as CreateProjectRequest, {
-        onSuccess: () => {
-          onOpenChange(false);
-        },
-      });
+      createMutation.mutate(
+        buildCreateProjectPayload(data, clientType, clientList),
+        {
+          onSuccess: () => {
+            onOpenChange(false);
+          },
+        }
+      );
     } else if (mode === "edit" && projectCode) {
       updateMutation.mutate(
         {
@@ -192,7 +233,7 @@ export const ProjectFormModal = ({
                   Retry
                 </Button>
               </Box>
-            ) : (
+            ) : mode === "edit" ? (
               <Stack gap={5}>
                 {/* Section heading */}
                 <Stack gap={1}>
@@ -200,9 +241,7 @@ export const ProjectFormModal = ({
                     Project Details
                   </Text>
                   <Text fontSize="xs" color="gray.500">
-                    {mode === "create"
-                      ? "Enter the information needed to create this project."
-                      : "Update the project details below."}
+                    Update the project details below.
                   </Text>
                 </Stack>
 
@@ -392,6 +431,25 @@ export const ProjectFormModal = ({
                   )}
                 />
               </Stack>
+            ) : step === "select" ? (
+              /* Step 1 — client type selection */
+              <ClientTypeSelection
+                value={clientType}
+                onChange={selectClientType}
+                onContinue={goToForm}
+                disabled={isSubmitting}
+              />
+            ) : (
+              /* Step 2 — project details for the chosen client type */
+              <ProjectCreateFields
+                control={control}
+                errors={errors}
+                clientType={clientType}
+                clients={clientList}
+                employees={employeeList}
+                onBack={goToSelection}
+                disabled={isSubmitting}
+              />
             )}
           </DialogBody>
 
@@ -404,15 +462,17 @@ export const ProjectFormModal = ({
             >
               Cancel
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              type="submit"
-              loading={isSubmitting}
-              disabled={!canSubmit}
-            >
-              {submitButtonText}
-            </Button>
+            {(mode !== "create" || step === "form") && (
+              <Button
+                variant="primary"
+                size="sm"
+                type="submit"
+                loading={isSubmitting}
+                disabled={!canSubmit}
+              >
+                {submitButtonText}
+              </Button>
+            )}
           </DialogFooter>
         </Box>
       </DialogContent>

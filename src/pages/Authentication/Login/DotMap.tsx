@@ -98,7 +98,12 @@ const PILLARS = [
 // ── Main export ──────────────────────────────────────────────────────────────
 export const TravelConnectSidePanel = () => {
   return (
-    <GridItem position="relative" overflow="hidden" minH="500px">
+    <GridItem
+      position="relative"
+      overflow="hidden"
+      borderRadius="3xl"
+      minH={{ base: "500px", lg: "0" }}
+    >
       <Box position="absolute" inset={0}>
         <img
           src={SupremeCourtImage}
@@ -126,7 +131,7 @@ export const TravelConnectSidePanel = () => {
         inset={0}
         style={{
           background:
-            "linear-gradient(to top, rgba(13,105,68,0.55) 0%, transparent 55%)",
+            "linear-gradient(to top, rgba(39, 130, 241, 0.42) 0%, transparent 55%)",
         }}
       />
       {/* Vignette edges */}

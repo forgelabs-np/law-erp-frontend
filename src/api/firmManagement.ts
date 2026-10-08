@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { FirmPayload } from "@/pages/SuperAdmin/FirmManagement/types";
+import {
+  FirmPayload,
+  FirmUpdatePayload,
+} from "@/pages/SuperAdmin/FirmManagement/types";
 import { api } from "@/shared/service/service-api";
 import { LawFirmCRMClient } from "@/shared/service/service-axios";
 import { ApiErrorResponse, ApiResponse } from "@/shared/types/response";
@@ -8,6 +11,8 @@ import {
   errorNotification,
   successNotification,
 } from "@/shared/utils/notification";
+
+export type FirmStatus = "ACTIVE" | "SUSPENDED" | "TRIAL" | "EXPIRED";
 
 export interface FirmResponse {
   id: string;
@@ -31,6 +36,19 @@ export interface FirmResponse {
   fullName?: string;
   firmName?: string;
   firmCode?: string;
+  // Lifecycle fields
+  firmStatus: FirmStatus;
+  /**
+   * Firm-state fields returned by the firm APIs. `status` and `isTrial` are
+   * two separate backend concepts — `status` is the firm's actual status,
+   * `isTrial` says whether it is a trial account.
+   */
+  status?: FirmStatus;
+  trialDays?: number;
+  trialExpiresAt?: string | null;
+  // Legacy fields (kept for backward compatibility)
+  isTrial: boolean | null;
+  isSuspended: boolean | null;
 }
 
 // ─── GET ALL FIRMS ─────────────────────────────────────────────────────────────
@@ -57,19 +75,26 @@ const getFirmById = async (id: string) => {
   );
 };
 
-export const useFirmByIdQuery = (id: string) => {
+export const useFirmByIdQuery = (
+  id: string,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: [`firm-${id}`],
-    enabled: !!id,
+    enabled: options?.enabled !== undefined ? options.enabled : !!id,
     queryFn: async () => getFirmById(id),
-    select: (data) => data?.data?.data,
+    select: (response) => {
+      // API returns { data: { data: [...] } } where data is an array of firm/admin records
+      const items = response?.data?.data;
+      // Return the first item for single firm lookup
+      return Array.isArray(items) ? items[0] : items;
+    },
   });
 };
 
-// ─── CREATE / EDIT FIRM ────────────────────────────────────────────────────────
+// ─── CREATE FIRM ────────────────────────────────────────────────────────────────
 
 const createEditFirm = (payload: FirmPayload) => {
-  console.log(api.FIRM_MANAGEMENT.POST, "hgjhfgd");
   return LawFirmCRMClient.post(api.FIRM_MANAGEMENT.POST, {
     data: payload,
   });
@@ -88,6 +113,49 @@ export const useCreateEditFirmMutation = () => {
     onError: (error: ApiErrorResponse) => {
       const errorMessage =
         error?.response?.data?.message ?? "Something went wrong!";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// ─── UPDATE FIRM (PUT) ─────────────────────────────────────────────────────────
+
+/**
+ * Updates an existing firm via `PUT /super-admin/firms/{firmId}` where
+ * `firmId` is the firm UUID (never the lawFirmCode or adminUsername).
+ * The create POST endpoint is not used for edits.
+ */
+const updateFirm = (firmId: string, payload: FirmUpdatePayload) => {
+  const url = api.FIRM_MANAGEMENT.UPDATE.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url, {
+    data: payload,
+  });
+};
+
+export const useUpdateFirmMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      firmId,
+      data,
+    }: {
+      firmId: string;
+      data: FirmUpdatePayload;
+    }) => updateFirm(firmId, data),
+    onSuccess: (response, variables) => {
+      successNotification(
+        response?.data?.message || "Firm updated successfully."
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [`firm-${variables.firmId}`],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to update firm";
       errorNotification(errorMessage);
     },
   });
@@ -119,6 +187,8 @@ export const useToggleFirmMutation = () => {
   });
 };
 
+// ─── FIRM MODULES & ROLES ──────────────────────────────────────────────────────
+
 const getFirmModules = () => {
   return LawFirmCRMClient.get<ApiResponse<FirmResponse[]>>(
     api.FIRM_MANAGEMENT.GET_FIRMS_MODULES
@@ -144,5 +214,124 @@ export const useGetFirmRolesQuery = () => {
     queryKey: [api.FIRM_MANAGEMENT.GET_FIRM_ROLES],
     queryFn: getFirmRoles,
     select: (response) => response?.data,
+  });
+};
+
+// ─── FIRM LIFECYCLE APIs ───────────────────────────────────────────────────────
+
+// Suspend Firm
+const suspendFirm = (firmId: string) => {
+  const url = api.FIRM_LIFECYCLE.SUSPEND.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url);
+};
+
+export const useSuspendFirmMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: suspendFirm,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Firm suspended successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to suspend firm";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// Activate Firm
+const activateFirm = (firmId: string) => {
+  const url = api.FIRM_LIFECYCLE.ACTIVATE.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url);
+};
+
+export const useActivateFirmMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: activateFirm,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Firm activated successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to activate firm";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// Extend Trial
+interface ExtendTrialPayload {
+  additionalDays: number;
+}
+
+const extendTrial = (firmId: string, payload: ExtendTrialPayload) => {
+  const url = api.FIRM_LIFECYCLE.EXTEND_TRIAL.replace("{firmId}", firmId);
+  return LawFirmCRMClient.put(url, { data: payload });
+};
+
+export const useExtendTrialMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      firmId,
+      additionalDays,
+    }: {
+      firmId: string;
+      additionalDays: number;
+    }) => extendTrial(firmId, { additionalDays }),
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Trial extended successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to extend trial";
+      errorNotification(errorMessage);
+    },
+  });
+};
+
+// Convert to Permanent
+const convertToPermanent = (firmId: string) => {
+  const url = api.FIRM_LIFECYCLE.CONVERT_TO_PERMANENT.replace(
+    "{firmId}",
+    firmId
+  );
+  return LawFirmCRMClient.put(url);
+};
+
+export const useConvertToPermanentMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: convertToPermanent,
+    onSuccess: (response) => {
+      successNotification(
+        response?.data?.message || "Firm converted to permanent successfully"
+      );
+      queryClient.invalidateQueries({
+        queryKey: [api.FIRM_MANAGEMENT.GET_FIRMS],
+      });
+    },
+    onError: (error: ApiErrorResponse) => {
+      const errorMessage =
+        error?.response?.data?.message ?? "Failed to convert firm";
+      errorNotification(errorMessage);
+    },
   });
 };

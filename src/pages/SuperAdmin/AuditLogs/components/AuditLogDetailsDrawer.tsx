@@ -50,7 +50,7 @@ const DetailRow = ({
           color="gray.700"
           fontFamily="mono"
           maxW="200px"
-        // truncate={true}
+          // truncate={true}
         >
           {value || "—"}
         </Text>

@@ -1,8 +1,5 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
-import { FirmHeroPanel } from "@/pages/Authentication/Login/LoginHeroPanel";
-import { SuperAdminHeroPanel } from "@/pages/Authentication/Login/HeroPanels/SuperAdminHeroPanel";
-import { ClientHeroPanel } from "@/pages/Authentication/Login/HeroPanels/ClientHeroPanel";
 import Signup from "@/pages/Authentication/SignUp";
 import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
@@ -23,7 +20,6 @@ import {
   Archive,
   CaseTypeSetup,
   ClientDashboard,
-  Folder,
   Home,
   MyFiles,
   OfficeSetup,
@@ -44,7 +40,7 @@ import FirmActivityPage from "@/pages/User/CaseManagement/pages/FirmActivityPage
 import StaleMattersPage from "@/pages/User/CaseManagement/pages/StaleMattersPage";
 import CaseDashboardPage from "@/pages/User/CaseManagement/pages/CaseDashboardPage";
 import ScraperManagementPage from "@/pages/User/ScraperManagement/ScraperManagementPage";
-import GlobalDashboardPage from "@/pages/User/CaseManagement/pages/GlobalDashboardPage";
+import DashboardPage from "@/pages/User/Dashboard/DashboardPage";
 import {
   ProjectDashboardPage,
   ProjectListPage,
@@ -56,6 +52,12 @@ import {
   ClientProjectDetailPage,
 } from "@/pages/User/ProjectManagement";
 
+import { ClientDocumentsPage } from "@/pages/User/ClientDocuments";
+import {
+  FirmDocumentsPage,
+  FolderDetailPage,
+} from "@/pages/User/FirmDocuments";
+
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
 import PermissionManagementTable from "@/pages/SuperAdmin/PermissionSetup/PermissionSetupTable";
@@ -65,6 +67,7 @@ import InvoiceListPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceListPag
 import CreateInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/CreateInvoicePage";
 import EditInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/EditInvoicePage";
 import InvoiceDetailPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceDetailPage";
+import NotificationsPage from "@/pages/User/Notifications/NotificationsPage";
 
 /**
  * Route-level permission configuration.
@@ -90,8 +93,23 @@ export const USER_ROUTES: Array<{
   },
   {
     path: ROUTES_CONFIG.USER.FOLDER,
-    element: <Folder />,
+    element: <FirmDocumentsPage />,
     moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
+  },
+  {
+    // A project folder of the document library.
+    path: ROUTES_CONFIG.USER.FOLDER_PROJECT_DOCUMENTS,
+    element: <FolderDetailPage kind="project" />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
+  },
+  {
+    // A matter folder of the document library.
+    path: ROUTES_CONFIG.USER.FOLDER_MATTER_DOCUMENTS,
+    element: <FolderDetailPage kind="matter" />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
   },
   {
     path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
@@ -243,7 +261,7 @@ export const USER_ROUTES: Array<{
   },
   {
     path: ROUTES_CONFIG.USER.GLOBAL_DASHBOARD,
-    element: <GlobalDashboardPage />,
+    element: <DashboardPage />,
     moduleCode: "DASHBOARD_MANAGEMENT",
     requiredAction: "VIEW",
   },
@@ -293,6 +311,13 @@ export const USER_ROUTES: Array<{
     path: ROUTES_CONFIG.USER.CLIENT_PROJECT_DETAIL,
     element: <ClientProjectDetailPage />,
     moduleCode: "PROJECT_MANAGEMENT",
+    roles: ["CLIENT"],
+  },
+  {
+    path: ROUTES_CONFIG.USER.CLIENT_DOCUMENTS,
+    element: <ClientDocumentsPage />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
     roles: ["CLIENT"],
   },
   {
@@ -349,6 +374,12 @@ export const USER_ROUTES: Array<{
     moduleCode: "FIRM_MANAGEMENT",
   },
   {
+    path: ROUTES_CONFIG.USER.NOTIFICATIONS,
+    element: <NotificationsPage />,
+    moduleCode: "NOTIFICATION_MANAGEMENT",
+    requiredAction: "VIEW",
+  },
+  {
     path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_ACCESS_MANAGEMENT,
     element: <AccessManagementPage />,
     moduleCode: "FIRM_MANAGEMENT",
@@ -368,37 +399,19 @@ export const USER_ROUTES: Array<{
 export const AUTHENTICATION_ROUTES = [
   {
     path: ROUTES_CONFIG.AUTHENTICATION.FORGOT_PASSWORD,
-    element: <ForgotPassword />,
+    element: <PublicRoute Component={ForgotPassword} variant="split" />,
   },
   {
     path: "/auth/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<FirmHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
   {
     path: "/auth/client/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<ClientHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
   {
     path: "/super-admin/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<SuperAdminHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
 
   {
@@ -411,7 +424,7 @@ export const AUTHENTICATION_ROUTES = [
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
-    element: <ResetPassword />,
+    element: <PublicRoute Component={ResetPassword} variant="split" />,
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD,

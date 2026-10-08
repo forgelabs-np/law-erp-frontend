@@ -20,13 +20,27 @@ export interface CurrentUserResponse {
   fullName: string;
   role: string;
   roleId: string;
+  /** Display name of the product/firm (informational, not used for theming). */
+  appName?: string | null;
+  /**
+   * Firm branding from `/me`. Hex colors (e.g. `#1A237E`); may be null when
+   * the firm has no custom brand — the frontend then keeps the default
+   * theme (see `createBrandSystem` in `@/shared/theme`).
+   */
+  brandColorPrimary?: string | null;
+  brandColorSecondary?: string | null;
   firm: {
     id: string;
     name: string;
     code: string;
+    trial: boolean;
+    daysRemaining: number | null;
+    trialExpiresAt: string | null;
+    status: string;
   };
   permissions: string[];
   modules: UserModule[];
+  [key: string]: unknown; // required to be assignable to User in auth.store.ts
 }
 
 const getCurrentUser = () => {
