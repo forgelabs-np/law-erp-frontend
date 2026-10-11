@@ -231,7 +231,9 @@ export const applyBrandColors = (
     return THEME_COLORS;
   }
 
-  const primaryScale = primary ? buildPrimaryScale(primary) : THEME_COLORS.primary;
+  const primaryScale = primary
+    ? buildPrimaryScale(primary)
+    : THEME_COLORS.primary;
   const secondaryScale = secondary
     ? buildSecondaryScale(secondary)
     : THEME_COLORS.secondary;

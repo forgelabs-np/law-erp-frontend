@@ -15,7 +15,11 @@ import {
   UploadDocumentParams,
 } from "@/shared/types/documents";
 import { ApiResponse } from "@/shared/types/response";
-import { FirmDocument, FirmDocumentPage, StorageUsage } from "../types/firmDocument.types";
+import {
+  FirmDocument,
+  FirmDocumentPage,
+  StorageUsage,
+} from "../types/firmDocument.types";
 import {
   contentTypeFor,
   getBackendErrorMessage,
@@ -295,7 +299,7 @@ export const useUpdateDocumentVisibilityMutation = () => {
     onError: (error: unknown) => {
       toastFail(
         getBackendErrorMessage(error) ??
-        "Failed to change the document visibility."
+          "Failed to change the document visibility."
       );
     },
   });

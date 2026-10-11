@@ -25,7 +25,8 @@ export const AuthInputIcon = ({
       "& > svg": {
         boxSize: "6",
       },
-    }}    >
-      {icon ?? children}
-    </Box>
+    }}
+  >
+    {icon ?? children}
+  </Box>
 );

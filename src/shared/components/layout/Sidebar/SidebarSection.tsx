@@ -3,21 +3,21 @@ import { SidebarSectionProps } from "@/shared/types";
 
 export const SidebarSection = ({ title, items }: SidebarSectionProps) => {
   return (
-    <Box>
+    <Box mb="5">
       {title && (
         <Text
-          fontSize="10px"
-          fontWeight="600"
-          color="gray.500"
+          fontSize="11px"
+          fontWeight="700"
+          color="gray.400"
           px="3"
-          py="1"
+          mb="2.5"
           textTransform="uppercase"
-          letterSpacing="wide"
+          letterSpacing="wider"
         >
           {title}
         </Text>
       )}
-      <VStack alignItems="stretch" gap="0">
+      <VStack alignItems="stretch" gap="1.5">
         {items}
       </VStack>
     </Box>

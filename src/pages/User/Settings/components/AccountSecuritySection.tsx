@@ -12,15 +12,17 @@ import {
 import { Eye, EyeOff, Shield } from "lucide-react";
 
 interface AccountSecuritySectionProps {
-  passwordForm: {
-    currentPassword: "";
-    newPassword: "";
-    confirmPassword: "";
-  } | {
-    currentPassword: string;
-    newPassword: string;
-    confirmPassword: string;
-  };
+  passwordForm:
+    | {
+        currentPassword: "";
+        newPassword: "";
+        confirmPassword: "";
+      }
+    | {
+        currentPassword: string;
+        newPassword: string;
+        confirmPassword: string;
+      };
   setPasswordForm: React.Dispatch<
     React.SetStateAction<{
       currentPassword: string;
@@ -55,7 +57,13 @@ export const AccountSecuritySection = ({
   isLoading,
 }: AccountSecuritySectionProps) => {
   return (
-    <Card.Root h="100%" border="1px solid" borderColor="gray.200" shadow="xs" borderRadius="xl">
+    <Card.Root
+      h="100%"
+      border="1px solid"
+      borderColor="gray.200"
+      shadow="xs"
+      borderRadius="xl"
+    >
       <Card.Header pb={4} borderBottom="1px solid" borderColor="gray.100">
         <HStack gap={3}>
           <Box
@@ -110,9 +118,15 @@ export const AccountSecuritySection = ({
                     current: !prev.current,
                   }))
                 }
-                aria-label={showPasswords.current ? "Hide password" : "Show password"}
+                aria-label={
+                  showPasswords.current ? "Hide password" : "Show password"
+                }
               >
-                {showPasswords.current ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPasswords.current ? (
+                  <EyeOff size={16} />
+                ) : (
+                  <Eye size={16} />
+                )}
               </Button>
             </HStack>
             {passwordErrors.currentPassword && (
@@ -151,7 +165,9 @@ export const AccountSecuritySection = ({
                     new: !prev.new,
                   }))
                 }
-                aria-label={showPasswords.new ? "Hide password" : "Show password"}
+                aria-label={
+                  showPasswords.new ? "Hide password" : "Show password"
+                }
               >
                 {showPasswords.new ? <EyeOff size={16} /> : <Eye size={16} />}
               </Button>
@@ -192,9 +208,15 @@ export const AccountSecuritySection = ({
                     confirm: !prev.confirm,
                   }))
                 }
-                aria-label={showPasswords.confirm ? "Hide password" : "Show password"}
+                aria-label={
+                  showPasswords.confirm ? "Hide password" : "Show password"
+                }
               >
-                {showPasswords.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPasswords.confirm ? (
+                  <EyeOff size={16} />
+                ) : (
+                  <Eye size={16} />
+                )}
               </Button>
             </HStack>
             {passwordErrors.confirmPassword && (

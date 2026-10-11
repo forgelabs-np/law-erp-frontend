@@ -59,11 +59,12 @@ export const LinkItem = ({
   return (
     <HStack
       px={isCollapsed ? "2" : "3"}
-      py="2"
+      py="2.5"
       pl={isChild ? "8" : undefined}
       userSelect="none"
       width="full"
       position="relative"
+      borderRadius="12px"
       _hover={{
         background: !isActive ? "gray.100" : undefined,
       }}
@@ -78,9 +79,9 @@ export const LinkItem = ({
         <Box
           position="absolute"
           left="0"
-          top="0"
-          bottom="0"
-          width="3px"
+          top="2px"
+          bottom="2px"
+          width="4px"
           background="primary.500"
           borderRadius="0 4px 4px 0"
         />

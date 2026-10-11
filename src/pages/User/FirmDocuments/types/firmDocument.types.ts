@@ -47,11 +47,7 @@ export interface StorageUsage {
 // arrives (the hook keeps stage="uploading" at 100 in that window).
 // ============================================================
 
-export type DocumentUploadStage =
-  | "idle"
-  | "uploading"
-  | "success"
-  | "error";
+export type DocumentUploadStage = "idle" | "uploading" | "success" | "error";
 
 export interface DocumentUploadState {
   stage: DocumentUploadStage;

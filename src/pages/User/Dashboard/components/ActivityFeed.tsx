@@ -48,14 +48,14 @@ export const ActivityFeed = ({
       css={
         maxHeight
           ? {
-            "&::-webkit-scrollbar": { width: "3px" },
-            "&::-webkit-scrollbar-track": { bg: "transparent" },
-            "&::-webkit-scrollbar-thumb": {
-              bg: "gray.200",
-              borderRadius: "full",
-            },
-            "&::-webkit-scrollbar-thumb:hover": { bg: "gray.300" },
-          }
+              "&::-webkit-scrollbar": { width: "3px" },
+              "&::-webkit-scrollbar-track": { bg: "transparent" },
+              "&::-webkit-scrollbar-thumb": {
+                bg: "gray.200",
+                borderRadius: "full",
+              },
+              "&::-webkit-scrollbar-thumb:hover": { bg: "gray.300" },
+            }
           : undefined
       }
       px={6}

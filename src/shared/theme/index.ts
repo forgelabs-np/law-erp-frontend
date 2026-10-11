@@ -82,7 +82,9 @@ export type BrandSystem = ReturnType<typeof createBrandSystem>;
  */
 export const createBrandSystem = (brand?: BrandColorInput | null) => {
   const colors = applyBrandColors(brand);
-  return colors === THEME_COLORS ? defaultSystem : createSystem(defaultConfig, buildConfig(colors));
+  return colors === THEME_COLORS
+    ? defaultSystem
+    : createSystem(defaultConfig, buildConfig(colors));
 };
 
 const chakraSystem = createBrandSystem();
