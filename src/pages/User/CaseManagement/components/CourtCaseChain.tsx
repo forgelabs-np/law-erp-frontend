@@ -14,6 +14,7 @@ import { CourtCase, RelationType } from "../types/matter.types";
 import {
   courtCaseStageLabel,
   formatDate,
+  getCourtBackgroundImage,
   relationTypeLabel,
 } from "../utils/matterHelpers";
 import { CourtCaseStatusBadge } from "./MatterBadges";
@@ -152,6 +153,10 @@ export const CourtCaseChain = ({
         const isLast = index === courtCases.length - 1;
         const accentBorder = isCurrent ? "primary.300" : "gray.200";
         const innerDivider = isCurrent ? "primary.100" : "gray.100";
+        const courtBg = getCourtBackgroundImage(
+          courtCase.courtLevel,
+          courtCase.courtName
+        );
 
         return (
           <Box
@@ -160,6 +165,7 @@ export const CourtCaseChain = ({
             minW={0}
           >
             <Box
+              position="relative"
               bg={isCurrent ? "primary.50" : "white"}
               border="1.5px solid"
               borderColor={accentBorder}
@@ -174,6 +180,25 @@ export const CourtCaseChain = ({
                 boxShadow: "0 4px 14px rgba(16, 24, 40, 0.07)",
               }}
             >
+              {/* ── Card Background Court Image ───────────────────────── */}
+              {courtBg && (
+                <Box
+                  position="absolute"
+                  right={{ base: "8px", md: "20px" }}
+                  top="50%"
+                  transform="translateY(-50%)"
+                  w={{ base: "140px", md: "210px" }}
+                  h={{ base: "100px", md: "140px" }}
+                  bgImage={`url(${courtBg})`}
+                  bgRepeat="no-repeat"
+                  // bgPosition="center right"
+                  bgSize="contain"
+                  opacity={isCurrent ? 0.2 : 0.15}
+                  pointerEvents="none"
+                  aria-hidden="true"
+                  zIndex={0}
+                />
+              )}
               {/* ── Card header ───────────────────────────────────────── */}
               <HStack
                 justify="space-between"

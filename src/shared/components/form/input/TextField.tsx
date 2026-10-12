@@ -89,9 +89,7 @@ export const TextFieldInput = ({
           paddingLeft={
             startElement && !isAuthPill ? "10 !important" : undefined
           }
-          paddingRight={
-            endElement && !isAuthPill ? "10 !important" : undefined
-          }
+          paddingRight={endElement && !isAuthPill ? "10 !important" : undefined}
           autoComplete={autoComplete}
           height={isAuthPill ? AUTH_PILL_INPUT_PROPS.height : inputHeight}
           fontSize={isAuthPill ? AUTH_PILL_INPUT_PROPS.fontSize : undefined}
@@ -100,8 +98,12 @@ export const TextFieldInput = ({
             isAuthPill ? AUTH_PILL_INPUT_PROPS.borderRadius : inputBorderRadius
           }
           bg={isAuthPill ? AUTH_PILL_INPUT_PROPS.bg : undefined}
-          borderWidth={isAuthPill ? AUTH_PILL_INPUT_PROPS.borderWidth : undefined}
-          borderStyle={isAuthPill ? AUTH_PILL_INPUT_PROPS.borderStyle : undefined}
+          borderWidth={
+            isAuthPill ? AUTH_PILL_INPUT_PROPS.borderWidth : undefined
+          }
+          borderStyle={
+            isAuthPill ? AUTH_PILL_INPUT_PROPS.borderStyle : undefined
+          }
           borderColor={
             isAuthPill
               ? AUTH_PILL_INPUT_PROPS.borderColor
@@ -127,9 +129,7 @@ export const TextFieldInput = ({
                 : AUTH_PILL_INPUT_STYLE
               : undefined
           }
-          _disabled={
-            isAuthPill ? AUTH_PILL_INPUT_PROPS._disabled : undefined
-          }
+          _disabled={isAuthPill ? AUTH_PILL_INPUT_PROPS._disabled : undefined}
         />
       </InputGroup>
     </FormWrapper>

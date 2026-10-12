@@ -4,23 +4,23 @@ import type { SystemStyleObject } from "@chakra-ui/react";
  * authentication screens.
  */
 export const AUTH_PILL_INPUT_PROPS = {
-  height: "50px",
-  fontSize: "18px",
-  px: "28px",
-  borderRadius: "28px",
+  height: "56px",
+  fontSize: "15px",
+  px: "24px",
+  borderRadius: "9999px",
   bg: "white",
   borderWidth: "1px",
   borderStyle: "solid",
-  borderColor: "#B8B8B8",
-  _placeholder: { color: "gray.400" },
-  _hover: { borderColor: "#8F8F8F" },
+  borderColor: "#E2E8F0",
+  _placeholder: { color: "#94A3B8" },
+  _hover: { borderColor: "#CBD5E1" },
   _disabled: { opacity: "0.6", cursor: "not-allowed", bg: "gray.50" },
-  endElementProps: { me: "4" },
+  endElementProps: { me: "3" },
 };
 
 export const AUTH_PILL_INPUT_STYLE: SystemStyleObject = {
   borderColor: "primary.500",
-  boxShadow: "0 0 0 3px rgba(0, 86, 255, 0.15)",
+  boxShadow: "0 0 0 4px rgba(0, 82, 255, 0.12)",
 };
 
 export const AUTH_PILL_INVALID_STYLE: SystemStyleObject = {
@@ -29,21 +29,21 @@ export const AUTH_PILL_INVALID_STYLE: SystemStyleObject = {
 
 export const AUTH_PILL_BUTTON_PROPS = {
   width: "full",
-  height: "64px",
+  height: "56px",
   borderRadius: "9999px",
-  fontSize: "19px",
-  fontWeight: "600",
-  boxShadow: "none",
+  fontSize: "18px",
+  fontWeight: "700",
+  boxShadow: "0 10px 25px -4px rgba(0, 82, 255, 0.4)",
 };
 
 export const AUTH_PILL_BUTTON_STYLE: SystemStyleObject = {
   bg: "primary.500",
   color: "white",
-  boxShadow: "none",
+  boxShadow: "0 10px 25px -4px rgba(0, 82, 255, 0.4)",
   _hover: {
-    bg: "primary.500", opacity: "0.92",
-    borderColor: "primary.500",
+    bg: "primary.600",
+    boxShadow: "0 12px 28px -4px rgba(0, 82, 255, 0.5)",
   },
-  _active: { opacity: "0.88", bg: "primary.500" },
-  _focusVisible: { boxShadow: "0 0 0 3px rgba(0, 86, 255, 0.35)" },
+  _active: { opacity: "0.9", bg: "primary.700" },
+  _focusVisible: { boxShadow: "0 0 0 4px rgba(0, 82, 255, 0.35)" },
 };

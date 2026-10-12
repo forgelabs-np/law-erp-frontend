@@ -36,7 +36,10 @@ const readCachedBrand = (): CachedBrandData | null => {
     if (!raw) return null;
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
-    const { primary, secondary, isPersonalColor } = parsed as Record<string, unknown>;
+    const { primary, secondary, isPersonalColor } = parsed as Record<
+      string,
+      unknown
+    >;
     if (!isStoredColor(primary) || !isStoredColor(secondary)) return null;
     return {
       primary,
@@ -130,9 +133,15 @@ export const useFirmBrandSystem = () => {
     if (!me) return;
     const isPersonal = Boolean(me.firm?.isPersonalColor ?? me.isPersonalColor);
     const primary =
-      me.firm?.brandPrimaryHex ?? me.brandPrimaryHex ?? me.brandColorPrimary ?? null;
+      me.firm?.brandPrimaryHex ??
+      me.brandPrimaryHex ??
+      me.brandColorPrimary ??
+      null;
     const secondary =
-      me.firm?.brandSecondaryHex ?? me.brandSecondaryHex ?? me.brandColorSecondary ?? null;
+      me.firm?.brandSecondaryHex ??
+      me.brandSecondaryHex ??
+      me.brandColorSecondary ??
+      null;
 
     writeCachedBrand({
       primary,
@@ -146,13 +155,21 @@ export const useFirmBrandSystem = () => {
     if (isSuperAdminSession(location.pathname, me?.role)) return null;
 
     if (me) {
-      const isPersonal = Boolean(me.firm?.isPersonalColor ?? me.isPersonalColor);
+      const isPersonal = Boolean(
+        me.firm?.isPersonalColor ?? me.isPersonalColor
+      );
       if (!isPersonal) return null;
 
       const primary =
-        me.firm?.brandPrimaryHex ?? me.brandPrimaryHex ?? me.brandColorPrimary ?? null;
+        me.firm?.brandPrimaryHex ??
+        me.brandPrimaryHex ??
+        me.brandColorPrimary ??
+        null;
       const secondary =
-        me.firm?.brandSecondaryHex ?? me.brandSecondaryHex ?? me.brandColorSecondary ?? null;
+        me.firm?.brandSecondaryHex ??
+        me.brandSecondaryHex ??
+        me.brandColorSecondary ??
+        null;
 
       return { primary, secondary };
     }

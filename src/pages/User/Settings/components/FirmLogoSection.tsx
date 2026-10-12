@@ -38,7 +38,13 @@ export const FirmLogoSection = ({
   isUploadLoading,
 }: FirmLogoSectionProps) => {
   return (
-    <Card.Root h="100%" border="1px solid" borderColor="gray.200" shadow="xs" borderRadius="xl">
+    <Card.Root
+      h="100%"
+      border="1px solid"
+      borderColor="gray.200"
+      shadow="xs"
+      borderRadius="xl"
+    >
       <Card.Header pb={4} borderBottom="1px solid" borderColor="gray.100">
         <HStack gap={3}>
           <Box
@@ -99,7 +105,12 @@ export const FirmLogoSection = ({
                 maxW="340px"
               >
                 <VStack gap={2}>
-                  <Box p={2.5} bg="gray.100" color="gray.400" borderRadius="full">
+                  <Box
+                    p={2.5}
+                    bg="gray.100"
+                    color="gray.400"
+                    borderRadius="full"
+                  >
                     <FileImage size={22} />
                   </Box>
                   <Text fontSize="sm" fontWeight="600" color="gray.700">
@@ -136,7 +147,14 @@ export const FirmLogoSection = ({
 
           {/* Upload Controls when enabled */}
           {logoAllowed ? (
-            <Stack gap={4} p={5} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.200">
+            <Stack
+              gap={4}
+              p={5}
+              bg="gray.50"
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="gray.200"
+            >
               <Field.Root invalid={!!logoError}>
                 <Field.Label fontWeight="500" fontSize="sm" color="gray.700">
                   Upload Custom Logo
@@ -177,9 +195,17 @@ export const FirmLogoSection = ({
                 </VStack>
 
                 {logoFile && (
-                  <Box mt={2} p={2.5} bg="primary.50" borderRadius="md" border="1px solid" borderColor="primary.200">
+                  <Box
+                    mt={2}
+                    p={2.5}
+                    bg="primary.50"
+                    borderRadius="md"
+                    border="1px solid"
+                    borderColor="primary.200"
+                  >
                     <Text fontSize="xs" fontWeight="500" color="primary.800">
-                      Selected File: {logoFile.name} ({(logoFile.size / 1024).toFixed(1)} KB)
+                      Selected File: {logoFile.name} (
+                      {(logoFile.size / 1024).toFixed(1)} KB)
                     </Text>
                   </Box>
                 )}
@@ -206,12 +232,21 @@ export const FirmLogoSection = ({
               </Box>
             </Stack>
           ) : (
-            <HStack gap={2} p={3.5} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200" color="gray.600">
+            <HStack
+              gap={2}
+              p={3.5}
+              bg="gray.50"
+              borderRadius="md"
+              border="1px solid"
+              borderColor="gray.200"
+              color="gray.600"
+            >
               <Box flexShrink={0} display="flex">
                 <Info size={16} />
               </Box>
               <Text fontSize="xs">
-                Logo uploads are currently disabled. Enable them above to upload a logo.
+                Logo uploads are currently disabled. Enable them above to upload
+                a logo.
               </Text>
             </HStack>
           )}

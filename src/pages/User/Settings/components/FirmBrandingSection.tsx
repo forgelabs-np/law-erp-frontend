@@ -37,7 +37,12 @@ export const FirmBrandingSection = ({
   isLoading,
 }: FirmBrandingSectionProps) => {
   return (
-    <Card.Root border="1px solid" borderColor="gray.200" shadow="xs" borderRadius="xl">
+    <Card.Root
+      border="1px solid"
+      borderColor="gray.200"
+      shadow="xs"
+      borderRadius="xl"
+    >
       <Card.Header pb={4} borderBottom="1px solid" borderColor="gray.100">
         <HStack gap={3}>
           <Box
@@ -62,7 +67,11 @@ export const FirmBrandingSection = ({
         </HStack>
       </Card.Header>
       <Card.Body pt={6}>
-        <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={8} alignItems="start">
+        <Grid
+          templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
+          gap={8}
+          alignItems="start"
+        >
           {/* Controls column */}
           <Stack gap={5}>
             <BrandColorField

@@ -169,6 +169,7 @@ export const LEGAL_FACTS: LegalFact[] = [
       'The term comes from the Latin phrase pro bono publico, meaning "for the public good."',
   },
 
+  /*
   // 🇳🇵 ५० नेपाली कानुनी रोचक तथ्यहरू (Nepali Legal Facts)
   {
     id: 21,
@@ -330,6 +331,7 @@ export const LEGAL_FACTS: LegalFact[] = [
     description:
       "नेपालको मुलुकी देवानी संहिताअनुसार बहुविवाह पूर्ण रूपमा प्रतिबन्धित र दण्डनीय अपराध हो।",
   },
+  */
 
   // 📜 Historical Legal Facts
   {

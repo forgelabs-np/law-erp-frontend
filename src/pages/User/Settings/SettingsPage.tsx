@@ -14,6 +14,7 @@ import { SettingsHeader } from "./components/SettingsHeader";
 import { AccountSecuritySection } from "./components/AccountSecuritySection";
 import { FirmBrandingSection } from "./components/FirmBrandingSection";
 import { FirmLogoSection } from "./components/FirmLogoSection";
+import { TypographySection } from "./components/TypographySection";
 
 import { resolveRoleCode } from "@/shared/utils/role";
 
@@ -32,7 +33,9 @@ export const SettingsPage = () => {
     newPassword: "",
     confirmPassword: "",
   });
-  const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>({});
+  const [passwordErrors, setPasswordErrors] = useState<Record<string, string>>(
+    {}
+  );
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
@@ -44,7 +47,9 @@ export const SettingsPage = () => {
     primaryColor: "",
     secondaryColor: "",
   });
-  const [brandingErrors, setBrandingErrors] = useState<Record<string, string>>({});
+  const [brandingErrors, setBrandingErrors] = useState<Record<string, string>>(
+    {}
+  );
 
   // Logo state
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -243,7 +248,11 @@ export const SettingsPage = () => {
       <Stack gap={8}>
         {/* Account Security & Firm Logo aligned horizontally on large screens */}
         {canManageFirmSettings ? (
-          <Grid templateColumns={{ base: "1fr", lg: "1fr 1fr" }} gap={8} alignItems="stretch">
+          <Grid
+            templateColumns={{ base: "1fr", lg: "1fr 1fr" }}
+            gap={8}
+            alignItems="stretch"
+          >
             <AccountSecuritySection
               passwordForm={passwordForm}
               setPasswordForm={setPasswordForm}
@@ -288,6 +297,9 @@ export const SettingsPage = () => {
             isLoading={updateBrandThemeMutation.isPending}
           />
         )}
+
+        {/* Global Website Font & Typography Section */}
+        <TypographySection />
       </Stack>
     </Box>
   );

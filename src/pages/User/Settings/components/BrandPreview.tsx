@@ -6,7 +6,10 @@ interface BrandPreviewProps {
   secondaryColor: string;
 }
 
-export const BrandPreview = ({ primaryColor, secondaryColor }: BrandPreviewProps) => {
+export const BrandPreview = ({
+  primaryColor,
+  secondaryColor,
+}: BrandPreviewProps) => {
   const isValidHex = (val: string) => /^#?[0-9a-fA-F]{6}$/.test(val.trim());
 
   const formatHex = (val: string, fallback: string) => {
@@ -29,7 +32,12 @@ export const BrandPreview = ({ primaryColor, secondaryColor }: BrandPreviewProps
       <HStack justify="space-between" align="center" mb={3}>
         <HStack gap={1.5} color="gray.700">
           {/* <Sparkles size={14} /> */}
-          <Text fontSize="xs" fontWeight="600" textTransform="uppercase" letterSpacing="wider">
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            textTransform="uppercase"
+            letterSpacing="wider"
+          >
             Live Brand Preview
           </Text>
         </HStack>
@@ -55,7 +63,15 @@ export const BrandPreview = ({ primaryColor, secondaryColor }: BrandPreviewProps
                 NepalCRM
               </Text>
             </HStack>
-            <Box px={2} py={0.5} bg="white" color={primary} borderRadius="xs" fontSize="9px" fontWeight="700">
+            <Box
+              px={2}
+              py={0.5}
+              bg="white"
+              color={primary}
+              borderRadius="xs"
+              fontSize="9px"
+              fontWeight="700"
+            >
               PORTAL
             </Box>
           </HStack>

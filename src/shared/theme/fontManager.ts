@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 
-import {
-  AVAILABLE_FONTS,
-  DEFAULT_FONT,
-  type FontKey,
-} from "./tokens/fonts";
+import { AVAILABLE_FONTS, DEFAULT_FONT, type FontKey } from "./tokens/fonts";
 
 const FONT_STORAGE_KEY = "nepalcrm.active-font.v1";
 const FONT_CHANGE_EVENT = "app-font-changed";
@@ -28,7 +24,8 @@ export const getStoredFont = (): FontKey => {
  * Apply the selected font family to the DOM root and document body.
  */
 export const applyFontToDOM = (fontKey: FontKey): void => {
-  const fontCssValue = AVAILABLE_FONTS[fontKey] || AVAILABLE_FONTS[DEFAULT_FONT];
+  const fontCssValue =
+    AVAILABLE_FONTS[fontKey] || AVAILABLE_FONTS[DEFAULT_FONT];
   document.documentElement.style.setProperty("--app-font-family", fontCssValue);
   if (document.body) {
     document.body.style.setProperty("font-family", fontCssValue);
@@ -46,9 +43,7 @@ export const setAppFont = (fontKey: FontKey): void => {
     // localStorage unavailable
   }
   applyFontToDOM(fontKey);
-  window.dispatchEvent(
-    new CustomEvent(FONT_CHANGE_EVENT, { detail: fontKey })
-  );
+  window.dispatchEvent(new CustomEvent(FONT_CHANGE_EVENT, { detail: fontKey }));
 };
 
 /**

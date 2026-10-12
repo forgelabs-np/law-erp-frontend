@@ -3,7 +3,6 @@ import { AxiosError } from "axios";
 import { useEffect, PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
 
-import { FontSwitcherWidget } from "../components/FontSwitcher";
 import { ChakraProvider, ToasterProvider } from "../components/ui";
 import { useFirmBrandSystem } from "../hooks/useFirmBrandSystem";
 import { initAppFont } from "../theme";
@@ -49,7 +48,6 @@ const BrandTheme = ({ children }: PropsWithChildren) => {
     <ChakraProvider value={system}>
       {children}
       <ToasterProvider />
-      <FontSwitcherWidget />
     </ChakraProvider>
   );
 };

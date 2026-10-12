@@ -51,7 +51,8 @@ export const useChangePasswordMutation = () => {
       toastSuccess("Password changed successfully");
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || "Failed to change password";
+      const message =
+        error.response?.data?.message || "Failed to change password";
       toastFail(message);
     },
   });
@@ -62,7 +63,9 @@ export const useChangePasswordMutation = () => {
 // ============================================================
 
 const getFirmBrandTheme = () => {
-  return LawFirmCRMClient.get<ApiResponse<FirmBrandTheme>>(api.FIRM_BRANDING.GET_THEME);
+  return LawFirmCRMClient.get<ApiResponse<FirmBrandTheme>>(
+    api.FIRM_BRANDING.GET_THEME
+  );
 };
 
 export const useFirmBrandThemeQuery = () => {
@@ -89,7 +92,8 @@ export const useUpdateFirmBrandThemeMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["firm-brand-theme"] });
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || "Failed to save branding";
+      const message =
+        error.response?.data?.message || "Failed to save branding";
       toastFail(message);
     },
   });
@@ -100,7 +104,9 @@ export const useUpdateFirmBrandThemeMutation = () => {
 // ============================================================
 
 const getFirmLogoSettings = () => {
-  return LawFirmCRMClient.get<ApiResponse<FirmLogoSettings>>(api.FIRM_BRANDING.GET_LOGO);
+  return LawFirmCRMClient.get<ApiResponse<FirmLogoSettings>>(
+    api.FIRM_BRANDING.GET_LOGO
+  );
 };
 
 export const useFirmLogoSettingsQuery = () => {
@@ -128,7 +134,8 @@ export const useUpdateLogoAllowedMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["current-user"] });
     },
     onError: (error: any) => {
-      const message = error.response?.data?.message || "Failed to update logo permission";
+      const message =
+        error.response?.data?.message || "Failed to update logo permission";
       toastFail(message);
     },
   });

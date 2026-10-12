@@ -3,7 +3,11 @@ import { Box, Button, HStack, Text, VStack } from "@chakra-ui/react";
 import { LuType, LuX, LuCheck, LuChevronUp, LuRotateCcw } from "react-icons/lu";
 
 import { useAppFont } from "@/shared/theme/fontManager";
-import { AVAILABLE_FONTS, DEFAULT_FONT, type FontKey } from "@/shared/theme/tokens/fonts";
+import {
+  AVAILABLE_FONTS,
+  DEFAULT_FONT,
+  type FontKey,
+} from "@/shared/theme/tokens/fonts";
 
 const FONT_OPTIONS: Array<{ key: FontKey; label: string; family: string }> = [
   { key: "Poppins", label: "Poppins", family: AVAILABLE_FONTS.Poppins },
@@ -84,7 +88,12 @@ export const FontSwitcherWidget = () => {
                 <LuType size={16} />
               </Box>
               <Box>
-                <Text fontSize="sm" fontWeight={700} color="gray.800" lineHeight="tight">
+                <Text
+                  fontSize="sm"
+                  fontWeight={700}
+                  color="gray.800"
+                  lineHeight="tight"
+                >
                   Font Switcher
                 </Text>
                 <Text fontSize="10px" color="gray.500" fontWeight={500}>
@@ -176,13 +185,30 @@ export const FontSwitcherWidget = () => {
               borderWidth="1px"
               borderColor="gray.200"
             >
-              <Text fontSize="10px" fontWeight={700} textTransform="uppercase" color="gray.400" mb={1} letterSpacing="wider">
+              <Text
+                fontSize="10px"
+                fontWeight={700}
+                textTransform="uppercase"
+                color="gray.400"
+                mb={1}
+                letterSpacing="wider"
+              >
                 Live Sample Preview
               </Text>
-              <Text fontSize="xs" fontWeight={600} color="gray.800" style={{ fontFamily: AVAILABLE_FONTS[activeFont] }}>
+              <Text
+                fontSize="xs"
+                fontWeight={600}
+                color="gray.800"
+                style={{ fontFamily: AVAILABLE_FONTS[activeFont] }}
+              >
                 Law ERP Dashboard & Documents
               </Text>
-              <Text fontSize="11px" color="gray.600" mt={0.5} style={{ fontFamily: AVAILABLE_FONTS[activeFont] }}>
+              <Text
+                fontSize="11px"
+                color="gray.600"
+                mt={0.5}
+                style={{ fontFamily: AVAILABLE_FONTS[activeFont] }}
+              >
                 1234567890 • Quick brown fox jumps over lazy dog
               </Text>
             </Box>

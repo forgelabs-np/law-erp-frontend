@@ -17,9 +17,12 @@ export const BrandColorField = ({
   error,
   placeholder,
 }: BrandColorFieldProps) => {
-  const displayColor = value && /^#?[0-9a-fA-F]{6}$/.test(value.trim())
-    ? value.startsWith("#") ? value : `#${value}`
-    : "#000000";
+  const displayColor =
+    value && /^#?[0-9a-fA-F]{6}$/.test(value.trim())
+      ? value.startsWith("#")
+        ? value
+        : `#${value}`
+      : "#000000";
 
   return (
     <Field.Root invalid={!!error}>
