@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   HStack,
+  IconButton,
   MenuContent,
   MenuItem,
   MenuPositioner,
@@ -412,39 +413,66 @@ export const UserManagement = () => {
       {
         accessorKey: "fullName",
         header: "Full Name",
-        cell: ({ row }) => (
-          <Text
-            fontSize="sm"
-            fontWeight="500"
-            color="blue.600"
-            cursor="pointer"
-            _hover={{ textDecoration: "underline" }}
-            onClick={() =>
-              navigate(
-                `${ROUTES_CONFIG.USER.USER_MANAGEMENT}/${row.original.id}/profile`
-              )
-            }
-          >
-            {row.original.fullName}
-          </Text>
-        ),
+        cell: ({ row }) => {
+          const initials =
+            row.original.fullName
+              ?.split(" ")
+              .map((w) => w[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase() || "U";
+          return (
+            <HStack gap={3} align="center">
+              <Box
+                boxSize="36px"
+                borderRadius="full"
+                bg="blue.100"
+                color="blue.700"
+                display="grid"
+                placeItems="center"
+                fontSize="xs"
+                fontWeight="700"
+                flexShrink={0}
+              >
+                {initials}
+              </Box>
+              <Stack gap={0.5}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="600"
+                  color="gray.900"
+                  cursor="pointer"
+                  _hover={{ color: "blue.600", textDecoration: "underline" }}
+                  onClick={() =>
+                    navigate(
+                      `${ROUTES_CONFIG.USER.USER_MANAGEMENT}/${row.original.id}/profile`
+                    )
+                  }
+                >
+                  {row.original.fullName}
+                </Text>
+                <Text fontSize="2xs" color="gray.400">
+                  {row.original.lastLogin
+                    ? `Active on ${new Date(row.original.lastLogin).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })}`
+                    : "Active user"}
+                </Text>
+              </Stack>
+            </HStack>
+          );
+        },
       },
       {
-        accessorKey: "username",
-        header: "Username",
+        id: "usernameEmail",
+        header: "Username / Email",
         cell: ({ row }) => (
-          <Text fontSize="sm" color="gray.700">
-            {row.original.username}
-          </Text>
-        ),
-      },
-      {
-        accessorKey: "email",
-        header: "Email",
-        cell: ({ row }) => (
-          <Text fontSize="sm" color="gray.700">
-            {row.original.email}
-          </Text>
+          <Stack gap={0.5}>
+            <Text fontSize="sm" fontWeight="600" color="gray.800">
+              {row.original.username}
+            </Text>
+            <Text fontSize="xs" color="gray.400">
+              {row.original.email}
+            </Text>
+          </Stack>
         ),
       },
       {
@@ -452,13 +480,14 @@ export const UserManagement = () => {
         header: "User Type",
         cell: ({ row }) => (
           <Badge
-            bg="blue.100"
-            color="blue.700"
-            px="2"
-            py="1"
+            bg="blue.50"
+            color="blue.600"
+            px="2.5"
+            py="0.5"
             borderRadius="md"
-            fontSize="xs"
-            fontWeight="600"
+            fontSize="2xs"
+            fontWeight="700"
+            letterSpacing="0.05em"
           >
             {row.original.userType}
           </Badge>
@@ -469,15 +498,26 @@ export const UserManagement = () => {
         header: "Status",
         cell: ({ row }) => (
           <Badge
-            bg={row.original.isActive ? "green.100" : "red.100"}
-            color={row.original.isActive ? "green.700" : "red.700"}
-            px="2"
-            py="1"
-            borderRadius="md"
-            fontSize="xs"
-            fontWeight="600"
+            bg={row.original.isActive ? "green.50" : "red.50"}
+            color={row.original.isActive ? "green.600" : "red.600"}
+            px="2.5"
+            py="0.5"
+            borderRadius="full"
+            fontSize="2xs"
+            fontWeight="700"
+            letterSpacing="0.05em"
+            display="inline-flex"
+            alignItems="center"
           >
-            {row.original.isActive ? "Active" : "Inactive"}
+            <Box
+              as="span"
+              display="inline-block"
+              boxSize="5px"
+              borderRadius="full"
+              bg={row.original.isActive ? "green.500" : "red.500"}
+              mr="1.5"
+            />
+            {row.original.isActive ? "ACTIVE" : "INACTIVE"}
           </Badge>
         ),
       },
@@ -487,9 +527,24 @@ export const UserManagement = () => {
         cell: ({ row }) => (
           <HStack gap={2}>
             <Tooltip content="View Profile">
-              <Button
+              <IconButton
                 size="sm"
                 variant="ghost"
+                w="32px"
+                h="32px"
+                minW="32px"
+                p="0"
+                borderRadius="8px"
+                border="1px solid"
+                borderColor="gray.200"
+                color="gray.400"
+                bg="white"
+                transition="all 0.15s ease"
+                _hover={{
+                  bg: "gray.50",
+                  borderColor: "gray.300",
+                  color: "blue.600",
+                }}
                 onClick={() =>
                   navigate(
                     `${ROUTES_CONFIG.USER.USER_MANAGEMENT}/${row.original.id}/profile`
@@ -497,14 +552,33 @@ export const UserManagement = () => {
                 }
                 aria-label="View Profile"
               >
-                <Eye size={18} />
-              </Button>
+                <Eye size={15} />
+              </IconButton>
             </Tooltip>
             <MenuRoot positioning={{ placement: "right-start" }}>
               <MenuTrigger asChild>
-                <Button size="sm" variant="ghost" aria-label="Settings">
-                  <Settings size={18} />
-                </Button>
+                <IconButton
+                  size="sm"
+                  variant="ghost"
+                  w="32px"
+                  h="32px"
+                  minW="32px"
+                  p="0"
+                  borderRadius="8px"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  color="gray.400"
+                  bg="white"
+                  transition="all 0.15s ease"
+                  _hover={{
+                    bg: "gray.50",
+                    borderColor: "gray.300",
+                    color: "gray.700",
+                  }}
+                  aria-label="Settings"
+                >
+                  <Settings size={15} />
+                </IconButton>
               </MenuTrigger>
               <Portal>
                 <MenuPositioner>
@@ -645,91 +719,13 @@ export const UserManagement = () => {
         )}
       </HStack>
 
-      {/* Filters */}
-      <Box
-        bg="white"
-        p={5}
-        borderRadius="lg"
-        border="1px solid"
-        borderColor="gray.200"
-        zIndex={99}
-      >
-        <FormProvider methods={filterFormMethods}>
-          <Stack
-            direction={{ base: "column", md: "row" }}
-            gap={4}
-            alignItems={{ md: "flex-end" }}
-          >
-            <Box flex={1}>
-              <SearchInput
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search by name, email, or username..."
-              />
-            </Box>
-            <Box minW="160px">
-              <ReactSelect
-                name="userType"
-                label=""
-                placeholder="All Types"
-                options={userTypeOptions}
-                extraOnChange={(value) => setUserTypeFilter(value as string)}
-              />
-            </Box>
-            <Box minW="160px">
-              <ReactSelect
-                name="roleId"
-                label=""
-                placeholder="All Roles"
-                options={[{ label: "All Roles", value: "" }, ...roleOptions]}
-                extraOnChange={(value) => setRoleIdFilter(value as string)}
-              />
-            </Box>
-            <Box minW="140px">
-              <ReactSelect
-                name="active"
-                label=""
-                placeholder="All Status"
-                options={statusOptions}
-                extraOnChange={(value) => setStatusFilter(value as string)}
-              />
-            </Box>
-            {(searchQuery ||
-              userTypeFilter ||
-              roleIdFilter ||
-              statusFilter) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchQuery("");
-                  setDebouncedSearch("");
-                  setUserTypeFilter("");
-                  setRoleIdFilter("");
-                  setStatusFilter("");
-                  setSelectedIds([]);
-                  setCurrentPage(0);
-                  filterFormMethods.reset({
-                    userType: "",
-                    roleId: "",
-                    active: "",
-                  });
-                }}
-              >
-                Reset
-              </Button>
-            )}
-          </Stack>
-        </FormProvider>
-      </Box>
-
       {/* Error State */}
       {isError ? (
         <Box
           textAlign="center"
           py={12}
           bg="white"
-          borderRadius="lg"
+          borderRadius="20px"
           border="1px solid"
           borderColor="gray.200"
         >
@@ -741,28 +737,106 @@ export const UserManagement = () => {
           </Button>
         </Box>
       ) : (
-        <Box mt={6} w="100%" maxW="100%" minW={0}>
+        <Box w="100%" maxW="100%" minW={0}>
           <Datatable
             isLoading={isLoading}
             columns={columns}
             data={filteredUsers ?? []}
             revisionKey={selectedIds.join(",")}
+            search={{
+              value: searchQuery,
+              onChange: setSearchQuery,
+              placeholder: "Search by name, email, or username...",
+            }}
+            filters={
+              <FormProvider methods={filterFormMethods}>
+                <HStack gap={3} flexWrap="wrap" align="center">
+                  <Box minW="140px">
+                    <ReactSelect
+                      name="userType"
+                      label=""
+                      placeholder="All Types"
+                      options={userTypeOptions}
+                      extraOnChange={(value) =>
+                        setUserTypeFilter(value as string)
+                      }
+                    />
+                  </Box>
+                  <Box minW="140px">
+                    <ReactSelect
+                      name="roleId"
+                      label=""
+                      placeholder="All Roles"
+                      options={[
+                        { label: "All Roles", value: "" },
+                        ...roleOptions,
+                      ]}
+                      extraOnChange={(value) =>
+                        setRoleIdFilter(value as string)
+                      }
+                    />
+                  </Box>
+                  <Box minW="130px">
+                    <ReactSelect
+                      name="active"
+                      label=""
+                      placeholder="All Status"
+                      options={statusOptions}
+                      extraOnChange={(value) =>
+                        setStatusFilter(value as string)
+                      }
+                    />
+                  </Box>
+                  {(searchQuery ||
+                    userTypeFilter ||
+                    roleIdFilter ||
+                    statusFilter) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        h="40px"
+                        color="gray.500"
+                        _hover={{ bg: "gray.100", color: "gray.800" }}
+                        onClick={() => {
+                          setSearchQuery("");
+                          setDebouncedSearch("");
+                          setUserTypeFilter("");
+                          setRoleIdFilter("");
+                          setStatusFilter("");
+                          setSelectedIds([]);
+                          setCurrentPage(0);
+                          filterFormMethods.reset({
+                            userType: "",
+                            roleId: "",
+                            active: "",
+                          });
+                        }}
+                      >
+                        Reset
+                      </Button>
+                    )}
+                </HStack>
+              </FormProvider>
+            }
             pagination={
               totalPages > 1
                 ? {
-                    pageSize: pageSize,
-                    currentPage: currentPage + 1,
-                    pageCount: totalPages,
-                    setPageSize: (newSize: number) => {
-                      setPageSize(newSize);
-                      setCurrentPage(0);
-                    },
-                    onPaginationChange: (newPage: number) => {
-                      setCurrentPage(newPage - 1);
-                    },
-                    isFirstPage: isFirstPage,
-                    isLastPage: isLastPage,
-                  }
+                  pageSize: pageSize,
+                  currentPage: currentPage + 1,
+                  pageCount: totalPages,
+                  totalElements: totalElements,
+                  itemName: "USERS",
+                  currentCount: filteredUsers.length,
+                  setPageSize: (newSize: number) => {
+                    setPageSize(newSize);
+                    setCurrentPage(0);
+                  },
+                  onPaginationChange: (newPage: number) => {
+                    setCurrentPage(newPage - 1);
+                  },
+                  isFirstPage: isFirstPage,
+                  isLastPage: isLastPage,
+                }
                 : undefined
             }
           />

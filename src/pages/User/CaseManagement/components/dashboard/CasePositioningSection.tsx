@@ -1,4 +1,4 @@
-import { Stack } from "@chakra-ui/react";
+import { Box, Stack } from "@chakra-ui/react";
 import React, { useMemo, useState } from "react";
 
 import { CasePositioning, TodayEvent } from "../../types/dashboard.types";
@@ -60,7 +60,16 @@ export const CasePositioningSection = ({
   }, [matters, statusFilter, typeFilter, searchQuery]);
 
   return (
-    <Stack gap={4} w="100%" minW={0}>
+    <Box
+      bg="white"
+      border="1px solid"
+      borderColor="gray.200"
+      borderRadius="20px"
+      boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04)"
+      overflow="hidden"
+      w="100%"
+      minW={0}
+    >
       <CasePositioningToolbar
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
@@ -72,13 +81,15 @@ export const CasePositioningSection = ({
         hasActiveFilters={hasActiveFilters}
         totalCount={matters.length}
         filteredCount={filteredMatters.length}
+        isInsideCard={true}
       />
 
       <CasePositioningTable
         matters={filteredMatters}
         todayEvents={todayEvents}
         isLoading={isLoading}
+        isInsideCard={true}
       />
-    </Stack>
+    </Box>
   );
 };

@@ -19,6 +19,7 @@ interface CasePositioningTableProps {
   matters: CasePositioning[];
   todayEvents?: TodayEvent[];
   isLoading?: boolean;
+  isInsideCard?: boolean;
 }
 
 const PAGE_SIZE = 5;
@@ -134,6 +135,7 @@ const StatusDotBadge = ({ status }: { status: string | null | undefined }) => {
 export const CasePositioningTable = ({
   matters,
   isLoading = false,
+  isInsideCard = false,
 }: CasePositioningTableProps) => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -154,11 +156,11 @@ export const CasePositioningTable = ({
     return (
       <Box
         bg="white"
-        border="1px solid"
+        border={isInsideCard ? "none" : "1px solid"}
         borderColor="gray.200"
-        borderRadius="xl"
+        borderRadius={isInsideCard ? "0" : "20px"}
         p={5}
-        boxShadow="0 1px 3px rgba(0, 0, 0, 0.03)"
+        boxShadow={isInsideCard ? "none" : "0 1px 3px rgba(0, 0, 0, 0.03)"}
       >
         <Stack gap={3}>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -172,10 +174,10 @@ export const CasePositioningTable = ({
   return (
     <Box
       bg="white"
-      border="1px solid"
+      border={isInsideCard ? "none" : "1px solid"}
       borderColor="gray.200"
-      borderRadius="xl"
-      boxShadow="0 1px 3px rgba(0, 0, 0, 0.03)"
+      borderRadius={isInsideCard ? "0" : "20px"}
+      boxShadow={isInsideCard ? "none" : "0 1px 3px rgba(0, 0, 0, 0.03)"}
       overflow="hidden"
       w="100%"
       maxW="100%"

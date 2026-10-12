@@ -44,6 +44,7 @@ const EmployeeManagementTable = () => {
   const { canCreate, canEdit, canView } = useModulePermissions("EMPLOYEE");
   const [selectedId, setSelectedId] = useState<string | undefined>();
   const [viewEmployeeId, setViewEmployeeId] = useState<string | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
   const [employeeToToggle, setEmployeeToToggle] = useState<{
     id: string;
     active: boolean;
@@ -236,6 +237,22 @@ const EmployeeManagementTable = () => {
     []
   );
 
+  // Filter employees based on search query
+  const filteredEmployees = useMemo(() => {
+    const list = employeesData?.content ?? [];
+    if (!searchQuery.trim()) return list;
+    const q = searchQuery.toLowerCase();
+    return list.filter(
+      (emp) =>
+        emp.fullName?.toLowerCase().includes(q) ||
+        emp.email?.toLowerCase().includes(q) ||
+        emp.mobileNo?.toLowerCase().includes(q) ||
+        emp.roleName?.toLowerCase().includes(q) ||
+        emp.employeeCode?.toLowerCase().includes(q) ||
+        emp.designation?.toLowerCase().includes(q)
+    );
+  }, [employeesData?.content, searchQuery]);
+
   return (
     <Stack
       gap={6}
@@ -254,42 +271,47 @@ const EmployeeManagementTable = () => {
           </Text>
         </Stack>
 
-        <HStack gap={3}>
-          <ColumnToggle
-            columns={columnToggleConfig}
-            visibility={columnVisibility}
-            onVisibilityChange={handleColumnVisibilityChange}
-          />
-          {canCreate && (
-            <Button
-              variant="primary"
-              onClick={() => {
-                setSelectedId("");
-                onAddEditOpen();
-              }}
-            >
-              <AddIcon color="white" />
-              Add Employee
-            </Button>
-          )}
-        </HStack>
+        {canCreate && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              setSelectedId("");
+              onAddEditOpen();
+            }}
+          >
+            <AddIcon color="white" />
+            Add Employee
+          </Button>
+        )}
       </HStack>
 
-      {/* Table scroll container — contains horizontal overflow */}
       <Box
         width="100%"
         minWidth={0}
         maxWidth="100%"
-        overflowX="auto"
         flex="1"
         minHeight={0}
       >
         <Datatable
           isLoading={isLoading}
           columns={columns}
-          data={employeesData?.content ?? []}
+          data={filteredEmployees}
           columnVisibility={columnVisibility}
           onColumnVisibilityChange={handleColumnVisibilityChange}
+          search={{
+            value: searchQuery,
+            onChange: setSearchQuery,
+            placeholder: "Search employees by name, email, role...",
+          }}
+          actions={
+            <ColumnToggle
+              columns={columnToggleConfig}
+              visibility={columnVisibility}
+              onVisibilityChange={handleColumnVisibilityChange}
+            />
+          }
+          autoPagination={true}
+          itemName="EMPLOYEES"
         />
       </Box>
 

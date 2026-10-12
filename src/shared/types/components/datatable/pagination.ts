@@ -9,6 +9,10 @@ export type TablePaginationProps = PageSizeSelectorProps & {
   onPaginationChange: (currentPage: number) => void;
   isFirstPage?: boolean;
   isLastPage?: boolean;
+  totalElements?: number;
+  currentCount?: number;
+  itemName?: string;
+  showShowingText?: boolean;
 };
 
 export type PageSizeSelectorProps = {

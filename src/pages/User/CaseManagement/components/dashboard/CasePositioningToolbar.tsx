@@ -23,6 +23,7 @@ interface CasePositioningToolbarProps {
   hasActiveFilters: boolean;
   totalCount: number;
   filteredCount: number;
+  isInsideCard?: boolean;
 }
 
 export const CasePositioningToolbar = ({
@@ -36,15 +37,18 @@ export const CasePositioningToolbar = ({
   hasActiveFilters,
   totalCount,
   filteredCount,
+  isInsideCard = false,
 }: CasePositioningToolbarProps) => {
   return (
     <Box
       bg="white"
-      border="1px solid"
+      border={isInsideCard ? "none" : "1px solid"}
       borderColor="gray.200"
-      borderRadius="xl"
-      p={{ base: 3, md: 3.5 }}
-      boxShadow="0 1px 3px rgba(0, 0, 0, 0.03)"
+      borderRadius={isInsideCard ? "0" : "xl"}
+      borderBottom={isInsideCard ? "1px solid" : undefined}
+      borderBottomColor={isInsideCard ? "gray.100" : undefined}
+      p={{ base: 4, md: 5 }}
+      boxShadow={isInsideCard ? "none" : "0 1px 3px rgba(0, 0, 0, 0.03)"}
       w="100%"
       minW={0}
     >
