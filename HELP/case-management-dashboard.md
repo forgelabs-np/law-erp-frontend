@@ -1,9 +1,11 @@
 # Case Management Dashboard
 
 ## What this module does
+
 The Case Management Dashboard is the central operational hub for law firms in NepalCRM. It provides an immediate overview of active matters, upcoming court hearings, court positioning, caseload statistics, and stale matters that require attorney attention.
 
 ## What was built
+
 - `CaseDashboardPage.tsx`: Primary page component composing layout, fetching firm dashboard metrics, handling permission checks (`CASE_MANAGEMENT:VIEW`), and managing refresh/error states.
 - `CaseDashboardLayout.tsx`: Responsive two-column dashboard grid providing an ~74% main content area on the left and an ~26% utility sidebar on the right on desktop, with vertical stacking on tablet and mobile.
 - `CasePositioningSection.tsx`: Orchestrates case filtering, search, and table presentation.
@@ -15,7 +17,9 @@ The Case Management Dashboard is the central operational hub for law firms in Ne
 - `ContextualHelpCard.tsx`: Dark-slate legal workflow helper card with a watermark scale icon providing quick navigation to all matters.
 
 ## API Endpoints
+
 Consumed by the dashboard:
+
 - `GET /api/v1/dashboard/firm`
   - Auth required: Yes (`Authorization: Bearer <accessToken>`)
   - Request body: None
@@ -46,6 +50,7 @@ Consumed by the dashboard:
     - `500 Internal Server Error`: Backend error message.
 
 ## Example request/response
+
 ```bash
 curl -X GET "https://api.nepalcrm.com/api/v1/dashboard/firm" \
   -H "Authorization: Bearer <jwt_token>" \
@@ -53,6 +58,7 @@ curl -X GET "https://api.nepalcrm.com/api/v1/dashboard/firm" \
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -100,6 +106,7 @@ Response:
 ```
 
 ## Frontend implementation notes
+
 - **Hooks & State**: Uses `useFirmDashboardQuery` from `../api/dashboard.api` (React Query key `["firm-dashboard"]`). Refetching is triggered by the "Refresh" action button without manual cache mutation.
 - **Strict Typing**: Fully typed with `CaseDashboardData`, `CasePositioning`, `TodayEvent`, `MatterType`, and `CourtCaseStage`. Zero usage of TypeScript `any`.
 - **Date & Value Safety**: Handles null dates, null outcomes, null court rooms, and null judges gracefully with `—` fallbacks.
@@ -108,4 +115,5 @@ Response:
 - **Navigation**: Preserves existing navigation paths: row clicks route to `/cases/:matterNumber`, header actions route to `/cases`, `/stale-matters`, and `/cases/create`.
 
 ## Open items / not yet implemented
+
 - None for this dashboard redesign. Backend provides advocate display name in `TodayEvent`, which is used for matching advocate IDs in `CasePositioning` when present; otherwise neutral "Assigned" / "—" indicator is displayed.

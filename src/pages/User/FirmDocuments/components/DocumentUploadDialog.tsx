@@ -40,6 +40,7 @@ interface DocumentUploadDialogProps {
   matterOptions?: DocumentSelectOption[];
   projectOptions?: DocumentSelectOption[];
   isOptionsLoading?: boolean;
+  initialFile?: File | null;
 }
 
 type DestinationKind = "matter" | "project";
@@ -65,6 +66,7 @@ export const DocumentUploadDialog = ({
   matterOptions = [],
   projectOptions = [],
   isOptionsLoading = false,
+  initialFile = null,
 }: DocumentUploadDialogProps) => {
   const upload = useDocumentUpload();
 
@@ -128,6 +130,22 @@ export const DocumentUploadDialog = ({
     }));
   }, [context, activeMatterNumber, selectedMatterDetail]);
 
+  /** Validates and stages a picked/dropped file, with an image thumbnail. */
+  const handleFileSelected = (selected: File) => {
+    const result = validateDocumentFile(selected);
+
+    setFileError(result.valid ? undefined : result.error);
+    setFile(selected);
+
+    // Replace (or drop) the temporary preview URL — never leak one.
+    releasePreviewUrl();
+
+    if (selected.type.startsWith("image/")) {
+      previewUrlRef.current = URL.createObjectURL(selected);
+      setFilePreviewUrl(previewUrlRef.current);
+    }
+  };
+
   // Reset everything each time the dialog is opened so no stale file,
   // destination or error is ever reused.
   useEffect(() => {
@@ -141,9 +159,13 @@ export const DocumentUploadDialog = ({
     setSelectedProject("");
     setSelectedCourtCase("");
     upload.reset();
+
+    if (initialFile) {
+      handleFileSelected(initialFile);
+    }
     // `upload.reset` is stable; re-running only on open is intentional.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, initialFile]);
 
   // Never leak an object URL if the dialog unmounts mid-flow.
   useEffect(() => {
@@ -161,22 +183,6 @@ export const DocumentUploadDialog = ({
     const timeout = setTimeout(onClose, SUCCESS_CLOSE_DELAY_MS);
     return () => clearTimeout(timeout);
   }, [open, upload.isSuccess, onClose]);
-
-  /** Validates and stages a picked/dropped file, with an image thumbnail. */
-  const handleFileSelected = (selected: File) => {
-    const result = validateDocumentFile(selected);
-
-    setFileError(result.valid ? undefined : result.error);
-    setFile(selected);
-
-    // Replace (or drop) the temporary preview URL — never leak one.
-    releasePreviewUrl();
-
-    if (selected.type.startsWith("image/")) {
-      previewUrlRef.current = URL.createObjectURL(selected);
-      setFilePreviewUrl(previewUrlRef.current);
-    }
-  };
 
   const handleRemoveFile = () => {
     setFile(null);

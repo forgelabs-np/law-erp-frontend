@@ -54,7 +54,8 @@ export const DashboardStatsPanel = ({
   const todayEvents = stats?.todayEventsCount ?? 0;
   const stale = stats?.staleCount ?? 0;
 
-  const activeRatio = total > 0 ? Math.min(100, Math.round((active / total) * 100)) : 0;
+  const activeRatio =
+    total > 0 ? Math.min(100, Math.round((active / total) * 100)) : 0;
 
   if (isLoading) {
     return (
@@ -93,7 +94,12 @@ export const DashboardStatsPanel = ({
     >
       {/* Panel Header */}
       <HStack justify="space-between" align="center" mb={4}>
-        <Text fontSize="sm" fontWeight="700" color="gray.900" letterSpacing="-0.01em">
+        <Text
+          fontSize="sm"
+          fontWeight="700"
+          color="gray.900"
+          letterSpacing="-0.01em"
+        >
           Case Statistics
         </Text>
         <Text fontSize="xs" color="gray.400" fontWeight="500">
@@ -102,7 +108,14 @@ export const DashboardStatsPanel = ({
       </HStack>
 
       {/* Primary Active / Total Ratio & Progress Bar */}
-      <Box mb={4} p={3.5} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.100">
+      <Box
+        mb={4}
+        p={3.5}
+        bg="gray.50"
+        borderRadius="lg"
+        border="1px solid"
+        borderColor="gray.100"
+      >
         <HStack justify="space-between" align="center" mb={2}>
           <Text fontSize="xs" fontWeight="600" color="gray.600">
             Active / Total
@@ -116,7 +129,13 @@ export const DashboardStatsPanel = ({
         </HStack>
 
         {/* Progress track */}
-        <Box w="100%" h="6px" bg="gray.200" borderRadius="full" overflow="hidden">
+        <Box
+          w="100%"
+          h="6px"
+          bg="gray.200"
+          borderRadius="full"
+          overflow="hidden"
+        >
           <Box
             h="100%"
             w={`${activeRatio}%`}

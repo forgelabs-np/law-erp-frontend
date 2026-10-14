@@ -17,7 +17,7 @@ export interface UserResponseType {
   username: string;
   email: string;
   fullName: string;
-  isActive: boolean;
+  active: boolean;
   isBlocked: boolean;
   roleId: string;
   roleName?: string;

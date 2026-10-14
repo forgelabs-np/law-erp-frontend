@@ -8,12 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import axios from "axios";
-import {
-  FileText,
-  Plus,
-  RefreshCw,
-  XOctagon,
-} from "lucide-react";
+import { FileText, Plus, RefreshCw, XOctagon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -145,11 +140,7 @@ const CaseDashboardPage = () => {
       const data = error.response?.data as
         | { message?: string; error?: { errorMessage?: string } }
         | undefined;
-      return (
-        data?.message ??
-        data?.error?.errorMessage ??
-        ""
-      );
+      return data?.message ?? data?.error?.errorMessage ?? "";
     }
     return error instanceof Error ? error.message : "";
   }, [isError, error]);
@@ -170,7 +161,12 @@ const CaseDashboardPage = () => {
         w="100%"
       >
         <Stack gap={1} minW={0}>
-          <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="700" color="gray.900" letterSpacing="-0.02em">
+          <Text
+            fontSize={{ base: "xl", md: "2xl" }}
+            fontWeight="700"
+            color="gray.900"
+            letterSpacing="-0.02em"
+          >
             Case Management
           </Text>
           <Text fontSize="xs" color="gray.500">

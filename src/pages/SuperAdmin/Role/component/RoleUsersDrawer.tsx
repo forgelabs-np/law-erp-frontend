@@ -166,15 +166,15 @@ export const RoleUsersDrawer = ({
                           {user.fullName || "—"}
                         </Text>
                         <Badge
-                          bg={user.isActive ? "green.100" : "gray.100"}
-                          color={user.isActive ? "green.700" : "gray.700"}
+                          bg={user.active ? "green.100" : "gray.100"}
+                          color={user.active ? "green.700" : "gray.700"}
                           px={2}
                           py={0.5}
                           borderRadius="md"
                           fontSize="xs"
                           fontWeight="600"
                         >
-                          {user.isActive ? "Active" : "Inactive"}
+                          {user.active ? "Active" : "Inactive"}
                         </Badge>
                       </HStack>
                       <Text fontSize="sm" color="gray.500">

@@ -32,11 +32,17 @@ export const ContextualHelpCard = () => {
 
       <Stack gap={3} position="relative" zIndex={1}>
         <Stack gap={1}>
-          <Text fontSize="sm" fontWeight="700" color="white" letterSpacing="-0.01em">
+          <Text
+            fontSize="sm"
+            fontWeight="700"
+            color="white"
+            letterSpacing="-0.01em"
+          >
             Need help managing cases?
           </Text>
           <Text fontSize="xs" color="gray.300" lineHeight="1.5">
-            Track hearings, manage court dates, and streamline legal documentation in NepalCRM.
+            Track hearings, manage court dates, and streamline legal
+            documentation in NepalCRM.
           </Text>
         </Stack>
 

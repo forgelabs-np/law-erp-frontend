@@ -23,7 +23,8 @@ export const TableUI = <T,>({
   isLoading,
   columnVisibility,
   onColumnVisibilityChange,
-}: TableProps<T> & { isLoading?: boolean }) => {
+  isInsideCard = false,
+}: TableProps<T> & { isLoading?: boolean; isInsideCard?: boolean }) => {
   const table = useReactTable({
     data,
     columns,
@@ -42,15 +43,15 @@ export const TableUI = <T,>({
 
   return (
     <Box
-      bg="white"
-      borderWidth="1px"
+      bg={isInsideCard ? "transparent" : "white"}
+      borderWidth={isInsideCard ? "0" : "1px"}
       borderColor="gray.200"
-      borderRadius="12px"
-      boxShadow="0 1px 3px rgba(0, 0, 0, 0.05)"
+      borderRadius={isInsideCard ? "0" : "20px"}
+      boxShadow={isInsideCard ? "none" : "0 1px 3px rgba(0, 0, 0, 0.04)"}
       overflow="hidden"
       display="flex"
       flexDirection="column"
-      maxH="calc(100vh - 220px)"
+      maxH={isInsideCard ? undefined : "calc(100vh - 220px)"}
       w="100%"
       maxW="100%"
       minW={0}
@@ -68,7 +69,7 @@ export const TableUI = <T,>({
           css={{
             "& tbody tr": {
               bg: "white",
-              _hover: { bg: "gray.50" },
+              _hover: { bg: "#F8FAFC" },
             },
           }}
           borderCollapse={"separate"}
@@ -80,9 +81,9 @@ export const TableUI = <T,>({
             {headerGroups.map((headerGroup) => (
               <ChakraTable.Row
                 key={headerGroup.id}
-                backgroundColor={"gray.50"}
+                backgroundColor={"white"}
                 borderBottom="1px solid"
-                borderColor="gray.200"
+                borderColor="gray.100"
               >
                 {headerGroup.headers.map((header) => {
                   const meta =
@@ -93,17 +94,18 @@ export const TableUI = <T,>({
                       position="sticky"
                       top={0}
                       zIndex={1}
-                      bg="gray.50"
+                      bg="white"
                       css={{ ...meta }}
-                      py="3"
-                      px="4"
+                      py="3.5"
+                      px="5"
                       whiteSpace="nowrap"
                     >
                       <Text
-                        fontSize={"13px"}
+                        fontSize={"11px"}
                         fontWeight={600}
-                        color={"gray.700"}
-                        textTransform={"capitalize"}
+                        color={"gray.500"}
+                        textTransform={"uppercase"}
+                        letterSpacing={"0.05em"}
                       >
                         {header.isPlaceholder
                           ? null
@@ -127,13 +129,12 @@ export const TableUI = <T,>({
                   textAlign={"center"}
                   borderBottom={0}
                 >
-                  <Stack width={"full"}>
-                    <Skeleton height="20px" />
-                    <Skeleton height="20px" />
-                    <Skeleton height="20px" />
-                    <Skeleton height="20px" />
-                    <Skeleton height="20px" />
-                    <Skeleton height="20px" />
+                  <Stack width={"full"} p={4}>
+                    <Skeleton height="24px" borderRadius="md" />
+                    <Skeleton height="24px" borderRadius="md" />
+                    <Skeleton height="24px" borderRadius="md" />
+                    <Skeleton height="24px" borderRadius="md" />
+                    <Skeleton height="24px" borderRadius="md" />
                   </Stack>
                 </ChakraTable.Cell>
               </ChakraTable.Row>
@@ -143,6 +144,7 @@ export const TableUI = <T,>({
                   colSpan={headerGroups[0].headers.length}
                   textAlign={"center"}
                   borderBottom={0}
+                  py={10}
                 >
                   <NoDataAvailable content={"No Data Available"} />
                 </ChakraTable.Cell>
@@ -165,7 +167,7 @@ export const TableUI = <T,>({
                         css={{ ...meta }}
                         fontSize={"14px"}
                         py="4"
-                        px="4"
+                        px="5"
                         verticalAlign="middle"
                       >
                         {flexRender(

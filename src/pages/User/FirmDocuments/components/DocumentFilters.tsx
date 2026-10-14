@@ -35,8 +35,7 @@ interface DocumentFiltersProps extends DocumentFiltersValue {
  * Matter/Project document tabs. Every filter maps to a server-side query
  * parameter — "All" omits the parameter entirely rather than sending "ALL".
  *
- * The search box matches file names only, which is exactly what the backend
- * `search` parameter does.
+ * Restyled to a clean, elevated white toolbar card matching the CRM design system.
  */
 export const DocumentFilters = ({
   searchInput,
@@ -51,24 +50,24 @@ export const DocumentFilters = ({
 }: DocumentFiltersProps) => {
   return (
     <Box
-      bg="gray.50"
+      bg="white"
       border="1px solid"
       borderColor="gray.200"
-      borderRadius="xl"
-      p={3}
+      borderRadius="20px"
+      boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04)"
+      p={4}
+      w="100%"
     >
-      <HStack gap={3} flexWrap="wrap" alignItems="flex-end">
-        <Stack gap={1} flex="1" minW={{ base: "100%", md: "240px" }}>
-          <Text fontSize="xs" fontWeight={600} color="gray.600">
-            Search Documents
-          </Text>
+      <HStack gap={3} flexWrap="wrap" alignItems="center">
+        {/* Search input on the left */}
+        <Box flex="1" minW={{ base: "100%", md: "240px" }}>
           <InputGroup
             startElement={
               <Grid
                 placeItems="center"
                 boxSize="10"
-                color="system.inputGroup.element"
-                css={{ "& > svg": { boxSize: "5" } }}
+                color="gray.400"
+                css={{ "& > svg": { boxSize: "4" } }}
               >
                 <Search size={16} />
               </Grid>
@@ -80,15 +79,22 @@ export const DocumentFilters = ({
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
                 onSearchInputChange(event.target.value)
               }
+              h="40px"
+              borderRadius="10px"
+              borderColor="gray.200"
+              bg="white"
+              fontSize="sm"
               paddingLeft="10 !important"
+              _focus={{
+                borderColor: "blue.500",
+                boxShadow: "0 0 0 1px rgba(0, 86, 255, 0.2)",
+              }}
             />
           </InputGroup>
-        </Stack>
+        </Box>
 
-        <Stack gap={1} w={{ base: "100%", sm: "170px" }} flexShrink={0}>
-          <Text fontSize="xs" fontWeight={600} color="gray.600">
-            Status
-          </Text>
+        {/* Status dropdown */}
+        <Box w={{ base: "100%", sm: "160px" }} flexShrink={0}>
           <FieldSelect
             value={status}
             onChange={(value) => onStatusChange(value as DocumentStatus | "")}
@@ -98,12 +104,10 @@ export const DocumentFilters = ({
             <option value="ACTIVE">Active</option>
             <option value="ARCHIVED">Archived</option>
           </FieldSelect>
-        </Stack>
+        </Box>
 
-        <Stack gap={1} w={{ base: "100%", sm: "170px" }} flexShrink={0}>
-          <Text fontSize="xs" fontWeight={600} color="gray.600">
-            Visibility
-          </Text>
+        {/* Visibility dropdown */}
+        <Box w={{ base: "100%", sm: "160px" }} flexShrink={0}>
           <FieldSelect
             value={visibility}
             onChange={(value) =>
@@ -115,7 +119,7 @@ export const DocumentFilters = ({
             <option value="PRIVATE">Private</option>
             <option value="SHARED">Shared</option>
           </FieldSelect>
-        </Stack>
+        </Box>
 
         {actions}
 
@@ -123,10 +127,13 @@ export const DocumentFilters = ({
           <Button
             variant="ghost"
             size="sm"
+            h="40px"
+            color="gray.500"
+            _hover={{ bg: "gray.100", color: "gray.800" }}
             onClick={onClearFilters}
             flexShrink={0}
           >
-            <X size={16} /> Clear Filters
+            <X size={15} /> Reset
           </Button>
         )}
       </HStack>

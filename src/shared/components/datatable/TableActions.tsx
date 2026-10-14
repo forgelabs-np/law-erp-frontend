@@ -1,10 +1,8 @@
-import { Flex, IconButton } from "@chakra-ui/react";
+import { HStack, IconButton } from "@chakra-ui/react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
-import { DeleteIcon, EditIcon, EyeOpenIcon } from "@/shared/assets";
 import { TableActionsProps } from "@/shared/types";
-
 import { Tooltip } from "../ui";
-import { Eye } from "lucide-react";
 
 export const TableActions = ({
   onView,
@@ -12,21 +10,31 @@ export const TableActions = ({
   onDelete,
 }: TableActionsProps) => {
   return (
-    <Flex alignItems="center" gap="3">
+    <HStack gap="2" alignItems="center">
       {!!onView && (
         <Tooltip content="View">
           <IconButton
             aria-label="View"
-            background="transparent"
-            _focus={{
-              backgroundColor: "transparent",
+            variant="ghost"
+            size="sm"
+            w="32px"
+            h="32px"
+            minW="32px"
+            p="0"
+            borderRadius="8px"
+            border="1px solid"
+            borderColor="gray.200"
+            color="gray.400"
+            bg="white"
+            transition="all 0.15s ease"
+            _hover={{
+              bg: "gray.50",
+              borderColor: "gray.300",
+              color: "blue.600",
             }}
-            height="6"
-            minWidth="6"
-            color={"gray.800"}
-            border={"none"}
+            onClick={onView}
           >
-            <Eye onClick={onView} />
+            <Eye size={15} />
           </IconButton>
         </Tooltip>
       )}
@@ -35,14 +43,26 @@ export const TableActions = ({
         <Tooltip content="Edit">
           <IconButton
             aria-label="Edit"
-            background="transparent"
-            _focus={{
-              backgroundColor: "transparent",
+            variant="ghost"
+            size="sm"
+            w="32px"
+            h="32px"
+            minW="32px"
+            p="0"
+            borderRadius="8px"
+            border="1px solid"
+            borderColor="gray.200"
+            color="gray.400"
+            bg="white"
+            transition="all 0.15s ease"
+            _hover={{
+              bg: "gray.50",
+              borderColor: "gray.300",
+              color: "blue.600",
             }}
-            height="6"
-            minWidth="6"
+            onClick={onEdit}
           >
-            <EditIcon onClick={onEdit} />
+            <Pencil size={15} />
           </IconButton>
         </Tooltip>
       )}
@@ -51,17 +71,29 @@ export const TableActions = ({
         <Tooltip content="Delete">
           <IconButton
             aria-label="Delete"
-            background="transparent"
-            _focus={{
-              backgroundColor: "transparent",
+            variant="ghost"
+            size="sm"
+            w="32px"
+            h="32px"
+            minW="32px"
+            p="0"
+            borderRadius="8px"
+            border="1px solid"
+            borderColor="gray.200"
+            color="gray.400"
+            bg="white"
+            transition="all 0.15s ease"
+            _hover={{
+              bg: "red.50",
+              borderColor: "red.200",
+              color: "red.600",
             }}
-            height="6"
-            minWidth="6"
+            onClick={onDelete}
           >
-            <DeleteIcon onClick={onDelete} />
+            <Trash2 size={15} />
           </IconButton>
         </Tooltip>
       )}
-    </Flex>
+    </HStack>
   );
 };

@@ -45,7 +45,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
       alignItems="stretch"
       gap="3"
       height="100vh"
-      bg="#F5F6F8"
+      bg="#F1F5F9"
       p="3"
       w="100%"
       maxW="100%"

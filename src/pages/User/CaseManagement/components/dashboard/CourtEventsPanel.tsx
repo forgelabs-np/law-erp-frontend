@@ -143,7 +143,8 @@ export const CourtEventsPanel = ({
         <Stack gap={2.5}>
           {events.map((event) => {
             const timeStr =
-              formatTime(event.scheduledTime) || formatDate(event.scheduledDate);
+              formatTime(event.scheduledTime) ||
+              formatDate(event.scheduledDate);
 
             return (
               <Box
@@ -180,7 +181,12 @@ export const CourtEventsPanel = ({
                   </Badge>
                 </HStack>
 
-                <HStack justify="space-between" align="center" fontSize="11px" color="gray.600">
+                <HStack
+                  justify="space-between"
+                  align="center"
+                  fontSize="11px"
+                  color="gray.600"
+                >
                   <HStack gap={1} color="purple.700" fontWeight="500">
                     <Clock size={11} />
                     <Text>{timeStr}</Text>
