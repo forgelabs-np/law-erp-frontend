@@ -1,5 +1,13 @@
-import { Box, Button, HStack, SimpleGrid, Stack, Text } from "@chakra-ui/react";
-import { Upload } from "lucide-react";
+import {
+  Box,
+  Button,
+  Grid,
+  HStack,
+  SimpleGrid,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { Folder, Upload } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +40,7 @@ import { DocumentFolderCard } from "./DocumentFolderCard";
 import { DocumentFolderCardSkeleton } from "./DocumentFolderCardSkeleton";
 import { DocumentFolderKind } from "./DocumentFolderKindBadge";
 import { DocumentGrid } from "./DocumentGrid";
+import { DocumentUploadPanel } from "./DocumentUploadPanel";
 import {
   DocumentSelectOption,
   DocumentUploadDialog,
@@ -48,7 +57,7 @@ const SEARCH_DEBOUNCE_MS = 300;
 const LIBRARY_WINDOW_SIZE = 60;
 /** Matters/projects fetched at most once, for folder names + upload targets. */
 const FOLDER_OPTION_LIMIT = 100;
-const FOLDER_GRID_COLUMNS = { base: 1, md: 2, xl: 3, "2xl": 4 } as const;
+const FOLDER_GRID_COLUMNS = { base: 1, sm: 2, xl: 3 } as const;
 const FOLDER_SKELETON_COUNT = 6;
 
 interface ResultSection {
@@ -94,6 +103,7 @@ export const DocumentLibraryView = () => {
   const [visibility, setVisibility] = useState<DocumentVisibility | "">("");
   const [windowSize, setWindowSize] = useState(LIBRARY_WINDOW_SIZE);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [preselectedFile, setPreselectedFile] = useState<File | null>(null);
 
   const actions = useDocumentActions();
 
@@ -275,11 +285,26 @@ export const DocumentLibraryView = () => {
   ) => (
     <Stack gap={4} key={kind}>
       <HStack justify="space-between" align="center" gap={3}>
-        <Text fontSize="md" fontWeight={600} color="gray.800">
-          {title}
-        </Text>
+        <HStack gap={2}>
+          <Text fontSize="md" fontWeight={600} color="gray.800">
+            {title}
+          </Text>
+          {sectionGroups.length > 0 && (
+            <Box
+              px={2}
+              py={0.5}
+              borderRadius="full"
+              bg="gray.100"
+              fontSize="xs"
+              fontWeight={600}
+              color="gray.600"
+            >
+              {sectionGroups.length}
+            </Box>
+          )}
+        </HStack>
         {sectionGroups.length > 0 && (
-          <Text fontSize="sm" color="gray.500" whiteSpace="nowrap">
+          <Text fontSize="xs" color="gray.400">
             {sectionGroups.length}{" "}
             {sectionGroups.length === 1 ? "folder" : "folders"}
           </Text>
@@ -291,10 +316,33 @@ export const DocumentLibraryView = () => {
           bg="white"
           border="1px solid"
           borderColor="gray.200"
-          borderRadius="xl"
-          pb={4}
+          borderRadius="18px"
+          p={5}
+          boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04)"
         >
-          <NoDataAvailable content={emptyMessage} />
+          <HStack justify="center" gap={3.5} py={2}>
+            <Box
+              w="10"
+              h="10"
+              borderRadius="12px"
+              bg={kind === "project" ? "purple.50" : "blue.50"}
+              color={kind === "project" ? "purple.500" : "blue.500"}
+              display="grid"
+              placeItems="center"
+              flexShrink={0}
+            >
+              <Folder size={18} />
+            </Box>
+            <Stack gap={0.5} textAlign="left">
+              <Text fontSize="sm" fontWeight={600} color="gray.700">
+                {emptyMessage}
+              </Text>
+              <Text fontSize="xs" color="gray.400">
+                Documents associated with firm {title.toLowerCase()} will appear
+                here
+              </Text>
+            </Stack>
+          </HStack>
         </Box>
       ) : (
         <SimpleGrid columns={FOLDER_GRID_COLUMNS} gap={5}>
@@ -319,187 +367,227 @@ export const DocumentLibraryView = () => {
   const isLibraryEmpty = !isError && !isPending && documents.length === 0;
 
   return (
-    <Stack gap={5} minW={0}>
-      <StorageUsageCard
-        usage={storageUsage}
-        isLoading={isStorageUsagePending}
-      />
+    <Grid
+      templateColumns={{ base: "1fr", lg: "320px 1fr", xl: "360px 1fr" }}
+      gap={6}
+      alignItems="start"
+      w="100%"
+      minW={0}
+    >
+      {/* ── Left Sidebar: Upload Panel + Storage Capacity ── */}
+      <Stack
+        gap={5}
+        w="100%"
+        minW={0}
+        position={{ lg: "sticky" }}
+        top={{ lg: "20px" }}
+      >
+        <DocumentUploadPanel
+          canUpload={canUpload}
+          onOpenUploadDialog={(file) => {
+            setPreselectedFile(file ?? null);
+            setIsUploadOpen(true);
+          }}
+        />
 
-      <DocumentFilters
-        searchInput={searchInput}
-        onSearchInputChange={setSearchInput}
-        status={status}
-        onStatusChange={(value) => {
-          setStatus(value);
-          setWindowSize(LIBRARY_WINDOW_SIZE);
-        }}
-        visibility={visibility}
-        onVisibilityChange={(value) => {
-          setVisibility(value);
-          setWindowSize(LIBRARY_WINDOW_SIZE);
-        }}
-        hasActiveFilters={hasActiveFilters}
-        onClearFilters={handleClearFilters}
-        actions={uploadAction}
-      />
+        <StorageUsageCard
+          usage={storageUsage}
+          isLoading={isStorageUsagePending}
+        />
+      </Stack>
 
-      {isError ? (
-        <Box
-          p={6}
-          bg="red.50"
-          border="1px solid"
-          borderColor="red.200"
-          borderRadius="lg"
-          textAlign="center"
-        >
-          <Text fontSize="sm" color="red.700">
-            {getBackendErrorMessage(error) ?? "Failed to load documents."}
-          </Text>
-          <Button
-            variant="outline"
-            size="sm"
-            mt={4}
-            onClick={() => void refetch()}
+      {/* ── Main Document Area: Search, Filters & Folders ── */}
+      <Stack gap={6} w="100%" minW={0}>
+        <DocumentFilters
+          searchInput={searchInput}
+          onSearchInputChange={setSearchInput}
+          status={status}
+          onStatusChange={(value) => {
+            setStatus(value);
+            setWindowSize(LIBRARY_WINDOW_SIZE);
+          }}
+          visibility={visibility}
+          onVisibilityChange={(value) => {
+            setVisibility(value);
+            setWindowSize(LIBRARY_WINDOW_SIZE);
+          }}
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={handleClearFilters}
+        />
+
+        {isError ? (
+          <Box
+            p={6}
+            bg="red.50"
+            border="1px solid"
+            borderColor="red.200"
+            borderRadius="20px"
+            textAlign="center"
           >
-            Retry
-          </Button>
-        </Box>
-      ) : isLoadingFirstPage ? (
-        <Stack gap={8}>
-          <SimpleGrid columns={FOLDER_GRID_COLUMNS} gap={5}>
-            {Array.from({ length: FOLDER_SKELETON_COUNT }).map((_, index) => (
-              <DocumentFolderCardSkeleton key={index} />
-            ))}
-          </SimpleGrid>
-        </Stack>
-      ) : isLibraryEmpty ? (
-        <Box
-          bg="white"
-          border="1px solid"
-          borderColor="gray.200"
-          borderRadius="xl"
-          py={6}
-          textAlign="center"
-        >
-          <NoDataAvailable
-            content={
-              hasActiveFilters
-                ? "No documents match your current filters"
-                : "No documents yet"
-            }
-          />
-          {hasActiveFilters ? (
+            <Text fontSize="sm" color="red.700">
+              {getBackendErrorMessage(error) ?? "Failed to load documents."}
+            </Text>
             <Button
               variant="outline"
               size="sm"
-              mt={2}
-              onClick={handleClearFilters}
+              mt={4}
+              onClick={() => void refetch()}
             >
-              Clear Filters
+              Retry
             </Button>
-          ) : (
-            <Stack gap={2} align="center" px={6}>
-              <Text fontSize="sm" color="gray.500">
-                Your firm&apos;s uploaded documents will appear here.
-              </Text>
-              {canUpload && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => setIsUploadOpen(true)}
-                >
-                  <Upload size={16} /> Upload Document
-                </Button>
-              )}
-            </Stack>
-          )}
-        </Box>
-      ) : isSearching ? (
-        /* ---------- Search: matching documents, grouped by folder ---------- */
-        <Stack gap={8}>
-          {resultSections.map((section) => (
-            <Stack gap={4} key={section.key}>
-              {section.code ? (
-                <FolderSectionHeader
-                  kind={section.kind}
-                  code={section.code}
-                  name={section.name}
-                  documentCount={section.documents.length}
-                  countIsPartial={hasMore}
-                  onOpen={() => openFolder(section.kind, section.code)}
+          </Box>
+        ) : isLoadingFirstPage ? (
+          <Stack gap={8}>
+            <SimpleGrid columns={FOLDER_GRID_COLUMNS} gap={5}>
+              {Array.from({ length: FOLDER_SKELETON_COUNT }).map((_, index) => (
+                <DocumentFolderCardSkeleton key={index} />
+              ))}
+            </SimpleGrid>
+          </Stack>
+        ) : isLibraryEmpty ? (
+          <Box
+            bg="white"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="20px"
+            p={8}
+            textAlign="center"
+            boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.04)"
+          >
+            <NoDataAvailable
+              content={
+                hasActiveFilters
+                  ? "No documents match your current filters"
+                  : "No documents yet"
+              }
+            />
+            {hasActiveFilters ? (
+              <Button
+                variant="outline"
+                size="sm"
+                mt={3}
+                onClick={handleClearFilters}
+              >
+                Clear Filters
+              </Button>
+            ) : (
+              <Stack gap={2} align="center" px={6} mt={2}>
+                <Text fontSize="sm" color="gray.500">
+                  Your firm&apos;s uploaded documents will appear here.
+                </Text>
+                {canUpload && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    mt={1}
+                    onClick={() => {
+                      setPreselectedFile(null);
+                      setIsUploadOpen(true);
+                    }}
+                  >
+                    <Upload size={16} /> Upload Document
+                  </Button>
+                )}
+              </Stack>
+            )}
+          </Box>
+        ) : isSearching ? (
+          /* ---------- Search: matching documents, grouped by folder ---------- */
+          <Stack gap={8}>
+            {resultSections.map((section) => (
+              <Stack gap={4} key={section.key}>
+                {section.code ? (
+                  <FolderSectionHeader
+                    kind={section.kind}
+                    code={section.code}
+                    name={section.name}
+                    documentCount={section.documents.length}
+                    countIsPartial={hasMore}
+                    onOpen={() => openFolder(section.kind, section.code)}
+                  />
+                ) : (
+                  <Text fontSize="sm" fontWeight={600} color="gray.800">
+                    Unfiled documents
+                  </Text>
+                )}
+
+                <DocumentGrid
+                  documents={section.documents}
+                  {...folderGridProps}
                 />
-              ) : (
-                <Text fontSize="sm" fontWeight={600} color="gray.800">
+              </Stack>
+            ))}
+          </Stack>
+        ) : (
+          /* ---------- Library: Projects and Matters as folders ---------- */
+          <Stack gap={8}>
+            {renderFolderSection(
+              "project",
+              "Projects",
+              groups.projects,
+              "No project documents yet"
+            )}
+            {renderFolderSection(
+              "matter",
+              "Matters",
+              groups.matters,
+              "No matter documents yet"
+            )}
+
+            {groups.unfiled.length > 0 && (
+              <Stack gap={4}>
+                <Text fontSize="md" fontWeight={600} color="gray.800">
                   Unfiled documents
                 </Text>
-              )}
+                <DocumentGrid documents={groups.unfiled} {...folderGridProps} />
+              </Stack>
+            )}
+          </Stack>
+        )}
 
-              <DocumentGrid
-                documents={section.documents}
-                {...folderGridProps}
-              />
-            </Stack>
-          ))}
-        </Stack>
-      ) : (
-        /* ---------- Library: Projects and Matters as folders ---------- */
-        <Stack gap={8}>
-          {renderFolderSection(
-            "project",
-            "Projects",
-            groups.projects,
-            "No project documents yet"
-          )}
-          {renderFolderSection(
-            "matter",
-            "Matters",
-            groups.matters,
-            "No matter documents yet"
-          )}
-
-          {groups.unfiled.length > 0 && (
-            <Stack gap={4}>
-              <Text fontSize="md" fontWeight={600} color="gray.800">
-                Unfiled documents
-              </Text>
-              <DocumentGrid documents={groups.unfiled} {...folderGridProps} />
-            </Stack>
-          )}
-        </Stack>
-      )}
-
-      {/* Honest window footer: counts are lower bounds until everything loaded */}
-      {!isError && totalElements > 0 && (
-        <HStack justify="space-between" align="center" gap={3} flexWrap="wrap">
-          <Text fontSize="xs" color="gray.500">
-            Showing {loadedCount} of {totalElements} document
-            {totalElements === 1 ? "" : "s"} — folders are built from the
-            documents loaded here.
-          </Text>
-          {hasMore && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setWindowSize((previous) => previous + LIBRARY_WINDOW_SIZE)
-              }
-            >
-              Load more documents
-            </Button>
-          )}
-        </HStack>
-      )}
+        {/* Honest window footer: counts are lower bounds until everything loaded */}
+        {!isError && totalElements > 0 && (
+          <HStack
+            justify="space-between"
+            align="center"
+            gap={3}
+            flexWrap="wrap"
+            pt={2}
+          >
+            <Text fontSize="xs" color="gray.500">
+              Showing {loadedCount} of {totalElements} document
+              {totalElements === 1 ? "" : "s"} — folders are built from the
+              documents loaded here.
+            </Text>
+            {hasMore && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setWindowSize((previous) => previous + LIBRARY_WINDOW_SIZE)
+                }
+              >
+                Load more documents
+              </Button>
+            )}
+          </HStack>
+        )}
+      </Stack>
 
       <DocumentUploadDialog
         open={isUploadOpen}
-        onClose={() => setIsUploadOpen(false)}
+        onClose={() => {
+          setIsUploadOpen(false);
+          setPreselectedFile(null);
+        }}
         context={{ kind: "library" }}
         matterOptions={matterOptions}
         projectOptions={projectOptions}
         isOptionsLoading={isLoadingMatters || isLoadingProjects}
+        initialFile={preselectedFile}
       />
 
       <DocumentActionDialogs actions={actions} />
-    </Stack>
+    </Grid>
   );
 };

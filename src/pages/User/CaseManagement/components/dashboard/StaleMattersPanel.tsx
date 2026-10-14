@@ -175,7 +175,12 @@ export const StaleMattersPanel = ({
                 </Badge>
               </HStack>
 
-              <HStack justify="space-between" align="center" fontSize="11px" color="gray.600">
+              <HStack
+                justify="space-between"
+                align="center"
+                fontSize="11px"
+                color="gray.600"
+              >
                 <Text fontFamily="monospace" color="gray.500">
                   {matter.matterNumber}
                 </Text>

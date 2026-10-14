@@ -48,7 +48,8 @@ export const selectStyles: StylesConfig = {
   menu: (styles) => ({
     ...styles,
     borderRadius: "12px",
-    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+    boxShadow:
+      "0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
     border: "1px solid #E2E8F0",
     overflow: "hidden",
     zIndex: 9999,
@@ -62,11 +63,7 @@ export const selectStyles: StylesConfig = {
       fontSize: "13px",
       fontWeight: isSelected ? 600 : 400,
       color: isSelected ? "#0056FF" : "#1E293B",
-      backgroundColor: isSelected
-        ? "#EFF6FF"
-        : isFocused
-          ? "#F8FAFC"
-          : "white",
+      backgroundColor: isSelected ? "#EFF6FF" : isFocused ? "#F8FAFC" : "white",
       cursor: "pointer",
       ":hover": {
         backgroundColor: isSelected ? "#EFF6FF" : brand.hover || "#F1F5F9",
@@ -75,6 +72,17 @@ export const selectStyles: StylesConfig = {
   },
 
   input: (styles) => ({ ...styles, fontSize: "13px", color: "#1E293B" }),
-  placeholder: (styles) => ({ ...styles, fontSize: "13px", color: "#64748B", fontWeight: 500 }),
-  singleValue: (styles) => ({ ...styles, fontSize: "13px", color: "#1E293B", fontWeight: 500, cursor: "pointer" }),
+  placeholder: (styles) => ({
+    ...styles,
+    fontSize: "13px",
+    color: "#64748B",
+    fontWeight: 500,
+  }),
+  singleValue: (styles) => ({
+    ...styles,
+    fontSize: "13px",
+    color: "#1E293B",
+    fontWeight: 500,
+    cursor: "pointer",
+  }),
 };

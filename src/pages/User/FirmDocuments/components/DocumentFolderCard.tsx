@@ -33,11 +33,8 @@ export interface DocumentFolderCardProps {
  * One project or matter rendered as a folder in the document library.
  *
  * Rendered as a real `<button>` so it is keyboard reachable and announced
- * correctly, with the visual language of the existing `MatterCard` (subtle
- * border, rounded corners, small elevation, brand accent on hover).
- *
- * Presentation only: the card never fetches anything and never computes a
- * count of its own.
+ * correctly, with the visual language of the reference design (clean white
+ * cards, subtle borders, soft elevation, smooth hover effects).
  */
 export const DocumentFolderCard = ({
   kind,
@@ -56,9 +53,9 @@ export const DocumentFolderCard = ({
     documentCount === 1 ? "document" : "documents"
   }`;
 
+  const isProject = kind === "project";
+
   return (
-    /* `asChild` keeps the card a real <button>: it stays keyboard reachable
-       and correctly announced, with no nested interactive elements. */
     <Box
       asChild
       w="100%"
@@ -66,22 +63,22 @@ export const DocumentFolderCard = ({
       textAlign="left"
       bg="white"
       border="1px solid"
-      borderColor={isHighlighted ? "primary.200" : "gray.200"}
-      borderRadius="xl"
+      borderColor={isHighlighted ? "blue.300" : "gray.200"}
+      borderRadius="18px"
       boxShadow={
         isHighlighted
-          ? "0 6px 16px rgba(16, 24, 40, 0.08)"
-          : "0 1px 2px rgba(16, 24, 40, 0.04)"
+          ? "0 8px 24px -4px rgba(0, 86, 255, 0.08)"
+          : "0 1px 3px 0 rgba(0, 0, 0, 0.04)"
       }
-      transition="all 0.18s ease"
-      transform={isHighlighted ? "translateY(-1px)" : "translateY(0)"}
+      transition="all 0.2s ease"
+      transform={isHighlighted ? "translateY(-2px)" : "translateY(0)"}
       overflow="hidden"
       display="flex"
       flexDirection="column"
       cursor="pointer"
       _focusVisible={{
         outline: "2px solid",
-        outlineColor: "primary.500",
+        outlineColor: "blue.500",
         outlineOffset: "2px",
       }}
     >
@@ -94,19 +91,21 @@ export const DocumentFolderCard = ({
         onBlur={() => setIsHighlighted(false)}
         aria-label={`Open ${FOLDER_KIND_LABEL[kind]} ${title}, ${countLabel}`}
       >
-        <VStack align="stretch" gap={3.5} p={5}>
+        <VStack align="stretch" gap={3.5} p={4.5}>
           <HStack justify="space-between" align="flex-start" gap={3}>
             <Box
-              w="12"
-              h="12"
-              borderRadius="xl"
-              bg="primary.50"
-              color="primary.600"
+              w="11"
+              h="11"
+              borderRadius="12px"
+              bg={isProject ? "purple.50" : "blue.50"}
+              color={isProject ? "purple.600" : "blue.600"}
               display="grid"
               placeItems="center"
               flexShrink={0}
+              transition="transform 0.2s ease"
+              transform={isHighlighted ? "scale(1.05)" : "scale(1)"}
             >
-              <Folder size={22} />
+              <Folder size={20} />
             </Box>
 
             <DocumentFolderKindBadge kind={kind} />
@@ -114,7 +113,7 @@ export const DocumentFolderCard = ({
 
           <VStack align="stretch" gap={1} minW={0}>
             <Text
-              fontSize="md"
+              fontSize="sm"
               fontWeight={600}
               color="gray.900"
               lineHeight="1.4"
@@ -125,8 +124,8 @@ export const DocumentFolderCard = ({
             </Text>
             {trimmedName && (
               <Text
-                fontSize="sm"
-                color="gray.500"
+                fontSize="xs"
+                color="gray.400"
                 fontFamily="monospace"
                 lineClamp={1}
               >
@@ -136,23 +135,22 @@ export const DocumentFolderCard = ({
           </VStack>
         </VStack>
 
-        <Box borderTop="1px solid" borderColor="gray.100" mt="auto" />
-
         <HStack
           justify="space-between"
           align="center"
           gap={3}
-          px={5}
-          py={3.5}
-          bg="gray.50"
+          px={4.5}
+          py={3}
+          bg="gray.50/80"
           borderTop="1px solid"
           borderColor="gray.100"
+          mt="auto"
         >
-          <VStack align="stretch" gap={0.5} minW={0}>
-            <Text fontSize="sm" fontWeight={600} color="gray.700">
+          <VStack align="stretch" gap={0} minW={0}>
+            <Text fontSize="xs" fontWeight={600} color="gray.700">
               {countLabel}
             </Text>
-            <Text fontSize="xs" color="gray.500" lineClamp={1}>
+            <Text fontSize="11px" color="gray.400" lineClamp={1}>
               Updated {formatDocumentUpdatedLabel(latestCreatedAt)}
             </Text>
           </VStack>
@@ -160,13 +158,13 @@ export const DocumentFolderCard = ({
           <HStack
             gap={1}
             flexShrink={0}
-            color={isHighlighted ? "primary.600" : "gray.400"}
+            color={isHighlighted ? "blue.600" : "gray.400"}
             transition="color 0.18s ease"
           >
             <Text fontSize="xs" fontWeight={600}>
               Open
             </Text>
-            <ArrowRight size={16} />
+            <ArrowRight size={14} />
           </HStack>
         </HStack>
       </button>

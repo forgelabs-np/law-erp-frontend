@@ -42,8 +42,9 @@ export const DatatableWithAutoPagination = <T,>({
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedData = filteredData.slice(startIndex, startIndex + pageSize);
 
-  const effectiveSearch = search ?? (
-    header?.hasSearch
+  const effectiveSearch =
+    search ??
+    (header?.hasSearch
       ? {
           value: header.searchText ?? searchText,
           onChange: (val: string) => {
@@ -53,8 +54,7 @@ export const DatatableWithAutoPagination = <T,>({
           },
           placeholder: "Search...",
         }
-      : undefined
-  );
+      : undefined);
 
   return (
     <Box

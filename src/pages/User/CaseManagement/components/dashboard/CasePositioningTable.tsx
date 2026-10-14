@@ -193,7 +193,11 @@ export const CasePositioningTable = ({
         >
           {/* Table Header: 5 Distinct & Balanced Columns */}
           <ChakraTable.Header>
-            <ChakraTable.Row bg="gray.50" borderBottom="1px solid" borderColor="gray.200">
+            <ChakraTable.Row
+              bg="gray.50"
+              borderBottom="1px solid"
+              borderColor="gray.200"
+            >
               <ChakraTable.ColumnHeader
                 w={{ base: "30%", md: "29%" }}
                 py={3.5}
@@ -307,7 +311,9 @@ export const CasePositioningTable = ({
                   matter.nextEventCourtRoom
                     ? `Rm ${matter.nextEventCourtRoom}`
                     : null,
-                  matter.nextEventJudge ? `Judge ${matter.nextEventJudge}` : null,
+                  matter.nextEventJudge
+                    ? `Judge ${matter.nextEventJudge}`
+                    : null,
                 ]
                   .filter(Boolean)
                   .join(" · ");
@@ -439,9 +445,7 @@ export const CasePositioningTable = ({
                           {daysAgoText && (
                             <Text
                               fontSize="11px"
-                              color={
-                                matter.stale ? "amber.700" : "gray.500"
-                              }
+                              color={matter.stale ? "amber.700" : "gray.500"}
                               fontWeight={matter.stale ? "600" : "400"}
                             >
                               {daysAgoText}
@@ -580,7 +584,9 @@ export const CasePositioningTable = ({
                 w="28px"
                 p={0}
                 disabled={safeCurrentPage >= totalPages}
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 aria-label="Next page"
               >
                 <ChevronRight size={14} />

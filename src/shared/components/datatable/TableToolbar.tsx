@@ -36,15 +36,17 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
   }
 
   // Derive search configuration from either `search` prop or `header` prop
-  const effectiveSearch = search ?? (
-    header?.hasSearch && header?.searchText !== undefined && header?.setSearchText
+  const effectiveSearch =
+    search ??
+    (header?.hasSearch &&
+    header?.searchText !== undefined &&
+    header?.setSearchText
       ? {
           value: header.searchText,
           onChange: header.setSearchText,
           placeholder: "Search...",
         }
-      : undefined
-  );
+      : undefined);
 
   const hasSearch = Boolean(effectiveSearch);
   const hasFilters = Boolean(filters);
@@ -95,7 +97,12 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
               <InputGroup
                 w="100%"
                 startElement={
-                  <Box pl={3} color="gray.400" display="flex" alignItems="center">
+                  <Box
+                    pl={3}
+                    color="gray.400"
+                    display="flex"
+                    alignItems="center"
+                  >
                     <Search size={17} />
                   </Box>
                 }
@@ -104,7 +111,8 @@ export const TableToolbar: React.FC<TableToolbarProps> = ({
                   value={effectiveSearch.value}
                   onChange={(e) => effectiveSearch.onChange(e.target.value)}
                   placeholder={
-                    effectiveSearch.placeholder ?? "Search by name, email, or username..."
+                    effectiveSearch.placeholder ??
+                    "Search by name, email, or username..."
                   }
                   bg="white"
                   borderRadius="10px"

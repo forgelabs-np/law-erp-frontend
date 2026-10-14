@@ -309,9 +309,8 @@ export const UserManagement = () => {
   const userTypeOptions = [
     { label: "All Types", value: "" },
     { label: "SUPER_ADMIN", value: "SUPER_ADMIN" },
-    { label: "ADMIN", value: "ADMIN" },
-    { label: "LAWYER", value: "LAWYER" },
-    { label: "STAFF", value: "STAFF" },
+    { label: "FIRM", value: "FIRM" },
+    { label: "FIRM_USER", value: "FIRM_USER" },
     { label: "CLIENT", value: "CLIENT" },
   ];
 
@@ -350,7 +349,7 @@ export const UserManagement = () => {
 
     if (statusFilter) {
       const isActive = statusFilter === "true";
-      data = data.filter((u) => u.isActive === isActive);
+      data = data.filter((u) => u.active === isActive);
     }
 
     return data;
@@ -395,6 +394,7 @@ export const UserManagement = () => {
         id: "selection",
         header: () => (
           <UICheckbox
+            cursor="pointer"
             checked={isIndeterminate ? "indeterminate" : isAllSelected}
             onCheckedChange={(details) => handleSelectAll(!!details.checked)}
             aria-label="Select all"
@@ -402,6 +402,7 @@ export const UserManagement = () => {
         ),
         cell: ({ row }) => (
           <UICheckbox
+            cursor="pointer"
             checked={selectedIds.includes(row.original.id)}
             onCheckedChange={(details) =>
               handleSelectOne(row.original.id, !!details.checked)
@@ -494,12 +495,12 @@ export const UserManagement = () => {
         ),
       },
       {
-        accessorKey: "isActive",
+        accessorKey: "active",
         header: "Status",
         cell: ({ row }) => (
           <Badge
-            bg={row.original.isActive ? "green.50" : "red.50"}
-            color={row.original.isActive ? "green.600" : "red.600"}
+            bg={row.original.active ? "green.50" : "red.50"}
+            color={row.original.active ? "green.600" : "red.600"}
             px="2.5"
             py="0.5"
             borderRadius="full"
@@ -514,10 +515,10 @@ export const UserManagement = () => {
               display="inline-block"
               boxSize="5px"
               borderRadius="full"
-              bg={row.original.isActive ? "green.500" : "red.500"}
+              bg={row.original.active ? "green.500" : "red.500"}
               mr="1.5"
             />
-            {row.original.isActive ? "ACTIVE" : "INACTIVE"}
+            {row.original.active ? "ACTIVE" : "INACTIVE"}
           </Badge>
         ),
       },
@@ -791,52 +792,52 @@ export const UserManagement = () => {
                     userTypeFilter ||
                     roleIdFilter ||
                     statusFilter) && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        h="40px"
-                        color="gray.500"
-                        _hover={{ bg: "gray.100", color: "gray.800" }}
-                        onClick={() => {
-                          setSearchQuery("");
-                          setDebouncedSearch("");
-                          setUserTypeFilter("");
-                          setRoleIdFilter("");
-                          setStatusFilter("");
-                          setSelectedIds([]);
-                          setCurrentPage(0);
-                          filterFormMethods.reset({
-                            userType: "",
-                            roleId: "",
-                            active: "",
-                          });
-                        }}
-                      >
-                        Reset
-                      </Button>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      h="40px"
+                      color="gray.500"
+                      _hover={{ bg: "gray.100", color: "gray.800" }}
+                      onClick={() => {
+                        setSearchQuery("");
+                        setDebouncedSearch("");
+                        setUserTypeFilter("");
+                        setRoleIdFilter("");
+                        setStatusFilter("");
+                        setSelectedIds([]);
+                        setCurrentPage(0);
+                        filterFormMethods.reset({
+                          userType: "",
+                          roleId: "",
+                          active: "",
+                        });
+                      }}
+                    >
+                      Reset
+                    </Button>
+                  )}
                 </HStack>
               </FormProvider>
             }
             pagination={
               totalPages > 1
                 ? {
-                  pageSize: pageSize,
-                  currentPage: currentPage + 1,
-                  pageCount: totalPages,
-                  totalElements: totalElements,
-                  itemName: "USERS",
-                  currentCount: filteredUsers.length,
-                  setPageSize: (newSize: number) => {
-                    setPageSize(newSize);
-                    setCurrentPage(0);
-                  },
-                  onPaginationChange: (newPage: number) => {
-                    setCurrentPage(newPage - 1);
-                  },
-                  isFirstPage: isFirstPage,
-                  isLastPage: isLastPage,
-                }
+                    pageSize: pageSize,
+                    currentPage: currentPage + 1,
+                    pageCount: totalPages,
+                    totalElements: totalElements,
+                    itemName: "USERS",
+                    currentCount: filteredUsers.length,
+                    setPageSize: (newSize: number) => {
+                      setPageSize(newSize);
+                      setCurrentPage(0);
+                    },
+                    onPaginationChange: (newPage: number) => {
+                      setCurrentPage(newPage - 1);
+                    },
+                    isFirstPage: isFirstPage,
+                    isLastPage: isLastPage,
+                  }
                 : undefined
             }
           />

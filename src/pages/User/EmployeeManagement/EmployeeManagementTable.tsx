@@ -285,13 +285,7 @@ const EmployeeManagementTable = () => {
         )}
       </HStack>
 
-      <Box
-        width="100%"
-        minWidth={0}
-        maxWidth="100%"
-        flex="1"
-        minHeight={0}
-      >
+      <Box width="100%" minWidth={0} maxWidth="100%" flex="1" minHeight={0}>
         <Datatable
           isLoading={isLoading}
           columns={columns}

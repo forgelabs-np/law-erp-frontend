@@ -161,15 +161,15 @@ export const UserProfilePage = () => {
                 {profile.fullName}
               </Text>
               <Badge
-                bg={profile.isActive ? "green.100" : "red.100"}
-                color={profile.isActive ? "green.700" : "red.700"}
+                bg={profile.active ? "green.100" : "red.100"}
+                color={profile.active ? "green.700" : "red.700"}
                 px="2"
                 py="1"
                 borderRadius="md"
                 fontSize="xs"
                 fontWeight="600"
               >
-                {profile.isActive ? "Active" : "Inactive"}
+                {profile.active ? "Active" : "Inactive"}
               </Badge>
               <Badge
                 bg="blue.100"

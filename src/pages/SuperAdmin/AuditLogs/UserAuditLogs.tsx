@@ -144,17 +144,17 @@ const UserAuditLogs = () => {
                   <Text fontWeight="600" fontSize="sm" color="gray.800">
                     {userContext.fullName}
                   </Text>
-                  {userContext.isActive !== undefined && (
+                  {userContext.active !== undefined && (
                     <Badge
-                      bg={userContext.isActive ? "green.100" : "red.100"}
-                      color={userContext.isActive ? "green.700" : "red.700"}
+                      bg={userContext.active ? "green.100" : "red.100"}
+                      color={userContext.active ? "green.700" : "red.700"}
                       px="2"
                       py="0.5"
                       borderRadius="md"
                       fontSize="xs"
                       fontWeight="600"
                     >
-                      {userContext.isActive ? "Active" : "Inactive"}
+                      {userContext.active ? "Active" : "Inactive"}
                     </Badge>
                   )}
                 </HStack>
