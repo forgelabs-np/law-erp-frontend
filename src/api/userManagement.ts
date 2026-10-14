@@ -17,7 +17,7 @@ export interface UserResponseType {
   username: string;
   email: string;
   fullName: string;
-  isActive: boolean;
+  active: boolean;
   isBlocked: boolean;
   roleId: string;
   roleName?: string;
@@ -70,6 +70,8 @@ export const useSuperAdminUsersQuery = (params: UsersPaginationParams) => {
   return useQuery({
     queryKey: [api.USER_MANAGEMENT.USERS.SUPER_ADMIN_GET_USERS, params],
     queryFn: () => getSuperAdminUsers(params),
+    // Keep the previous rows visible while a new search/page key loads.
+    placeholderData: (previous) => previous,
     select: (response) => response?.data?.data,
   });
 };

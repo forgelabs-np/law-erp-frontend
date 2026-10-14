@@ -14,21 +14,8 @@ import { ChevronDown, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
+import { performLogout } from "@/api/auth";
 import { useCurrentUser, useClearUser } from "@/shared/hooks/useAuth";
-import { useAuthStore } from "@/shared/stores/auth.store";
-import TokenService from "@/shared/service/service-token";
-import { queryClient } from "@/shared/provider/Provider";
-
-const handleLogout = () => {
-  // Clear auth store
-  useAuthStore.getState().clearUser();
-  // Clear tokens
-  TokenService.clearToken();
-  // Clear React Query cache
-  queryClient.clear();
-  // Use replace to prevent back navigation
-  window.location.replace("/auth/login");
-};
 
 interface SidebarProfileProps {
   isCollapsed?: boolean;
@@ -41,6 +28,16 @@ export const SidebarProfile = ({
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  // Guards against duplicate logout requests while one is in flight.
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    // Calls POST /auth/logout first, then clears local + persisted auth and
+    // the React Query cache, and replaces the history entry with /auth/login.
+    void performLogout();
+  };
 
   // Reset the image fallback whenever the profile photo changes, and close
   // the dropdown on navigation so it never lingers after a route change.
@@ -196,6 +193,7 @@ export const SidebarProfile = ({
                 cursor="pointer"
                 borderRadius="8px"
                 mx="1"
+                disabled={isLoggingOut}
                 onClick={handleLogout}
               >
                 <HStack gap="2.5" width="full">

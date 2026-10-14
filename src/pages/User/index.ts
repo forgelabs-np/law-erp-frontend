@@ -9,3 +9,4 @@ export * from "./OfficeSetup";
 export * from "./SharedWithMe";
 export * from "./SoloDashboard";
 export * from "./UserManagement";
+export { SettingsPage } from "./Settings/SettingsPage";

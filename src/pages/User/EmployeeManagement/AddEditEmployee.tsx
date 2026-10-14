@@ -43,11 +43,15 @@ export const AddEditEmployee = ({
   onClose,
   id,
   setId,
+  title,
+  subHeading,
 }: {
   open: boolean;
   onClose: () => void;
   id?: string;
   setId: Dispatch<SetStateAction<string | undefined>>;
+  title?: string;
+  subHeading?: string;
 }) => {
   const { data: employeeById, isLoading: isLoadingEmployee } =
     useEmployeeByIdQuery(id ?? "");
@@ -129,8 +133,8 @@ export const AddEditEmployee = ({
         key={id || "add"}
         open={open}
         onClose={closeHandler}
-        title={id ? "Edit Employee" : "Add Employee"}
-        subHeading="Fill in the employee details below"
+        title={title ?? (id ? "Edit Employee" : "Add Employee")}
+        subHeading={subHeading ?? "Fill in the employee details below"}
         hasFooter
         submitButtonText="Submit"
         exitButtonText="Close"

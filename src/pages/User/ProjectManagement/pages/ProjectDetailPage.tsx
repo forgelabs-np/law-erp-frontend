@@ -71,6 +71,7 @@ import {
   CreateCredentialRequest,
 } from "../types/project.types";
 import { Tabs } from "@/shared/components/ui/Tabs";
+import { ProjectDocumentsTab } from "@/pages/User/FirmDocuments";
 import { Tooltip } from "@/shared/components/ui";
 import {
   PopoverRoot,
@@ -1723,6 +1724,7 @@ const ProjectDetailPage = () => {
     { label: "Credentials", value: "credentials" },
     { label: "Renewals", value: "renewals" },
     { label: "Team", value: "team" },
+    { label: "Documents", value: "documents" },
   ];
 
   // Loading state
@@ -1931,6 +1933,10 @@ const ProjectDetailPage = () => {
                 return <RenewalsTab projectCode={project.projectCode} />;
               case "team":
                 return <TeamTab projectCode={project.projectCode} />;
+              case "documents":
+                return (
+                  <ProjectDocumentsTab projectCode={project.projectCode} />
+                );
               default:
                 return null;
             }

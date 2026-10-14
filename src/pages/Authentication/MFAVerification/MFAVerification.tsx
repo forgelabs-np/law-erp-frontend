@@ -2,12 +2,16 @@ import { Box, Button, Image, Stack, Text, VStack } from "@chakra-ui/react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 
 import { LoginType, useValidateMfaMutation } from "@/api/auth";
 import { Logo } from "@/assets/images";
 import { useTemporaryAuthStore } from "@/store/temporaryAuthStore";
 import { CountdownTimer } from "@/shared/components/ui/CountdownTimer";
-import { OtpInput } from "@/shared/components/inputField/OtpInput";
+import {
+  OtpCodeInput,
+  OtpCodeInputStatus,
+} from "@/shared/components/inputField/OtpCodeInput";
 import TokenService from "@/shared/service/service-token";
 import { ROUTES_CONFIG } from "@/shared/config";
 import { FormProvider } from "@/shared/components";
@@ -35,6 +39,15 @@ const MFAVerification = () => {
   const { handleSubmit, control, watch } = methods;
   const totpCode = watch("totpCode");
 
+  // Visual state for the code input only. The request, loading state, API error
+  // message (toast) and success navigation all stay owned by the mutation.
+  const [codeStatus, setCodeStatus] = useState<OtpCodeInputStatus>("idle");
+
+  // Guards against duplicate verification: one request at a time, and the same
+  // completed code is never auto-verified twice without the user editing it.
+  const isVerifyingRef = useRef(false);
+  const autoVerifiedCodeRef = useRef<string | null>(null);
+
   const resolveLoginType = (pathname: string): LoginType => {
     if (pathname.includes("/super-admin")) return "super-admin";
     if (pathname.includes("/client")) return "client";
@@ -43,17 +56,29 @@ const MFAVerification = () => {
 
   const loginType = resolveLoginType(location.pathname);
 
-  const handleVerify = async (data: MfaVerificationSchemaType) => {
+  /**
+   * The single verification path used by both the Verify button and the
+   * auto-submit on a completed code. Endpoint, payload and success handling are
+   * unchanged; only the OTP component's visual status is added.
+   */
+  const verifyCode = async (totpCodeValue: string) => {
+    isVerifyingRef.current = true;
+
     try {
       const response = await validateMfa({
         mfaToken: authState.mfaToken,
-        totpCode: data.totpCode,
+        totpCode: totpCodeValue,
       });
 
       const resData = response?.data?.data;
-      if (!resData) return;
+      if (!resData) {
+        setCodeStatus("idle");
+        return;
+      }
 
       if (resData.status === "SUCCESS") {
+        setCodeStatus("success");
+
         // Clear any stale tokens before setting new ones
         TokenService.clearToken();
 
@@ -64,13 +89,36 @@ const MFAVerification = () => {
         localStorage.setItem("lastLoginRole", loginType);
 
         if (loginType === "super-admin") navigate("/super-admin/dashboard");
-        else if (loginType === "client")
-          navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
         else navigate(ROUTES_CONFIG.USER.GLOBAL_DASHBOARD);
+      } else {
+        setCodeStatus("error");
       }
     } catch {
-      return;
+      // The mutation already surfaced the API message; only mirror the state.
+      setCodeStatus("error");
+    } finally {
+      isVerifyingRef.current = false;
     }
+  };
+
+  const handleVerify = async (data: MfaVerificationSchemaType) => {
+    if (isVerifyingRef.current || authState.isExpired()) return;
+    await verifyCode(data.totpCode);
+  };
+
+  /** Auto-submit once when the code is complete — never twice for one code. */
+  const handleCodeComplete = (code: string) => {
+    if (isVerifyingRef.current || authState.isExpired()) return;
+    if (autoVerifiedCodeRef.current === code) return;
+
+    autoVerifiedCodeRef.current = code;
+    void verifyCode(code);
+  };
+
+  const handleCodeChange = (_nextCode: string) => {
+    // Editing clears the previous verdict and re-arms auto-submit.
+    if (codeStatus !== "idle") setCodeStatus("idle");
+    autoVerifiedCodeRef.current = null;
   };
 
   return (
@@ -109,11 +157,19 @@ const MFAVerification = () => {
               name="totpCode"
               control={control}
               render={({ field }) => (
-                <OtpInput
+                <OtpCodeInput
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(nextCode) => {
+                    handleCodeChange(nextCode);
+                    field.onChange(nextCode);
+                  }}
+                  onComplete={handleCodeComplete}
                   length={6}
-                  isDisabled={authState.isExpired()}
+                  status={codeStatus}
+                  disabled={authState.isExpired()}
+                  autoFocus
+                  ariaLabel="6-digit authentication code"
+                  name="totpCode"
                 />
               )}
             />

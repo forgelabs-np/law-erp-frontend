@@ -1,8 +1,5 @@
 import { ForgotPassword, ResetPassword } from "@/pages/Authentication";
 import Login from "@/pages/Authentication/Login/Login";
-import { FirmHeroPanel } from "@/pages/Authentication/Login/LoginHeroPanel";
-import { SuperAdminHeroPanel } from "@/pages/Authentication/Login/HeroPanels/SuperAdminHeroPanel";
-import { ClientHeroPanel } from "@/pages/Authentication/Login/HeroPanels/ClientHeroPanel";
 import Signup from "@/pages/Authentication/SignUp";
 import ChangePassword from "@/pages/Authentication/ChangePassword/ChangePassword";
 import MFASetup from "@/pages/Authentication/MFASetup/MFASetup";
@@ -23,7 +20,6 @@ import {
   Archive,
   CaseTypeSetup,
   ClientDashboard,
-  Folder,
   Home,
   MyFiles,
   OfficeSetup,
@@ -33,6 +29,7 @@ import {
   UserProfilePage,
   UserPermissionsPage,
   UserActivityPage,
+  SettingsPage,
 } from "@/pages/User";
 import { CalendarTasksPage } from "@/pages/User/TaskAndCalendar/CalendarTasksPage";
 import TaskCalendarPage from "@/pages/User/TaskCalendar/TaskCalendarPage";
@@ -55,6 +52,12 @@ import {
   ClientProjectsPage,
   ClientProjectDetailPage,
 } from "@/pages/User/ProjectManagement";
+
+import { ClientDocumentsPage } from "@/pages/User/ClientDocuments";
+import {
+  FirmDocumentsPage,
+  FolderDetailPage,
+} from "@/pages/User/FirmDocuments";
 
 import { ROUTES_CONFIG } from "../config";
 import PublicRoute from "../routes/PublicRoutes";
@@ -91,8 +94,23 @@ export const USER_ROUTES: Array<{
   },
   {
     path: ROUTES_CONFIG.USER.FOLDER,
-    element: <Folder />,
+    element: <FirmDocumentsPage />,
     moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
+  },
+  {
+    // A project folder of the document library.
+    path: ROUTES_CONFIG.USER.FOLDER_PROJECT_DOCUMENTS,
+    element: <FolderDetailPage kind="project" />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
+  },
+  {
+    // A matter folder of the document library.
+    path: ROUTES_CONFIG.USER.FOLDER_MATTER_DOCUMENTS,
+    element: <FolderDetailPage kind="matter" />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
   },
   {
     path: ROUTES_CONFIG.USER.CLIENT_DASHBOARD,
@@ -297,6 +315,13 @@ export const USER_ROUTES: Array<{
     roles: ["CLIENT"],
   },
   {
+    path: ROUTES_CONFIG.USER.CLIENT_DOCUMENTS,
+    element: <ClientDocumentsPage />,
+    moduleCode: "DOCUMENT_MANAGEMENT",
+    requiredAction: "VIEW",
+    roles: ["CLIENT"],
+  },
+  {
     path: ROUTES_CONFIG.SUPER_ADMIN.INVOICES,
     element: <InvoiceListPage />,
     moduleCode: "BILLING",
@@ -370,48 +395,29 @@ export const USER_ROUTES: Array<{
     element: <FirmConfigurationPage />,
     moduleCode: "FIRM_CONFIG",
   },
+  {
+    path: ROUTES_CONFIG.USER.SETTINGS,
+    element: <SettingsPage />,
+    moduleCode: "SETTINGS",
+  },
 ];
 
 export const AUTHENTICATION_ROUTES = [
   {
     path: ROUTES_CONFIG.AUTHENTICATION.FORGOT_PASSWORD,
-    element: (
-      <PublicRoute
-        Component={ForgotPassword}
-        variant="split"
-        sideContent={<FirmHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={ForgotPassword} variant="split" />,
   },
   {
     path: "/auth/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<FirmHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
   {
     path: "/auth/client/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<ClientHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
   {
     path: "/super-admin/login",
-    element: (
-      <PublicRoute
-        Component={Login}
-        variant="split"
-        sideContent={<SuperAdminHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={Login} variant="split" />,
   },
 
   {
@@ -424,13 +430,7 @@ export const AUTHENTICATION_ROUTES = [
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
-    element: (
-      <PublicRoute
-        Component={ResetPassword}
-        variant="split"
-        sideContent={<FirmHeroPanel />}
-      />
-    ),
+    element: <PublicRoute Component={ResetPassword} variant="split" />,
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD,

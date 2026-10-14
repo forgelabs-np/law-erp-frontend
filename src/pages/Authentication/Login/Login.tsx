@@ -15,13 +15,17 @@ import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { type LoginType, useLoginMutation } from "@/api/auth";
 import { useTemporaryAuthStore } from "@/store/temporaryAuthStore";
 import { Logo } from "@/assets/images";
-import { KeyIcon } from "@/assets/svgs";
 import TokenService from "@/shared/service/service-token";
 import {
+  AuthInputIcon,
   FormProvider,
   PasswordInput,
   TextFieldInput,
 } from "@/shared/components";
+import {
+  AUTH_PILL_BUTTON_PROPS,
+  AUTH_PILL_BUTTON_STYLE,
+} from "@/shared/components/form/input/authPill";
 import { ROUTES_CONFIG } from "@/shared/config";
 import {
   loginSchema,
@@ -29,8 +33,12 @@ import {
   LoginSchemaType,
   SuperAdminLoginSchemaType,
 } from "@/validations";
-import { MdSafetyCheck, MdSecurityUpdate } from "react-icons/md";
-import { LuShieldCheck } from "react-icons/lu";
+import {
+  LuShieldCheck,
+  LuLandmark,
+  LuUser,
+  LuCalendarCheck,
+} from "react-icons/lu";
 
 const defaultValues: LoginSchemaType = {
   lawFirmCode: "",
@@ -163,40 +171,49 @@ const Login = () => {
   };
 
   return (
-    <VStack gap={5} justifyContent="center" py={1} align="stretch">
+    <VStack gap={5} justifyContent="center" align="stretch">
       {/* Logo Area */}
-      <HStack gap={2} align="flex-start">
+      <HStack gap={3} align="center" mb={1}>
         <Box>
-          <Image src={Logo} alt="Logo" height="40px" width="max-content" />
+          <Image
+            src={Logo}
+            alt="Logo"
+            height="42px"
+            width="auto"
+            objectFit="contain"
+          />
         </Box>
         <Stack gap={0.5}>
-          <Text fontSize="sm" fontWeight="600" color="gray.600">
+          <Text
+            fontSize="lg"
+            fontWeight="800"
+            color="gray.900"
+            lineHeight="1.2"
+          >
             Law Firm CRM
           </Text>
-          <Text fontSize="xs" color="gray.400">
+          <Text fontSize="xs" fontWeight="500" color="gray.400">
             Enterprise Practice Management
           </Text>
         </Stack>
       </HStack>
 
       {/* Header */}
-      <Stack gap={4}>
+      <Stack gap={3} mb={1}>
         {/* Access type badge */}
         <Box
           display="inline-flex"
           alignSelf="flex-start"
-          px={3}
-          py={1}
+          px={3.5}
+          py={1.5}
           borderRadius="full"
-          bg="gray.50"
-          border="1px solid"
-          borderColor="gray.200"
+          bg="gray.100"
         >
           <Text
-            fontSize="xs"
-            fontWeight="600"
+            fontSize="11px"
+            fontWeight="700"
             color="gray.600"
-            letterSpacing="0.05em"
+            letterSpacing="0.08em"
             textTransform="uppercase"
           >
             {config.badge}
@@ -205,14 +222,15 @@ const Login = () => {
 
         <Stack gap={2}>
           <Text
-            fontSize="3xl"
-            fontWeight="700"
+            fontSize="4xl"
+            fontWeight="800"
             color="gray.900"
-            lineHeight="1.1"
+            lineHeight="1.15"
+            letterSpacing="-0.02em"
           >
             {config.title}
           </Text>
-          <Text fontSize="md" color="gray.500" lineHeight="1.6">
+          <Text fontSize="md" color="gray.500" lineHeight="1.5">
             {config.subtitle}
           </Text>
         </Stack>
@@ -220,43 +238,40 @@ const Login = () => {
 
       {/* Form */}
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmitHandler)}>
-        <Stack gap={4}>
+        <Stack gap={5}>
           <Stack gap={4}>
             {loginType !== "super-admin" && (
               <TextFieldInput
                 name="lawFirmCode"
                 label="Firm Code"
-                placeholder="Enter your firm code"
+                placeholder="Firm code"
                 required
-                inputHeight="48px"
-                inputBorderRadius="lg"
+                variant="authPill"
+                endElement={<AuthInputIcon icon={<LuLandmark />} />}
+                hideLabel={true}
               />
             )}
             <TextFieldInput
               name="username"
               label="Username"
-              placeholder="Enter your username"
+              placeholder="Username"
               required
-              inputHeight="48px"
-              inputBorderRadius="lg"
+              variant="authPill"
+              endElement={<AuthInputIcon icon={<LuUser />} />}
+              hideLabel={true}
             />
             <PasswordInput
               name="password"
               label="Password"
-              placeholder="Enter your password"
+              placeholder="Password"
               required
-              inputHeight="48px"
-              inputBorderRadius="lg"
+              variant="authPill"
+              hideLabel
             />
             {loginType !== "super-admin" && (
-              <Text
-                fontSize="xs"
-                color="gray.400"
-                justifyContent="end"
-                width="full"
-              >
+              <Text fontSize="xs" color="gray.400" mt={1}>
                 Forgot your password?{" "}
-                <Link color="primary.500" fontWeight="600" asChild>
+                <Link color="primary.500" fontWeight="700" asChild>
                   <RouterLink to={ROUTES_CONFIG.AUTHENTICATION.FORGOT_PASSWORD}>
                     Reset here
                   </RouterLink>
@@ -269,14 +284,9 @@ const Login = () => {
             type="submit"
             variant="solid"
             loading={isPending}
-            width="full"
-            height="48px"
-            borderRadius="lg"
-            fontSize="md"
-            fontWeight="600"
-            bg="primary.500"
-            _hover={{ bg: "primary.600" }}
-            _active={{ bg: "primary.700" }}
+            mt={1}
+            {...AUTH_PILL_BUTTON_PROPS}
+            css={AUTH_PILL_BUTTON_STYLE as never}
           >
             Sign in
           </Button>
@@ -284,46 +294,18 @@ const Login = () => {
       </FormProvider>
 
       {/* Security Footer */}
-      <HStack gap={2} justify="center" pt={2}>
-        <LuShieldCheck />
-        <Text fontSize="xs" color="gray.400">
+      <HStack gap={2} justify="center" pt={3}>
+        <LuShieldCheck color="#0052FF" size={15} />
+        <Text
+          fontSize="11px"
+          fontWeight="700"
+          letterSpacing="0.08em"
+          color="gray.400"
+          textTransform="uppercase"
+        >
           Secured with enterprise-grade encryption
         </Text>
       </HStack>
-
-      {/* Bottom Links */}
-      <Stack gap={2} pt={0}>
-        <HStack gap={5} justify="center" fontSize="xs" color="gray.400">
-          <Text>Need help?</Text>
-          <Text
-            as="span"
-            color="primary.500"
-            cursor="pointer"
-            _hover={{ textDecoration: "underline" }}
-          >
-            Contact Support
-          </Text>
-          <HStack gap={3} justify="center" fontSize="xs" color="gray.400">
-            <Text>•</Text>
-
-            <Text
-              as="span"
-              cursor="pointer"
-              _hover={{ textDecoration: "underline" }}
-            >
-              Privacy Policy
-            </Text>
-            <Text>•</Text>
-            <Text
-              as="span"
-              cursor="pointer"
-              _hover={{ textDecoration: "underline" }}
-            >
-              Terms of Service
-            </Text>
-          </HStack>
-        </HStack>
-      </Stack>
     </VStack>
   );
 };

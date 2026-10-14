@@ -1,7 +1,9 @@
 import { Box, HStack, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
-import { ROWS_OPTIONS } from "@/shared/constants";
+// Deep import (not the constants barrel) to keep the shared table out of the
+// `@/shared/constants` -> pageRoutes -> pages -> shared table import cycle.
+import { ROWS_OPTIONS } from "@/shared/constants/table";
 import { PageSizeSelectorProps } from "@/shared/types";
 
 import { FormProvider, ReactSelect } from "../../form";

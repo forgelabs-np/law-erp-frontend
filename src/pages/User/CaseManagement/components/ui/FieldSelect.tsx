@@ -10,6 +10,13 @@ interface FieldSelectProps {
   size?: "sm" | "md" | "lg";
   /** CSS width of the select itself (defaults to full width). */
   w?: string;
+  /** Accessible name for the native <select> (the visual label is plain text). */
+  ariaLabel?: string;
+  /**
+   * Optional explicit control height (e.g. "36px" to match size="sm"
+   * inputs); the wrapper grows to that height and centers the select.
+   */
+  inputHeight?: string;
 }
 
 /**
@@ -28,8 +35,11 @@ export const FieldSelect = ({
   disabled = false,
   size = "md",
   w = "100%",
+  ariaLabel,
+  inputHeight,
 }: FieldSelectProps) => {
   const isLarge = size === "lg";
+  const isCentered = isLarge || !!inputHeight;
 
   return (
     <Box
@@ -38,9 +48,9 @@ export const FieldSelect = ({
       borderRadius={isLarge ? "lg" : "md"}
       p={isLarge ? undefined : size === "sm" ? 1 : 2}
       px={isLarge ? 3 : undefined}
-      minH={isLarge ? "46px" : undefined}
-      display={isLarge ? "flex" : undefined}
-      alignItems={isLarge ? "center" : undefined}
+      minH={isLarge ? "46px" : inputHeight}
+      display={isCentered ? "flex" : undefined}
+      alignItems={isCentered ? "center" : undefined}
       bg="white"
       transition={isLarge ? "all 0.18s ease" : undefined}
       _hover={isLarge && !disabled ? { borderColor: "gray.300" } : undefined}
@@ -53,6 +63,7 @@ export const FieldSelect = ({
       <select
         value={value}
         disabled={disabled}
+        aria-label={ariaLabel}
         onChange={(e: ChangeEvent<HTMLSelectElement>) =>
           onChange(e.target.value)
         }

@@ -11,6 +11,7 @@ import { ModuleRouteGuard } from "../components/ModuleRouteGuard";
 import { AUTHENTICATION_ROUTES, USER_ROUTES } from "../constants";
 import TokenService from "../service/service-token";
 import { useRole } from "../hooks/useAuth";
+import { resolveRoleCode } from "../utils/role";
 import { checkAuthentication } from "@/api/auth";
 
 /**
@@ -125,12 +126,8 @@ export const AppRoutes = () => {
   // Filter routes based on role if roles are specified
   const filteredUserRoutes = USER_ROUTES.filter((route) => {
     if (!route.roles) return true; // No role restriction, allow access
-    // Handle both string role and object role with code property
-    const roleCode =
-      typeof userRole === "object" && (userRole as any)?.code
-        ? (userRole as any).code
-        : userRole;
-    return route.roles.includes(roleCode);
+    // The role may arrive as a code string or as the full role object.
+    return route.roles.includes(resolveRoleCode(userRole));
   });
 
   // Wrap each route with ModuleRouteGuard based on its moduleCode + requiredAction

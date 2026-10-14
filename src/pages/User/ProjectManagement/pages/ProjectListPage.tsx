@@ -24,7 +24,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useProjectsQuery } from "../api/project.api";
@@ -250,10 +250,16 @@ const ProjectCard = ({
 // Main Component
 // ============================================================
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 const ProjectListPage = () => {
   const navigate = useNavigate();
   const { canCreate, canEdit } = useModulePermissions("PROJECT_MANAGEMENT");
+  // Debounce: `search` is what the input shows, `appliedSearch` is what the
+  // API gets. Without this every keystroke changed the query key and fired a
+  // request (plus the full-page loading state — it looked like a reload).
   const [search, setSearch] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [page, setPage] = useState(0);
   const [size] = useState(20);
@@ -263,13 +269,25 @@ const ProjectListPage = () => {
     string | undefined
   >();
 
+  // Debounce the search box into the query state (same 300 ms pattern as the
+  // documents pages). Page resets together with the settled search so one
+  // request fires per search, batched into a single render.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setAppliedSearch(search.trim());
+      setPage(0);
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
+
   const {
     data: projectsData,
     isLoading,
     isError,
     refetch,
   } = useProjectsQuery({
-    search: search || undefined,
+    search: appliedSearch || undefined,
     status: statusFilter || undefined,
     page,
     size,
@@ -293,13 +311,15 @@ const ProjectListPage = () => {
 
   const handleClearFilters = () => {
     setSearch("");
+    // Clearing applies immediately — no need to wait out the debounce.
+    setAppliedSearch("");
     setStatusFilter("");
     setPage(0);
   };
 
   const handleSearch = (value: string) => {
+    // Page reset happens in the debounce above, together with the search.
     setSearch(value);
-    setPage(0);
   };
 
   const handleStatusChange = (value: string) => {

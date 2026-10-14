@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   HStack,
   MenuContent,
@@ -167,8 +168,15 @@ const FirmManagement = () => {
         accessorKey: "firmStatus",
         header: "Status",
         cell: ({ row }) => {
-          const statusBadge = getFirmStatusBadge(row.original.firmStatus);
-          const isSuspended = row.original.firmStatus === "SUSPENDED";
+          // `status` and `isTrial` are separate backend concepts. Status shows
+          // the firm's actual status only — trial state lives in its own
+          // "Is Trial" column, so a legacy firmStatus of "TRIAL" (which
+          // encodes trial-ness as a status) is displayed as ACTIVE.
+          const statusValue = row.original.status ?? row.original.firmStatus;
+          const statusBadge = getFirmStatusBadge(
+            statusValue === "TRIAL" ? "ACTIVE" : statusValue
+          );
+          const isSuspended = statusValue === "SUSPENDED";
 
           return (
             <HStack gap={2}>
@@ -196,6 +204,27 @@ const FirmManagement = () => {
                 {statusBadge.label}
               </Text>
             </HStack>
+          );
+        },
+      },
+      {
+        accessorKey: "isTrial",
+        header: "Is Trial",
+        cell: ({ row }) => {
+          const isTrial = row.original.isTrial === true;
+
+          return (
+            <Badge
+              px={2}
+              py={0.5}
+              borderRadius="full"
+              fontSize="xs"
+              fontWeight="600"
+              bg={isTrial ? "blue.50" : "gray.100"}
+              color={isTrial ? "blue.700" : "gray.500"}
+            >
+              {isTrial ? "Yes" : "No"}
+            </Badge>
           );
         },
       },

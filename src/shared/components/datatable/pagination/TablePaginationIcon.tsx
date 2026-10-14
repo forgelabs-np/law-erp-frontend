@@ -1,6 +1,6 @@
 import { Grid } from "@chakra-ui/react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { ArrowLeftIcon } from "@/shared/assets";
 import { TablePaginationIconProps } from "@/shared/types";
 
 export const TablePaginationIcon = ({
@@ -10,17 +10,15 @@ export const TablePaginationIcon = ({
   return (
     <Grid
       placeItems="center"
-      borderRadius="full"
-      height={{ base: "7", "2xl": "8" }}
-      width={{ base: "7", "2xl": "8" }}
+      borderRadius="8px"
+      height="32px"
+      width="32px"
       cursor={isDisabled ? "not-allowed" : "pointer"}
-      transform={isRight ? "rotate(180deg)" : ""}
       opacity={isDisabled ? "0.3" : "1"}
-      _hover={{
-        background: "gray.50",
-      }}
+      color="gray.500"
+      transition="all 0.15s ease"
     >
-      <ArrowLeftIcon />
+      {isRight ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
     </Grid>
   );
 };

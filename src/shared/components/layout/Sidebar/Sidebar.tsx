@@ -11,11 +11,17 @@ import { useMemo, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
+import { resolveRoleCode } from "@/shared/utils/role";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarProfile } from "./SidebarProfile";
 import { SidebarSection } from "./SidebarSection";
 import { AccordionRoot } from "../../ui";
-import { useCurrentUser, useFirm, useModules } from "@/shared/hooks/useAuth";
+import {
+  useCurrentUser,
+  useFirm,
+  useModules,
+  useRole,
+} from "@/shared/hooks/useAuth";
 import {
   moduleHasAction,
   isModuleEnabled,
@@ -28,6 +34,7 @@ import {
   SIDEBAR_SECTION_ORDER,
 } from "@/shared/constants/moduleRegistry";
 import { useUnreadCountQuery } from "@/api/notifications";
+import { ROUTES_CONFIG } from "@/shared/config";
 
 const SUPPORT_MODULE_CODES = [
   // "TEMPLATES",
@@ -51,6 +58,11 @@ const CASE_MANAGEMENT_ACTIVE_PREFIXES = [
   "/firm-activity",
   "/stale-matters",
 ];
+
+// Path prefixes that belong to the Documents module. The library folder routes
+// (`/folder/projects/...`, `/folder/matters/...`) sit underneath `/folder`, so
+// the sidebar item stays highlighted while a folder is open.
+const DOCUMENT_MANAGEMENT_ACTIVE_PREFIXES = [ROUTES_CONFIG.USER.FOLDER];
 
 const buildSupportSidebarItems = (unreadCount: number = 0) => {
   return SUPPORT_MODULE_CODES.map((moduleCode) => {
@@ -85,6 +97,13 @@ export const Sidebar = () => {
   const modules = useModules();
   const user = useCurrentUser();
   const firm = useFirm();
+  const role = useRole();
+
+  // `/me` types `role` as a string, but some call sites store the full role
+  // object ({ code, name }), so normalise with the shared resolver.
+  // CLIENT users get the client-portal route for modules that declare one
+  // (e.g. DOCUMENT_MANAGEMENT → /client-documents instead of /folder).
+  const isClientPortal = resolveRoleCode(role).toUpperCase() === "CLIENT";
 
   const { data: unreadCount = 0 } = useUnreadCountQuery({
     enabled: Boolean(user),
@@ -134,14 +153,25 @@ export const Sidebar = () => {
     const mapModuleToSidebarItem = (item: any, isChild = false): any => {
       const Icon = item.icon;
 
+      const resolvedPath =
+        isClientPortal && item.clientPath ? item.clientPath : item.path;
+
       const isCaseManagementActive =
         item.moduleCode === "CASE_MANAGEMENT" &&
         CASE_MANAGEMENT_ACTIVE_PREFIXES.some((prefix) =>
           location.pathname.startsWith(prefix)
         );
 
+      const isDocumentManagementActive =
+        item.moduleCode === "DOCUMENT_MANAGEMENT" &&
+        DOCUMENT_MANAGEMENT_ACTIVE_PREFIXES.some((prefix) =>
+          location.pathname.startsWith(prefix)
+        );
+
       const isActive =
-        location.pathname === item.path || isCaseManagementActive;
+        location.pathname === resolvedPath ||
+        isCaseManagementActive ||
+        isDocumentManagementActive;
 
       const subItems = item.subModules?.map((sub: any) =>
         mapModuleToSidebarItem(sub, true)
@@ -150,7 +180,7 @@ export const Sidebar = () => {
       return {
         moduleCode: item.moduleCode,
         name: item.label,
-        href: item.path || undefined,
+        href: resolvedPath || undefined,
         icon: <Icon size={16} />,
         section: item.section,
         order: item.order,
@@ -167,7 +197,7 @@ export const Sidebar = () => {
     return mapEnabledModulesToSidebarData(modules).map((item) =>
       mapModuleToSidebarItem(item)
     );
-  }, [modules, location.pathname, unreadCount]);
+  }, [modules, location.pathname, unreadCount, isClientPortal]);
 
   const itemsBySection = useMemo(
     () => groupSidebarItemsBySection(moduleItems),

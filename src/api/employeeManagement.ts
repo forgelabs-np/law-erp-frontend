@@ -87,6 +87,9 @@ export const useAddEmployeeMutation = () => {
       queryClient.invalidateQueries({
         queryKey: [api.EMPLOYEE_MANAGEMENT.GET_EMPLOYEES],
       });
+      queryClient.invalidateQueries({
+        queryKey: [api.USER_MANAGEMENT.USERS.GET_USERS],
+      });
     },
     onError: (error: ApiErrorResponse) => {
       const errorMessage =

@@ -1,4 +1,4 @@
-import { HStack } from "@chakra-ui/react";
+import { Flex, HStack, Text } from "@chakra-ui/react";
 import ReactPaginate from "react-paginate";
 
 import { TablePaginationProps } from "@/shared/types";
@@ -16,38 +16,57 @@ export const Pagination = ({
   setPageSize,
   isFirstPage,
   isLastPage,
+  totalElements,
+  currentCount,
+  itemName = "USERS",
 }: TablePaginationProps) => {
   const pageRangeDisplayed = 3;
   const marginPagesDisplayed = 2;
 
-  // need to add 1 because pagination change returns the index
   const handlePaginationChange = (selected: number) => {
     onPaginationChange(selected + 1);
   };
 
-  // Use isFirstPage/isLastPage if provided, otherwise fall back to page calculation
   const disablePrevious =
     isFirstPage !== undefined ? isFirstPage : currentPage === 1;
   const disableNext =
     isLastPage !== undefined ? isLastPage : currentPage === pageCount;
 
   return (
-    <HStack
-      flexDirection={{
-        base: "column",
-        md: "row",
-      }}
-      alignItems={{
-        base: "center",
-      }}
+    <Flex
+      direction={{ base: "column", sm: "row" }}
+      align={{ base: "flex-start", sm: "center" }}
       gap="4"
-      justifyContent="space-between"
+      justify="space-between"
       userSelect="none"
-      padding="4"
-      flexShrink={0}
+      w="100%"
     >
-      <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
+      {/* Left side: Showing count text */}
+      <HStack gap={3} align="center">
+        {totalElements !== undefined ? (
+          <Text
+            fontSize="xs"
+            fontWeight="600"
+            color="gray.400"
+            letterSpacing="0.05em"
+            textTransform="uppercase"
+          >
+            SHOWING{" "}
+            <Text as="span" color="gray.800" fontWeight="700">
+              {currentCount ?? pageSize}
+            </Text>{" "}
+            OF{" "}
+            <Text as="span" color="gray.800" fontWeight="700">
+              {totalElements}
+            </Text>{" "}
+            {itemName.toUpperCase()}
+          </Text>
+        ) : (
+          <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
+        )}
+      </HStack>
 
+      {/* Right side: Page navigation */}
       <ReactPaginate
         forcePage={currentPage - 1}
         pageCount={pageCount}
@@ -61,6 +80,6 @@ export const Pagination = ({
         className="pagination"
         activeClassName="pagination__link--active"
       />
-    </HStack>
+    </Flex>
   );
 };

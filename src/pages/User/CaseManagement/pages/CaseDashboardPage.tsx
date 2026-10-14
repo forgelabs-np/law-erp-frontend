@@ -1,118 +1,38 @@
 import {
   Box,
   Button,
-  Grid,
   HStack,
+  Skeleton,
   Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import {
-  Activity,
-  AlertTriangle,
-  CalendarDays,
-  FileText,
-  Plus,
-  RefreshCw,
-  XOctagon,
-} from "lucide-react";
+import axios from "axios";
+import { FileText, Plus, RefreshCw, XOctagon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useFirmDashboardQuery } from "../api/dashboard.api";
 import { useModulePermissions } from "@/shared/hooks/usePermissions";
-import { TodaysCourtEvents } from "../components/dashboard/TodaysCourtEvents";
-import { CasePositioningSection } from "../components/dashboard/CasePositioning";
-import { StaleMatters } from "../components/dashboard/StaleMatters";
+import { ApiErrorResponse } from "@/shared/types/response";
+
+import { CaseDashboardLayout } from "../components/dashboard/CaseDashboardLayout";
+import { CasePositioningSection } from "../components/dashboard/CasePositioningSection";
+import { ContextualHelpCard } from "../components/dashboard/ContextualHelpCard";
+import { CourtEventsPanel } from "../components/dashboard/CourtEventsPanel";
+import { DashboardStatsPanel } from "../components/dashboard/DashboardStatsPanel";
+import { StaleMattersPanel } from "../components/dashboard/StaleMattersPanel";
 
 // ============================================================
-// Metric Card
+// Error & Forbidden States
 // ============================================================
 
-interface MetricCardProps {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  color: string;
-  onClick?: () => void;
-}
-
-const MetricCard = ({
-  label,
-  value,
-  icon,
-  color,
-  onClick,
-}: MetricCardProps) => (
-  <Box
-    p={5}
-    bg="white"
-    border="1px solid"
-    borderColor="gray.200"
-    borderRadius="lg"
-    cursor={onClick ? "pointer" : "default"}
-    onClick={onClick}
-    _hover={onClick ? { borderColor: "blue.300", boxShadow: "md" } : undefined}
-    transition="all 0.15s ease"
-  >
-    <HStack justify="space-between" align="flex-start">
-      <Stack gap={1}>
-        <Text fontSize="sm" fontWeight="500" color="gray.500">
-          {label}
-        </Text>
-        <Text fontSize="3xl" fontWeight="700" color="gray.900">
-          {value}
-        </Text>
-      </Stack>
-      <Box
-        w="10"
-        h="10"
-        borderRadius="lg"
-        bg={`${color}.100`}
-        color={`${color}.600`}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        {icon}
-      </Box>
-    </HStack>
-  </Box>
-);
-
-// ============================================================
-// Skeleton Loaders
-// ============================================================
-
-const MetricCardSkeleton = () => (
-  <Box
-    p={5}
-    bg="white"
-    border="1px solid"
-    borderColor="gray.200"
-    borderRadius="lg"
-  >
-    <HStack justify="space-between">
-      <Stack gap={2} flex={1}>
-        <Box h="12px" w="80px" bg="gray.100" borderRadius="md" />
-        <Box h="32px" w="50px" bg="gray.100" borderRadius="md" />
-      </Stack>
-      <Box w="10" h="10" borderRadius="lg" bg="gray.100" />
-    </HStack>
-  </Box>
-);
-
-// ============================================================
-// Error State
-// ============================================================
-
-const DashboardError = ({
-  message,
-  onRetry,
-}: {
+interface DashboardErrorProps {
   message: string;
   onRetry: () => void;
-}) => (
+}
+
+const DashboardError = ({ message, onRetry }: DashboardErrorProps) => (
   <Stack gap={4} align="center" py={16} textAlign="center">
     <Box
       w="16"
@@ -164,6 +84,28 @@ const ForbiddenState = () => (
 );
 
 // ============================================================
+// Skeleton Loader for Dashboard
+// ============================================================
+
+const DashboardSkeleton = () => (
+  <CaseDashboardLayout
+    leftContent={
+      <Stack gap={4} w="100%">
+        <Skeleton h="54px" borderRadius="xl" />
+        <Skeleton h="360px" borderRadius="xl" />
+      </Stack>
+    }
+    rightContent={
+      <Stack gap={5} w="100%">
+        <Skeleton h="240px" borderRadius="xl" />
+        <Skeleton h="160px" borderRadius="xl" />
+        <Skeleton h="160px" borderRadius="xl" />
+      </Stack>
+    }
+  />
+);
+
+// ============================================================
 // Main Component
 // ============================================================
 
@@ -186,18 +128,21 @@ const CaseDashboardPage = () => {
 
   const isForbidden = useMemo(() => {
     if (!isError || !error) return false;
-    const axiosError = error as any;
-    return axiosError?.response?.status === 403;
+    if (axios.isAxiosError(error)) {
+      return error.response?.status === 403;
+    }
+    return false;
   }, [isError, error]);
 
   const errorMessage = useMemo(() => {
     if (!isError || !error) return "";
-    const axiosError = error as any;
-    return (
-      axiosError?.response?.data?.message ??
-      axiosError?.response?.data?.error?.errorMessage ??
-      ""
-    );
+    if (axios.isAxiosError(error)) {
+      const data = error.response?.data as
+        | { message?: string; error?: { errorMessage?: string } }
+        | undefined;
+      return data?.message ?? data?.error?.errorMessage ?? "";
+    }
+    return error instanceof Error ? error.message : "";
   }, [isError, error]);
 
   const stats = dashboard?.stats;
@@ -205,157 +150,98 @@ const CaseDashboardPage = () => {
   const casePositioning = dashboard?.casePositioning ?? [];
   const staleCases = dashboard?.staleCases ?? [];
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <Stack gap={6} padding={2}>
-        <HStack justify="space-between" flexWrap="wrap" gap={4}>
-          <Stack gap={2}>
-            <Box h="28px" w="220px" bg="gray.100" borderRadius="md" />
-            <Box h="16px" w="360px" bg="gray.100" borderRadius="md" />
-          </Stack>
-        </HStack>
-        <Grid
-          templateColumns={{
-            base: "1fr",
-            sm: "repeat(2, 1fr)",
-            lg: "repeat(4, 1fr)",
-          }}
-          gap={4}
-        >
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <MetricCardSkeleton key={i} />
-          ))}
-        </Grid>
-        <TodaysCourtEvents events={[]} isLoading />
-      </Stack>
-    );
-  }
-
-  if (isForbidden) {
-    return (
-      <Stack gap={6} padding={2}>
-        <ForbiddenState />
-      </Stack>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Stack gap={6} padding={2}>
-        <DashboardError message={errorMessage} onRetry={handleRefresh} />
-      </Stack>
-    );
-  }
-
   return (
-    <Stack gap={6} padding={2}>
-      {/* ==================== HEADER ==================== */}
+    <Stack gap={6} padding={{ base: 2, md: 3 }} w="100%" maxW="100%" minW={0}>
+      {/* ==================== PAGE HEADER ==================== */}
       <HStack
         justifyContent="space-between"
         alignItems="center"
         flexWrap="wrap"
         gap={4}
+        w="100%"
       >
-        <Stack gap={2}>
-          <Text textStyle="heading_4">Case Management</Text>
-          <Text textStyle="paragraph_regular" color="gray.500">
-            Overview of your firm's matters, hearings and case activity.
+        <Stack gap={1} minW={0}>
+          <Text
+            fontSize={{ base: "xl", md: "2xl" }}
+            fontWeight="700"
+            color="gray.900"
+            letterSpacing="-0.02em"
+          >
+            Case Management
+          </Text>
+          <Text fontSize="xs" color="gray.500">
+            Overview of your firm's matters, hearings, and court positioning.
           </Text>
         </Stack>
-        <HStack gap={2}>
+
+        <HStack gap={2.5} flexWrap="wrap">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleRefresh}
             disabled={isFetching}
+            color="gray.600"
+            _hover={{ bg: "gray.100" }}
           >
-            {isFetching ? <Spinner size="sm" /> : <RefreshCw size={16} />}
+            {isFetching ? <Spinner size="xs" /> : <RefreshCw size={14} />}
             {isFetching ? "Refreshing..." : "Refresh"}
           </Button>
-          <Button variant="outline" onClick={() => navigate("/cases")}>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/cases")}
+            color="gray.700"
+            borderColor="gray.200"
+            _hover={{ bg: "gray.50", borderColor: "gray.300" }}
+          >
+            <FileText size={14} />
             View All Matters
           </Button>
-          <Button variant="ghost" onClick={() => navigate("/stale-matters")}>
-            Stale Matters
-          </Button>
+
           {canCreate && (
-            <Button variant="primary" onClick={() => navigate("/cases/create")}>
-              <Plus size={16} color="white" /> New Matter
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate("/cases/create")}
+            >
+              <Plus size={15} color="white" />
+              New Matter
             </Button>
           )}
         </HStack>
       </HStack>
 
-      {/* ==================== SUMMARY SECTION ==================== */}
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          sm: "repeat(2, 1fr)",
-          lg: "repeat(3, 1fr)",
-          xl: "repeat(6, 1fr)",
-        }}
-        gap={4}
-      >
-        <MetricCard
-          label="Total Matters"
-          value={stats?.totalMatters ?? 0}
-          icon={<FileText size={20} />}
-          color="blue"
-          onClick={() => navigate("/cases")}
+      {/* ==================== CONTENT BODY ==================== */}
+      {isForbidden ? (
+        <ForbiddenState />
+      ) : isError ? (
+        <DashboardError message={errorMessage} onRetry={handleRefresh} />
+      ) : isLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <CaseDashboardLayout
+          leftContent={
+            <CasePositioningSection
+              matters={casePositioning}
+              todayEvents={todayEvents}
+              isLoading={isLoading}
+            />
+          }
+          rightContent={
+            <>
+              <DashboardStatsPanel stats={stats} isLoading={isLoading} />
+              <CourtEventsPanel events={todayEvents} isLoading={isLoading} />
+              <StaleMattersPanel
+                matters={staleCases}
+                staleCount={stats?.staleCount}
+                isLoading={isLoading}
+              />
+              <ContextualHelpCard />
+            </>
+          }
         />
-        <MetricCard
-          label="Active Matters"
-          value={stats?.activeMatters ?? 0}
-          icon={<Activity size={20} />}
-          color="green"
-          onClick={() => navigate("/cases")}
-        />
-        <MetricCard
-          label="Dormant Matters"
-          value={stats?.dormantMatters ?? 0}
-          icon={<FileText size={20} />}
-          color="gray"
-          onClick={() => navigate("/cases")}
-        />
-        <MetricCard
-          label="Closed Matters"
-          value={stats?.closedMatters ?? 0}
-          icon={<FileText size={20} />}
-          color="gray"
-          onClick={() => navigate("/cases")}
-        />
-        <MetricCard
-          label="Today's Events"
-          value={stats?.todayEventsCount ?? 0}
-          icon={<CalendarDays size={20} />}
-          color="purple"
-          onClick={() => navigate("/task-calendar")}
-        />
-        <MetricCard
-          label="Stale Matters"
-          value={stats?.staleCount ?? 0}
-          icon={<AlertTriangle size={20} />}
-          color="amber"
-          onClick={() => navigate("/stale-matters")}
-        />
-      </Grid>
-
-      {/* ==================== TODAY'S COURT EVENTS ==================== */}
-      <TodaysCourtEvents events={todayEvents} />
-
-      {/* ==================== CASE POSITIONING + STALE MATTERS ==================== */}
-      <Grid
-        templateColumns={{
-          base: "1fr",
-          lg: "minmax(0, 1.8fr) minmax(320px, 1fr)",
-        }}
-        gap={6}
-        alignItems="start"
-      >
-        <CasePositioningSection matters={casePositioning} />
-        <StaleMatters matters={staleCases} />
-      </Grid>
+      )}
     </Stack>
   );
 };

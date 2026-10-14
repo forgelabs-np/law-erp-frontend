@@ -2,6 +2,8 @@ import { format, parseISO } from "date-fns";
 
 import { ApiErrorResponse } from "@/shared/types/response";
 
+import { DistrictCourtBg, HighCourtBg, SupremeCourtBg } from "@/assets/images";
+
 import {
   CourtCaseStage,
   CourtCaseStatus,
@@ -111,6 +113,26 @@ export const courtLevelLabel = (level?: CourtLevel | null): string => {
     default:
       return "-";
   }
+};
+
+/** Map court level or court name to background image asset. */
+export const getCourtBackgroundImage = (
+  level?: CourtLevel | string | null,
+  courtName?: string | null
+): string => {
+  const normalizedLevel = (level || "").toUpperCase();
+  const normalizedName = (courtName || "").toUpperCase();
+
+  if (normalizedLevel === "SUPREME" || normalizedName.includes("SUPREME")) {
+    return SupremeCourtBg;
+  }
+  if (normalizedLevel === "HIGH" || normalizedName.includes("HIGH")) {
+    return HighCourtBg;
+  }
+  if (normalizedLevel === "DISTRICT" || normalizedName.includes("DISTRICT")) {
+    return DistrictCourtBg;
+  }
+  return DistrictCourtBg;
 };
 
 export const partyTypeLabel = (type?: PartyType | null): string => {

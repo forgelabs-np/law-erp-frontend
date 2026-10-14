@@ -23,7 +23,16 @@ export const getCaseHearingStatus = async (caseNoInternal: string) => {
 // Admin Manual Scrape
 // ============================================================
 
-export const manualScrape = async (courtId: number, dateBs: string) => {
+/**
+ * Trigger a manual cause-list sync. The optional `signal` lets the caller
+ * abandon the request (e.g. the Court Sync 2-minute wait) — it cancels the
+ * browser request only; the server-side scrape is not cancelled by it.
+ */
+export const manualScrape = async (
+  courtId: number,
+  dateBs: string,
+  signal?: AbortSignal
+) => {
   return LawFirmCRMClient.post<ApiResponse<ScrapeResult>>(
     api.SCRAPER.ADMIN_SCRAPE,
     null,
@@ -32,6 +41,7 @@ export const manualScrape = async (courtId: number, dateBs: string) => {
         courtId,
         date: dateBs,
       },
+      signal,
     }
   );
 };

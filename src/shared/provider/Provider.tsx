@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { PropsWithChildren } from "react";
+import { useEffect, PropsWithChildren } from "react";
 import { BrowserRouter } from "react-router-dom";
 
 import { ChakraProvider, ToasterProvider } from "../components/ui";
+import { useFirmBrandSystem } from "../hooks/useFirmBrandSystem";
+import { initAppFont } from "../theme";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,14 +30,34 @@ export const queryClient = new QueryClient({
   },
 });
 
-export const Provider = ({ children }: PropsWithChildren) => {
-  return (
-    <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>{children}</BrowserRouter>
-      </QueryClientProvider>
+/**
+ * Applies the firm's brand theme (from `/me`) to the whole app.
+ *
+ * It must sit INSIDE QueryClientProvider (it reads `/me` through React Query)
+ * and BrowserRouter (Super Admin is gated by route), but it still wraps every
+ * page — Chakra remains the styling boundary for all children.
+ */
+const BrandTheme = ({ children }: PropsWithChildren) => {
+  const system = useFirmBrandSystem();
 
+  useEffect(() => {
+    initAppFont();
+  }, []);
+
+  return (
+    <ChakraProvider value={system}>
+      {children}
       <ToasterProvider />
     </ChakraProvider>
+  );
+};
+
+export const Provider = ({ children }: PropsWithChildren) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <BrandTheme>{children}</BrandTheme>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };

@@ -1,11 +1,13 @@
 export const api = {
   login: "auth/login",
+  logout: "auth/logout",
   signup: "auth/register/solo",
   refreshToken: "auth/refresh",
   loginClient: "auth/client/login",
   registerClient: "auth/register/client",
   superAdminLogin: "super-admin/login",
   changePassword: "auth/change-password",
+  changePasswordMe: "me/change-password",
   forgotPassword: "auth/forgot-password",
   resetPassword: "auth/reset-password",
   mfaSetupConfirm: "auth/mfa/setup/confirm",
@@ -78,6 +80,7 @@ export const api = {
   },
   FIRM_MANAGEMENT: {
     POST: "super-admin/firms",
+    UPDATE: "super-admin/firms/{firmId}",
     GET_FIRMS: "super-admin/firms/admins",
     GET_FIRMS_MODULES: "firm/modules",
     GET_FIRM_MODULES: "super-admin/firms/{firmId}/modules",
@@ -193,6 +196,33 @@ export const api = {
     PROJECT_BY_CODE: "client/projects/{projectCode}",
     PROJECT_RENEWALS: "client/projects/{projectCode}/renewals",
   },
+  /**
+   * Client-portal document store. Read-only: the backend already scopes the
+   * list to the authenticated client's ACTIVE + SHARED documents, so the
+   * client service never sends status/visibility filters.
+   * NOTE: `DOWNLOAD_URL` takes the numeric document id (not the uuid).
+   */
+  CLIENT_DOCUMENTS: {
+    LIST: "client/documents",
+    DOWNLOAD_URL: "client/documents/{documentId}/download-url",
+  },
+  /**
+   * Firm-side document store (full library + per-matter / per-project
+   * scopes). Upload is a SINGLE multipart/form-data POST to `UPLOAD` — the
+   * bytes go to the API and the document comes back `ACTIVE` immediately.
+   * `ARCHIVE` is a soft delete; the stored file is retained for retention.
+   * NOTE: every `{documentId}` here is the numeric id (not the uuid).
+   */
+  FIRM_DOCUMENTS: {
+    LIBRARY: "firm/documents",
+    UPLOAD: "firm/documents",
+    VISIBILITY: "firm/documents/{documentId}/visibility",
+    DOWNLOAD_URL: "firm/documents/{documentId}/download-url",
+    ARCHIVE: "firm/documents/{documentId}",
+    STORAGE_USAGE: "firm/documents/storage-usage",
+    MATTER_DOCUMENTS: "firm/matters/{matterNumber}/documents",
+    PROJECT_DOCUMENTS: "firm/projects/{projectCode}/documents",
+  },
   NOTIFICATIONS: {
     LIST: "notifications",
     UNREAD_COUNT: "notifications/unread-count",
@@ -223,5 +253,12 @@ export const api = {
     PROVINCES: "master-data/provinces",
     DISTRICTS: "master-data/districts",
     DISTRICTS_BY_PROVINCE: "master-data/provinces/{provinceId}/districts",
+  },
+  FIRM_BRANDING: {
+    GET_THEME: "firm/brand/theme",
+    UPDATE_THEME: "firm/brand/theme",
+    GET_LOGO: "firm/brand/logo",
+    UPDATE_LOGO_ALLOWED: "firm/brand/logo/allowed",
+    UPLOAD_LOGO: "firm/brand/logo",
   },
 };

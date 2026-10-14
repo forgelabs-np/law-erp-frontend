@@ -58,6 +58,7 @@ export const ActivityFeed = ({
             }
           : undefined
       }
+      px={6}
     >
       <Stack gap={0}>
         {displayed.map((activity, index) => {

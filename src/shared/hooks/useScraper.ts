@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 
 import {
   getCaseHearingStatus,
@@ -9,7 +10,7 @@ import {
 } from "../service/scraper.service";
 import { ApiErrorResponse } from "../types/response";
 import { toastFail, toastSuccess } from "../toast";
-import { CourtType } from "../types/scraper.types";
+import { CourtType, ScrapeResult } from "../types/scraper.types";
 
 // ============================================================
 // Query keys
@@ -55,36 +56,100 @@ export const useCourtsByTypeQuery = (courtType: CourtType | null) => {
     enabled: !!courtType,
     select: (response) => response?.data?.data,
   });
-};
-
-// ============================================================
+}; // ============================================================
 // Admin Manual Scrape
 // ============================================================
 
-export const useManualScrape = () => {
+const MANUAL_SCRAPE_ERROR_MESSAGE = "Unable to update court data";
+
+export interface ScrapeOutcome {
+  type: "success" | "error";
+  message: string;
+}
+
+/**
+ * Single source of truth for the manual-scrape notification copy, so the
+ * mutation and any caller that sequences its own notifications (the Court Sync
+ * progress flow) cannot drift apart.
+ */
+export const getManualScrapeOutcome = (
+  data: ScrapeResult | undefined
+): ScrapeOutcome => {
+  if (!data?.success) {
+    return {
+      type: "error",
+      message: data?.error || MANUAL_SCRAPE_ERROR_MESSAGE,
+    };
+  }
+
+  if (data.rows === 0) {
+    return {
+      type: "success",
+      message: "No hearing records were published for this date",
+    };
+  }
+
+  return {
+    type: "success",
+    message: `Court data updated successfully. ${data.rows} hearing records processed.`,
+  };
+};
+
+export const notifyScrapeOutcome = ({ type, message }: ScrapeOutcome) => {
+  if (type === "success") toastSuccess(message);
+  else toastFail(message);
+};
+
+/**
+ * A request abandoned on purpose (2-minute wait elapsed, page left, retry) is
+ * not an API failure and must never surface as one.
+ */
+export const isRequestCanceled = (error: unknown) => {
+  if (axios.isCancel(error)) return true;
+
+  const candidate = error as { name?: string; code?: string } | null;
+  return (
+    candidate?.name === "AbortError" ||
+    candidate?.name === "CanceledError" ||
+    candidate?.code === "ERR_CANCELED"
+  );
+};
+
+export interface ManualScrapeVariables {
+  courtId: number;
+  dateBs: string;
+  /** Cancels the browser request when the caller's wait window elapses. */
+  signal?: AbortSignal;
+}
+
+/**
+ * @param options.notify
+ *   `false` keeps the mutation purely as transport (query invalidation still
+ *   runs) so the caller can show the outcome after its own completion
+ *   animation. Defaults to `true` — the original behaviour.
+ */
+export const useManualScrape = (options?: { notify?: boolean }) => {
   const queryClient = useQueryClient();
+  const notify = options?.notify ?? true;
 
   return useMutation({
-    mutationFn: ({ courtId, dateBs }: { courtId: number; dateBs: string }) =>
-      manualScrape(courtId, dateBs),
+    mutationFn: ({ courtId, dateBs, signal }: ManualScrapeVariables) =>
+      manualScrape(courtId, dateBs, signal),
     onSuccess: (response) => {
       const data = response?.data?.data;
+
       if (data?.success) {
-        if (data.rows === 0) {
-          toastSuccess("No hearing records were published for this date");
-        } else {
-          toastSuccess(
-            `Court data updated successfully. ${data.rows} hearing records processed.`
-          );
-        }
         // Invalidate hearing status queries for cases that might be affected
         queryClient.invalidateQueries({ queryKey: ["case-hearing-status"] });
-      } else {
-        toastFail(data?.error || "Unable to update court data");
       }
+
+      if (!notify) return;
+      notifyScrapeOutcome(getManualScrapeOutcome(data));
     },
     onError: (error: ApiErrorResponse) => {
-      toastFail("Unable to update court data");
+      if (isRequestCanceled(error)) return;
+      if (!notify) return;
+      toastFail(MANUAL_SCRAPE_ERROR_MESSAGE);
     },
   });
 };

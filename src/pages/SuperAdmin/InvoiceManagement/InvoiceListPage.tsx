@@ -12,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Plus,
@@ -47,6 +47,8 @@ import { InvoiceFilters } from "./components/InvoiceFilters";
 
 const DEFAULT_PAGE_SIZE = 10;
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 const defaultFilters: InvoiceListParams = {
   search: undefined,
   status: undefined,
@@ -60,7 +62,31 @@ const InvoiceListPage = () => {
   const [filters, setFilters] = useState<InvoiceListParams>(defaultFilters);
   const [deleteTarget, setDeleteTarget] = useState<Invoice | null>(null);
 
-  const { data: invoiceData, isLoading } = useInvoicesQuery(filters);
+  // Debounced copy of the search box — the query below uses this, so typing
+  // does not fire an invoices request per keystroke. Status/firm filters are
+  // discrete choices and still apply immediately.
+  const [appliedSearch, setAppliedSearch] = useState<string | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setAppliedSearch(filters.search);
+      // The page reset for a search lands HERE (with the settled search) so
+      // typing alone never changes the query key. Same-value update = no-op.
+      setFilters((prev) => (prev.page === 0 ? prev : { ...prev, page: 0 }));
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timeout);
+  }, [filters.search]);
+
+  // Raw `filters.search` is excluded so keystrokes never reach the query.
+  const queryFilters = useMemo<InvoiceListParams>(
+    () => ({ ...filters, search: appliedSearch }),
+    [filters, appliedSearch]
+  );
+
+  const { data: invoiceData, isLoading } = useInvoicesQuery(queryFilters);
   const { mutate: deleteInvoice, isPending: isDeletePending } =
     useDeleteInvoiceMutation();
   const { mutate: sendInvoice, isPending: isSendPending } =
@@ -78,12 +104,16 @@ const InvoiceListPage = () => {
     setFilters((prev) => ({
       ...prev,
       [field]: value || undefined,
-      page: 0,
+      // The search box is debounced: its page reset lands together with the
+      // settled search (see the effect above) instead of firing immediately.
+      page: field === "search" ? prev.page : 0,
     }));
   };
 
   const handleReset = () => {
     setFilters(defaultFilters);
+    // Reset applies immediately — no need to wait out the debounce.
+    setAppliedSearch(undefined);
   };
 
   const handlePageChange = (page: number) => {

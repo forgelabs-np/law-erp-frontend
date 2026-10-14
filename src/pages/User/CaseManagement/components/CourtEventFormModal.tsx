@@ -210,7 +210,7 @@ export const CourtEventFormModal = ({
                 </Box>
               </Flex>
 
-              <Flex gap={4} flexDirection={{ base: "column", md: "row" }}>
+              {/* <Flex gap={4} flexDirection={{ base: "column", md: "row" }}>
                 <Box flex={1}>
                   <Text mb={1} fontSize="sm" fontWeight="500">
                     Time
@@ -231,7 +231,7 @@ export const CourtEventFormModal = ({
                     render={({ field }) => <Input type="time" {...field} />}
                   />
                 </Box>
-              </Flex>
+              </Flex> */}
 
               {/* <Box>
                 <Text mb={1} fontSize="sm" fontWeight="500">

@@ -2,7 +2,8 @@ import { VStack } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { DATA_PER_PAGE } from "@/shared/constants";
+// Deep import to avoid cycling back through the constants barrel.
+import { DATA_PER_PAGE } from "@/shared/constants/table";
 import { DynamicDatatableProps } from "@/shared/types";
 
 import { TableHeader } from "./header";

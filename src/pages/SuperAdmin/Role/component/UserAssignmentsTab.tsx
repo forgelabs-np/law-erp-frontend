@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
@@ -113,12 +113,18 @@ const StatCard = ({
   );
 };
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 // User-centric view: browse users, open a user's assigned role and manage its permissions.
 const UserAssignmentsTab = () => {
   const navigate = useNavigate();
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const [searchQuery, setSearchQuery] = useState("");
+  // Debounced copy of the search box — `q` below uses this so typing does
+  // not fire a users-search request per keystroke (300 ms, same pattern as
+  // the documents pages).
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [userTypeFilter, setUserTypeFilter] = useState("");
   const [firmFilter, setFirmFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
@@ -128,6 +134,14 @@ const UserAssignmentsTab = () => {
     defaultValues: { userType: "", firm: "" },
   });
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setAppliedSearch(searchQuery.trim());
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
   const {
     data: usersData,
     isLoading,
@@ -135,7 +149,7 @@ const UserAssignmentsTab = () => {
   } = useSuperAdminUsersQuery({
     page: currentPage,
     size: pageSize,
-    q: searchQuery || undefined,
+    q: appliedSearch || undefined,
     userType: userTypeFilter || undefined,
     roleId: undefined,
     active: undefined,
@@ -160,13 +174,14 @@ const UserAssignmentsTab = () => {
   ];
 
   const list: UserResponseType[] = usersData?.content ?? [];
-  const totalRecords = usersData?.totalElements ?? 0;
+  const totalElements = usersData?.totalElements ?? 0;
+  const totalRecords = totalElements;
   const pageCount = usersData?.totalPages ?? 1;
   const isFirstPage = usersData?.first ?? true;
   const isLastPage = usersData?.last ?? true;
 
   // Calculate statistics
-  const totalUsers = totalRecords;
+  const totalUsers = totalElements;
   const uniqueRoles = new Set(list.map((user) => user.roleName).filter(Boolean))
     .size;
   const uniqueFirms = new Set(list.map((user) => user.firmName).filter(Boolean))
@@ -304,6 +319,7 @@ const UserAssignmentsTab = () => {
 
   const resetFilters = () => {
     setSearchQuery("");
+    setAppliedSearch("");
     setUserTypeFilter("");
     setFirmFilter("");
     setCurrentPage(0);
@@ -350,73 +366,68 @@ const UserAssignmentsTab = () => {
         />
       </Grid>
 
-      {/* Search & Filter Toolbar */}
-      <Box
-        bg="white"
-        _dark={{ bg: "gray.800" }}
-        borderRadius="16px"
-        borderWidth="1px"
-        borderColor="gray.200"
-        p={4}
-        zIndex={999999}
-      >
-        <FormProvider methods={filterFormMethods}>
-          <Stack
-            direction={{ base: "column", md: "row" }}
-            gap={4}
-            alignItems={{ md: "flex-end" }}
-          >
-            <Box flex={1}>
-              <SearchInput
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search users by username..."
-              />
-            </Box>
-            <Box minW="160px">
-              <ReactSelect
-                name="userType"
-                label=""
-                placeholder="All Types"
-                options={userTypeOptions}
-                extraOnChange={(value) => setUserTypeFilter(value as string)}
-              />
-            </Box>
-            <Box minW="160px">
-              <ReactSelect
-                name="firm"
-                label=""
-                placeholder="All Firms"
-                options={firmOptions}
-                extraOnChange={(value) => setFirmFilter(value as string)}
-              />
-            </Box>
-            <IconButton
-              aria-label="Refresh"
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
+      {/* Search & Filter Toolbar for mobile only */}
+      {isMobile && (
+        <Box
+          bg="white"
+          _dark={{ bg: "gray.800" }}
+          borderRadius="16px"
+          borderWidth="1px"
+          borderColor="gray.200"
+          p={4}
+          zIndex={999999}
+        >
+          <FormProvider methods={filterFormMethods}>
+            <Stack
+              direction={{ base: "column", md: "row" }}
+              gap={4}
+              alignItems={{ md: "flex-end" }}
             >
-              <RefreshCw size={16} />
-            </IconButton>
-            {(searchQuery || userTypeFilter || firmFilter) && (
-              <Button variant="ghost" size="sm" onClick={resetFilters}>
-                Reset
-              </Button>
-            )}
-          </Stack>
-        </FormProvider>
-      </Box>
+              <Box flex={1}>
+                <SearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search users by username..."
+                />
+              </Box>
+              <Box minW="160px">
+                <ReactSelect
+                  name="userType"
+                  label=""
+                  placeholder="All Types"
+                  options={userTypeOptions}
+                  extraOnChange={(value) => setUserTypeFilter(value as string)}
+                />
+              </Box>
+              <Box minW="160px">
+                <ReactSelect
+                  name="firm"
+                  label=""
+                  placeholder="All Firms"
+                  options={firmOptions}
+                  extraOnChange={(value) => setFirmFilter(value as string)}
+                />
+              </Box>
+              <IconButton
+                aria-label="Refresh"
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+              >
+                <RefreshCw size={16} />
+              </IconButton>
+              {(searchQuery || userTypeFilter || firmFilter) && (
+                <Button variant="ghost" size="sm" onClick={resetFilters}>
+                  Reset
+                </Button>
+              )}
+            </Stack>
+          </FormProvider>
+        </Box>
+      )}
 
       {/* Table Container */}
-      <Box
-        bg="white"
-        _dark={{ bg: "gray.800" }}
-        borderRadius="16px"
-        borderWidth="1px"
-        borderColor="gray.200"
-        overflow="hidden"
-      >
+      <Box w="100%" minW={0}>
         {!isLoading && list.length === 0 ? (
           <Box p={12} textAlign="center">
             <VStack gap={4}>
@@ -593,12 +604,69 @@ const UserAssignmentsTab = () => {
             isLoading={isLoading}
             columns={columns}
             data={list}
+            search={{
+              value: searchQuery,
+              onChange: setSearchQuery,
+              placeholder: "Search users by username...",
+            }}
+            filters={
+              <FormProvider methods={filterFormMethods}>
+                <HStack gap={3} flexWrap="wrap" align="center">
+                  <Box minW="150px">
+                    <ReactSelect
+                      name="userType"
+                      label=""
+                      placeholder="All Types"
+                      options={userTypeOptions}
+                      extraOnChange={(value) =>
+                        setUserTypeFilter(value as string)
+                      }
+                    />
+                  </Box>
+                  <Box minW="150px">
+                    <ReactSelect
+                      name="firm"
+                      label=""
+                      placeholder="All Firms"
+                      options={firmOptions}
+                      extraOnChange={(value) => setFirmFilter(value as string)}
+                    />
+                  </Box>
+                  <IconButton
+                    aria-label="Refresh"
+                    variant="outline"
+                    size="sm"
+                    w="38px"
+                    h="38px"
+                    borderRadius="10px"
+                    borderColor="gray.200"
+                    onClick={() => refetch()}
+                  >
+                    <RefreshCw size={16} />
+                  </IconButton>
+                  {(searchQuery || userTypeFilter || firmFilter) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      h="38px"
+                      color="gray.500"
+                      onClick={resetFilters}
+                    >
+                      Reset
+                    </Button>
+                  )}
+                </HStack>
+              </FormProvider>
+            }
             pagination={
               pageCount > 1
                 ? {
                     pageSize: pageSize,
                     currentPage: currentPage + 1,
                     pageCount: pageCount,
+                    totalElements: totalElements,
+                    itemName: "USERS",
+                    currentCount: list.length,
                     setPageSize: (newSize: number) => {
                       setPageSize(newSize);
                       setCurrentPage(0);
