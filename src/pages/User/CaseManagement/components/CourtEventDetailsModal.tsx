@@ -104,6 +104,15 @@ export const CourtEventDetailsModal = ({
               </HStack>
             )}
 
+            {event.fatNumber && (
+              <HStack color="gray.600">
+                <MapPin size={18} />
+                <Text fontSize="sm" fontWeight="500">
+                  Fat: {event.fatNumber}
+                </Text>
+              </HStack>
+            )}
+
             {event.judgeName && (
               <HStack color="gray.600">
                 <User size={18} />

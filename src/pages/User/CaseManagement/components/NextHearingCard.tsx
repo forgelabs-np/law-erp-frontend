@@ -96,11 +96,11 @@ export const NextHearingCard = ({
     }
 
     const details = [
+      event.fatNumber ? `Fat ${event.fatNumber}` : "",
       event.courtRoom ? `Court room ${event.courtRoom}` : "",
       event.scheduledTime
-        ? `${formatTime(event.scheduledTime)}${
-            event.endTime ? ` – ${formatTime(event.endTime)}` : ""
-          }`
+        ? `${formatTime(event.scheduledTime)}${event.endTime ? ` – ${formatTime(event.endTime)}` : ""
+        }`
         : "",
     ].filter(Boolean);
     return details.length > 0 ? details.join(" · ") : undefined;
@@ -115,9 +115,8 @@ export const NextHearingCard = ({
           ? "Tomorrow"
           : `In ${daysUntil} days`;
 
-  const title = `${courtEventTypeLabel(event.eventType)}${
-    sequence && sequence > 1 ? ` · Sequence #${sequence}` : ""
-  }`;
+  const title = `${courtEventTypeLabel(event.eventType)}${sequence && sequence > 1 ? ` · Sequence #${sequence}` : ""
+    }`;
 
   return (
     <Box bg="primary.600" borderRadius="xl" px={6} py={5}>
@@ -180,11 +179,11 @@ export const NextHearingCard = ({
           <Text color="white" fontSize="xl" fontWeight="700" lineHeight="1.3">
             {title}
           </Text>
-          {/* {supportingText && (
+          {event && (
             <Text color="whiteAlpha.800" fontSize="sm">
-              {supportingText}
+              {event.notes}
             </Text>
-          )} */}
+          )}
         </Stack>
 
         {/* Days badge + optional action */}

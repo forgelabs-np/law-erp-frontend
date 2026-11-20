@@ -51,8 +51,7 @@ import { PartyMatch } from "../types/matter.types";
 const STEPS = [
   { id: 1, title: "Basic Information" },
   { id: 2, title: "Original Court Case" },
-  { id: 3, title: "Parties" },
-  { id: 4, title: "Review & Save" },
+  { id: 3, title: "Review & Save" },
 ];
 
 const COURT_LEVELS: CourtLevel[] = [
@@ -183,9 +182,11 @@ const CreateMatterPage = () => {
 
   const stepValidation = useMemo(() => {
     return [
-      title.trim().length > 0 && matterType !== null,
+      title.trim().length > 0 &&
+        matterType !== null &&
+        parties.length > 0 &&
+        parties.every((p) => p.fullName.trim().length > 0),
       courtName.trim().length > 0 && courtCaseNumber.trim().length > 0,
-      parties.length > 0 && parties.every((p) => p.fullName.trim().length > 0),
       true,
     ];
   }, [title, matterType, courtName, courtCaseNumber, parties]);
@@ -293,84 +294,329 @@ const CreateMatterPage = () => {
 
       {/* Step 1 - Basic Information */}
       {currentStep === 0 && (
-        <FormSection
-          title="Matter Details"
-          description="The core information used to identify and organise this matter."
-          icon={FileText}
-        >
-          <VStack gap={6} align="stretch">
-            <Box>
-              <FieldLabel required>Matter Type</FieldLabel>
-              <CaseTypeSelector
-                value={matterType}
-                onChange={(type) => {
-                  setMatterType(type);
-                  setParties((prev) =>
-                    prev.map((p) => ({
-                      ...p,
-                      roleType: defaultRoleForType(type),
-                    }))
-                  );
-                }}
-              />
-            </Box>
-
-            <Box borderTop="1px solid" borderColor="gray.100" pt={6}>
-              <FormInput
-                label="Matter Title"
-                required
-                emphasis
-                value={title}
-                onChange={setTitle}
-                placeholder="e.g. ABC Industries vs XYZ Ltd."
-                helperText="Use a concise, descriptive name that clearly identifies the dispute or case."
-              />
-            </Box>
-
-            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={5}>
+        <VStack gap={6} align="stretch">
+          <FormSection
+            title="Matter Details"
+            description="The core information used to identify and organise this matter."
+            icon={FileText}
+          >
+            <VStack gap={6} align="stretch">
               <Box>
-                <FieldLabel>Assigned Partner</FieldLabel>
-                <FieldSelect
-                  size="lg"
-                  value={assignedPartnerId}
-                  onChange={setAssignedPartnerId}
-                  placeholder="No partner assigned"
-                >
-                  {employees.map((emp) => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.fullName}
-                    </option>
-                  ))}
-                </FieldSelect>
+                <FieldLabel required>Matter Type</FieldLabel>
+                <CaseTypeSelector
+                  value={matterType}
+                  onChange={(type) => {
+                    setMatterType(type);
+                    setParties((prev) =>
+                      prev.map((p) => ({
+                        ...p,
+                        roleType: defaultRoleForType(type),
+                      }))
+                    );
+                  }}
+                />
               </Box>
-              <Box>
-                <FieldLabel>Assigned Advocate</FieldLabel>
-                <FieldSelect
-                  size="lg"
-                  value={advocateId}
-                  onChange={setAdvocateId}
-                  placeholder="No advocate assigned"
-                >
-                  {employees.map((emp) => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.fullName}
-                    </option>
-                  ))}
-                </FieldSelect>
-              </Box>
-            </Grid>
 
-            <Box borderTop="1px solid" borderColor="gray.100" pt={6}>
-              <FormTextarea
-                label="Description"
-                value={description}
-                onChange={setDescription}
-                placeholder="Add any background, key facts, or context that helps the team understand this matter."
-                rows={5}
-              />
-            </Box>
-          </VStack>
-        </FormSection>
+              <Box borderTop="1px solid" borderColor="gray.100" pt={6}>
+                <FormInput
+                  label="Matter Title"
+                  required
+                  emphasis
+                  value={title}
+                  onChange={setTitle}
+                  placeholder="e.g. ABC Industries vs XYZ Ltd."
+                  helperText="Use a concise, descriptive name that clearly identifies the dispute or case."
+                />
+              </Box>
+
+              <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={5}>
+                <Box>
+                  <FieldLabel>Assigned Partner</FieldLabel>
+                  <FieldSelect
+                    size="lg"
+                    value={assignedPartnerId}
+                    onChange={setAssignedPartnerId}
+                    placeholder="No partner assigned"
+                  >
+                    {employees.map((emp) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.fullName}
+                      </option>
+                    ))}
+                  </FieldSelect>
+                </Box>
+                <Box>
+                  <FieldLabel>Assigned Advocate</FieldLabel>
+                  <FieldSelect
+                    size="lg"
+                    value={advocateId}
+                    onChange={setAdvocateId}
+                    placeholder="No advocate assigned"
+                  >
+                    {employees.map((emp) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.fullName}
+                      </option>
+                    ))}
+                  </FieldSelect>
+                </Box>
+              </Grid>
+
+              <Box borderTop="1px solid" borderColor="gray.100" pt={6}>
+                <FormTextarea
+                  label="Description"
+                  value={description}
+                  onChange={setDescription}
+                  placeholder="Add any background, key facts, or context that helps the team understand this matter."
+                  rows={5}
+                />
+              </Box>
+            </VStack>
+          </FormSection>
+
+          <FormSection
+            title="Parties"
+            description="Add the parties of the original court case. Matching clients and parties are suggested to avoid duplicates."
+            icon={User}
+          >
+            <HStack justify="flex-end" mb={5}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAddPartyOpen(true)}
+              >
+                + Add Party
+              </Button>
+            </HStack>
+
+            {parties.length === 0 ? (
+              <Center
+                flexDirection="column"
+                gap={3}
+                py={12}
+                px={6}
+                border="1px dashed"
+                borderColor="gray.300"
+                borderRadius="xl"
+                bg="gray.50"
+              >
+                <Center
+                  w="12"
+                  h="12"
+                  borderRadius="full"
+                  bg="white"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  color="gray.400"
+                >
+                  <User size={20} />
+                </Center>
+                <VStack gap={1}>
+                  <Text fontSize="sm" fontWeight="600" color="gray.700">
+                    No parties added yet
+                  </Text>
+                  <Text fontSize="13px" color="gray.500" textAlign="center">
+                    Add at least one party to continue.
+                  </Text>
+                </VStack>
+                <Button
+                  mt={1}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsAddPartyOpen(true)}
+                >
+                  + Add First Party
+                </Button>
+              </Center>
+            ) : (
+              <VStack gap={4} align="stretch">
+                {parties.map((party) => (
+                  <Box
+                    key={party.key}
+                    p={{ base: 4, md: 5 }}
+                    bg="white"
+                    border="1px solid"
+                    borderColor="gray.200"
+                    borderRadius="xl"
+                    boxShadow="0 1px 2px rgba(16, 24, 40, 0.04)"
+                  >
+                    <HStack justify="space-between" mb={4} gap={3}>
+                      <HStack gap={2.5} minW={0}>
+                        <Center
+                          w="8"
+                          h="8"
+                          borderRadius="lg"
+                          bg={matterType === "CIVIL" ? "primary.50" : "red.50"}
+                          color={
+                            matterType === "CIVIL" ? "primary.500" : "red.500"
+                          }
+                          flexShrink={0}
+                        >
+                          {matterType === "CIVIL" ? (
+                            <Scale size={16} />
+                          ) : (
+                            <Gavel size={16} />
+                          )}
+                        </Center>
+                        <Text
+                          fontSize="14px"
+                          fontWeight="600"
+                          color="gray.900"
+                          truncate
+                        >
+                          {party.fullName || "New party"}
+                        </Text>
+                      </HStack>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        colorScheme="red"
+                        aria-label="Remove party"
+                        onClick={() =>
+                          setParties((prev) =>
+                            prev.filter((p) => p.key !== party.key)
+                          )
+                        }
+                      >
+                        <X size={15} />
+                      </Button>
+                    </HStack>
+
+                    <Grid
+                      templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
+                      gap={4}
+                    >
+                      <Box>
+                        <CompactLabel>Full Name *</CompactLabel>
+                        <Input
+                          {...compactInputProps}
+                          value={party.fullName}
+                          onChange={(e) => {
+                            updateParty(party.key, { fullName: e.target.value });
+                            handlePartyMatch({
+                              ...party,
+                              fullName: e.target.value,
+                            });
+                          }}
+                          placeholder="Full name"
+                        />
+                      </Box>
+                      <Box>
+                        <CompactLabel>Mobile</CompactLabel>
+                        <Input
+                          {...compactInputProps}
+                          value={party.mobileNo ?? ""}
+                          onChange={(e) => {
+                            updateParty(party.key, { mobileNo: e.target.value });
+                            handlePartyMatch({
+                              ...party,
+                              mobileNo: e.target.value,
+                            });
+                          }}
+                          placeholder="9800000000"
+                        />
+                      </Box>
+                      <Box>
+                        <CompactLabel>Email</CompactLabel>
+                        <Input
+                          {...compactInputProps}
+                          value={party.email ?? ""}
+                          onChange={(e) => {
+                            updateParty(party.key, { email: e.target.value });
+                            handlePartyMatch({
+                              ...party,
+                              email: e.target.value,
+                            });
+                          }}
+                          placeholder="name@mail.com"
+                        />
+                      </Box>
+                      <Box>
+                        <CompactLabel>Role *</CompactLabel>
+                        <FieldSelect
+                          size="sm"
+                          value={party.roleType}
+                          onChange={(value) =>
+                            updateParty(party.key, {
+                              roleType: value as PartyType,
+                            })
+                          }
+                        >
+                          {(
+                            [
+                              "PLAINTIFF",
+                              "DEFENDANT",
+                              "ACCUSED",
+                              "APPELLANT",
+                              "RESPONDENT",
+                              "APPLICANT",
+                            ] as PartyType[]
+                          ).map((type) => (
+                            <option key={type} value={type}>
+                              {partyTypeLabel(type)}
+                            </option>
+                          ))}
+                        </FieldSelect>
+                      </Box>
+                      <Box>
+                        <CompactLabel>Representation *</CompactLabel>
+                        <FieldSelect
+                          size="sm"
+                          value={party.representation}
+                          onChange={(value) =>
+                            updateParty(party.key, {
+                              representation: value as PartyRepresentation,
+                            })
+                          }
+                        >
+                          {(
+                            [
+                              "REPRESENTED",
+                              "OPPOSING",
+                              "SELF",
+                            ] as PartyRepresentation[]
+                          ).map((rep) => (
+                            <option key={rep} value={rep}>
+                              {representationLabel(rep)}
+                            </option>
+                          ))}
+                        </FieldSelect>
+                      </Box>
+                      <Box>
+                        <CompactLabel>Our client</CompactLabel>
+                        <FieldSelect
+                          size="sm"
+                          value={party.isOurClient ? "yes" : "no"}
+                          onChange={(value) =>
+                            updateParty(party.key, {
+                              isOurClient: value === "yes",
+                            })
+                          }
+                        >
+                          <option value="yes">Yes</option>
+                          <option value="no">No</option>
+                        </FieldSelect>
+                      </Box>
+                    </Grid>
+
+                    <Box mt={3}>
+                      <PartyMatchSuggestions
+                        matches={matchesByParty[party.key] ?? []}
+                        onSelectMatch={(match) => selectMatch(party.key, match)}
+                        onDismiss={() =>
+                          setMatchesByParty((prev) => ({
+                            ...prev,
+                            [party.key]: [],
+                          }))
+                        }
+                      />
+                    </Box>
+                  </Box>
+                ))}
+              </VStack>
+            )}
+          </FormSection>
+        </VStack>
       )}
 
       {/* Step 2 - Original Court Case */}
@@ -457,254 +703,10 @@ const CreateMatterPage = () => {
         </FormSection>
       )}
 
-      {/* Step 3 - Parties */}
+
+
+      {/* Step 3 - Review */}
       {currentStep === 2 && (
-        <FormSection
-          title="Parties"
-          description="Add the parties of the original court case. Matching clients and parties are suggested to avoid duplicates."
-          icon={User}
-        >
-          <HStack justify="flex-end" mb={5}>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsAddPartyOpen(true)}
-            >
-              + Add Party
-            </Button>
-          </HStack>
-
-          {parties.length === 0 ? (
-            <Center
-              flexDirection="column"
-              gap={3}
-              py={12}
-              px={6}
-              border="1px dashed"
-              borderColor="gray.300"
-              borderRadius="xl"
-              bg="gray.50"
-            >
-              <Center
-                w="12"
-                h="12"
-                borderRadius="full"
-                bg="white"
-                border="1px solid"
-                borderColor="gray.200"
-                color="gray.400"
-              >
-                <User size={20} />
-              </Center>
-              <VStack gap={1}>
-                <Text fontSize="sm" fontWeight="600" color="gray.700">
-                  No parties added yet
-                </Text>
-                <Text fontSize="13px" color="gray.500" textAlign="center">
-                  Add at least one party to continue.
-                </Text>
-              </VStack>
-              <Button
-                mt={1}
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAddPartyOpen(true)}
-              >
-                + Add First Party
-              </Button>
-            </Center>
-          ) : (
-            <VStack gap={4} align="stretch">
-              {parties.map((party) => (
-                <Box
-                  key={party.key}
-                  p={{ base: 4, md: 5 }}
-                  bg="white"
-                  border="1px solid"
-                  borderColor="gray.200"
-                  borderRadius="xl"
-                  boxShadow="0 1px 2px rgba(16, 24, 40, 0.04)"
-                >
-                  <HStack justify="space-between" mb={4} gap={3}>
-                    <HStack gap={2.5} minW={0}>
-                      <Center
-                        w="8"
-                        h="8"
-                        borderRadius="lg"
-                        bg={matterType === "CIVIL" ? "primary.50" : "red.50"}
-                        color={
-                          matterType === "CIVIL" ? "primary.500" : "red.500"
-                        }
-                        flexShrink={0}
-                      >
-                        {matterType === "CIVIL" ? (
-                          <Scale size={16} />
-                        ) : (
-                          <Gavel size={16} />
-                        )}
-                      </Center>
-                      <Text
-                        fontSize="14px"
-                        fontWeight="600"
-                        color="gray.900"
-                        truncate
-                      >
-                        {party.fullName || "New party"}
-                      </Text>
-                    </HStack>
-                    <Button
-                      variant="ghost"
-                      size="xs"
-                      colorScheme="red"
-                      aria-label="Remove party"
-                      onClick={() =>
-                        setParties((prev) =>
-                          prev.filter((p) => p.key !== party.key)
-                        )
-                      }
-                    >
-                      <X size={15} />
-                    </Button>
-                  </HStack>
-
-                  <Grid
-                    templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
-                    gap={4}
-                  >
-                    <Box>
-                      <CompactLabel>Full Name *</CompactLabel>
-                      <Input
-                        {...compactInputProps}
-                        value={party.fullName}
-                        onChange={(e) => {
-                          updateParty(party.key, { fullName: e.target.value });
-                          handlePartyMatch({
-                            ...party,
-                            fullName: e.target.value,
-                          });
-                        }}
-                        placeholder="Full name"
-                      />
-                    </Box>
-                    <Box>
-                      <CompactLabel>Mobile</CompactLabel>
-                      <Input
-                        {...compactInputProps}
-                        value={party.mobileNo ?? ""}
-                        onChange={(e) => {
-                          updateParty(party.key, { mobileNo: e.target.value });
-                          handlePartyMatch({
-                            ...party,
-                            mobileNo: e.target.value,
-                          });
-                        }}
-                        placeholder="9800000000"
-                      />
-                    </Box>
-                    <Box>
-                      <CompactLabel>Email</CompactLabel>
-                      <Input
-                        {...compactInputProps}
-                        value={party.email ?? ""}
-                        onChange={(e) => {
-                          updateParty(party.key, { email: e.target.value });
-                          handlePartyMatch({
-                            ...party,
-                            email: e.target.value,
-                          });
-                        }}
-                        placeholder="name@mail.com"
-                      />
-                    </Box>
-                    <Box>
-                      <CompactLabel>Role *</CompactLabel>
-                      <FieldSelect
-                        size="sm"
-                        value={party.roleType}
-                        onChange={(value) =>
-                          updateParty(party.key, {
-                            roleType: value as PartyType,
-                          })
-                        }
-                      >
-                        {(
-                          [
-                            "PLAINTIFF",
-                            "DEFENDANT",
-                            "ACCUSED",
-                            "APPELLANT",
-                            "RESPONDENT",
-                            "APPLICANT",
-                          ] as PartyType[]
-                        ).map((type) => (
-                          <option key={type} value={type}>
-                            {partyTypeLabel(type)}
-                          </option>
-                        ))}
-                      </FieldSelect>
-                    </Box>
-                    <Box>
-                      <CompactLabel>Representation *</CompactLabel>
-                      <FieldSelect
-                        size="sm"
-                        value={party.representation}
-                        onChange={(value) =>
-                          updateParty(party.key, {
-                            representation: value as PartyRepresentation,
-                          })
-                        }
-                      >
-                        {(
-                          [
-                            "REPRESENTED",
-                            "OPPOSING",
-                            "SELF",
-                          ] as PartyRepresentation[]
-                        ).map((rep) => (
-                          <option key={rep} value={rep}>
-                            {representationLabel(rep)}
-                          </option>
-                        ))}
-                      </FieldSelect>
-                    </Box>
-                    <Box>
-                      <CompactLabel>Our client</CompactLabel>
-                      <FieldSelect
-                        size="sm"
-                        value={party.isOurClient ? "yes" : "no"}
-                        onChange={(value) =>
-                          updateParty(party.key, {
-                            isOurClient: value === "yes",
-                          })
-                        }
-                      >
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                      </FieldSelect>
-                    </Box>
-                  </Grid>
-
-                  <Box mt={3}>
-                    <PartyMatchSuggestions
-                      matches={matchesByParty[party.key] ?? []}
-                      onSelectMatch={(match) => selectMatch(party.key, match)}
-                      onDismiss={() =>
-                        setMatchesByParty((prev) => ({
-                          ...prev,
-                          [party.key]: [],
-                        }))
-                      }
-                    />
-                  </Box>
-                </Box>
-              ))}
-            </VStack>
-          )}
-        </FormSection>
-      )}
-
-      {/* Step 4 - Review */}
-      {currentStep === 3 && (
         <FormSection
           title="Review & Save"
           description="Confirm the details below before creating this matter."

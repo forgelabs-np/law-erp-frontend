@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   Button,
@@ -16,6 +16,22 @@ import {
   PopoverContent,
 } from "@/shared/components/ui/Popover";
 
+import {
+  NepaliDateParts,
+  NEPALI_MONTH_NAMES,
+  NEPALI_FONT_STACK,
+  getNepaliDaysInMonth,
+  getNepaliMonthStart,
+  gregorianToNepali,
+  isSameNepaliDate,
+  nepaliToGregorian,
+  toNepaliDigits,
+} from "@/utils/nepaliDateUtils";
+
+// ==================== Types ====================
+
+type CalendarMode = "BS" | "AD";
+
 interface DatePickerProps {
   value?: string;
   onChange?: (value: string) => void;
@@ -25,36 +41,72 @@ interface DatePickerProps {
   size?: "sm" | "md" | "lg";
 }
 
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+type ViewMode = "date" | "month" | "year";
+
+// ==================== Constants ====================
+
+const GREGORIAN_MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const GREGORIAN_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const getDaysInMonth = (year: number, month: number) => {
-  return new Date(year, month + 1, 0).getDate();
+const BS_WEEKDAY_SHORT = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];
+
+const TOTAL_CALENDAR_CELLS = 42;
+
+// ==================== Utility Functions ====================
+
+/** Parse yyyy-MM-dd string to JS Date (local) */
+const parseDateString = (dateStr: string): Date => {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day);
 };
 
-const getFirstDayOfMonth = (year: number, month: number) => {
-  return new Date(year, month, 1).getDay();
+/** Format JS Date to yyyy-MM-dd string */
+const formatDateToString = (date: Date): string => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 };
 
-const formatDate = (year: number, month: number, day: number) => {
-  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+/** Convert Gregorian view date to NepaliDateParts */
+const gregorianToNepaliParts = (year: number, month: number, day: number): NepaliDateParts => {
+  return gregorianToNepali(new Date(year, month, day));
 };
 
-type ViewMode = "date" | "month" | "year";
+/** Convert NepaliDateParts to Gregorian { year, month, day } */
+const nepaliToGregorianParts = (parts: NepaliDateParts): { year: number; month: number; day: number } => {
+  const date = nepaliToGregorian(parts);
+  return { year: date.getFullYear(), month: date.getMonth(), day: date.getDate() };
+};
+
+/** Build 6-week grid for Nepali month */
+const buildBsCalendarCells = (year: number, month: number): NepaliDateParts[] => {
+  const cells: NepaliDateParts[] = [];
+  const daysInMonth = getNepaliDaysInMonth(year, month);
+  const leadingBlanks = getNepaliMonthStart(year, month).getDay();
+  const prevYear = month === 0 ? year - 1 : year;
+  const prevMonth = month === 0 ? 11 : month - 1;
+  const daysInPrevMonth = getNepaliDaysInMonth(prevYear, prevMonth);
+
+  for (let i = 0; i < leadingBlanks; i++) {
+    cells.push({ year: prevYear, month: prevMonth, day: daysInPrevMonth - leadingBlanks + 1 + i });
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    cells.push({ year, month, day });
+  }
+  const nextYear = month === 11 ? year + 1 : year;
+  const nextMonth = month === 11 ? 0 : month + 1;
+  for (let day = 1; cells.length < TOTAL_CALENDAR_CELLS; day++) {
+    cells.push({ year: nextYear, month: nextMonth, day });
+  }
+  return cells;
+};
+
+// ==================== Main Component ====================
 
 export const DatePicker = ({
   value,
@@ -64,188 +116,255 @@ export const DatePicker = ({
   maxDate,
   size = "sm",
 }: DatePickerProps) => {
+  // ---- Core state ----
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(value || "");
+  const [calendarMode, setCalendarMode] = useState<CalendarMode>("BS");
   const [viewMode, setViewMode] = useState<ViewMode>("date");
-  const [yearRangeStart, setYearRangeStart] = useState(() => {
-    const currentYear = new Date().getFullYear();
-    return Math.floor(currentYear / 12) * 12;
-  });
-  const [viewDate, setViewDate] = useState(() => {
+
+  // AD calendar state
+  const [adViewDate, setAdViewDate] = useState<{ year: number; month: number }>(() => {
     if (value) {
       const [year, month] = value.split("-").map(Number);
       return { year, month: month - 1 };
     }
     return { year: new Date().getFullYear(), month: new Date().getMonth() };
   });
-  const inputRef = useRef<HTMLInputElement>(null);
 
+  // BS calendar state
+  const [bsViewDate, setBsViewDate] = useState<NepaliDateParts>(() => {
+    if (value) {
+      const date = parseDateString(value);
+      return gregorianToNepali(date);
+    }
+    return gregorianToNepali(new Date());
+  });
+
+  // Year range for year-selection view
+  const [yearRangeStart, setYearRangeStart] = useState(() => {
+    if (value) {
+      const [year] = value.split("-").map(Number);
+      return Math.floor(year / 12) * 12;
+    }
+    const currentYear = new Date().getFullYear();
+    return Math.floor(currentYear / 12) * 12;
+  });
+
+  // ---- Sync from value prop ----
   useEffect(() => {
     if (value) {
-      setSelectedDate(value);
-      const [year, month] = value.split("-").map(Number);
-      setViewDate({ year, month: month - 1 });
+      const date = parseDateString(value);
+      setAdViewDate({ year: date.getFullYear(), month: date.getMonth() });
+      setBsViewDate(gregorianToNepali(date));
     }
   }, [value]);
 
-  const handleDateSelect = useCallback(
+  // ---- Today references ----
+  const todayAd = useMemo(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth(), day: now.getDate() };
+  }, []);
+
+  const todayBs = useMemo(() => gregorianToNepali(new Date()), []);
+
+  // ---- BS calendar cells (memoized) ----
+  const bsCells = useMemo(() => {
+    return buildBsCalendarCells(bsViewDate.year, bsViewDate.month);
+  }, [bsViewDate.year, bsViewDate.month]);
+
+  // ---- Get current selected date parts based on mode ----
+  const getSelectedDateParts = useCallback((): { year: number; month: number; day: number } | null => {
+    if (!value) return null;
+    const date = parseDateString(value);
+    return { year: date.getFullYear(), month: date.getMonth(), day: date.getDate() };
+  }, [value]);
+
+  const getSelectedBsParts = useCallback((): NepaliDateParts | null => {
+    if (!value) return null;
+    return gregorianToNepali(parseDateString(value));
+  }, [value]);
+
+  // ---- Calendar mode switch ----
+  const handleModeChange = useCallback((newMode: CalendarMode) => {
+    if (newMode === calendarMode) return;
+
+    // Convert current view date to the new calendar mode
+    if (calendarMode === "AD" && newMode === "BS") {
+      // AD view -> BS view
+      const bsParts = gregorianToNepaliParts(adViewDate.year, adViewDate.month, 1);
+      setBsViewDate({ year: bsParts.year, month: bsParts.month, day: 1 });
+    } else if (calendarMode === "BS" && newMode === "AD") {
+      // BS view -> AD view
+      const gregorian = nepaliToGregorianParts({ year: bsViewDate.year, month: bsViewDate.month, day: 1 });
+      setAdViewDate({ year: gregorian.year, month: gregorian.month });
+    }
+
+    setCalendarMode(newMode);
+    setViewMode("date");
+  }, [calendarMode, adViewDate, bsViewDate]);
+
+  // ---- Date selection (AD mode) ----
+  const handleAdDateSelect = useCallback(
     (day: number) => {
-      const dateString = formatDate(viewDate.year, viewDate.month, day);
-      setSelectedDate(dateString);
-      onChange?.(dateString);
+      const dateStr = formatDateToString(new Date(adViewDate.year, adViewDate.month, day));
+      onChange?.(dateStr);
       setIsOpen(false);
     },
-    [viewDate, onChange]
+    [adViewDate, onChange]
   );
 
-  const handleTodayClick = useCallback(() => {
-    const now = new Date();
-    const todayString = formatDate(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
-    setSelectedDate(todayString);
-    onChange?.(todayString);
-    setIsOpen(false);
-  }, [onChange]);
+  // ---- Date selection (BS mode) ----
+  const handleBsDateSelect = useCallback(
+    (date: NepaliDateParts) => {
+      const gregorianDate = nepaliToGregorian(date);
+      onChange?.(formatDateToString(gregorianDate));
+      setIsOpen(false);
+    },
+    [onChange]
+  );
 
-  const handlePrevMonth = useCallback(() => {
-    setViewDate((prev) => ({
+  // ---- Today button ----
+  const handleTodayClick = useCallback(() => {
+    if (calendarMode === "AD") {
+      setAdViewDate({ year: todayAd.year, month: todayAd.month });
+      onChange?.(formatDateToString(new Date(todayAd.year, todayAd.month, todayAd.day)));
+    } else {
+      setBsViewDate({ year: todayBs.year, month: todayBs.month, day: todayBs.day });
+      onChange?.(formatDateToString(nepaliToGregorian(todayBs)));
+    }
+    setIsOpen(false);
+  }, [calendarMode, todayAd, todayBs, onChange]);
+
+  // ---- Month navigation (AD) ----
+  const handleAdPrevMonth = useCallback(() => {
+    setAdViewDate((prev) => ({
       year: prev.month === 0 ? prev.year - 1 : prev.year,
       month: prev.month === 0 ? 11 : prev.month - 1,
     }));
   }, []);
 
-  const handleNextMonth = useCallback(() => {
-    setViewDate((prev) => ({
+  const handleAdNextMonth = useCallback(() => {
+    setAdViewDate((prev) => ({
       year: prev.month === 11 ? prev.year + 1 : prev.year,
       month: prev.month === 11 ? 0 : prev.month + 1,
     }));
   }, []);
 
-  const handlePrevYear = useCallback(() => {
-    setViewDate((prev) => ({
-      ...prev,
-      year: prev.year - 1,
+  // ---- Month navigation (BS) ----
+  const handleBsPrevMonth = useCallback(() => {
+    setBsViewDate((prev) => ({
+      year: prev.month === 0 ? prev.year - 1 : prev.year,
+      month: prev.month === 0 ? 11 : prev.month - 1,
+      day: 1,
     }));
   }, []);
+
+  const handleBsNextMonth = useCallback(() => {
+    setBsViewDate((prev) => ({
+      year: prev.month === 11 ? prev.year + 1 : prev.year,
+      month: prev.month === 11 ? 0 : prev.month + 1,
+      day: 1,
+    }));
+  }, []);
+
+  // ---- Year navigation ----
+  const handlePrevYear = useCallback(() => {
+    if (calendarMode === "AD") {
+      setAdViewDate((prev) => ({ ...prev, year: prev.year - 1 }));
+    } else {
+      setBsViewDate((prev) => ({ ...prev, year: prev.year - 1 }));
+    }
+  }, [calendarMode]);
 
   const handleNextYear = useCallback(() => {
-    setViewDate((prev) => ({
-      ...prev,
-      year: prev.year + 1,
-    }));
-  }, []);
+    if (calendarMode === "AD") {
+      setAdViewDate((prev) => ({ ...prev, year: prev.year + 1 }));
+    } else {
+      setBsViewDate((prev) => ({ ...prev, year: prev.year + 1 }));
+    }
+  }, [calendarMode]);
 
+  // ---- Year selection view ----
   const handleYearClick = useCallback(() => {
     setViewMode("year");
-    setYearRangeStart(Math.floor(viewDate.year / 12) * 12);
-  }, [viewDate.year]);
+    const currentYear = calendarMode === "AD" ? adViewDate.year : bsViewDate.year;
+    setYearRangeStart(Math.floor(currentYear / 12) * 12);
+  }, [calendarMode, adViewDate.year, bsViewDate.year]);
 
-  const handleMonthClick = useCallback(() => {
-    setViewMode("month");
-  }, []);
+  const handleYearSelect = useCallback(
+    (year: number) => {
+      if (calendarMode === "AD") {
+        setAdViewDate((prev) => ({ ...prev, year }));
+      } else {
+        setBsViewDate((prev) => ({ ...prev, year }));
+      }
+      setViewMode("month");
+    },
+    [calendarMode]
+  );
 
-  const handleYearSelect = useCallback((year: number) => {
-    setViewDate((prev) => ({ ...prev, year }));
-    setViewMode("month");
-  }, []);
+  const handlePrevYearRange = useCallback(() => setYearRangeStart((prev) => prev - 12), []);
+  const handleNextYearRange = useCallback(() => setYearRangeStart((prev) => prev + 12), []);
 
-  const handleMonthSelect = useCallback((month: number) => {
-    setViewDate((prev) => ({ ...prev, month }));
-    setViewMode("date");
-  }, []);
+  // ---- Month selection view ----
+  const handleMonthClick = useCallback(() => setViewMode("month"), []);
 
-  const handlePrevYearRange = useCallback(() => {
-    setYearRangeStart((prev) => prev - 12);
-  }, []);
+  const handleMonthSelect = useCallback(
+    (month: number) => {
+      if (calendarMode === "AD") {
+        setAdViewDate((prev) => ({ ...prev, month }));
+      } else {
+        setBsViewDate((prev) => ({ ...prev, month, day: 1 }));
+      }
+      setViewMode("date");
+    },
+    [calendarMode]
+  );
 
-  const handleNextYearRange = useCallback(() => {
-    setYearRangeStart((prev) => prev + 12);
-  }, []);
-
-  const isDateDisabled = useCallback(
+  // ---- Date disabled check (AD only for now) ----
+  const isAdDateDisabled = useCallback(
     (year: number, month: number, day: number) => {
       const date = new Date(year, month, day);
-      if (minDate) {
-        const min = new Date(minDate);
-        if (date < min) return true;
-      }
-      if (maxDate) {
-        const max = new Date(maxDate);
-        if (date > max) return true;
-      }
+      if (minDate && date < new Date(minDate)) return true;
+      if (maxDate && date > new Date(maxDate)) return true;
       return false;
     },
     [minDate, maxDate]
   );
 
-  const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(viewDate.year, viewDate.month);
-    const firstDay = getFirstDayOfMonth(viewDate.year, viewDate.month);
-    const days = [];
-
-    for (let i = 0; i < firstDay; i++) {
-      days.push(<Box key={`empty-${i}`} w="8" h="8" />);
+  // ---- Display value ----
+  const displayValue = useMemo(() => {
+    if (!value) return "";
+    if (calendarMode === "AD") {
+      return value; // Already in yyyy-MM-dd
     }
+    // BS mode: show in BS format
+    const bsParts = gregorianToNepali(parseDateString(value));
+    return `${toNepaliDigits(bsParts.year)}-${String(bsParts.month + 1).padStart(2, "0")}-${String(bsParts.day).padStart(2, "0")}`;
+  }, [value, calendarMode]);
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = formatDate(viewDate.year, viewDate.month, day);
-      const isSelected = selectedDate === dateStr;
-      const isDisabled = isDateDisabled(viewDate.year, viewDate.month, day);
-      const isToday =
-        day === new Date().getDate() &&
-        viewDate.month === new Date().getMonth() &&
-        viewDate.year === new Date().getFullYear();
-
-      days.push(
-        <Box key={day} position="relative" w="8" h="8">
-          {/* Dotted circle indicator for today (behind the button) */}
-          {isToday && !isSelected && (
-            <Box
-              position="absolute"
-              inset="1px"
-              borderRadius="full"
-              border="1.5px dashed"
-              borderColor="blue.400"
-              pointerEvents="none"
-            />
-          )}
-          <Button
-            size="sm"
-            variant="ghost"
-            w="8"
-            h="8"
-            p={0}
-            borderRadius="full"
-            bg={isSelected ? "blue.500" : "transparent"}
-            color={isSelected ? "white" : "gray.700"}
-            _hover={{ bg: isSelected ? "blue.600" : "gray.100" }}
-            onClick={() => handleDateSelect(day)}
-            disabled={isDisabled}
-            fontSize="xs"
-            position="relative"
-            zIndex={1}
-            aria-label={`Select day ${day}${isToday ? " (today)" : ""}`}
-          >
-            {day}
-          </Button>
-        </Box>
-      );
+  // ---- Current view month/year text ----
+  const currentMonthText = useMemo(() => {
+    if (calendarMode === "AD") {
+      return `${GREGORIAN_MONTHS[adViewDate.month]} ${adViewDate.year}`;
     }
+    return `${NEPALI_MONTH_NAMES[bsViewDate.month]} ${toNepaliDigits(bsViewDate.year)}`;
+  }, [calendarMode, adViewDate, bsViewDate]);
 
-    return days;
-  };
+  const currentYearDisplay = useMemo(() => {
+    return calendarMode === "AD" ? adViewDate.year : toNepaliDigits(bsViewDate.year);
+  }, [calendarMode, adViewDate.year, bsViewDate.year]);
 
+  // ---- Year grid ----
   const renderYearGrid = () => {
     const years = [];
-    const currentYear = new Date().getFullYear();
+    const currentYear = calendarMode === "AD" ? todayAd.year : todayBs.year;
+    const viewYear = calendarMode === "AD" ? adViewDate.year : bsViewDate.year;
 
     for (let i = 0; i < 12; i++) {
       const year = yearRangeStart + i;
-      const isSelected = year === viewDate.year;
+      const isSelected = year === viewYear;
       const isCurrentYear = year === currentYear;
+      const displayYear = calendarMode === "BS" ? toNepaliDigits(year) : String(year);
 
       years.push(
         <Button
@@ -255,32 +374,33 @@ export const DatePicker = ({
           w="16"
           h="10"
           borderRadius="md"
-          bg={
-            isSelected ? "blue.500" : isCurrentYear ? "blue.50" : "transparent"
-          }
+          bg={isSelected ? "blue.500" : isCurrentYear ? "blue.50" : "transparent"}
           color={isSelected ? "white" : "gray.700"}
           _hover={{ bg: isSelected ? "blue.600" : "gray.100" }}
           onClick={() => handleYearSelect(year)}
           fontSize="sm"
           fontWeight={isCurrentYear ? "bold" : "normal"}
+          fontFamily={calendarMode === "BS" ? NEPALI_FONT_STACK : "inherit"}
           aria-label={`Select year ${year}`}
           aria-current={isCurrentYear ? "date" : undefined}
         >
-          {year}
+          {displayYear}
         </Button>
       );
     }
-
     return years;
   };
 
+  // ---- Month grid ----
   const renderMonthGrid = () => {
-    const months = MONTHS.map((month, index) => {
-      const isSelected = index === viewDate.month;
+    const months = calendarMode === "AD" ? GREGORIAN_MONTHS : NEPALI_MONTH_NAMES;
+    const viewMonth = calendarMode === "AD" ? adViewDate.month : bsViewDate.month;
 
+    return months.map((monthName, index) => {
+      const isSelected = index === viewMonth;
       return (
         <Button
-          key={month}
+          key={monthName}
           size="sm"
           variant="ghost"
           w="20"
@@ -291,15 +411,22 @@ export const DatePicker = ({
           _hover={{ bg: isSelected ? "blue.600" : "gray.100" }}
           onClick={() => handleMonthSelect(index)}
           fontSize="sm"
-          aria-label={`Select month ${month}`}
+          fontFamily={calendarMode === "BS" ? NEPALI_FONT_STACK : "inherit"}
+          aria-label={`Select month ${monthName}`}
         >
-          {month}
+          {monthName}
         </Button>
       );
     });
-
-    return months;
   };
+
+  // ---- Year range text ----
+  const yearRangeText = useMemo(() => {
+    if (calendarMode === "BS") {
+      return `${toNepaliDigits(yearRangeStart)}–${toNepaliDigits(yearRangeStart + 11)}`;
+    }
+    return `${yearRangeStart}–${yearRangeStart + 11}`;
+  }, [calendarMode, yearRangeStart]);
 
   return (
     <PopoverRoot
@@ -310,14 +437,14 @@ export const DatePicker = ({
       <PopoverTrigger asChild>
         <Box position="relative" w="full">
           <Input
-            ref={inputRef}
-            value={selectedDate}
+            value={displayValue}
             readOnly
             placeholder={placeholder}
             size={size}
             cursor="pointer"
             onClick={() => setIsOpen(true)}
             pr="10"
+            fontFamily={calendarMode === "BS" ? NEPALI_FONT_STACK : "inherit"}
             aria-label={placeholder || "Select date"}
             aria-haspopup="dialog"
           />
@@ -334,46 +461,72 @@ export const DatePicker = ({
       </PopoverTrigger>
       <PopoverContent p={3} w="280px">
         <VStack gap={2}>
+          {/* AD/BS Select + Year Navigation */}
+          <HStack w="full" justify="space-between">
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={handlePrevYear}
+              p={1}
+              aria-label="Previous year"
+            >
+              <ChevronLeft size={14} />
+            </Button>
+
+            <HStack gap={1} align="center">
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={handleYearClick}
+                p={1}
+                fontWeight="bold"
+                fontFamily={calendarMode === "BS" ? NEPALI_FONT_STACK : "inherit"}
+                aria-label={`Select year, currently ${currentYearDisplay}`}
+              >
+                {currentYearDisplay}
+              </Button>
+
+              {/* AD/BS Select */}
+              <select
+                value={calendarMode}
+                onChange={(e) => handleModeChange(e.target.value as CalendarMode)}
+                style={{
+                  fontSize: "11px",
+                  padding: "2px 4px",
+                  borderRadius: "4px",
+                  border: "1px solid #E5E7EB",
+                  backgroundColor: "#F9FAFB",
+                  cursor: "pointer",
+                  outline: "none",
+                  fontWeight: 500,
+                  color: "#374151",
+                }}
+                aria-label="Select calendar mode"
+              >
+                <option value="BS">BS</option>
+                <option value="AD">AD</option>
+              </select>
+            </HStack>
+
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={handleNextYear}
+              p={1}
+              aria-label="Next year"
+            >
+              <ChevronRight size={14} />
+            </Button>
+          </HStack>
+
           {viewMode === "date" && (
             <>
-              {/* Year Navigation */}
-              <HStack w="full" justify="space-between">
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={handlePrevYear}
-                  p={1}
-                  aria-label="Previous year"
-                >
-                  <ChevronLeft size={14} />
-                </Button>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={handleYearClick}
-                  p={1}
-                  fontWeight="bold"
-                  aria-label={`Select year, currently ${viewDate.year}`}
-                >
-                  {viewDate.year}
-                </Button>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={handleNextYear}
-                  p={1}
-                  aria-label="Next year"
-                >
-                  <ChevronRight size={14} />
-                </Button>
-              </HStack>
-
               {/* Month Navigation */}
               <HStack w="full" justify="space-between">
                 <Button
                   size="xs"
                   variant="ghost"
-                  onClick={handlePrevMonth}
+                  onClick={calendarMode === "AD" ? handleAdPrevMonth : handleBsPrevMonth}
                   p={1}
                   aria-label="Previous month"
                 >
@@ -386,14 +539,15 @@ export const DatePicker = ({
                   p={1}
                   fontWeight="medium"
                   w="32"
-                  aria-label={`Select month, currently ${MONTHS[viewDate.month]}`}
+                  fontFamily={calendarMode === "BS" ? NEPALI_FONT_STACK : "inherit"}
+                  aria-label={`Select month, currently ${currentMonthText}`}
                 >
-                  {MONTHS[viewDate.month]}
+                  {currentMonthText}
                 </Button>
                 <Button
                   size="xs"
                   variant="ghost"
-                  onClick={handleNextMonth}
+                  onClick={calendarMode === "AD" ? handleAdNextMonth : handleBsNextMonth}
                   p={1}
                   aria-label="Next month"
                 >
@@ -403,7 +557,7 @@ export const DatePicker = ({
 
               {/* Day Headers */}
               <Flex gap={1}>
-                {DAYS.map((day) => (
+                {(calendarMode === "AD" ? GREGORIAN_DAYS : BS_WEEKDAY_SHORT).map((day) => (
                   <Box
                     key={day}
                     w="8"
@@ -412,7 +566,12 @@ export const DatePicker = ({
                     alignItems="center"
                     justifyContent="center"
                   >
-                    <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                    <Text
+                      fontSize="xs"
+                      color="gray.500"
+                      fontWeight="medium"
+                      fontFamily={calendarMode === "BS" ? NEPALI_FONT_STACK : "inherit"}
+                    >
                       {day}
                     </Text>
                   </Box>
@@ -421,7 +580,102 @@ export const DatePicker = ({
 
               {/* Calendar Grid */}
               <Flex flexWrap="wrap" gap={1}>
-                {renderCalendar()}
+                {calendarMode === "AD" ? (
+                  // AD Calendar
+                  (() => {
+                    const daysInMonth = new Date(adViewDate.year, adViewDate.month + 1, 0).getDate();
+                    const firstDay = new Date(adViewDate.year, adViewDate.month, 1).getDay();
+                    const days = [];
+                    const selectedParts = getSelectedDateParts();
+
+                    for (let i = 0; i < firstDay; i++) {
+                      days.push(<Box key={`empty-${i}`} w="8" h="8" />);
+                    }
+
+                    for (let day = 1; day <= daysInMonth; day++) {
+                      const isSelected = selectedParts?.year === adViewDate.year && selectedParts?.month === adViewDate.month && selectedParts?.day === day;
+                      const isDisabled = isAdDateDisabled(adViewDate.year, adViewDate.month, day);
+                      const isToday = todayAd.day === day && todayAd.month === adViewDate.month && todayAd.year === adViewDate.year;
+
+                      days.push(
+                        <Box key={day} position="relative" w="8" h="8">
+                          {isToday && !isSelected && (
+                            <Box
+                              position="absolute"
+                              inset="1px"
+                              borderRadius="full"
+                              border="1.5px dashed"
+                              borderColor="blue.400"
+                              pointerEvents="none"
+                            />
+                          )}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            w="8"
+                            h="8"
+                            p={0}
+                            borderRadius="full"
+                            bg={isSelected ? "blue.500" : "transparent"}
+                            color={isSelected ? "white" : "gray.700"}
+                            _hover={{ bg: isSelected ? "blue.600" : "gray.100" }}
+                            onClick={() => handleAdDateSelect(day)}
+                            disabled={isDisabled}
+                            fontSize="xs"
+                            position="relative"
+                            zIndex={1}
+                            aria-label={`Select day ${day}${isToday ? " (today)" : ""}`}
+                          >
+                            {day}
+                          </Button>
+                        </Box>
+                      );
+                    }
+                    return days;
+                  })()
+                ) : (
+                  // BS Calendar
+                  bsCells.map((date) => {
+                    const isCurrentMonth = date.month === bsViewDate.month;
+                    const selectedBs = getSelectedBsParts();
+                    const isSelected = isSameNepaliDate(date, selectedBs);
+                    const isToday = isSameNepaliDate(date, todayBs);
+
+                    return (
+                      <Box key={`${date.year}-${date.month}-${date.day}`} position="relative" w="8" h="8">
+                        {isToday && !isSelected && (
+                          <Box
+                            position="absolute"
+                            inset="1px"
+                            borderRadius="full"
+                            border="1.5px dashed"
+                            borderColor="blue.400"
+                            pointerEvents="none"
+                          />
+                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          w="8"
+                          h="8"
+                          p={0}
+                          borderRadius="full"
+                          bg={isSelected ? "blue.500" : "transparent"}
+                          color={isSelected ? "white" : isCurrentMonth ? "gray.700" : "gray.400"}
+                          _hover={{ bg: isSelected ? "blue.600" : "gray.100" }}
+                          onClick={() => handleBsDateSelect(date)}
+                          fontSize="xs"
+                          position="relative"
+                          zIndex={1}
+                          fontFamily={NEPALI_FONT_STACK}
+                          aria-label={`${toNepaliDigits(date.day)}${isToday ? " (today)" : ""}`}
+                        >
+                          {toNepaliDigits(date.day)}
+                        </Button>
+                      </Box>
+                    );
+                  })
+                )}
               </Flex>
 
               {/* Today Button */}
@@ -447,32 +701,17 @@ export const DatePicker = ({
 
           {viewMode === "month" && (
             <>
-              {/* Year Navigation for Month View */}
               <HStack w="full" justify="space-between">
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={handlePrevYear}
-                  p={1}
-                  aria-label="Previous year"
-                >
+                <Button size="xs" variant="ghost" onClick={handlePrevYear} p={1} aria-label="Previous year">
                   <ChevronLeft size={14} />
                 </Button>
-                <Text fontSize="sm" fontWeight="bold">
-                  {viewDate.year}
+                <Text fontSize="sm" fontWeight="bold" fontFamily={calendarMode === "BS" ? NEPALI_FONT_STACK : "inherit"}>
+                  {currentYearDisplay}
                 </Text>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={handleNextYear}
-                  p={1}
-                  aria-label="Next year"
-                >
+                <Button size="xs" variant="ghost" onClick={handleNextYear} p={1} aria-label="Next year">
                   <ChevronRight size={14} />
                 </Button>
               </HStack>
-
-              {/* Month Grid */}
               <Flex flexWrap="wrap" gap={1} justify="center">
                 {renderMonthGrid()}
               </Flex>
@@ -481,32 +720,15 @@ export const DatePicker = ({
 
           {viewMode === "year" && (
             <>
-              {/* Year Range Navigation */}
               <HStack w="full" justify="space-between">
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={handlePrevYearRange}
-                  p={1}
-                  aria-label="Previous 12 years"
-                >
+                <Button size="xs" variant="ghost" onClick={handlePrevYearRange} p={1} aria-label="Previous 12 years">
                   <ChevronLeft size={14} />
                 </Button>
-                <Text fontSize="sm" fontWeight="bold">
-                  {yearRangeStart}–{yearRangeStart + 11}
-                </Text>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  onClick={handleNextYearRange}
-                  p={1}
-                  aria-label="Next 12 years"
-                >
+                <Text fontSize="sm" fontWeight="bold">{yearRangeText}</Text>
+                <Button size="xs" variant="ghost" onClick={handleNextYearRange} p={1} aria-label="Next 12 years">
                   <ChevronRight size={14} />
                 </Button>
               </HStack>
-
-              {/* Year Grid */}
               <Flex flexWrap="wrap" gap={1} justify="center">
                 {renderYearGrid()}
               </Flex>

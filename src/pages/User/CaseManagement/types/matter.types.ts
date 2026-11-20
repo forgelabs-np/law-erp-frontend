@@ -196,6 +196,7 @@ export interface CourtEvent {
   attendingAdvocateId?: string;
   judgeName?: string;
   courtRoom?: string;
+  fatNumber?: string;
   notes?: string;
   status: CourtEventStatus;
   outcome?: string;
@@ -244,6 +245,7 @@ export interface CalendarEventItem {
   scheduledTime?: string;
   endTime?: string;
   courtRoom?: string;
+  fatNumber?: string;
   status: CourtEventStatus;
   attendingAdvocateId?: string;
 }
@@ -395,6 +397,7 @@ export interface CreateCourtEventRequest {
   attendingAdvocateId?: string;
   judgeName?: string;
   courtRoom?: string;
+  fatNumber?: string;
   notes?: string;
 }
 
@@ -404,6 +407,7 @@ export interface UpdateCourtEventRequest {
   endTime?: string;
   judgeName?: string;
   courtRoom?: string;
+  fatNumber?: string;
   notes?: string;
   attendingAdvocateId?: string;
 }

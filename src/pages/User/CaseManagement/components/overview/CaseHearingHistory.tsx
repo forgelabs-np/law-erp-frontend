@@ -143,6 +143,11 @@ export const CaseHearingHistory = ({
                             : ""}
                         </Text>
                       )}
+                      {event.fatNumber && (
+                        <Text fontSize="12px" color="gray.500">
+                          Fat: {event.fatNumber}
+                        </Text>
+                      )}
                       {event.courtRoom && (
                         <Text fontSize="12px" color="gray.500">
                           {event.courtRoom}

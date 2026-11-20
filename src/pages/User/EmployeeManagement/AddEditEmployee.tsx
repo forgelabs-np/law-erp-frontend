@@ -38,6 +38,12 @@ const defaultValues: EmployeeFormValues = {
   notes: "",
 };
 
+const SPECIALIZATION_OPTIONS = [
+  { label: "Litigation", value: "Litigation" },
+  { label: "Corporate", value: "Corporate" },
+  { label: "Both", value: "Both" },
+];
+
 export const AddEditEmployee = ({
   open,
   onClose,
@@ -100,7 +106,12 @@ export const AddEditEmployee = ({
         designation: employeeById.designation ?? "",
         // departmentId: employeeById.departmentId ?? "",
         barCouncilNo: employeeById.barCouncilNo ?? "",
-        specialization: employeeById.specialization ?? "",
+        specialization:
+          SPECIALIZATION_OPTIONS.find(
+            (opt) =>
+              opt.value.toLowerCase() ===
+              employeeById.specialization?.toLowerCase()
+          )?.value ?? (employeeById.specialization ?? ""),
         joiningDate: employeeById.joiningDate ?? "",
         emergencyContactName: employeeById.emergencyContactName ?? "",
         emergencyContactPhone: employeeById.emergencyContactPhone ?? "",
@@ -269,10 +280,11 @@ export const AddEditEmployee = ({
               </GridItem>
 
               <GridItem>
-                <TextFieldInput
+                <ReactSelect
                   name="specialization"
                   label="Specialization"
-                  placeholder="e.g. Civil Law, Criminal Law"
+                  placeholder="Select Specialization"
+                  options={SPECIALIZATION_OPTIONS}
                 />
               </GridItem>
 

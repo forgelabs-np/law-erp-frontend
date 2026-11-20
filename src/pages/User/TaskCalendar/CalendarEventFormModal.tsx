@@ -47,8 +47,7 @@ interface EventFormValues {
   scheduledTime: string;
   endTime: string;
   attendingAdvocateId: string;
-  judgeName: string;
-  courtRoom: string;
+  fatNumber: string;
   notes: string;
 }
 
@@ -94,8 +93,7 @@ export const CalendarEventFormModal = ({
       scheduledTime: "",
       endTime: "",
       // attendingAdvocateId: "",
-      judgeName: "",
-      courtRoom: "",
+      fatNumber: "",
       notes: "",
     },
     resolver: yupResolver(calendarEventSchema) as any,
@@ -115,8 +113,7 @@ export const CalendarEventFormModal = ({
             : "",
           endTime: initialData.endTime ? initialData.endTime.slice(0, 5) : "",
           // attendingAdvocateId: initialData.attendingAdvocateId ?? "",
-          judgeName: initialData.judgeName ?? "",
-          courtRoom: initialData.courtRoom ?? "",
+          fatNumber: initialData.fatNumber ?? "",
           notes: initialData.notes ?? "",
         });
       } else {
@@ -127,8 +124,7 @@ export const CalendarEventFormModal = ({
           scheduledTime: "",
           endTime: "",
           // attendingAdvocateId: "",
-          judgeName: "",
-          courtRoom: "",
+          fatNumber: "",
           notes: "",
         });
       }
@@ -153,8 +149,7 @@ export const CalendarEventFormModal = ({
         : undefined,
       endTime: values.endTime ? `${values.endTime}:00` : undefined,
       // attendingAdvocateId: values.attendingAdvocateId || undefined,
-      judgeName: values.judgeName.trim() || undefined,
-      courtRoom: values.courtRoom.trim() || undefined,
+      fatNumber: values.fatNumber.trim() || undefined,
       notes: values.notes.trim() || undefined,
     });
   };
@@ -356,32 +351,18 @@ export const CalendarEventFormModal = ({
                 />
               </Box> */}
 
-              <Flex gap={4} flexDirection={{ base: "column", md: "row" }}>
-                <Box flex={1}>
-                  <Text mb={1} fontSize="sm" fontWeight="500">
-                    Judge Name
-                  </Text>
-                  <Controller
-                    name="judgeName"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} placeholder="e.g. Judge B. Karki" />
-                    )}
-                  />
-                </Box>
-                <Box flex={1}>
-                  <Text mb={1} fontSize="sm" fontWeight="500">
-                    Court Room
-                  </Text>
-                  <Controller
-                    name="courtRoom"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} placeholder="e.g. Court 3" />
-                    )}
-                  />
-                </Box>
-              </Flex>
+              <Box>
+                <Text mb={1} fontSize="sm" fontWeight="500">
+                  Fat Number
+                </Text>
+                <Controller
+                  name="fatNumber"
+                  control={control}
+                  render={({ field }) => (
+                    <Input {...field} placeholder="e.g. 1" />
+                  )}
+                />
+              </Box>
 
               <Box>
                 <Text mb={1} fontSize="sm" fontWeight="500">

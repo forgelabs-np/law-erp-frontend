@@ -128,8 +128,16 @@ export const CaseEventTimelineItem = ({
             {formatDate(event.scheduledDate)}
           </Text>
 
-          {(event.courtRoom || event.judgeName || event.outcomeType) && (
+          {(event.courtRoom || event.fatNumber || event.judgeName || event.outcomeType) && (
             <HStack gap={4} mt={2} flexWrap="wrap" color="gray.500">
+              {event.fatNumber && (
+                <HStack gap={1.5} minW={0}>
+                  <MapPin size={13} />
+                  <Text fontSize="xs" fontWeight="600">
+                    Fat: {event.fatNumber}
+                  </Text>
+                </HStack>
+              )}
               {event.courtRoom && (
                 <HStack gap={1.5} minW={0}>
                   <MapPin size={13} />
