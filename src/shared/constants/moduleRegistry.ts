@@ -13,6 +13,7 @@ import {
   Database,
   Briefcase,
   Bell,
+  CreditCard,
 } from "lucide-react";
 import { ComponentType } from "react";
 
@@ -192,6 +193,14 @@ export const MODULE_REGISTRY: Record<string, ModuleRegistryEntry> = {
     icon: Bell,
     section: "Support",
     order: 27,
+  },
+  PLANS_MANAGEMENT: {
+    moduleCode: "PLANS_MANAGEMENT",
+    label: "Plans & Pricing",
+    path: ROUTES_CONFIG.SUPER_ADMIN.PLANS,
+    icon: CreditCard,
+    section: "Main",
+    order: 28,
   },
   CONFIGURATION: {
     moduleCode: "CONFIGURATION",

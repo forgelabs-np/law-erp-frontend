@@ -8,7 +8,7 @@ import {
   Badge,
 } from "@chakra-ui/react";
 import { useMemo, useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CreditCard } from "lucide-react";
 import { LogoImage } from "@/shared/assets";
 import { getInitialExpandedSidebarMenu } from "@/shared/utils";
 import { resolveRoleCode } from "@/shared/utils/role";
@@ -199,10 +199,37 @@ export const Sidebar = () => {
     );
   }, [modules, location.pathname, unreadCount, isClientPortal]);
 
-  const itemsBySection = useMemo(
-    () => groupSidebarItemsBySection(moduleItems),
-    [moduleItems]
-  );
+  const isSuperAdmin = resolveRoleCode(role).toUpperCase() === "SUPER_ADMIN";
+
+  const itemsBySection = useMemo(() => {
+    const grouped = groupSidebarItemsBySection(moduleItems);
+
+    // Plans & Pricing is a platform-level Super Admin screen. It has no
+    // backend module of its own (the route is role-protected), so it is added
+    // to the Administration section explicitly.
+    if (!isSuperAdmin) return grouped;
+
+    const existing = grouped.Administration ?? [];
+    const plansPath = ROUTES_CONFIG.SUPER_ADMIN.PLANS;
+    if (existing.some((item) => item.href === plansPath)) return grouped;
+
+    const plansItem = {
+      moduleCode: "PLANS_MANAGEMENT",
+      name: "Plans & Pricing",
+      href: plansPath,
+      icon: <CreditCard size={16} />,
+      section: "Administration",
+      order: 25.5,
+      isActive: location.pathname.startsWith(plansPath),
+    };
+
+    return {
+      ...grouped,
+      Administration: [...existing, plansItem].sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0)
+      ),
+    };
+  }, [moduleItems, isSuperAdmin, location.pathname]);
 
   const bottomItems = useMemo(
     () => buildSupportSidebarItems(unreadCount),

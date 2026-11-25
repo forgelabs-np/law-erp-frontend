@@ -15,7 +15,14 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Edit, History, ScrollText, Settings, Shield } from "lucide-react";
+import {
+  CreditCard,
+  Edit,
+  History,
+  ScrollText,
+  Settings,
+  Shield,
+} from "lucide-react";
 
 import {
   FirmResponse,
@@ -132,6 +139,15 @@ const FirmManagement = () => {
           ":firmId",
           firmId
         )
+      );
+    },
+    [navigate]
+  );
+
+  const handleTrialSubscription = useCallback(
+    (firmId: string) => {
+      navigate(
+        ROUTES_CONFIG.SUPER_ADMIN.FIRM_SUBSCRIPTION.replace(":firmId", firmId)
       );
     },
     [navigate]
@@ -275,6 +291,17 @@ const FirmManagement = () => {
                         </MenuItem>
                       )}
 
+                      <MenuItem
+                        cursor="pointer"
+                        value="trial-subscription"
+                        onClick={() => handleTrialSubscription(firmId)}
+                      >
+                        <HStack gap={2}>
+                          <CreditCard size={16} />
+                          <Text>Trial &amp; Subscription</Text>
+                        </HStack>
+                      </MenuItem>
+
                       {canAccessAudit && (
                         <MenuItem
                           cursor="pointer"
@@ -342,6 +369,7 @@ const FirmManagement = () => {
       handleAuditLog,
       handleEditFirm,
       handleManageAccess,
+      handleTrialSubscription,
     ]
   );
 

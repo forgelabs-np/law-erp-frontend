@@ -247,6 +247,30 @@ export const api = {
     EXTEND_TRIAL: "super-admin/firms/{firmId}/extend-trial",
     CONVERT_TO_PERMANENT: "super-admin/firms/{firmId}/convert-to-permanent",
   },
+  /**
+   * Plans & pricing. `PUBLIC` is unauthenticated and returns only active,
+   * public plans sorted by the backend; the `SUPER_ADMIN` routes return every
+   * plan (active, inactive, private) and require a SUPER_ADMIN token.
+   */
+  PLAN_MANAGEMENT: {
+    PUBLIC: "plans",
+    LIST: "super-admin/plans",
+    CREATE: "super-admin/plans",
+    GET_BY_ID: "super-admin/plans/{planId}",
+    UPDATE: "super-admin/plans/{planId}",
+    STATUS: "super-admin/plans/{planId}/status",
+    DELETE: "super-admin/plans/{planId}",
+  },
+  /** Active module catalogue used by the plan module picker. */
+  ACTIVE_MODULES: "admin/modules/active",
+  /**
+   * Per-firm trial & subscription state. `TRIAL` is both the read endpoint and
+   * the start-trial endpoint (GET vs POST).
+   */
+  FIRM_SUBSCRIPTION: {
+    TRIAL: "super-admin/firms/{firmId}/trial",
+    CONVERT: "super-admin/firms/{firmId}/subscription/convert",
+  },
   MASTER_DATA: {
     REFRESH_CACHE: "master-data/cache/refresh",
     CACHE_STATS: "master-data/cache/stats",

@@ -4,6 +4,8 @@ export const ROUTES_CONFIG = {
     LOGIN: "/auth/login",
     RESET_PASSWORD: "/auth/reset-password",
     SIGNUP: "/auth/signup",
+    /** Registration route actually mounted in `AUTHENTICATION_ROUTES`. */
+    SIGNUP_SOLO: "/auth/register/solo",
     CHANGE_PASSWORD: "/auth/change-password",
     MFA_SETUP: "/auth/mfa/setup",
     MFA_VERIFICATION: "/auth/mfa/verify",
@@ -56,7 +58,12 @@ export const ROUTES_CONFIG = {
     FOLDER_MATTER_DOCUMENTS: "/folder/matters/:matterNumber",
     SETTINGS: "/settings",
   },
+  PUBLIC: {
+    PRICING: "/pricing",
+  },
   SUPER_ADMIN: {
+    PLANS: "/super-admin/plans",
+    FIRM_SUBSCRIPTION: "/firm-management/:firmId/subscription",
     AUDIT_LOGS: "/super-admin/audit-logs",
     USER_AUDIT_LOGS: "/super-admin/audit-logs/users/:userId",
     FIRM_AUDIT_LOGS: "/super-admin/audit-logs/firms/:firmId",

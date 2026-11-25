@@ -69,6 +69,9 @@ import CreateInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/CreateInvoic
 import EditInvoicePage from "@/pages/SuperAdmin/InvoiceManagement/EditInvoicePage";
 import InvoiceDetailPage from "@/pages/SuperAdmin/InvoiceManagement/InvoiceDetailPage";
 import NotificationsPage from "@/pages/User/Notifications/NotificationsPage";
+import PlansManagementPage from "@/pages/SuperAdmin/Plans/PlansManagementPage";
+import FirmTrialSubscriptionPage from "@/pages/SuperAdmin/FirmManagement/FirmTrialSubscriptionPage";
+import { PublicPricingPage } from "@/pages/Pricing";
 
 /**
  * Route-level permission configuration.
@@ -78,7 +81,11 @@ import NotificationsPage from "@/pages/User/Notifications/NotificationsPage";
 export const USER_ROUTES: Array<{
   path: string;
   element: React.ReactNode;
-  moduleCode: string;
+  /**
+   * Backend module that guards the route. Omitted when the route is protected
+   * by role alone (e.g. platform-level pricing pages).
+   */
+  moduleCode?: string;
   requiredAction?: string;
   roles?: string[];
 }> = [
@@ -322,6 +329,23 @@ export const USER_ROUTES: Array<{
     roles: ["CLIENT"],
   },
   {
+    path: ROUTES_CONFIG.PUBLIC.PRICING,
+    element: <PublicPricingPage />,
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.PLANS,
+    element: <PlansManagementPage />,
+    // moduleCode: "PLANS_MANAGEMENT",
+    roles: ["SUPER_ADMIN"],
+  },
+  {
+    path: ROUTES_CONFIG.SUPER_ADMIN.FIRM_SUBSCRIPTION,
+    element: <FirmTrialSubscriptionPage />,
+    moduleCode: "FIRM_MANAGEMENT",
+    requiredAction: "VIEW",
+    roles: ["SUPER_ADMIN"],
+  },
+  {
     path: ROUTES_CONFIG.SUPER_ADMIN.INVOICES,
     element: <InvoiceListPage />,
     moduleCode: "BILLING",
@@ -431,6 +455,12 @@ export const AUTHENTICATION_ROUTES = [
   {
     path: ROUTES_CONFIG.AUTHENTICATION.RESET_PASSWORD,
     element: <PublicRoute Component={ResetPassword} variant="split" />,
+  },
+  {
+    // Public pricing must render before sign-in, so it lives with the
+    // unauthenticated routes and needs no token.
+    path: ROUTES_CONFIG.PUBLIC.PRICING,
+    element: <PublicPricingPage />,
   },
   {
     path: ROUTES_CONFIG.AUTHENTICATION.CHANGE_PASSWORD,
